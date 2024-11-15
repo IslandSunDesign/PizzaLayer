@@ -160,16 +160,16 @@ return '<!-- Pizzalayer : MENU UI -->
 </li>
 
 <li class="col-lg-3 col-md-3 col-sm-3">
-<button onClick="PTswitchToMenu(\'drizzles\');" title="Drizzles" id="pizzalayer-icon-menu-item-drizzles" class="pizzalayer-icon-menu-item">
+<button onClick="PTswitchToMenu(\'toppings\');" title="Toppings" id="pizzalayer-icon-menu-item-toppings" class="pizzalayer-icon-menu-item">
 <div>
-<div class="pizzalayer-icon-menu-item-icon-row"><i class="fa fa-solid fa-water"></i></div>Drizzles
+<div class="pizzalayer-icon-menu-item-icon-row"><i class="fa fa-solid fa-cookie"></i></div>Toppings
 </div></button>
 </li>
 
 <li class="col-lg-3 col-md-3 col-sm-3">
-<button onClick="PTswitchToMenu(\'toppings\');" title="Toppings" id="pizzalayer-icon-menu-item-toppings" class="pizzalayer-icon-menu-item">
+<button onClick="PTswitchToMenu(\'drizzles\');" title="Drizzles" id="pizzalayer-icon-menu-item-drizzles" class="pizzalayer-icon-menu-item">
 <div>
-<div class="pizzalayer-icon-menu-item-icon-row"><i class="fa fa-solid fa-cookie"></i></div>Toppings
+<div class="pizzalayer-icon-menu-item-icon-row"><i class="fa fa-solid fa-water"></i></div>Drizzles
 </div></button>
 </li>
 
