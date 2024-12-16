@@ -50,6 +50,7 @@ return $pizzalayer_halves_visual_input . $pizzalayer_halves_form_controls;
 // ========= NEXT/PREV CONTROLS ========
 
 function pizzalayer_control_nextprev($PizzalayerPanePrev,$PizzalayerPaneNext,$ControlCSSid){
+    if( get_option('pizzalayer_setting_template_glass_display_section_nextprev') != 'show' ){ return ''; };
 if($PizzalayerPaneNext){ $pizzalayer_This_NextLink = '<a href="javascript:PTswitchToMenu(\'' . $PizzalayerPaneNext . '\');" class="pizzalayer-control-nextprev nextprev-next">' . $PizzalayerPaneNext . '  &gt;</a>'; };    
 if($PizzalayerPanePrev){$pizzalayer_This_PrevLink = '<a href="javascript:PTswitchToMenu(\'' . $PizzalayerPanePrev . '\');" class="pizzalayer-control-nextprev nextprev-prev"> &lt; ' . $PizzalayerPanePrev . '</a>';};    
 return '<div id="' . $ControlCSSid .'" class="pizzalayer-control-nextprev col-sm-12">' . $pizzalayer_This_PrevLink . $pizzalayer_This_NextLink . '</div>';

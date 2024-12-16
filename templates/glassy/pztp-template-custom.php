@@ -3,7 +3,7 @@ function pizzalayer_topvis_title($title,$icon){
     return '<h3 class="pizzalayer-toppings-visualizer-subtitle"><i class="fa fa-solid fa-' . $icon . '"></i> ' . $title . '</h2>';
 }
 
-function pizzalayer_branding_row_justlogo(){
+function pizzalayer_branding_row_justlogo(){ 
 return '<!-- Pizzalayer : BRANDING ROW -->
 <div class="pizzalayer-ui-branding row">
 <h2>Logo Here</h2>
@@ -294,6 +294,25 @@ function pizzalayer_javascript_hidden_vars(){
 </form>
 <!-- / Pizzalayer : HIDDEN FORM VARS AND RECIPE STORAGE -->';
 }
+
+//PIZZA-SPECIFIC CSS - values applied from customizer / global meta
+
+function pizzalayer_template_glass_options_css_output(){
+// static variables
+$pizzalayer_template_glass_options_string = '';
+
+// background color - main wrapper
+$pizzalayer_template_glass_option_color_background = get_option( 'pizzalayer_setting_template_glass_background' );
+if($pizzalayer_template_glass_option_color_background){ $pizzalayer_template_glass_options_string .= 'body #pizzalayer-ui-wrapper{background:' . $pizzalayer_template_glass_option_color_background . ';'; };
+
+//gather CSS for 
+$pizzalayer_options_css = '<style type="text/css">' . $pizzalayer_template_glass_options_string . '</style>';
+
+//finally, return combined CSS
+return $pizzalayer_options_css;
+    
+    
+} //close function
 
 function pizzalayer_current_toppings(){
     return '<div id="pizzalayer-ui-menu-section-toppings" class="pizzalayer-ui-menu-col pizzalayer-ui-menu-tab pizzalayer-ui-menu-col-toppings col-sm-12 pizzalayer-full-height"></div><div id="pizzalayer-current-toppings-footer"></div>';

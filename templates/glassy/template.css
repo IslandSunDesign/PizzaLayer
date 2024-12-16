@@ -75,7 +75,7 @@ backdrop-filter: blur(4px);
 .pizzalayer-ui-menu-col-toppings{}
 .pizzalayer-ui-menu-col-toppings .pizzalayer-topping{}
 .pizzalayer-ui-menu-col-alert{background:rgba(0,0,0,.5) !important;color:white;font-size:16px;}
-#pizzalayer-pizza{border-radius:50%;background:rgba(0,0,0,.4);border:double 30px rgba(0,0,0,.2);}
+#pizzalayer-pizza{border-radius:50%;}
 .pizzalayer-ui-menu-icons i.fa{font-size:23px;}
 .pizzalayer-ui-menu-icons.pizzalayer-ui-menu-icons-user-actions i.fa{font-size:22px;margin-right:12px;padding:0;}
 .pizzalayer-ui-menu-icons{padding:0 !important;}
