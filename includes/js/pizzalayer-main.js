@@ -7,11 +7,14 @@ var NewPizzaLayerImageUrlWrapped;
 var NewPizzaLayerAlt;
 var SwapPizzaLayerNewTitle;
 var ToppingCoverageArea;
+var NewToppingCoverageArea;
 var ToppingID;
 var TargetRadioButtonID;
 var ToppingCoverageShort;
 var CurrentToppingsCount;
 var MaxToppings;
+var ImageURLtoSet;
+let rotationIntervals = {};
 
 function SwapPizzaLayer(NewPizzaTargetLayer,NewPizzaLayerName,NewPizzaLayerImageUrl){
 jQuery('#' + NewPizzaTargetLayer).fadeOut(100).attr("src",NewPizzaLayerImageUrl).fadeIn(600);
@@ -80,7 +83,7 @@ function convertToSlug(Text) {
 }
 
 function SwapBasePizzaLayer(PizzaTargetLayer,NewPizzaLayerName,NewPizzaLayerImageUrl){
-    NewPizzaLayerImageUrlWrapped = 'url(' + NewPizzaLayerImageUrl + ')';
+NewPizzaLayerImageUrlWrapped = 'url(' + NewPizzaLayerImageUrl + ')';
 SwapPizzaLayerNewTitle = PizzaTargetLayer.replace('pizzalayer-base-layer-','pizzalayer-basics-tile-title-'); 
 ThisLayerTypeSlug = PizzaTargetLayer.replace('pizzalayer-base-layer-',''); 
 jQuery('#' + PizzaTargetLayer).fadeOut(100).delay(20).css("backgroundImage",NewPizzaLayerImageUrlWrapped).delay(20).fadeIn(900);
@@ -96,12 +99,58 @@ jQuery('#' + PizzaTargetLayer).fadeOut(100).css("backgroundImage",NewPizzaLayerI
 jQuery('#' + PizzaTargetLayer).parent().append(jQuery('#' + PizzaTargetLayer));
 }
 
-function SetToppingCoverage(ToppingCoverageArea,ToppingID){
-jQuery('#' + ToppingID).removeClass('tcg-half-left tcg-half-right tcg-whole tcg-quarter-topleft tcg-quarter-topright tcg-quarter-bottomleft tcg-quarter-bottomright');
+function SetToppingCoverage(ToppingCoverageArea,ToppingID,ToppingShort){
+jQuery('#' + ToppingID).removeClass('tcg-half-left tcg-half-right tcg-whole tcg-quarter-top-left tcg-quarter-top-right tcg-quarter-bottom-left tcg-quarter-bottom-right');
 jQuery('#' + ToppingID).addClass('tcg-' + ToppingCoverageArea);
 ToppingCoverageShort =  ToppingID.replace('pizzalayer-topping-','');
 TargetRadioButtonID = 'halfcontrol-' + ToppingCoverageShort + '-' + ToppingCoverageArea;
-jQuery('#' + TargetRadioButtonID)[0].checked = true;
 jQuery('#pizzalayer-halves-control-halfcontrol-' + ToppingCoverageShort + ' img.pizzalayer-halves-control').removeClass('pizzalayer-halves-control-highlighted');
 jQuery('#pizzalayer-halves-control-halfcontrol-' + ToppingCoverageShort + ' img.pizzalayer-halves-control-' + ToppingCoverageArea).addClass('pizzalayer-halves-control-highlighted');
+//1.create the new image string based on the topping short and area
+//topping-' . $pztp_tli_short_slug . '-halves-control-button-top-left
+NewToppingCoverageArea = ToppingCoverageArea.replace('quarter-','');
+ImageURLtoSet = jQuery('#topping-' + ToppingShort + '-halves-control-button-' + NewToppingCoverageArea).attr('src');
+//2. write new image string to the topping-fraction-thumb-shortslug image src
+jQuery('#topping-fraction-thumb-' + ToppingShort).attr('src',ImageURLtoSet);
+jQuery('#' + TargetRadioButtonID)[0].checked = true;
+}
+
+function OpenToppingFractionBox(ToppingID){
+jQuery('#pizzalayer-halves-control-halfcontrol-' + ToppingID).fadeOut(999);
+jQuery('#pizzalayer-halves-control-fraction-' + ToppingID).fadeIn(1200);
+}
+
+function CloseToppingFractionBox(ToppingID){
+jQuery('#pizzalayer-halves-control-halfcontrol-' + ToppingID).fadeIn(999);
+jQuery('#pizzalayer-halves-control-fraction-' + ToppingID).fadeOut(1200);
+}
+
+// Pizza Rotation - Credit ChatGPT
+/* USAGE:
+RotatePizza('myPizzaDiv', 2); // Faster rotation
+RotatePizza('myPizzaDiv', 0.5); // Slower rotation
+*/
+
+function RotatePizza($PizzaToRotate, speed = 1) {
+    let pizzaElement = document.getElementById($PizzaToRotate);
+    if (!pizzaElement) {
+        console.error('Element not found:', $PizzaToRotate);
+        return;
+    }
+    
+    let angle = 0;
+    function rotate() {
+        angle = (angle + speed) % 360; // Increment angle based on speed
+        pizzaElement.style.transform = `rotate(${angle}deg)`;
+        rotationIntervals[$PizzaToRotate] = requestAnimationFrame(rotate);
+    }
+    
+    rotate();
+}
+
+function StopPizza($PizzaToRotate) {
+    if (rotationIntervals[$PizzaToRotate]) {
+        cancelAnimationFrame(rotationIntervals[$PizzaToRotate]);
+        delete rotationIntervals[$PizzaToRotate];
+    }
 }
