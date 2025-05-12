@@ -1,7 +1,6 @@
 <?php
 $pizzalayer_template_images_directory = plugin_dir_url(__FILE__) .'images/';
 
-
 /* =============================================
 PIZZALAYER : front-end UI */
 function pizzalayer_toppings_visualizer_func( $atts ){
@@ -9,33 +8,116 @@ global $pizzalayer_template_name;
 
 /* ============= GET USER OPTIONS ============= */
 $pizzalayer_template_glassy_option_topping_maxtoppings = get_option('pizzalayer_setting_topping_maxtoppings');
-
 $pizzalayer_template_glassy_option_display_header = get_option('pizzalayer_setting_template_glass_display_header');
 $pizzalayer_template_glassy_option_display_myrecipe = get_option('pizzalayer_setting_template_glass_display_my_recipe');
 $pizzalayer_template_glassy_option_display_toppinglist = get_option('pizzalayer_setting_template_glass_display_topping_list');
 $pizzalayer_template_glassy_option_display_actionbar = get_option('pizzalayer_setting_template_glass_display_action_bar');
+$pizzalayer_template_glassy_element_style_header = get_option('pizzalayer_setting_template_glass_element_style_header');
+$pizzalayer_template_glassy_element_style_tabs = get_option('pizzalayer_setting_template_glass_element_style_tabs');
+$pizzalayer_template_glassy_option_header_text = get_option('pizzalayer_setting_template_glass_header_text');
+$pizzalayer_template_glassy_option_layout = get_option('pizzalayer_setting_template_glass_layout');
+$pizzalayer_global_option_element_style_toppings = get_option('pizzalayer_setting_element_style_toppings');
+$pizzalayer_global_option_element_style_layers = get_option('pizzalayer_setting_element_style_layers');
 
-
-/* ============= BUILD LAYOUT PARTS CONDITIONALLY ============= */
-if($pizzalayer_template_glassy_option_display_header == 'show'){
+/* ============= BUILD LAYOUT PART : HEADER ============= */
+if($pizzalayer_template_glassy_option_display_header == 'show' && $pizzalayer_template_glassy_element_style_header == 'traditional'){
 $pizzalayer_template_glassy_part_header_left = '<div id="pizzalayer-header-left" class="col-lg-4 col-md-12 col-sm-12">' . pizzalayer_branding_row_logo_or_byline() . '</div>';
-$pizzalayer_template_glassy_part_header_middle = '<div id="pizzalayer-header-middle" class="col-lg-4 col-md-12 col-sm-12">Your branding or custom content here!</div>';
+$pizzalayer_template_glassy_part_header_middle = '<div id="pizzalayer-header-middle" class="col-lg-4 col-md-12 col-sm-12">' . $pizzalayer_template_glassy_option_header_text . '</div>';
 $pizzalayer_template_glassy_part_header_right = '<div id="pizzalayer-header-right" class="col-lg-4 col-md-12 col-sm-12">' . pizzalayer_icons_menu_topright() . '</div>';
-$pizzalayer_template_glassy_part_header = '<div id="pizzalayer-header" class="col-sm-12 pizzalayer-ui-menu pizzalayer-ui-menu-col">' . $pizzalayer_template_glassy_part_header_left . $pizzalayer_template_glassy_part_header_middle . $pizzalayer_template_glassy_part_header_right . '</div>';
+$pizzalayer_template_glassy_part_header = '<div id="pizzalayer-header" class="col-sm-12 pizzalayer-ui-menu pizzalayer-ui-menu-col pizzalayer-header-style-' . $pizzalayer_template_glassy_element_style_header . '">' . $pizzalayer_template_glassy_part_header_left . $pizzalayer_template_glassy_part_header_middle . $pizzalayer_template_glassy_part_header_right . '</div>';
+
+} else if($pizzalayer_template_glassy_option_display_header == 'show' && $pizzalayer_template_glassy_element_style_header == 'crisp'){
+$pizzalayer_template_glassy_part_header_left = '<div id="pizzalayer-header-left" class="col-lg-4 col-md-12 col-sm-12">' . pizzalayer_branding_row_logo_or_byline() . '</div>';
+$pizzalayer_template_glassy_part_header_right = '<div id="pizzalayer-header-right" class="col-lg-4 col-md-12 col-sm-12">' . pizzalayer_icons_menu_topright() . '</div>';
+$pizzalayer_template_glassy_part_header = '<div id="pizzalayer-header" class="col-sm-12 pizzalayer-ui-menu pizzalayer-ui-menu-col pizzalayer-header-style-' . $pizzalayer_template_glassy_element_style_header . '">' . $pizzalayer_template_glassy_part_header_left . $pizzalayer_template_glassy_part_header_right . '</div>';
+    
+} else if($pizzalayer_template_glassy_option_display_header == 'show' && $pizzalayer_template_glassy_element_style_header == 'center'){    
+$pizzalayer_template_glassy_part_header_middle = '<div id="pizzalayer-header-left" class="col-lg-4 col-md-12 col-sm-12">' . pizzalayer_branding_row_logo_or_byline() . '</div>';
+$pizzalayer_template_glassy_part_header_left = '<div id="pizzalayer-header-middle" class="col-lg-4 col-md-12 col-sm-12">' . $pizzalayer_template_glassy_option_header_text . '</div>';
+$pizzalayer_template_glassy_part_header_right = '<div id="pizzalayer-header-right" class="col-lg-4 col-md-12 col-sm-12">' . pizzalayer_icons_menu_topright() . '</div>';
+$pizzalayer_template_glassy_part_header = '<div id="pizzalayer-header" class="col-sm-12 pizzalayer-ui-menu pizzalayer-ui-menu-col pizzalayer-header-style-' . $pizzalayer_template_glassy_element_style_header . '">' . $pizzalayer_template_glassy_part_header_left . $pizzalayer_template_glassy_part_header_middle . $pizzalayer_template_glassy_part_header_right . '</div>';
+    
+} else if($pizzalayer_template_glassy_option_display_header == 'show' && $pizzalayer_template_glassy_element_style_header == 'curve'){ 
+$pizzalayer_template_glassy_part_header_left = '<div id="pizzalayer-header-left" class="col-lg-6 col-md-6 col-sm-12">' . pizzalayer_branding_row_logo_or_byline() . '</div>';
+$pizzalayer_template_glassy_part_header_right = '<div id="pizzalayer-header-right" class="col-lg-6 col-md-6 col-sm-12">' . pizzalayer_icons_menu_topright() . '</div>';
+$pizzalayer_template_glassy_part_header = '<div id="pizzalayer-header" class="col-sm-12 pizzalayer-ui-menu pizzalayer-ui-menu-col pizzalayer-header-style-' . $pizzalayer_template_glassy_element_style_header . '">' . $pizzalayer_template_glassy_part_header_left . $pizzalayer_template_glassy_part_header_right . '</div>';
+
+} else if($pizzalayer_template_glassy_option_display_header == 'show' && $pizzalayer_template_glassy_element_style_header == 'thin'){ 
+$pizzalayer_template_glassy_part_header_left = '<div id="pizzalayer-header-left" class="col-lg-4 col-md-12 col-sm-12">' . pizzalayer_branding_row_logo_or_byline() . '</div>';
+$pizzalayer_template_glassy_part_header_middle = '<div id="pizzalayer-header-middle" class="col-lg-4 col-md-12 col-sm-12">' . $pizzalayer_template_glassy_option_header_text . '</div>';
+$pizzalayer_template_glassy_part_header_right = '<div id="pizzalayer-header-right" class="col-lg-4 col-md-12 col-sm-12">' . pizzalayer_icons_menu_topright() . '</div>';
+$pizzalayer_template_glassy_part_header = '<div id="pizzalayer-header" class="col-sm-12 pizzalayer-ui-menu pizzalayer-ui-menu-col pizzalayer-header-style-' . $pizzalayer_template_glassy_element_style_header . '">' . $pizzalayer_template_glassy_part_header_left . $pizzalayer_template_glassy_part_header_middle . $pizzalayer_template_glassy_part_header_right . '</div>';
+    
+} else if($pizzalayer_template_glassy_option_display_header == 'show' && $pizzalayer_template_glassy_element_style_header == 'logocentric'){     
+$pizzalayer_template_glassy_part_header_left = '<div id="pizzalayer-header-left" class="col-lg-4 col-md-12 col-sm-12">' . pizzalayer_branding_row_logo_or_byline() . '</div>';
+$pizzalayer_template_glassy_part_header_middle = '<div id="pizzalayer-header-middle" class="col-lg-4 col-md-12 col-sm-12">' . $pizzalayer_template_glassy_option_header_text . '</div>';
+$pizzalayer_template_glassy_part_header_right = '<div id="pizzalayer-header-right" class="col-lg-4 col-md-12 col-sm-12">' . pizzalayer_icons_menu_topright() . '</div>';
+$pizzalayer_template_glassy_part_header = '<div id="pizzalayer-header" class="col-sm-12 pizzalayer-ui-menu pizzalayer-ui-menu-col pizzalayer-header-style-' . $pizzalayer_template_glassy_element_style_header . '">' . $pizzalayer_template_glassy_part_header_left . $pizzalayer_template_glassy_part_header_middle . $pizzalayer_template_glassy_part_header_right . '</div>';
+
 } else {
  $pizzalayer_template_glassy_part_header = '';   
 };
+
+/* ============= BUILD LAYOUT PART : MAIN CONTENT ============= */
 $pizzalayer_template_glassy_part_maindisplay = '<div id="pizzalayer-main-visualizer-container" class="pizzalayer-visualizer pt-visualizer-' . $atts['id'] . ' col-md-7 col-sm-12">
 ' . pizzalayer_pizza_dynamic_nested($atts['id'],$atts['crust'],$atts['sauce'],$atts['toppings']) . '
 </div>';
 
-$pizzalayer_template_glassy_part_tabsmenu = '<div class="pizzalayer-tabs col-md-5 col-sm-12">' . pizzalayer_icons_menu_buttons() . pizzalayer_alert('Max : ' . $pizzalayer_template_glassy_option_topping_maxtoppings . ' Toppings','max-toppings') . pizzalayer_panels() . pizzalayer_icons_menu_user_actions() . '</div>';
+/* ============= BUILD LAYOUT PART : MAIN CONTENT - FULL WIDTH ============= */
+$pizzalayer_template_glassy_part_maindisplay_100percent = '<div id="pizzalayer-main-visualizer-container" class="pizzalayer-visualizer pt-visualizer-' . $atts['id'] . ' col-md-12 col-sm-12">
+' . pizzalayer_pizza_dynamic_nested($atts['id'],$atts['crust'],$atts['sauce'],$atts['toppings']) . '
+</div>';
 
+/* ============= BUILD LAYOUT PART : MAIN CONTENT - THIRD ============= */
+$pizzalayer_template_glassy_part_maindisplay_orderboard = '<div id="pizzalayer-main-visualizer-container" class="pizzalayer-visualizer pt-visualizer-' . $atts['id'] . ' col-md-4 col-sm-12">
+' . pizzalayer_pizza_dynamic_nested($atts['id'],$atts['crust'],$atts['sauce'],$atts['toppings']) . '
+</div>';
 
+/* ============= BUILD LAYOUT PART : OPEN TABS CONTAINER   ============= */
+$pizzalayer_template_glassy_part_opentabcontainer = '<div class="pizzalayer-tabs col-md-5 col-sm-12">';
 
+/* ============= BUILD LAYOUT PART : OPEN TABS CONTAINER - FULL   ============= */
+$pizzalayer_template_glassy_part_opentabcontainer_100percent = '<div class="pizzalayer-tabs col-md-12 col-sm-12">';
+
+/* ============= BUILD LAYOUT PART : OPEN TABS CONTAINER - ORDERBOARD   ============= */
+$pizzalayer_template_glassy_part_opentabcontainer_orderboard = '<div class="pizzalayer-tabs col-md-4 col-sm-12">';
+
+/* ============= BUILD LAYOUT PART : TABS MENU ============= */
+if($pizzalayer_template_glassy_element_style_tabs == 'buttonicon'){
+$pizzalayer_template_glassy_part_tabsmenu = pizzalayer_tabs_menu_buttons();
+} else if($pizzalayer_template_glassy_element_style_tabs == 'buttonrounded'){
+$pizzalayer_template_glassy_part_tabsmenu = pizzalayer_tabs_menu_textbuttons();
+} else if($pizzalayer_template_glassy_element_style_tabs == 'textonly'){
+$pizzalayer_template_glassy_part_tabsmenu = pizzalayer_tabs_menu_text_links();
+} else if($pizzalayer_template_glassy_element_style_tabs == 'textunderline'){
+$pizzalayer_template_glassy_part_tabsmenu = pizzalayer_tabs_menu_text_links();
+} else if($pizzalayer_template_glassy_element_style_tabs == 'texticonunderline'){
+$pizzalayer_template_glassy_part_tabsmenu = pizzalayer_tabs_menu_text_with_icons();
+} else if($pizzalayer_template_glassy_element_style_tabs == 'dropdown'){
+$pizzalayer_template_glassy_part_tabsmenu = pizzalayer_tabs_menu_dropdown();
+}else if($pizzalayer_template_glassy_element_style_tabs == 'icononly'){
+$pizzalayer_template_glassy_part_tabsmenu = pizzalayer_tabs_menu_icononly();
+}else if($pizzalayer_template_glassy_element_style_tabs == 'mobile'){
+$pizzalayer_template_glassy_part_tabsmenu = pizzalayer_tabs_menu_dropdown();
+}
+
+/* ============= BUILD LAYOUT PART : ALERT   ============= */
+$pizzalayer_template_glassy_part_alert = pizzalayer_alert('Max : ' . $pizzalayer_template_glassy_option_topping_maxtoppings . ' Toppings','max-toppings');
+
+/* ============= BUILD LAYOUT PART : PANELS   ============= */
+$pizzalayer_template_glassy_part_panels = pizzalayer_panels();
+
+/* ============= BUILD LAYOUT PART : USER ACTIONS  ============= */
+$pizzalayer_template_glassy_part_useractions = pizzalayer_icons_menu_user_actions();
+
+/* ============= BUILD LAYOUT PART : CLOSE TABS CONTAINER   ============= */
+$pizzalayer_template_glassy_part_closetabcontainer = '</div>';
+
+/* ============= BUILD LAYOUT PART : MY RECIPE ============= */
+
+/* v = default/sidebyside */
 if($pizzalayer_template_glassy_option_display_myrecipe == 'show'){
 $pizzalayer_template_glassy_part_myrecipe = '<!-- row : my recipe -->
-
 <div class="pizzalayer-ui-basics pizzalayer-ui-menu-col col-md-12 col-sm-12">'
 . pizzalayer_topvis_title('My Recipe','pizza-slice')
 . pizzalayer_selection_tile('Crust','crust','No Crust Chosen')
@@ -45,11 +127,40 @@ $pizzalayer_template_glassy_part_myrecipe = '<!-- row : my recipe -->
 . '
 </div>';
 } else { 
-    $pizzalayer_template_glassy_part_myrecipe = '';
+   $pizzalayer_template_glassy_part_myrecipe = '';
 };
 
+/* v = note recipe */
+if($pizzalayer_template_glassy_option_display_myrecipe == 'show'){
+$pizzalayer_template_glassy_part_myrecipe_noterecipe = '<!-- row : my recipe -->
+<div class="pizzalayer-ui-basics pizzalayer-ui-menu-col col-md-5 col-sm-12">'
+. pizzalayer_topvis_title('My Recipe','pizza-slice')
+. pizzalayer_selection_tile_100percent('Crust','crust','No Crust Chosen')
+. pizzalayer_selection_tile_100percent('Sauce','sauce','No Sauce Chosen')
+. pizzalayer_selection_tile_100percent('Cheese','cheese','No Cheese Chosen')
+. pizzalayer_selection_tile_100percent('Drizzle','drizzle','No Drizzle Chosen')
+. '
+</div>';
+} else { 
+    $pizzalayer_template_glassy_part_myrecipe_noterecipe = '';
+};
 
+/* v = app style */
+if($pizzalayer_template_glassy_option_display_myrecipe == 'show'){
+$pizzalayer_template_glassy_part_myrecipe_orderboard = '<!-- row : my recipe -->
+<div class="pizzalayer-ui-basics pizzalayer-ui-menu-col col-md-4 col-sm-12">'
+. pizzalayer_topvis_title('My Recipe','pizza-slice')
+. pizzalayer_selection_tile_100percent('Crust','crust','No Crust Chosen')
+. pizzalayer_selection_tile_100percent('Sauce','sauce','No Sauce Chosen')
+. pizzalayer_selection_tile_100percent('Cheese','cheese','No Cheese Chosen')
+. pizzalayer_selection_tile_100percent('Drizzle','drizzle','No Drizzle Chosen')
+. '
+</div>';
+} else { 
+    $pizzalayer_template_glassy_part_myrecipe_orderboard = '';
+};
 
+/* ============= BUILD LAYOUT PART : MY TOPPING LIST ============= */
 if( $pizzalayer_template_glassy_option_display_toppinglist == 'show' ){
 $pizzalayer_template_glassy_part_toppinglist = '<!-- row : current toppings list -->
 <div class="pizzalayer-ui-toppings pizzalayer-ui-menu-col col-md-12 col-sm-12">
@@ -60,26 +171,41 @@ $pizzalayer_template_glassy_part_toppinglist = '<!-- row : current toppings list
     $pizzalayer_template_glassy_part_toppinglist = '';
 };
 
-
-
+/* ============= BUILD LAYOUT PART : ACTION BAR ============= */
 if( $pizzalayer_template_glassy_option_display_actionbar == 'show' ){
 $pizzalayer_template_glassy_part_actionbar = '<!-- row : woocommerce action bar -->' . pizzalayer_woocommerce_actions();
 } else { 
 $pizzalayer_template_glassy_part_actionbar = '';
 };
 
-
-
 /* ============= ASSEMBLE PARTS AND RETURN UI ============= */
+//pizzalayer_setting_template_glass_layout
+
+if($pizzalayer_template_glassy_option_layout == 'sidebyside' || $pizzalayer_template_glassy_option_layout == ''){
+$pizzalayer_template_glassy_part_content =  $pizzalayer_template_glassy_part_header . $pizzalayer_template_glassy_part_maindisplay . $pizzalayer_template_glassy_part_opentabcontainer . $pizzalayer_template_glassy_part_alert . $pizzalayer_template_glassy_part_tabsmenu . $pizzalayer_template_glassy_part_panels . $pizzalayer_template_glassy_part_useractions . $pizzalayer_template_glassy_part_closetabcontainer . $pizzalayer_template_glassy_part_myrecipe . $pizzalayer_template_glassy_part_toppinglist;
+
+} else if($pizzalayer_template_glassy_option_layout == 'noterecipe'){
+$pizzalayer_template_glassy_part_content =  $pizzalayer_template_glassy_part_header . $pizzalayer_template_glassy_part_maindisplay .
+    $pizzalayer_template_glassy_part_myrecipe_noterecipe .  $pizzalayer_template_glassy_part_opentabcontainer_100percent . $pizzalayer_template_glassy_part_alert . $pizzalayer_template_glassy_part_tabsmenu . $pizzalayer_template_glassy_part_panels . $pizzalayer_template_glassy_part_useractions . $pizzalayer_template_glassy_part_closetabcontainer .  $pizzalayer_template_glassy_part_toppinglist;
+
+} else if($pizzalayer_template_glassy_option_layout == 'appstyle'){
+$pizzalayer_template_glassy_part_content =  $pizzalayer_template_glassy_part_header . $pizzalayer_template_glassy_part_maindisplay_100percent .  $pizzalayer_template_glassy_part_opentabcontainer_100percent . $pizzalayer_template_glassy_part_alert . $pizzalayer_template_glassy_part_tabsmenu . $pizzalayer_template_glassy_part_panels . $pizzalayer_template_glassy_part_useractions . $pizzalayer_template_glassy_part_closetabcontainer . $pizzalayer_template_glassy_part_myrecipe . $pizzalayer_template_glassy_part_toppinglist;
+
+} else if($pizzalayer_template_glassy_option_layout == 'orderboard'){
+$pizzalayer_template_glassy_part_content =  $pizzalayer_template_glassy_part_header .
+    $pizzalayer_template_glassy_part_opentabcontainer_orderboard .  $pizzalayer_template_glassy_part_alert .  $pizzalayer_template_glassy_part_tabsmenu . $pizzalayer_template_glassy_part_panels . $pizzalayer_template_glassy_part_useractions . $pizzalayer_template_glassy_part_closetabcontainer .  $pizzalayer_template_glassy_part_maindisplay_orderboard .  $pizzalayer_template_glassy_part_myrecipe_orderboard . $pizzalayer_template_glassy_part_toppinglist;
+
+} else if($pizzalayer_template_glassy_option_layout == 'pizza'){
+$pizzalayer_template_glassy_part_content = $pizzalayer_template_glassy_part_maindisplay . $pizzalayer_template_glassy_part_opentabcontainer . $pizzalayer_template_glassy_part_alert . $pizzalayer_template_glassy_part_tabsmenu . $pizzalayer_template_glassy_part_panels . $pizzalayer_template_glassy_part_useractions . $pizzalayer_template_glassy_part_closetabcontainer;
+
+};
 return '
 <!-- Pizzalayer : PIZZA DISPLAY ==================== -->
-<div id="pizzalayer-ui-wrapper" class="pizzalayer-ui-wrapper pizzalayer-template-' . $pizzalayer_template_name . '">
+<div id="pizzalayer-ui-wrapper" class="pizzalayer-ui-wrapper pizzalayer-template-' . $pizzalayer_template_name . ' pizzalayer-layout-' . $pizzalayer_template_glassy_option_layout . '">
 ' . pizzalayer_demo_notice() . '
 <!-- Pizzalayer : PIZZA + -->
 <div id="pizzalayer-ui-container" class="pizzalayer-ui-container pizzalayer-uirow">
-' . $pizzalayer_template_glassy_part_header . $pizzalayer_template_glassy_part_maindisplay . $pizzalayer_template_glassy_part_tabsmenu . 
-    $pizzalayer_template_glassy_part_myrecipe . 
-    $pizzalayer_template_glassy_part_toppinglist . 
+' . $pizzalayer_template_glassy_part_content . 
 '</div>
 ' . $pizzalayer_template_glassy_part_actionbar . '
 <div style="clear:both;"></div>
