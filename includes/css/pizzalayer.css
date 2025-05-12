@@ -41,9 +41,20 @@ body .pizzalayer-toppings-wrapper.pizzalayer-toppings-wrapper-static{margin:auto
 .pizzalayer-topping.tcg-half-left img{width:50%;height:100%;position:absolute;left:0;object-fit: cover; object-position: 50% 0;}
 .pizzalayer-topping.tcg-half-right img{width:50%;height:100%;position:absolute;right:0;object-fit: cover; object-position: 50% 0;}
 
+/* quarters */
+.pizzalayer-topping.tcg-quarter-top-left,
+.pizzalayer-topping.tcg-quarter-top-right,
+.pizzalayer-topping.tcg-quarter-bottom-left,
+.pizzalayer-topping.tcg-quarter-bottom-right{width:48%;height:48%;border:solid 1% blue !important;}
+.pizzalayer-topping.tcg-quarter-top-left img{width:50%;height:50%;position:absolute;left:0;top:0;object-fit: cover; object-position: top left;}
+.pizzalayer-topping.tcg-quarter-top-right img{width:50%;height:50%;position:absolute;right:0;top:0;object-fit: cover; object-position: top right;}
+.pizzalayer-topping.tcg-quarter-bottom-left img{width:50%;height:50%;position:absolute;left:0;top:50%;object-fit: cover; object-position: bottom left;}
+.pizzalayer-topping.tcg-quarter-bottom-right img{width:50%;height:50%;position:absolute;right:0;top:50%;object-fit: cover; object-position: bottom right;}
+
+
 /* UI Controls */
 
-.pzpt-ui-button-remove,.pzpt-ui-button-add{max-width:32px;max-height:32px;float:right;}
+
 
 .pizzalayer-control-nextprev{padding:6px;}
 .pizzalayer-control-nextprev a{border:solid 1px rgba(255,255,255,.6);padding:6px 12px;}
