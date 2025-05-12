@@ -1,10 +1,20 @@
 var $RequestedMenuItem;
+var $PTpopupSlug;
 
 function PTswitchToMenu($RequestedMenuItem){
 jQuery('.pizzalayer-ui-menu-tab').fadeOut(100);
 jQuery('#pizzalayer-ui-menu-section-' + $RequestedMenuItem).fadeIn(777);
-jQuery('.pizzalayer-icon-menu-item').removeClass('pizzalayer-icon-selected');
-jQuery('#pizzalayer-icon-menu-item-' + $RequestedMenuItem).addClass('pizzalayer-icon-selected');
+jQuery('button.pizzalayer-icon-menu-item').removeClass('pizzalayer-icon-selected');
+jQuery('button#pizzalayer-icon-menu-item-' + $RequestedMenuItem).addClass('pizzalayer-icon-selected');
+jQuery('a.pizzalayer-icon-menu-item').removeClass('pizzalayer-icon-selected');
+jQuery('a#pizzalayer-icon-menu-item-' + $RequestedMenuItem).addClass('pizzalayer-icon-selected');
+jQuery('option.pizzalayer-icon-menu-item').removeAttr('selected');
+jQuery('option#pizzalayer-icon-menu-item-' + $RequestedMenuItem).attr('selected','selected');
+}
+
+function PTselectToMenu($RequestedMenuItem){
+jQuery('.pizzalayer-ui-menu-tab').fadeOut(100);
+jQuery('#pizzalayer-ui-menu-section-' + $RequestedMenuItem).fadeIn(777);
 }
 
 function PThideMenu(){
@@ -27,3 +37,8 @@ jQuery( document ).ready(function() {
 jQuery(window).resize(function(){
   jQuery("#pizzalayer-main-visualizer-container").css("height", jQuery('#pizzalayer-main-visualizer-container').width());
 });
+
+function PTtoggleToppingPopup($PTpopupSlug){
+jQuery('#pizzalayer-halves-control-popup-' + $PTpopupSlug).slideToggle();
+//pizzalayer-halves-control-popup-
+}
