@@ -30,9 +30,6 @@ wp_enqueue_style( 'pizzalayer-css', plugins_url( 'includes/css/pizzalayer.css', 
 wp_register_style( 'pizzalayer-bootsrap-grid-css', plugins_url( 'includes/css/bootstrap-grid-system.css', __FILE__ ) );
 wp_enqueue_style( 'pizzalayer-bootstrap-grid-css', plugins_url( 'includes/css/bootstrap-grid-system.css', __FILE__ ) );
 
-wp_register_style( 'pizzalayer-fontawesome', plugins_url( 'includes/fontawesome/all.css', __FILE__ ) );
-wp_enqueue_style( 'pizzalayer-fontawesome', plugins_url( 'includes/fontawesome/all.css', __FILE__ ) );
-
 wp_enqueue_script( 'pizzalayer-js', plugins_url( 'includes/js/pizzalayer-main.js', __FILE__ ), array(), '0.9.0', true );
 
 /* +===  LOAD TEMPLATE +=========  */
