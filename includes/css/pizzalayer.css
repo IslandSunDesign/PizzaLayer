@@ -53,11 +53,21 @@ body .pizzalayer-toppings-wrapper.pizzalayer-toppings-wrapper-static{margin:auto
 
 
 /* UI Controls */
-
-
-
 .pizzalayer-control-nextprev{padding:6px;}
 .pizzalayer-control-nextprev a{border:solid 1px rgba(255,255,255,.6);padding:6px 12px;}
 .pizzalayer-control-nextprev a:hover{}
 .pizzalayer-control-nextprev .fa{font-size:28px;color:white;}
 .pizzlayer-control-next{float:right;}
+
+
+/* Idle Animation */
+
+@keyframes jump {
+  0% { transform: translateY(0); }
+  30% { transform: translateY(-20px); }
+  60% { transform: translateY(0); }
+}
+
+.jump {
+  animation: jump 0.5s ease;
+}
