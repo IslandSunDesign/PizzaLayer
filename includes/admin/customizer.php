@@ -18,6 +18,105 @@ function ic_sanitize_image( $file, $setting ) {
 	return ( $file_ext['ext'] ? $file : $setting->default );
 }
 
+/*-- ============================ --*/
+
+
+function pizzalayer_get_layer_options_as_array_OLD($tpv_query_layer_options_posttype){
+//return false if no cpt type passed
+if(!$tpv_query_layer_options_posttype){ return false; } 
+
+// -- assemble query to get options by cpt
+  
+// -- query loop arguments
+$args = array(  
+'post_type' => array('pizzalayer_' . $tpv_query_layer_options_posttype),
+'post_status' => 'publish',
+'posts_per_page' => '-1', 
+'orderby' => 'title', 
+'order' => 'ASC',
+);
+
+// -- ui css class
+
+// -- create array to return
+$pizzalayer_layer_options_array = [];
+    
+// -- get cpt posts and build
+/* Desired output : array(
+            'default' => 'Default',
+            'whole' => 'Whole Pizza Only',
+            'halves' => 'Whole + Halves',
+            'quarters' => 'Whole + Quarters',
+    ); */
+    
+$loop = new WP_Query( $args );        
+while ( $loop->have_posts() ) : $loop->the_post();
+$pztp_tli_short_slug = get_post_field( 'post_name', get_post() );
+//$pztp_tli_short_slug_capitalized = strtoupper($pztp_tli_short_slug);
+$pizzalayer_layer_options_array[$pztp_tli_short_slug] = $pztp_tli_short_slug;
+
+// end post 
+endwhile; //end main cpt loop
+wp_reset_postdata(); 
+return $pizzalayer_layer_options_array;    
+    
+}
+
+
+
+
+/*-- ============================ --*/
+
+
+
+
+
+
+function pizzalayer_get_layer_options_as_array($tpv_query_layer_options_posttype) {
+    // Initialize an empty array
+    $cuts_array = array();
+
+    // Arguments for WP_Query
+   $args = array(  
+        'post_type' => array('pizzalayer_' . $tpv_query_layer_options_posttype),
+        'post_status' => 'publish',
+        'posts_per_page' => -1, 
+        'orderby' => 'title', 
+        'order' => 'ASC',
+        );
+
+    // Custom query
+    $query = new WP_Query($args);
+
+    // Loop through the posts
+    if ($query->have_posts()) {
+        while ($query->have_posts()) {
+            $query->the_post();
+            $title = get_the_title();
+            $key = strtolower($title);
+            $value = ucfirst($title);
+            $this_loop_array[$key] = $value;
+        }
+        wp_reset_postdata(); // Reset post data after the loop
+    }
+    
+    $this_loop_array[''] = 'None';
+
+    return $this_loop_array;
+}
+
+
+
+
+
+
+
+
+
+
+
+/*-- ============================ --*/
+
 function pizzalayer_customize_register( $wp_customize ) {
 // Create our panels
 
@@ -110,23 +209,22 @@ $wp_customize->add_section( 'pizzalayer_panel_section_advanced' , array(
 
 /* =========== SETTING --------> global > template ============== v */
 
+$pizzalayer_setting_global_template_description = 'Choose a global template for the frontend display.<h6 style="padding-top:0px;"><strong>DEVELOPERS</strong><br/>The built-in template directory on the server is :</strong><br/>' . pizzalayer_template_get_templates_file_path() . '</h6>';
+
 $wp_customize->add_setting( 'pizzalayer_setting_global_template' , array(
 	'type'          => 'option',
 	'transport'     => 'refresh',
 ) );
 $wp_customize->add_control( 'pizzalayer_setting_global_template_control', array(
 	'label'      => 'Pizzalayer Main Template',
-	'description'=> 'Choose a global template for the frontend display.<h6 style="padding-top:0px;"><strong>DEVELOPERS</strong><br/>The built-in template directory on the server is :</strong><br/>' . pizzalayer_template_get_templates_file_path() . '</h6>',
+	'description'=> $pizzalayer_setting_global_template_description,
 	'section'    => 'pizzalayer_panel_section_template_selection',
 	'settings'   => 'pizzalayer_setting_global_template',
 	'type'       => 'select',
     'choices'    => pizzalayer_template_get_templates_as_array(),
 ) );
 
-
-//pizzalayer_template_get_templates_as_array_entries()
-	
-/* =========== SETTING --------> global > pizza size max ==============  */
+/* =========== SETTING --------> global > pizza size max ============== v */
 
 $wp_customize->add_setting( 'pizzalayer_setting_pizza_size_max' , array(
 	'type'          => 'option',
@@ -140,7 +238,7 @@ $wp_customize->add_control( 'pizzalayer_setting_pizza_size_max_control', array(
 	'type'       => 'text',
 ) );
 	
-/* =========== SETTING --------> global > pizza size min ==============  */
+/* =========== SETTING --------> global > pizza size min ============== v */
 
 $wp_customize->add_setting( 'pizzalayer_setting_pizza_size_min' , array(
 	'type'          => 'option',
@@ -154,7 +252,7 @@ $wp_customize->add_control( 'pizzalayer_setting_pizza_size_min_control', array(
 	'type'       => 'text',
 ) );
 
-/* =========== SETTING --------> global > pizza border size ==============  */
+/* =========== SETTING --------> global > pizza border size ============== v */
 
 $wp_customize->add_setting( 'pizzalayer_setting_pizza_border' , array(
 	'type'          => 'option',
@@ -168,7 +266,7 @@ $wp_customize->add_control( 'pizzalayer_setting_pizza_border_control', array(
 	'type'       => 'text',
 ) );
 
-/* =========== SETTING --------> global > pizza border color ==============  */
+/* =========== SETTING --------> global > pizza border color ============== v */
 
 $wp_customize->add_setting( 'pizzalayer_setting_pizza_border_color' , array(
 	'type'          => 'option',
@@ -181,9 +279,9 @@ $wp_customize->add_control(
     'description' => __( 'What color should the pizza border be?' ),
     'section'    => 'pizzalayer_panel_section_pizza', // Add a default or your own section
 ) ) );
-	
 
-/* =========== SETTING --------> global > accent color ==============  */
+
+/* =========== SETTING --------> global > accent color ============== v */
 		
 $wp_customize->add_setting( 'pizzalayer_setting_global_color' , array(
 	'type'          => 'option',
@@ -196,21 +294,96 @@ $wp_customize->add_control(
     'description' => __( 'Select a color for something' ),
     'section' => 'pizzalayer_panel_section_template', // Add a default or your own section
 ) ) );
-	
-	
-/* =========== SETTING --------> cheeses > max cheeses ==============  */
 
-$wp_customize->add_setting( 'pizzalayer_setting_cheese_maxcheeses' , array(
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* =========== SETTING --------> cuts > default slicing  ============== */
+
+$wp_customize->add_setting( 'pizzalayer_setting_cut_defaultcut' , array(
 	'type'          => 'option',
 	'transport'     => 'refresh',
 ) );
-$wp_customize->add_control( 'pizzalayer_cheese_setting_maxcheeses_control', array(
-	'label'      => 'Max # Cheeses',
-	'description'=> 'How many cheeses should the customer be limited to?',
+
+$wp_customize->add_control( 'pizzalayer_setting_cut_defaultcut_control', array(
+	'label'      => 'Default Slicing',
+	'description'=> 'How many slices should be shown on the slicing overlay over the pizza?',
+	'section'    => 'pizzalayer_panel_section_cuts',
+	'settings'   => 'pizzalayer_setting_cut_defaultcut',
+	'type'    => 'select',
+    'choices'    => pizzalayer_get_layer_options_as_array('cuts'),
+) );
+
+
+/* =========== SETTING --------> sauces > default sauce  ============== v */
+
+$wp_customize->add_setting( 'pizzalayer_setting_sauce_defaultsauce' , array(
+	'type'          => 'option',
+	'transport'     => 'refresh',
+) );
+$wp_customize->add_control( 'pizzalayer_setting_sauce_defaultsauce_control', array(
+	'label'      => 'Default Sauce',
+	'description'=> 'Which sauce should be applied by default?',
+	'section'    => 'pizzalayer_panel_section_sauces',
+	'settings'   => 'pizzalayer_setting_sauce_defaultsauce',
+	'type'    => 'select',
+    'choices'    => pizzalayer_get_layer_options_as_array('sauces'),
+) );
+
+/* =========== SETTING --------> drizzles > default drizzle  ============== v */
+
+$wp_customize->add_setting( 'pizzalayer_setting_drizzle_defaultdrizzle' , array(
+	'type'          => 'option',
+	'transport'     => 'refresh',
+) );
+$wp_customize->add_control( 'pizzalayer_setting_drizzle_defaultdrizzle_control', array(
+	'label'      => 'Default drizzle',
+	'description'=> 'Which drizzle should be applied by default?',
+	'section'    => 'pizzalayer_panel_section_drizzles',
+	'settings'   => 'pizzalayer_setting_drizzle_defaultdrizzle',
+	'type'    => 'select',
+   'choices'    => pizzalayer_get_layer_options_as_array('drizzles'),
+) );
+
+/* =========== SETTING --------> crusts > default crust  ============== v */
+
+$wp_customize->add_setting( 'pizzalayer_setting_crust_defaultcrust' , array(
+	'type'          => 'option',
+	'transport'     => 'refresh',
+) );
+$wp_customize->add_control( 'pizzalayer_setting_crust_defaultcrust_control', array(
+	'label'      => 'Default crust',
+	'description'=> 'Which crust should be applied by default?',
+	'section'    => 'pizzalayer_panel_section_crusts',
+	'settings'   => 'pizzalayer_setting_crust_defaultcrust',
+	'type'    => 'select',
+    'choices'    => pizzalayer_get_layer_options_as_array('crusts'),
+) );
+
+/* =========== SETTING --------> cheeses > default cheese  ============== v */
+
+$wp_customize->add_setting( 'pizzalayer_setting_cheese_defaultcheese' , array(
+	'type'          => 'option',
+	'transport'     => 'refresh',
+) );
+$wp_customize->add_control( 'pizzalayer_setting_cheese_defaultcheese_control', array(
+	'label'      => 'Default cheese',
+	'description'=> 'Which cheese should be applied by default?',
 	'section'    => 'pizzalayer_panel_section_cheeses',
-	'settings'   => 'pizzalayer_setting_cheese_maxcheeses',
-	'type'       => 'text',
-) );	
+	'settings'   => 'pizzalayer_setting_cheese_defaultcheese',
+	'type'    => 'select',
+    'choices'    => pizzalayer_get_layer_options_as_array('cheeses'),
+) );
 
 /* =========== SETTING --------> cheeses > cheese distance ==============  */
 
@@ -283,19 +456,8 @@ $wp_customize->add_control( 'pizzalayer_setting_crust_padding_control', array(
 	'type'       => 'text',
 ) );
 
-/* =========== SETTING --------> cuts > default slicing  ============== */
 
-$wp_customize->add_setting( 'pizzalayer_setting_cut_defaultslicing' , array(
-	'type'          => 'option',
-	'transport'     => 'refresh',
-) );
-$wp_customize->add_control( 'pizzalayer_setting_cut_defaultslicing_control', array(
-	'label'      => 'Default Slicing',
-	'description'=> 'How many slices should the pizza be cut into by default?',
-	'section'    => 'pizzalayer_panel_section_cuts',
-	'settings'   => 'pizzalayer_setting_cut_defaultslicing',
-	'type'       => 'text',
-) );
+
 
 
 /* =========== SETTING --------> toppings > fractions available for toppings ============== */
@@ -307,28 +469,15 @@ $wp_customize->add_control( 'pizzalayer_setting_topping_fractions_control', arra
 	'label'      => __('Please choose the portions of the pizza where customers can customize their toppings.'),
 	'section'    => 'pizzalayer_panel_section_toppings',
 	'settings'   => 'pizzalayer_setting_topping_fractions',
-		'type'    => 'select',
-        'choices'    => array(
+	'type'    => 'select',
+    'choices'    => array(
             'default' => 'Default',
             'whole' => 'Whole Pizza Only',
             'halves' => 'Whole + Halves',
             'quarters' => 'Whole + Quarters',
-        ),
+    ),
 ) );
 
-/* =========== SETTING --------> sauces > default sauce  ============== */
-
-$wp_customize->add_setting( 'pizzalayer_setting_sauce_defaultsauce' , array(
-	'type'          => 'option',
-	'transport'     => 'refresh',
-) );
-$wp_customize->add_control( 'pizzalayer_setting_sauce_defaultsauce_control', array(
-	'label'      => 'Default Sauce',
-	'description'=> 'Which sauce should be applied by default?',
-	'section'    => 'pizzalayer_panel_section_sauces',
-	'settings'   => 'pizzalayer_setting_sauce_defaultsauce',
-	'type'       => 'text',
-) );
 	
 /* =========== SETTING --------> sauces > padding  ============== */
 
@@ -344,19 +493,7 @@ $wp_customize->add_control( 'pizzalayer_setting_sauce_padding_control', array(
 	'type'       => 'text',
 ) );
 
-/* =========== SETTING --------> drizzles > default drizzle  ============== */
 
-$wp_customize->add_setting( 'pizzalayer_setting_drizzle_defaultdrizzle' , array(
-	'type'          => 'option',
-	'transport'     => 'refresh',
-) );
-$wp_customize->add_control( 'pizzalayer_setting_drizzle_defaultdrizzle_control', array(
-	'label'      => 'Default drizzle',
-	'description'=> 'Which drizzle should be applied by default?',
-	'section'    => 'pizzalayer_panel_section_drizzles',
-	'settings'   => 'pizzalayer_setting_drizzle_defaultdrizzle',
-	'type'       => 'text',
-) );
 
 /* =========== SETTING --------> features > layer thumbnails  ============== */
 
@@ -372,6 +509,7 @@ $wp_customize->add_control( 'pizzalayer_setting_features_show_thumbnails_control
 	'type'       => 'text',
 ) );
 
+
 /* =========== SETTING --------> SETTINGS > Demo mode notice  ============== */
 
 $wp_customize->add_setting( 'pizzalayer_setting_settings_demonotice' , array(
@@ -386,6 +524,7 @@ $wp_customize->add_control( 'pizzalayer_setting_settings_demonotice_control', ar
 	'type'       => 'textarea',
 ) );
 
+
 /* =========== SETTING --------> SETTINGS > Help screen content  ============== */
 
 $wp_customize->add_setting( 'pizzalayer_setting_global_help_content' , array(
@@ -399,6 +538,7 @@ $wp_customize->add_control( 'pizzalayer_setting_global_help_content_control', ar
 	'settings'   => 'pizzalayer_setting_global_help_content',
 	'type'       => 'textarea',
 ) );
+
 
 /* =========== SETTING --------> Branding > Alt Logo  ============== */
 
@@ -418,7 +558,8 @@ $wp_customize->add_control( new WP_Customize_Image_Control( $wp_customize, 'logo
 	)
 ) );
 
-/* =========== SETTING --------> Branding > Menu Title  ============== */
+
+/* =========== SETTING --------> Branding > Menu Title  ============== v */
 
 $wp_customize->add_setting( 'pizzalayer_setting_branding_menu_title', array(
   'capability' => 'edit_theme_options',
@@ -433,7 +574,9 @@ $wp_customize->add_control( 'pizzalayer_setting_branding_menu_title_control', ar
   'section' => 'pizzalayer_panel_section_branding',
   'label' => __( 'Content above menu icons' ),
   'description' => __( 'Please enter any content you would like to appear on top of the icons menu, such as an intro or custom logo' ),
+  'settings' => 'pizzalayer_setting_branding_menu_title',
 ) );
+
 
 /* =========== SETTING --------> Branding > Header > Custom Content  ============== */
 
@@ -450,7 +593,9 @@ $wp_customize->add_control( 'pizzalayer_setting_branding_header_custom_content_c
   'section' => 'pizzalayer_panel_section_branding',
   'label' => __( 'Content above menu icons' ),
   'description' => __( 'custom HTML content for the branding area in header' ),
+  'settings' => 'pizzalayer_setting_branding_header_custom_content',
 ) );
+
 
 /* === SETTING --> Toppings > Layer Choice Style ============== v */
 
@@ -477,6 +622,7 @@ $wp_customize->add_control( 'pizzalayer_setting_element_style_layers_control', a
             'appsidetrigger' => 'App Row with Side Triggers',
         ),
 ) );
+
 
 /* === SETTING --> Toppings > Toppings Style ============== v */
 
