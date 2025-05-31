@@ -1,4 +1,4 @@
-//pizza part swapper
+//declare vars
 var NewPizzaLayerImageUrl;var NewPizzaLayerName;var NewPizzaTargetLayer;var NewPizzaLayerContent;
 var MenuItemID;
 var NewPizzaLayerIndex;
@@ -31,8 +31,8 @@ var NewPizzaLayerContent = '';
 NewPizzaLayerContent = '<div id="' + NewPizzaLayerName + '" class="pizzalayer-topping ' + NewPizzaLayerName + '" style="z-index:' + NewPizzaLayerIndex + ';"><img title="' + NewPizzaLayerAlt + '" alt="' + NewPizzaLayerAlt + '" src="' + NewPizzaLayerImageUrl + '" onload="jQuery(this).hide().fadeIn(1300);"></div>';
 var NewPizzaLayerCurrentToppingLI;
 NewPizzaLayerCurrentToppingLI = '<li id="current-topping-' + NewPizzaLayerName + '" class="pizza-topping-li-' + NewPizzaLayerIndex + '">' + NewPizzaLayerAlt + '<a href="javascript:RemovePizzaLayer(\'' + NewPizzaLayerName + '\',\'' + NewPizzaLayerIndex + '\',\'' + NewPizzaLayerShort + '\');" class="topping-list-remove-button"><i class="fa fa-solid fa-trash"></i></a></li>';
-jQuery('#pizzalayer-toppings-wrapper').delay(501).append(NewPizzaLayerContent);
-jQuery('#pizzalayer-current-toppings').delay(20).append(NewPizzaLayerCurrentToppingLI).delay(20).fadeIn(600);
+jQuery('#pizzalayer-toppings-wrapper').delay(301).append(NewPizzaLayerContent);
+jQuery('#pizzalayer-current-toppings').delay(20).append(NewPizzaLayerCurrentToppingLI).delay(20).fadeIn(400);
 jQuery('#menu-pizzalayer-topping-' + NewPizzaLayerShort).addClass('ToppingSelected');
 jQuery('#' + NewPizzaLayerName).removeClass('tcg-half-left tcg-half-right tcg-whole tcg-quarter-topleft tcg-quarter-topright tcg-quarter-bottomleft tcg-quarter-bottomright');
 ToppingCoverageArea = jQuery("input[type='radio']:checked", '#halfcontrol-' + NewPizzaLayerShort).val();
