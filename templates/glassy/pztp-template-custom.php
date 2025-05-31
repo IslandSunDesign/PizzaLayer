@@ -14,6 +14,10 @@ function pizzalayer_topvis_title($title,$icon){
     return '<h3 class="pizzalayer-toppings-visualizer-subtitle"><i class="fa fa-solid fa-' . $icon . '"></i> ' . $title . '</h2>';
 }
 
+function pizzalayer_template_myrecipe_section_title($pizzalayer_template_myrecipe_title_stringIn,$pizzalayer_template_myrecipe_title_stringOut){
+if($pizzalayer_template_myrecipe_title_stringIn != ''){return $pizzalayer_template_myrecipe_title_stringIn;} else {return $pizzalayer_template_myrecipe_title_stringOut;};
+}
+
 function pizzalayer_branding_row_justlogo(){ 
 return '<!-- Pizzalayer : BRANDING ROW -->
 <div class="pizzalayer-ui-branding row">
