@@ -9,6 +9,7 @@ $pizzalayer_global_options_string = '';
 $pizzalayer_global_option_cheese_distance = get_option( 'pizzalayer_cheese_setting_cheesedistance' );
 $pizzalayer_global_option_crust_aspectratio = get_option( 'pizzalayer_setting_crust_aspectratio' );
 $pizzalayer_global_option_crust_padding = get_option( 'pizzalayer_setting_crust_padding' );
+$pizzalayer_global_option_cheese_padding = get_option( 'pizzalayer_setting_cheese_padding' );
 $pizzalayer_global_option_advanced_css = get_option( 'pizzalayer_setting_advanced_css' );
 $pizzalayer_global_option_color = get_option( 'pizzalayer_setting_global_color' );
 
@@ -29,6 +30,9 @@ if($pizzalayer_global_option_crust_aspectratio){ $pizzalayer_global_options_stri
 
 if($pizzalayer_global_option_crust_padding){ $pizzalayer_global_options_string .= '
 #pizzalayer-base-layer-crust{padding:' . $pizzalayer_global_option_crust_padding . 'px !important;}'; };
+
+if($pizzalayer_global_option_cheese_padding){ $pizzalayer_global_options_string .= '
+#pizzalayer-base-layer-cheese,body .pizzalayer-cheese{padding:' . $pizzalayer_global_option_cheese_padding . 'px !important;}'; };
 
 if($pizzalayer_template_glass_option_pizza_size_min){ $pizzalayer_global_options_string .= '
 #pizzalayer-pizza{min-width:' . $pizzalayer_template_glass_option_pizza_size_min . ';min-height:' . $pizzalayer_template_glass_option_pizza_size_min . ';}'; };
