@@ -120,10 +120,10 @@ if($pizzalayer_template_glassy_option_display_myrecipe == 'show'){
 $pizzalayer_template_glassy_part_myrecipe = '<!-- row : my recipe -->
 <div class="pizzalayer-ui-basics pizzalayer-ui-menu-col col-md-12 col-sm-12">'
 . pizzalayer_topvis_title('My Recipe','pizza-slice')
-. pizzalayer_selection_tile('Crust','crust','No Crust Chosen')
-. pizzalayer_selection_tile('Sauce','sauce','No Sauce Chosen')
-. pizzalayer_selection_tile('Cheese','cheese','No Cheese Chosen')
-. pizzalayer_selection_tile('Drizzle','drizzle','No Drizzle Chosen')
+. pizzalayer_selection_tile('Crust','crust', pizzalayer_template_myrecipe_section_title( get_option('pizzalayer_setting_crust_defaultcrust'),'No Crust Chosen.'))
+. pizzalayer_selection_tile('Sauce','sauce', pizzalayer_template_myrecipe_section_title( get_option('pizzalayer_setting_sauce_defaultsauce'),'No Sauce Chosen.'))
+. pizzalayer_selection_tile('Cheese','cheese', pizzalayer_template_myrecipe_section_title( get_option('pizzalayer_setting_cheese_defaultcheese'),'No Cheese Chosen.'))
+. pizzalayer_selection_tile('Drizzle','drizzle', pizzalayer_template_myrecipe_section_title( get_option('pizzalayer_setting_drizzle_defaultdrizzle'),'No Drizzle Chosen.'))
 . '
 </div>';
 } else { 
@@ -135,10 +135,10 @@ if($pizzalayer_template_glassy_option_display_myrecipe == 'show'){
 $pizzalayer_template_glassy_part_myrecipe_noterecipe = '<!-- row : my recipe -->
 <div class="pizzalayer-ui-basics pizzalayer-ui-menu-col col-md-5 col-sm-12">'
 . pizzalayer_topvis_title('My Recipe','pizza-slice')
-. pizzalayer_selection_tile_100percent('Crust','crust','No Crust Chosen')
-. pizzalayer_selection_tile_100percent('Sauce','sauce','No Sauce Chosen')
-. pizzalayer_selection_tile_100percent('Cheese','cheese','No Cheese Chosen')
-. pizzalayer_selection_tile_100percent('Drizzle','drizzle','No Drizzle Chosen')
+. pizzalayer_selection_tile_100percent('Crust','crust', pizzalayer_template_myrecipe_section_title( get_option('pizzalayer_setting_crust_defaultcrust'),'No Crust Chosen.'))
+. pizzalayer_selection_tile_100percent('Sauce','sauce', pizzalayer_template_myrecipe_section_title( get_option('pizzalayer_setting_sauce_defaultsauce'),'No Sauce Chosen.'))
+. pizzalayer_selection_tile_100percent('Cheese','cheese', pizzalayer_template_myrecipe_section_title( get_option('pizzalayer_setting_cheese_defaultcheese'),'No Cheese Chosen.'))
+. pizzalayer_selection_tile_100percent('Drizzle','drizzle', pizzalayer_template_myrecipe_section_title( get_option('pizzalayer_setting_drizzle_defaultdrizzle'),'No Drizzle Chosen.'))
 . '
 </div>';
 } else { 
@@ -150,10 +150,10 @@ if($pizzalayer_template_glassy_option_display_myrecipe == 'show'){
 $pizzalayer_template_glassy_part_myrecipe_orderboard = '<!-- row : my recipe -->
 <div class="pizzalayer-ui-basics pizzalayer-ui-menu-col col-md-4 col-sm-12">'
 . pizzalayer_topvis_title('My Recipe','pizza-slice')
-. pizzalayer_selection_tile_100percent('Crust','crust','No Crust Chosen')
-. pizzalayer_selection_tile_100percent('Sauce','sauce','No Sauce Chosen')
-. pizzalayer_selection_tile_100percent('Cheese','cheese','No Cheese Chosen')
-. pizzalayer_selection_tile_100percent('Drizzle','drizzle','No Drizzle Chosen')
+. pizzalayer_selection_tile_100percent('Crust','crust', pizzalayer_template_myrecipe_section_title( get_option('pizzalayer_setting_crust_defaultcrust'),'No Crust Chosen.'))
+. pizzalayer_selection_tile_100percent('Sauce','sauce', pizzalayer_template_myrecipe_section_title( get_option('pizzalayer_setting_sauce_defaultsauce'),'No Sauce Chosen.'))
+. pizzalayer_selection_tile_100percent('Cheese','cheese', pizzalayer_template_myrecipe_section_title( get_option('pizzalayer_setting_cheese_defaultcheese'),'No Cheese Chosen.'))
+. pizzalayer_selection_tile_100percent('Drizzle','drizzle', pizzalayer_template_myrecipe_section_title( get_option('pizzalayer_setting_drizzle_defaultdrizzle'),'No Drizzle Chosen.'))
 . '
 </div>';
 } else { 
