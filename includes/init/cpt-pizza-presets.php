@@ -3,7 +3,7 @@
 function pizzalayer_pizzas_custom_post_type() {
 
 	$labels = array(
-		'name'                  => _x( 'Preset Pizzas', 'Post Type General Name', 'text_domain' ),
+		'name'                  => _x( 'Preset Pizza', 'Post Type General Name', 'text_domain' ),
 		'singular_name'         => _x( 'Preset Pizza', 'Post Type Singular Name', 'text_domain' ),
 		'menu_name'             => __( 'Preset Pizzas', 'text_domain' ),
 		'name_admin_bar'        => __( 'Preset Pizzas', 'text_domain' ),
@@ -11,7 +11,7 @@ function pizzalayer_pizzas_custom_post_type() {
 		'attributes'            => __( 'Preset Pizzas s Attributes', 'text_domain' ),
 		'parent_item_colon'     => __( 'Parent Preset Pizza:', 'text_domain' ),
 		'all_items'             => __( 'All Preset Pizzas', 'text_domain' ),
-		'add_new_item'          => __( 'New Preset Pizzas', 'text_domain' ),
+		'add_new_item'          => __( 'New Preset Pizza', 'text_domain' ),
 		'add_new'               => __( 'Add New', 'text_domain' ),
 		'new_item'              => __( 'New Preset Pizza', 'text_domain' ),
 		'edit_item'             => __( 'Edit Preset Pizza', 'text_domain' ),
@@ -20,7 +20,7 @@ function pizzalayer_pizzas_custom_post_type() {
 		'view_items'            => __( 'View Preset Pizzas', 'text_domain' ),
 		'search_items'          => __( 'Search Preset Pizza', 'text_domain' ),
 		'not_found'             => __( 'Not found', 'text_domain' ),
-		'not_found_in_trash'    => __( 'Not found in Trash', 'text_domain' ),
+		'not_found_in_trash'    => __( 'No Pizzas found in Trash', 'text_domain' ),
 		'featured_image'        => __( 'Preset Pizza Image', 'text_domain' ),
 		'set_featured_image'    => __( 'Set Preset Pizza image', 'text_domain' ),
 		'remove_featured_image' => __( 'Remove Preset Pizza image', 'text_domain' ),
