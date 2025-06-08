@@ -10,7 +10,7 @@
  
 Plugin Name: Pizza Layer
 Plugin URI: https://pizzalayer.com 
-Description: pizza toppings customizer and pizza enhancements for woocommerce 
+Description: pizza toppings customizer and visualizer 
 Version: .9
 Author: RyanBishop 
 Author URI: http://www.pizzalayer.com
@@ -24,6 +24,7 @@ Text Domain: pizzalayer
 
 
 /* +===  ENQUEUE BASE CSS & JS +=========  */
+function pizzalayer_enqueue_css_and_js(){
 wp_register_style( 'pizzalayer-css', plugins_url( 'includes/css/pizzalayer.css', __FILE__ ) );
 wp_enqueue_style( 'pizzalayer-css', plugins_url( 'includes/css/pizzalayer.css', __FILE__ ) );
 
@@ -31,6 +32,9 @@ wp_register_style( 'pizzalayer-bootsrap-grid-css', plugins_url( 'includes/css/bo
 wp_enqueue_style( 'pizzalayer-bootstrap-grid-css', plugins_url( 'includes/css/bootstrap-grid-system.css', __FILE__ ) );
 
 wp_enqueue_script( 'pizzalayer-js', plugins_url( 'includes/js/pizzalayer-main.js', __FILE__ ), array(), '0.9.0', true );
+} //function
+add_action( 'wp_enqueue_scripts', 'pizzalayer_enqueue_css_and_js' );
+
 
 /* +===  LOAD TEMPLATE +=========  */
 include plugin_dir_path( __FILE__ ) . 'templates/template.php';
@@ -44,6 +48,9 @@ $pizzalayer_path_images = plugin_dir_url( __FILE__ ) . 'assets/images/';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/dashboard-menu.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/admin-bar-menu.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/customizer.php';
+include plugin_dir_path( __FILE__ ) . 'includes/admin/admin-home.php';
+include plugin_dir_path( __FILE__ ) . 'includes/admin/setup-guide.php';
+//include plugin_dir_path( __FILE__ ) . 'includes/admin/gutenberg.php';
 
 /* +===  CUSTOMIZER CSS  +=========  */
 include plugin_dir_path(__FILE__) . 'includes/public/topper-ui-css.php';
@@ -62,8 +69,8 @@ include plugin_dir_path(__FILE__) . 'includes/init/cpt-crusts.php';
 /* +===  CREATE CPTs FOR PIZZA PRESETS +=========  */
 include plugin_dir_path(__FILE__) . 'includes/init/cpt-pizza-presets.php';
 
-/* +===  CREATE CUSTOM FIELDS FOR TOPPINGS, SAUCES, AND CRUSTS +=========  */
-/* Custom fields now integrated using Advanced Custom Fields, located in the 'ACF' menu in your WordPress dashboard */
+/* +===  CREATE CUSTOM FIELDS FOR LAYERS +=========  */
+/* Custom fields now integrated using Secure Custom Fields, located in the 'SCF' menu in your WordPress dashboard (ACF compatible) */
 
 /* +===  CREATE CPT + CUSTOM FIELDS FOR SLICING / CUT CHART LAYERS +=========  */
 include plugin_dir_path(__FILE__) . 'includes/init/cpt-cuts.php';
