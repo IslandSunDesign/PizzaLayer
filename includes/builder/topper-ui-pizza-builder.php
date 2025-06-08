@@ -2,7 +2,14 @@
 // Function to get WordPress post ID given the post title
 function pizzalayer_getIdBySlug( $slug, $posttype ){
    $layer = get_page_by_path($slug,OBJECT,'pizzalayer_' . $posttype);
-   if($layer->ID){ return $layer->ID; };
+   if ( is_array( $layer ) ) {
+    return $layer->ID;
+} elseif ( is_object( $layer ) ) {
+    return $layer->ID;
+} else {
+    $result = ''; // Optional fallback
+};
+   
 }
 
 
