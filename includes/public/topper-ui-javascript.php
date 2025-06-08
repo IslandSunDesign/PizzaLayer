@@ -26,6 +26,7 @@ function pizzalayer_swapper_arrays(){
 $pizzalayer_swapper_array_toppings = '';
 $pizzalayer_swapper_array_sauces = '';
 $pizzalayer_swapper_array_crusts = '';
+$pizzalayer_swapper_array_cheeses = '';
 $args = array(  
 'post_type' => array('pizzalayer_toppings','pizzalayer_cheeses','pizzalayer_sauces','pizzalayer_crusts'),
 'post_status' => 'publish',
