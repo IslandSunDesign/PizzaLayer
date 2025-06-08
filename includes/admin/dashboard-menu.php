@@ -1,37 +1,131 @@
 <?php
-add_action( 'admin_menu', 'pztp_add_admin_menu' );
-add_action( 'admin_init', 'pztp_settings_init' );
+// Hook to admin_menu to register the custom menu and submenu
+add_action('admin_menu', 'pizzalayer_add_admin_menu');
+
+function pizzalayer_add_admin_menu() {
+    // Add main menu page
+    add_menu_page(
+        'PizzaLayer',         // Page title
+        'PizzaLayer',         // Menu title
+        'manage_options',             // Capability
+        'pizzalayer_main_menu',           // Menu slug
+        'pizzalayer_render_dashboard_home_page',  // Function to display content
+        'dashicons-pizza',            // Icon
+        83                            // Position
+    );
+
+    /* +===  Submenu: Crusts  ===+ */
+add_submenu_page(
+    'pizzalayer_main_menu',
+    'Crusts',
+    'Crusts',
+    'manage_options',
+    'edit.php?post_type=pizzalayer_crusts'
+);
+
+/* +===  Submenu: Sauces  ===+ */
+add_submenu_page(
+    'pizzalayer_main_menu',
+    'Sauces',
+    'Sauces',
+    'manage_options',
+    'edit.php?post_type=pizzalayer_sauces'
+);
+
+/* +===  Submenu: Cheeses  ===+ */
+add_submenu_page(
+    'pizzalayer_main_menu',
+    'Cheeses',
+    'Cheeses',
+    'manage_options',
+    'edit.php?post_type=pizzalayer_cheeses'
+);
+
+/* +===  Submenu: Toppings  ===+ */
+add_submenu_page(
+    'pizzalayer_main_menu',
+    'Toppings',
+    'Toppings',
+    'manage_options',
+    'edit.php?post_type=pizzalayer_toppings'
+);
+
+/* +===  Submenu: Drizzles  ===+ */
+add_submenu_page(
+    'pizzalayer_main_menu',
+    'Drizzles',
+    'Drizzles',
+    'manage_options',
+    'edit.php?post_type=pizzalayer_drizzles'
+);
+
+/* +===  Submenu: Cuts  ===+ */
+add_submenu_page(
+    'pizzalayer_main_menu',
+    'Cuts',
+    'Cuts',
+    'manage_options',
+    'edit.php?post_type=pizzalayer_cuts'
+);
+
+/* +===  Submenu: Preset Pizzas  ===+ */
+add_submenu_page(
+    'pizzalayer_main_menu',
+    'Preset Pizzas',
+    'Preset Pizzas',
+    'manage_options',
+    'edit.php?post_type=pizzalayer_pizzas'
+);
+
+/* +===  Submenu: Help  ===+ */
+add_submenu_page(
+    'pizzalayer_main_menu',    // Parent slug
+    'Help',                    // Page title
+    'Help',                    // Menu title
+    'manage_options',          // Capability
+    'pizzalayer_help',         // Menu slug
+    'pizzalayer_render_help_page' // Callback function
+);
 
 
-function pztp_add_admin_menu(  ) { 
+} // end function
 
-add_menu_page( 'PizzaLayer', 'PizzaLayer', 'manage_options', 'pizzalayer', 'pztp_options_page' );
+// Callback for the main menu page (can be empty or a placeholder)
+function pizzalayer_main_page_callback() {
+    echo '<div class="wrap"><h1>PizzaLayer</h1><p>Welcome to the PizzaLayer dashboard.</p></div>';
+}
+
+// Callback for the Settings submenu page
+function pizzalayer_settings_page_callback() {
+    ?>
+    <div class="wrap">
+        <form action='options.php' method='post'>
+            <h2>PizzaLayer</h2>
+            coming soon.
+        </form>
+    </div>
+    <?php
+}
+
+// Callback to display the help page content
+function pizzalayer_render_help_page() {
+    ?>
+    <div class="wrap">
+        <h1>PizzaLayer Help</h1>
+        <p>This is a placeholder for the help documentation. More information will be added soon.</p>
+        <ul>
+            <li>How to create and manage pizza layers</li>
+            <li>Working with crusts, sauces, cheeses, and toppings</li>
+            <li>Troubleshooting and support links</li>
+        </ul>
+    </div>
+    <?php
 }
 
 
-add_action('admin_menu', 'wpdocs_register_my_custom_submenu_page');
- 
-function wpdocs_register_my_custom_submenu_page() {
-    add_submenu_page(
-        'pizzalayer',
-        'Pizzalayer Settings',
-        'Pizzalayer Settings.',
-        'manage_options',
-        'pztp_options_page',
-        'pztp_options_page' );
-}
 
-function pztp_options_page(  ) { 
 
-		?>
-		<form action='options.php' method='post'>
 
-			<h2>PizzaLayer</h2>
 
-			PizzaLayer is mostly configured in Customizer.
 
-		</form>
-		<?php
-
-}
-
+?>
