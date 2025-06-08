@@ -6,12 +6,21 @@ $pizzalayer_templates_theme_folder_path = get_stylesheet_directory() . '/pzttemp
 define( 'Pizzalayer_TEMPLATES_PATH', plugin_dir_path( __FILE__ ) );
 
 //choose and validate template name from query url parameter or plugin options
-if($pizzalayer_template_name_default && file_exists($pizzalayer_templates_folder_path . $pizzalayer_template_name_default . '/')){ $pizzalayer_template_name = $pizzalayer_template_name_default;} else { $pizzalayer_template_name = 'glassy'; };
+if($pizzalayer_template_name_default && file_exists($pizzalayer_templates_folder_path . $pizzalayer_template_name_default . '/')){
+    $pizzalayer_template_name = $pizzalayer_template_name_default;
+    } else {
+    $pizzalayer_template_name = 'glassy'; 
+    };
 
 
-//load stylesheets
+//enqueue template-specific stylesheets and javascript
+function pizzalayer_template_glass_enqueue_css_and_js(){
+global $pizzalayer_template_name;
 wp_register_style( 'pizzalayer-template-base-css-' . $pizzalayer_template_name, plugins_url( $pizzalayer_template_name . '/template.css', __FILE__ ) );
 wp_enqueue_style( 'pizzalayer-template-base-css-' . $pizzalayer_template_name, plugins_url( $pizzalayer_template_name . '/template.css', __FILE__ ) );
+}//function
+add_action( 'wp_enqueue_scripts', 'pizzalayer_template_glass_enqueue_css_and_js' );
+
 
 //load the template files from the theme if folder exists, otherwise load template files from the built-in templates folder
 
