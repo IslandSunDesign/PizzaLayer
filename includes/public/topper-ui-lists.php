@@ -18,7 +18,7 @@ function shortcode_pizzalayer_ui_approws( $atts ) {
 function pizzalayer_ui_approws($tpv_query_posttype,$tpv_query_css_class){
 // -- resets
 $pizzalayer_toppings_list_array_toppings = '';
-
+global $pizzalayer_toppings_list_current_zindex;
 // -- post type
 // options: crusts,sauces,cheeses,toppings,drizzles,cuts
 if($tpv_query_posttype){$tpv_query_posttype_final = $tpv_query_posttype;} else {$tpv_query_posttype_final = 'toppings';};
@@ -209,6 +209,7 @@ $pizzalayer_list_item_style = get_option('pizzalayer_setting_element_style_layer
 
 function pizzalayer_ui_approws_v2_item($tpv_query_posttype_singular,$tpv_item_title,$tpv_item_slug){
 global $pizzalayer_list_item_style;
+global $pizzalayer_toppings_list_current_zindex;
 
 $pizzalayer_list_item_image = get_field( $tpv_query_posttype_singular . '_layer_image' );
 
@@ -314,15 +315,27 @@ $pizzalayer_list_item_output = '<a href="javascript:SwapBasePizzaLayer(\'pizzala
 return $pizzalayer_list_item_output;
 } //end function
 
-
 function shortcode_pizzalayer_ui_approws_v2( $atts ) {
     pizzalayer_ui_approws($atts['type'],$atts['css-class']);
 } //end function
 
 
+
+
+
+
+
+
 function pizzalayer_ui_approws_v2($tpv_query_posttype,$tpv_query_css_class){
-// -- resets
+global $pizzalayer_toppings_list_current_zindex;
+
+// -- resets and declare vars
 $pizzalayer_toppings_list_array_toppings = '';
+$pizzalayer_crusts_list_array_crusts = '';
+$pizzalayer_sauces_list_array_sauces = '';
+$pizzalayer_cheeses_list_array_cheeses = '';
+$pizzalayer_drizzles_list_array_drizzles = '';
+$pizzalayer_cuts_list_array_cuts = '';
 
 // -- post type
 // options: crusts,sauces,cheeses,toppings,drizzles,cuts
@@ -345,7 +358,7 @@ $args = array(
 );
 
 // -- ui css class
-    
+
 // -- get cpt posts and build
 $loop = new WP_Query( $args );        
 while ( $loop->have_posts() ) : $loop->the_post();
@@ -425,6 +438,7 @@ if($tpv_query_css_class){$tpv_query_css_class_final = ' ' . $tpv_query_css_class
 
 // -- get global options and create variables for use
 global $pizzalayer_template_images_directory;
+global $pizzalayer_toppings_list_current_zindex;
 
 $pizzalayer_global_option_pagination = get_option('pizzalayer_setting_template_glass_pagination');
 $pizzalayer_global_option_element_style_toppings = get_option('pizzalayer_setting_element_style_toppings');
@@ -486,6 +500,7 @@ $pizzalayer_halves_form_controls = '<div id="'. $PizzalayerControlID . '" class=
 <input type="radio" id="'. $PizzalayerControlID . '-whole" name="'. $PizzalayerControlID . '" value="whole" checked>
 <input type="radio" id="'. $PizzalayerControlID . '-half-right" name="'. $PizzalayerControlID . '" value="half-right">
 </div>';
+$pizzalayer_halves_form_controls_fractions_box_close_button = '';
 $pizzalayer_halves_form_controls_fractions_images_otherfractions .= '
 <img src="' . $pizzalayer_template_images_directory . 'button-half-pizza-left.png" class="pizzalayer-halves-control pizzalayer-halves-control-half-left"  onClick="SetToppingCoverage(\'half-left\',\'' . $ToppingLayerID . '\',\'' . $pztp_tli_short_slug . '\');" />
 <img src="' . $pizzalayer_template_images_directory . 'button-half-pizza-right.png" class="pizzalayer-halves-control pizzalayer-halves-control-half-right"  onClick="SetToppingCoverage(\'half-right\',\'' . $ToppingLayerID . '\',\'' . $pztp_tli_short_slug . '\');" />'; 
