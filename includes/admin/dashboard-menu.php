@@ -77,6 +77,17 @@ add_submenu_page(
     'edit.php?post_type=pizzalayer_pizzas'
 );
 
+/* +===  Submenu: Shortcode Generator  ===+ */
+add_submenu_page(
+    'pizzalayer_main_menu',    // Parent slug
+    'Shortcode Generator',                    // Page title
+    'Shortcode Generator',                    // Menu title
+    'manage_options',          // Capability
+    'pizzalayer_shortcode_generator',         // Menu slug
+    'pztpro_shortcode_generator_page' // Callback function
+);
+
+
 /* +===  Submenu: Help  ===+ */
 add_submenu_page(
     'pizzalayer_main_menu',    // Parent slug
@@ -87,6 +98,11 @@ add_submenu_page(
     'pizzalayer_render_help_page' // Callback function
 );
 
+
+
+
+
+//pztpro_shortcode_generator_page()
 
 } // end function
 
