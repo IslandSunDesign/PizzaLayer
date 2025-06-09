@@ -5,6 +5,10 @@ $pizzalayer_template_images_directory = plugin_dir_url(__FILE__) .'images/';
 PIZZALAYER : front-end UI */
 function pizzalayer_toppings_visualizer_func( $atts ){
 global $pizzalayer_template_name;
+if(!isset($atts['id'])){ $atts['id'] = ''; };
+if(!isset($atts['crust'])){ $atts['crust'] = ''; };
+if(!isset($atts['sauce'])){ $atts['sauce'] = ''; };
+if(!isset($atts['toppings'])){ $atts['toppings'] = ''; };
 
 /* ============= GET USER OPTIONS ============= */
 $pizzalayer_template_glassy_option_topping_maxtoppings = get_option('pizzalayer_setting_topping_maxtoppings');
