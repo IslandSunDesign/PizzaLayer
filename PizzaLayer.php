@@ -51,6 +51,7 @@ include plugin_dir_path( __FILE__ ) . 'includes/admin/customizer.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/admin-home.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/setup-guide.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/shortcode-generator.php';
+include plugin_dir_path( __FILE__ ) . 'includes/admin/preset-pizza-builder.php';
 
 //include plugin_dir_path( __FILE__ ) . 'includes/admin/gutenberg.php';
 
