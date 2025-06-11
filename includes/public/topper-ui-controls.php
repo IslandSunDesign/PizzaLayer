@@ -1,4 +1,5 @@
 <?php
+do_action( 'pizzalayer_file_topper-ui-controls_start' );
 
 // ========= HALVES SELECTION FOR TOPPINGS
 
@@ -16,6 +17,8 @@ $pizzalayer_halves_form_controls = '<div id="'. $PizzalayerControlID . '" class=
 <input type="radio" id="'. $PizzalayerControlID . '-whole" name="'. $PizzalayerControlID . '" value="whole" checked>
 <input type="radio" id="'. $PizzalayerControlID . '-half-right" name="'. $PizzalayerControlID . '" value="half-right">
 </div>';
+
+do_action( 'func_pizzalayer_control_halves_before_return' );
 return $pizzalayer_halves_visual_input . $pizzalayer_halves_form_controls;
 }
 
@@ -42,6 +45,7 @@ $pizzalayer_halves_form_controls = '<div id="'. $PizzalayerControlID . '" class=
 <input type="radio" id="'. $PizzalayerControlID . '-half-right" name="'. $PizzalayerControlID . '" value="half-right">
 </div>';
 
+do_action( 'func_pizzalayer_control_choice_options_before_return' );
 return $pizzalayer_halves_visual_input . $pizzalayer_halves_form_controls;
 
 }
@@ -52,6 +56,9 @@ return $pizzalayer_halves_visual_input . $pizzalayer_halves_form_controls;
 function pizzalayer_control_nextprev($PizzalayerPanePrev,$PizzalayerPaneNext,$ControlCSSid){
     if( get_option('pizzalayer_setting_template_glass_display_section_nextprev') != 'show' ){ return ''; };
 if($PizzalayerPaneNext){ $pizzalayer_This_NextLink = '<a href="javascript:PTswitchToMenu(\'' . $PizzalayerPaneNext . '\');" class="pizzalayer-control-nextprev nextprev-next">' . $PizzalayerPaneNext . '  &gt;</a>'; };    
-if($PizzalayerPanePrev){$pizzalayer_This_PrevLink = '<a href="javascript:PTswitchToMenu(\'' . $PizzalayerPanePrev . '\');" class="pizzalayer-control-nextprev nextprev-prev"> &lt; ' . $PizzalayerPanePrev . '</a>';};    
+if($PizzalayerPanePrev){$pizzalayer_This_PrevLink = '<a href="javascript:PTswitchToMenu(\'' . $PizzalayerPanePrev . '\');" class="pizzalayer-control-nextprev nextprev-prev"> &lt; ' . $PizzalayerPanePrev . '</a>';};
+do_action( 'func_pizzalayer_control_nextprev_before_return' );
 return '<div id="' . $ControlCSSid .'" class="pizzalayer-control-nextprev col-sm-12">' . $pizzalayer_This_PrevLink . $pizzalayer_This_NextLink . '</div>';
 }
+
+do_action( 'pizzalayer_file_topper-ui-controls_end' );
