@@ -1,4 +1,6 @@
 <?php
+do_action( 'pizzalayer_file_topper-ui-javascript_start' );
+
 function pizzalayer_swapper_js_output(){
 return '
 <script type="text/javascript">
@@ -34,6 +36,7 @@ $args = array(
 'orderby' => 'title', 
 'order' => 'ASC',
 );
+do_action( 'func_pizzalayer_swapper_arrays_before_loop' );
 $loop = new WP_Query( $args );        
 while ( $loop->have_posts() ) : $loop->the_post();    
 if( get_post_type( get_the_ID() ) == 'pizzalayer_toppings' ){ $pizzalayer_swapper_array_toppings .= '[\'' . get_the_title() . '\',\'' . get_field( 'topping_layer_image' ) . '\'],'; }
@@ -41,10 +44,13 @@ if( get_post_type( get_the_ID() ) == 'pizzalayer_sauces' ){ $pizzalayer_swapper_
 if( get_post_type( get_the_ID() ) == 'pizzalayer_crusts' ){ $pizzalayer_swapper_array_crusts .= '[\'' . get_the_title() . '\',\'' . get_field( 'crust_layer_image' ) . '\'],'; }
 if( get_post_type( get_the_ID() ) == 'pizzalayer_cheeses' ){ $pizzalayer_swapper_array_cheeses .= '[\'' . get_the_title() . '\',\'' . get_field( 'cheese_layer_image' ) . '\'],'; } 
 endwhile;
-wp_reset_postdata();    
+wp_reset_postdata();
+do_action( 'func_pizzalayer_swapper_arrays_before_return' );
 return '
 var pztpToppings = [' . $pizzalayer_swapper_array_toppings . '];
 var pztpSauces = [' . $pizzalayer_swapper_array_sauces . '];
 var pztpCrusts = [' . $pizzalayer_swapper_array_crusts . '];
 ';
 }
+
+do_action( 'pizzalayer_file_topper-ui-javascript_end' );
