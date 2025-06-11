@@ -85,3 +85,10 @@ include plugin_dir_path(__FILE__) . 'includes/public/topper.php';
 
 
 /* +===  MENU - WP TOP BAR +=========  */
+
+
+
+/* +=== FIELD SANITIZATION AND SECURITY FUNCTIONS ===+ */
+function pizzalayer_sanitize_text( $text ) {
+    return sanitize_text_field( wp_kses_post( $text ) );
+}
