@@ -1,10 +1,12 @@
 <?php
 $pizzalayer_template_images_directory = plugin_dir_url(__FILE__) .'images/';
+do_action( 'pizzalayer_file_pztp-containers-presentation_start' );
 
 /* =============================================
 PIZZALAYER : front-end UI */
 function pizzalayer_toppings_visualizer_func( $atts ){
 global $pizzalayer_template_name;
+do_action( 'func_pizzalayer_toppings_visualizer_func_before' );
 if(!isset($atts['id'])){ $atts['id'] = ''; };
 if(!isset($atts['crust'])){ $atts['crust'] = ''; };
 if(!isset($atts['sauce'])){ $atts['sauce'] = ''; };
@@ -22,6 +24,8 @@ $pizzalayer_template_glassy_option_header_text = get_option('pizzalayer_setting_
 $pizzalayer_template_glassy_option_layout = get_option('pizzalayer_setting_template_glass_layout');
 $pizzalayer_global_option_element_style_toppings = get_option('pizzalayer_setting_element_style_toppings');
 $pizzalayer_global_option_element_style_layers = get_option('pizzalayer_setting_element_style_layers');
+
+do_action( 'func_pizzalayer_toppings_visualizer_func_after_get_user_options' );
 
 /* ============= BUILD LAYOUT PART : HEADER ============= */
 if($pizzalayer_template_glassy_option_display_header == 'show' && $pizzalayer_template_glassy_element_style_header == 'traditional'){
@@ -203,6 +207,9 @@ $pizzalayer_template_glassy_part_content =  $pizzalayer_template_glassy_part_hea
 $pizzalayer_template_glassy_part_content = $pizzalayer_template_glassy_part_maindisplay . $pizzalayer_template_glassy_part_opentabcontainer . $pizzalayer_template_glassy_part_alert . $pizzalayer_template_glassy_part_tabsmenu . $pizzalayer_template_glassy_part_panels . $pizzalayer_template_glassy_part_useractions . $pizzalayer_template_glassy_part_closetabcontainer;
 
 };
+
+do_action( 'func_pizzalayer_toppings_visualizer_func_before_return' );
+
 return '
 <!-- Pizzalayer : PIZZA DISPLAY ==================== -->
 <div id="pizzalayer-ui-wrapper" class="pizzalayer-ui-wrapper pizzalayer-template-' . $pizzalayer_template_name . ' pizzalayer-layout-' . $pizzalayer_template_glassy_option_layout . '">
@@ -217,7 +224,8 @@ return '
 <!-- / Pizzalayer : PIZZA -->' . pizzalayer_javascript_hidden_vars() . pizzalayer_options_css_output() . pizzalayer_template_glass_options_css_output() . '
 <div style="clear:both;"></div>
 </div>
-<!-- / Pizzalayer ==================== -->'; 
+<!-- / Pizzalayer ==================== -->';
+do_action( 'func_pizzalayer_toppings_visualizer_func_after' );
 };
 
 add_Shortcode( 'pizzalayer-visualizer', 'pizzalayer_toppings_visualizer_func' );
@@ -251,3 +259,5 @@ function pizzalayer_ui_container_shell_1(){
     
     
 }
+
+do_action( 'pizzalayer_file_pztp-containers-presentation_end' );
