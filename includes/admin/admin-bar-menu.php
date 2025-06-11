@@ -1,4 +1,5 @@
 <?php
+do_action( 'pizzalayer_file_admin-bar-menu_before' );
 function create_pztp_menu() {
 global $wp_admin_bar;
 $menu_id = 'pztp';
@@ -11,4 +12,5 @@ $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Add a Crust')
 $wp_admin_bar->add_menu(array('parent' => $menu_id, 'title' => __('Settings'), 'id' => 'pztp-settings', 'href' => '/'));
 }
 add_action('admin_bar_menu', 'create_pztp_menu', 2000);
+do_action( 'pizzalayer_file_admin-bar-menu_after' );
 ?>
