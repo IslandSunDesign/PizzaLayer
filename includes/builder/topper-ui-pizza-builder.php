@@ -26,7 +26,7 @@ function pizzalayer_pizza_dynamic_nested(
     $ptpizza_dynamic_pizza_drizzle = '',
     $ptpizza_dynamic_pizza_cut = ''
     ){
-     
+     do_action( 'func_pizzalayer_pizza_dynamic_nested_start' );
 // GET LAYER PRESETS FROM PLUGIN OPTIONS
 
 
@@ -60,6 +60,8 @@ if($ptpizza_layer_cut_option != ''){ $ptpizza_dynamic_pizza_cut = $ptpizza_layer
 $ptpizza_layer_cut_id = pizzalayer_getIdBySlug($ptpizza_dynamic_pizza_cut,'cuts');
 $ptpizza_layer_cut = pizzalayer_layer_nest(950,'cut', get_field('cut_layer_image', $ptpizza_layer_cut_id), $ptpizza_dynamic_pizza_cut); 
 
+do_action( 'func_pizzalayer_pizza_dynamic_nested_after_layers_declared' );
+
 // PREPARE TOPPINGS AS LAYER
 $pizzalayer_this_toppings_array = explode(',',$ptpizza_dynamic_pizza_toppings_array); //convert toppings string into an array
 $ptpizza_layer_index = 400; //layer # (z-index)
@@ -83,6 +85,8 @@ $ptpizza_layer_drizzle = pizzalayer_layer_nest(950,'drizzle', '','drizzle') . '<
 // ADD PIZZA CUT DIAGRAM AS TOP LAYER
 $ptpizza_layer_cut = pizzalayer_layer_nest(990,'cut', '','Slices') . '</div>';
 
+do_action( 'func_pizzalayer_pizza_dynamic_nested_before_cooking' );
+
 //BAKE THE PIZZA HTML AND CLOSE NESTED CONTAINERS
 $pt_pizza_cooked = pizzalayer_ui_wrapper_pizza_dyn_1_start() . $ptpizza_layer_crust . $ptpizza_layer_sauce . $ptpizza_layer_cheese . $ptpizza_toppings_output_html . $ptpizza_layer_drizzle . '
 </div><!-- // close pizza toppings wrapper -->' . $ptpizza_layer_cut . '
@@ -91,7 +95,8 @@ $pt_pizza_cooked = pizzalayer_ui_wrapper_pizza_dyn_1_start() . $ptpizza_layer_cr
 </div><!-- // close pizza crust -->
 ' . pizzalayer_ui_wrapper_pizza_dyn_1_end();
 //RETURN RESULTS
-return $pt_pizza_cooked . pizzalayer_swapper_js_output();    
+return $pt_pizza_cooked . pizzalayer_swapper_js_output();
+do_action( 'func_pizzalayer_pizza_dynamic_nested_end' );
 } //end function
 
 
@@ -111,10 +116,7 @@ function pizzalayer_pizza_static_nested(
     $ptpizza_static_pizza_drizzle = '',
     $ptpizza_static_pizza_cut = ''
     ){
-        
-        
-        
-
+do_action( 'func_pizzalayer_pizza_static_nested_start' );
 // PREPARE CRUST AS OUTERMOST LAYER
 $ptpizza_layer_crust_option = get_option('pizzalayer_setting_crust_defaultcrust');
 if($ptpizza_layer_crust_option != ''){ $ptpizza_static_pizza_crust = $ptpizza_layer_crust_option; };
@@ -143,16 +145,15 @@ $ptpizza_layer_drizzle = pizzalayer_layer_nest(990,'drizzle', get_field('drizzle
 $ptpizza_layer_cut_option = get_option('pizzalayer_setting_cut_defaultcut');
 if($ptpizza_layer_cut_option != ''){ $ptpizza_static_pizza_cut = $ptpizza_layer_cut_option; };
 $ptpizza_layer_cut_id = pizzalayer_getIdBySlug($ptpizza_static_pizza_cut,'cuts');
-$ptpizza_layer_cut = pizzalayer_layer_nest(950,'cut', get_field('cut_layer_image', $ptpizza_layer_cut_id), $ptpizza_static_pizza_cut); 
+$ptpizza_layer_cut = pizzalayer_layer_nest(950,'cut', get_field('cut_layer_image', $ptpizza_layer_cut_id), $ptpizza_static_pizza_cut);
 
-
-
-
+do_action( 'func_pizzalayer_pizza_static_nested_after_layers_declared' );
 
 // USING TOPPINGS FROM SHORTCODE PARAMETERS, PREPARE TOPPINGS AS LAYERS
 $pizzalayer_this_toppings_array = explode(',',$ptpizza_static_pizza_toppings_array); //convert toppings string into an array
 $ptpizza_layer_index = 310; //layer # (z-index)
 $ptpizza_toppings_output_html = '<div id="pizzalayer-toppings-wrapper" class="pizzalayer-toppings-wrapper pizzalayer-toppings-wrapper-static">';
+
 //START PARSING TOPPINGS - START LOOPING THROUGH ARRAY VALUES
 foreach ($pizzalayer_this_toppings_array as $pizzalayer_this_layer) {
 $ptpizza_layer_index = $ptpizza_layer_index + 10; // topping layer (z-index value)
@@ -162,7 +163,10 @@ $ptpizza_layer_imageurl = get_field('topping_layer_image', $ptpizza_layer_id);
 $ptpizza_layer_alt = 'Pizza topping : ' . $ptpizza_layer_slug; // topping alt / description
 //PREPARE PIZZA LAYER FROM CURRENT ARRAY ITEM
 $ptpizza_toppings_output_html .= pizzalayer_layer($ptpizza_layer_index, $ptpizza_layer_slug, $ptpizza_layer_imageurl, $ptpizza_layer_alt);
-}; // END foreach
+}; 
+// END foreach
+
+do_action( 'func_pizzalayer_pizza_static_nested_before_cooking' );
 
 //BAKE THE PIZZA HTML USING COMPILED STRING
 $pt_pizza_cooked = pizzalayer_ui_wrapper_pizza_dyn_1_start() . $ptpizza_layer_crust . $ptpizza_layer_sauce . $ptpizza_layer_cheese . $ptpizza_toppings_output_html . '
@@ -172,7 +176,8 @@ $pt_pizza_cooked = pizzalayer_ui_wrapper_pizza_dyn_1_start() . $ptpizza_layer_cr
 </div><!-- // close pizza crust -->
 ' . pizzalayer_ui_wrapper_pizza_dyn_1_end();
 //RETURN RESULTS
-return $pt_pizza_cooked . pizzalayer_swapper_js_output();    
+return $pt_pizza_cooked . pizzalayer_swapper_js_output(); 
+do_action( 'func_pizzalayer_pizza_static_nested_end' );
 } //end function
 
 // STATIC DISPLAY SHORTCODE FUNCTION
