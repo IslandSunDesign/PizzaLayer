@@ -1,4 +1,5 @@
 <?php
+do_action( 'pizzalayer_file_pztp-template-custom_start' );
 
 function hex2rgba( $color,$alpha ) {
     if ($color[0] == '#') {
@@ -598,3 +599,5 @@ if($ResetButtonLocation == 'cta'){ return '<a href="javascript:ClearPizza()" cla
 if($ResetButtonLocation == 'foot'){ return '<a href="javascript:ClearPizza();" title="reset"><i class="fa fa-solid fa-trash"></i></a>'; };
 return false;
 } //close function
+
+do_action( 'pizzalayer_file_pztp-template-custom_end' );
