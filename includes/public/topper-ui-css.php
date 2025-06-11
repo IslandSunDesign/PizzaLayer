@@ -1,4 +1,5 @@
-<?php 
+<?php
+do_action( 'pizzalayer_file_topper-ui-css_start' );
 
 //PIZZA-SPECIFIC CSS - values applied from customizer / global meta
 
@@ -17,6 +18,8 @@ $pizzalayer_template_glass_option_pizza_size_max = get_option( 'pizzalayer_setti
 $pizzalayer_template_glass_option_pizza_size_min = get_option( 'pizzalayer_setting_pizza_size_min' );
 $pizzalayer_template_glass_option_pizza_border = get_option( 'pizzalayer_setting_pizza_border' );
 $pizzalayer_template_glass_option_pizza_border_color = get_option( 'pizzalayer_setting_pizza_border_color' );
+
+do_action( 'func_pizzalayer_options_css_output_after_vars' );
 
 /* ==  Generate CSS for inline placement based on global option values == */
 
@@ -56,7 +59,11 @@ $pizzalayer_options_css = '<style>
 ' . $pizzalayer_global_options_string . '
 </style>';
 
+do_action( 'func_pizzalayer_options_css_output_before_return' );
+
 /* ==  finally, return combined CSS == */
 return $pizzalayer_options_css;
 
 } //close function
+
+do_action( 'pizzalayer_file_topper-ui-css_end' );
