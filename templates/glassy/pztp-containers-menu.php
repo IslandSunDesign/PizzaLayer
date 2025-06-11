@@ -1,11 +1,10 @@
 <?php
+do_action('pizzalayer_file_pztp-containers-menu_start');
 function pizzalayer_toppings_menu_func(){
 return '
 <div id="pizzalayer-ui-menu-ingredients" class="pizzalayer-ui">
 <div class="pizzalayer-user-controls-bar">
 <a href="javascript:RemoveAllToppings();">Clear Toppings</a>
-
-
 </div>
 
 <div id="pizza-toppings">
@@ -37,5 +36,5 @@ return '
 <div style="clear:both;"></div>
 </div>
 ';
-    
 }
+do_action('pizzalayer_file_pztp-containers-menu_end');
