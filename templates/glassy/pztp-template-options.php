@@ -43,6 +43,8 @@ $wp_customize->add_section( 'pizzalayer_panel_section_advanced' , array(
 	'panel'             => 'pizzalayer_admin_panel_template_glassy',
 ) );
 
+do_action( 'func_pizzalayer_customize_register_glassy_panel_section' );
+
 /* =========== START ADDING SETTINGS TO CUSTOMIZER PANELS ============== v */  
 
 /* === SETTING --> glass template layout selected ============== v */
@@ -496,6 +498,9 @@ $wp_customize->add_control( 'pizzalayer_setting_template_glass_element_style_tab
             'mobile' => 'Mobile / Bar Menu',
         ),
 ) );
+
+
+do_action( 'func_pizzalayer_customize_register_glassy_panel_setting' );
 
 
 /* =========== END ADDING SETTINGS  ============== */ 
