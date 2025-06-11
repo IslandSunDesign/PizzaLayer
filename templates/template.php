@@ -1,9 +1,13 @@
 <?php
+do_action( 'pizzalayer_file_template_start' );
+
 //check global settings which template to load, or default to 'glassy'
 $pizzalayer_template_name_default = get_option( 'pizzalayer_setting_global_template' );
 $pizzalayer_templates_folder_path = plugins_url( '' , __FILE__ );
 $pizzalayer_templates_theme_folder_path = get_stylesheet_directory() . '/pzttemplates/';
 define( 'Pizzalayer_TEMPLATES_PATH', plugin_dir_path( __FILE__ ) );
+
+do_action( 'pizzalayer_file_template_after_vars' );
 
 //choose and validate template name from query url parameter or plugin options
 if($pizzalayer_template_name_default && file_exists($pizzalayer_templates_folder_path . $pizzalayer_template_name_default . '/')){
@@ -63,6 +67,7 @@ add_action('wp_enqueue_scripts', 'enqueue_pizzalayer_template_js');
 function pizzalayer_template_get_templates(){
 //add the built-in templates
 $pizzalayer_templates_folder_path = plugin_dir_path( __FILE__ );
+do_action( 'func_pizzalayer_template_get_templates_after_folder_path' );
 $pizzalayer_templates_list = '';
 $pizzalayer_templates_directories = glob($pizzalayer_templates_folder_path . '/*' , GLOB_ONLYDIR);
 foreach($pizzalayer_templates_directories as $pizzalayer_templates_directory){
@@ -76,6 +81,7 @@ return '<ul class="pizzalayer-templates-list-ul">' . $pizzalayer_templates_list 
 function pizzalayer_template_get_templates_as_array(){
 $pizzalayer_templates_folder_path = plugin_dir_path( __FILE__ );
 $pizzalayer_templates_theme_folder_path = get_stylesheet_directory() . '/pzttemplates/';
+do_action( 'func_pizzalayer_template_get_templates_as_array_after_folder_paths' );
 $pizzalayer_templates_list_as_array = [];
 
 //add the built-in templates
@@ -99,3 +105,5 @@ return $pizzalayer_templates_list_as_array;
 function pizzalayer_template_get_templates_file_path(){
     return plugin_dir_path( __FILE__ );
 }
+
+do_action( 'pizzalayer_file_template_end' );
