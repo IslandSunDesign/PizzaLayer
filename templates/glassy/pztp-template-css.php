@@ -1,4 +1,5 @@
 <?php
+do_action( 'pizzalayer_file_pztp-template-css_start' );
 //PIZZA-SPECIFIC CSS - values applied from customizer / global meta
 
 function pizzalayer_template_glass_options_css_output(){
@@ -16,6 +17,8 @@ $pizzalayer_template_glass_option_title_color = get_option( 'pizzalayer_setting_
 $pizzalayer_template_glass_option_wrapper_effect = get_option( 'pizzalayer_setting_template_glass_wrapper_effect' );
 $pizzalayer_template_glass_option_tabscontainer_background = get_option( 'pizzalayer_setting_template_glass_background_tabscontainer' );
 $pizzalayer_template_glass_option_sidebyside_switch = get_option( 'pizzalayer_setting_template_glass_sidebyside_switch' );
+
+do_action( 'func_pizzalayer_template_glass_options_css_output_after_get_user_options' );
 
 /* == setting : main container background color and opacity == */
 if($pizzalayer_template_glass_option_color_background && $pizzalayer_template_glass_option_background_opacity != ''){
@@ -80,7 +83,7 @@ $pizzalayer_template_glass_option_background_effect_array = array(
      $pizzalayer_template_glass_options_string .= 'body #pizzalayer-main-visualizer-container{float:right;}.pizzalayer-tabs{float:left;}';
   };
   
-  
+do_action( 'func_pizzalayer_template_glass_options_css_output_before_prep' );
 
 //gather CSS
 $pizzalayer_options_css = '<style>
@@ -88,8 +91,12 @@ $pizzalayer_options_css = '<style>
 ' . $pizzalayer_template_glass_options_string . '
 </style>';
 
+do_action( 'func_pizzalayer_template_glass_options_css_output_before_return' );
+
 //finally, return combined CSS
 return $pizzalayer_options_css;
     
     
 } //close function
+
+do_action( 'pizzalayer_file_pztp-template-css_end' );
