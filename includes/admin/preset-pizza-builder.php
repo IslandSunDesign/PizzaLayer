@@ -1,7 +1,9 @@
 <?php
+do_action( 'pizzalayer_file_preset-pizza-builder_before' );
 /* +=== Register the three meta boxes: Preset, Shortcode & Live Preview ===+ */
 add_action( 'add_meta_boxes', 'pizzalayer_register_metaboxes' );
 function pizzalayer_register_metaboxes() {
+    do_action( 'func_pizzalayer_register_metaboxes_start' );
     add_meta_box(
         'pizzalayer_preset_metabox',
         __( 'Build your Pizza Preset', 'textdomain' ),
@@ -26,10 +28,12 @@ function pizzalayer_register_metaboxes() {
         'side',
         'default'
     );
+    do_action( 'func_pizzalayer_register_metaboxes_end' );
 }
 
 /* +=== Render the preset-selection panel with two nonces (save + preview) ===+ */
 function pizzalayer_render_preset_metabox( $post ) {
+    do_action( 'func_pizzalayer_render_preset_metabox_start' );
     wp_nonce_field( 'pizzalayer_save_preset_metabox',    'pizzalayer_preset_nonce'    );
     wp_nonce_field( 'pizzalayer_preview_nonce',         'pizzalayer_preview_nonce'   );
 
@@ -171,38 +175,46 @@ function pizzalayer_render_preset_metabox( $post ) {
         });
     })(jQuery);
     </script>
+    do_action( 'func_pizzalayer_render_preset_metabox_end' );
     <?php
 }
 
 /* +=== Render the dynamic shortcode panel ===+ */
 function pizzalayer_render_shortcode_metabox( $post ) {
+    do_action( 'func_pizzalayer_render_shortcode_metabox_start' );
     echo '<p>'. esc_html__( 'Copy and paste this shortcode:', 'textdomain' ) .'</p>';
     echo '<textarea id="pizzalayer_shortcode_output" class="widefat code" rows="2" readonly></textarea>';
+    do_action( 'func_pizzalayer_render_shortcode_metabox_end' );
 }
 
 /* +=== Render the live preview panel ===+ */
 function pizzalayer_render_live_preview_metabox( $post ) {
+    do_action( 'func_pizzalayer_render_live_preview_metabox_start' );
     echo '<p>'. esc_html__( 'Preview of your pizza preset:', 'textdomain' ) .'</p>';
     echo '<div id="pizzalayer_live_preview" style="border:1px solid #ccd0d4; padding:8px; min-height:80px; background:#fff;"></div>';
+    do_action( 'func_pizzalayer_render_live_preview_metabox_end' );
 }
 
 /* +=== AJAX handler for live preview ===+ */
 add_action( 'wp_ajax_pizzalayer_preview_shortcode', 'pizzalayer_ajax_preview_shortcode' );
 function pizzalayer_ajax_preview_shortcode() {
-    if ( empty( $_POST['pizzalayer_preview_nonce'] )
+    do_action( 'func_pizzalayer_ajax_preview_shortcode_start' );
+    if ( empty( pizzalayer_sanitize_text($_POST['pizzalayer_preview_nonce']) )
       || ! wp_verify_nonce( $_POST['pizzalayer_preview_nonce'], 'pizzalayer_preview_nonce' ) ) {
         wp_die( 'Invalid nonce' );
     }
     $sc = sanitize_text_field( wp_unslash( $_POST['shortcode'] ) );
     echo do_shortcode( $sc );
+    do_action( 'func_pizzalayer_ajax_preview_shortcode_end' );
     wp_die();
 }
 
 /* +=== Save the preset data on post save ===+ */
 add_action( 'save_post_pizzalayer_pizzas', 'pizzalayer_save_preset_metabox', 10, 2 );
 function pizzalayer_save_preset_metabox( $post_id, $post ) {
-    if ( empty( $_POST['pizzalayer_preset_nonce'] )
-      || ! wp_verify_nonce( $_POST['pizzalayer_preset_nonce'], 'pizzalayer_save_preset_metabox' )
+    do_action( 'func_pizzalayer_save_preset_metabox_start' );
+    if ( empty( pizzalayer_sanitize_text($_POST['pizzalayer_preset_nonce']) )
+      || ! wp_verify_nonce( pizzalayer_sanitize_text($_POST['pizzalayer_preset_nonce']), 'pizzalayer_save_preset_metabox' )
       || ( defined('DOING_AUTOSAVE') && DOING_AUTOSAVE )
       || ! current_user_can( 'edit_post', $post_id ) ) {
         return;
@@ -231,4 +243,6 @@ function pizzalayer_save_preset_metabox( $post_id, $post ) {
     } else {
         delete_post_meta( $post_id, 'preset_chosen_toppings' );
     }
+    do_action( 'func_pizzalayer_save_preset_metabox_end' );
 }
+do_action( 'pizzalayer_file_preset-pizza-builder_after' );
