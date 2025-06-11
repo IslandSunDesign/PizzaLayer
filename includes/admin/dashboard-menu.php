@@ -3,6 +3,7 @@
 add_action('admin_menu', 'pizzalayer_add_admin_menu');
 
 function pizzalayer_add_admin_menu() {
+    do_action( 'func_pizzalayer_add_admin_menu_start' );
     // Add main menu page
     add_menu_page(
         'PizzaLayer',         // Page title
@@ -100,19 +101,19 @@ add_submenu_page(
 
 
 
-
-
-//pztpro_shortcode_generator_page()
-
+do_action( 'func_pizzalayer_add_admin_menu_end' );
 } // end function
 
 // Callback for the main menu page (can be empty or a placeholder)
 function pizzalayer_main_page_callback() {
+    do_action( 'func_pizzalayer_main_page_callback_start' );
     echo '<div class="wrap"><h1>PizzaLayer</h1><p>Welcome to the PizzaLayer dashboard.</p></div>';
+    do_action( 'func_pizzalayer_main_page_callback_end' );
 }
 
 // Callback for the Settings submenu page
 function pizzalayer_settings_page_callback() {
+    do_action( 'func_pizzalayer_settings_page_callback_start' );
     ?>
     <div class="wrap">
         <form action='options.php' method='post'>
@@ -121,10 +122,12 @@ function pizzalayer_settings_page_callback() {
         </form>
     </div>
     <?php
+    do_action( 'func_pizzalayer_settings_page_callback_end' );
 }
 
 // Callback to display the help page content
 function pizzalayer_render_help_page() {
+    do_action( 'func_pizzalayer_render_help_page_start' );
     ?>
     <div class="wrap">
         <h1>PizzaLayer Help</h1>
@@ -136,12 +139,7 @@ function pizzalayer_render_help_page() {
         </ul>
     </div>
     <?php
+    do_action( 'func_pizzalayer_render_help_page_end' );
 }
-
-
-
-
-
-
 
 ?>
