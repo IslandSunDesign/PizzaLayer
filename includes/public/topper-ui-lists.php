@@ -1,6 +1,6 @@
 <?php
 global $pizzalayer_path_images;
-
+do_action( 'pizzalayer_file_topper-ui-lists_start' );
 
 /*  ========================================================= */
 
@@ -11,11 +11,13 @@ global $pizzalayer_path_images;
 /*  ==== UE : LIST : APPROWS ============================== */
 
 function shortcode_pizzalayer_ui_approws( $atts ) {
+    do_action( 'func_shortcode_pizzalayer_ui_approws_before_return' );
     pizzalayer_ui_approws($atts['type'],$atts['css-class']);
 };
 
 
 function pizzalayer_ui_approws($tpv_query_posttype,$tpv_query_css_class){
+    do_action( 'func_pizzalayer_ui_approws_start' );
 // -- resets
 $pizzalayer_toppings_list_array_toppings = '';
 global $pizzalayer_toppings_list_current_zindex;
@@ -40,6 +42,8 @@ $args = array(
 );
 
 // -- ui css class
+
+do_action( 'func_pizzalayer_ui_approws_before_loop' );
     
 // -- get cpt posts and build
 $loop = new WP_Query( $args );        
@@ -114,6 +118,8 @@ $PizzalayerControlID = 'halfcontrol-' . $pztp_tli_short_slug;
 $ToppingLayerID = 'pizzalayer-topping-' . $pztp_tli_short_slug;
 
 global $pizzalayer_template_images_directory;
+do_action( 'func_pizzalayer_ui_approws_after_topping_vars' );
+
     
 //$PizzalayerControlID,$ToppingLayerID
 $pizzalayer_halves_visual_input = '<div id="pizzalayer-halves-control-' . $PizzalayerControlID . '" class="pizzalayer-halves-control col-sm-12">
@@ -210,7 +216,7 @@ $pizzalayer_list_item_style = get_option('pizzalayer_setting_element_style_layer
 function pizzalayer_ui_approws_v2_item($tpv_query_posttype_singular,$tpv_item_title,$tpv_item_slug){
 global $pizzalayer_list_item_style;
 global $pizzalayer_toppings_list_current_zindex;
-
+do_action( 'func_pizzalayer_ui_approws_v2_item_start' );
 $pizzalayer_list_item_image = get_field( $tpv_query_posttype_singular . '_layer_image' );
 
 
@@ -309,7 +315,7 @@ $pizzalayer_list_item_output = '<a href="javascript:SwapBasePizzaLayer(\'pizzala
 }
 
 
-
+do_action( 'func_pizzalayer_ui_approws_v2_item_before_return' );
 
 
 return $pizzalayer_list_item_output;
@@ -337,6 +343,8 @@ $pizzalayer_cheeses_list_array_cheeses = '';
 $pizzalayer_drizzles_list_array_drizzles = '';
 $pizzalayer_cuts_list_array_cuts = '';
 
+do_action( 'func_pizzalayer_ui_approws_v2_start' );
+
 // -- post type
 // options: crusts,sauces,cheeses,toppings,drizzles,cuts
 if($tpv_query_posttype){$tpv_query_posttype_final = $tpv_query_posttype;} else { return '';};
@@ -360,6 +368,9 @@ $args = array(
 // -- ui css class
 
 // -- get cpt posts and build
+do_action( 'func_pizzalayer_ui_approws_v2_before_loop' );
+
+
 $loop = new WP_Query( $args );        
 while ( $loop->have_posts() ) : $loop->the_post();
 
@@ -402,6 +413,8 @@ endwhile; //end main cpt loop
 wp_reset_postdata(); 
 
 // ==== Finally, structure and return the results by cpt type
+
+do_action( 'func_pizzalayer_ui_approws_v2_before_return' );
 
 // Return : crusts
 if ($tpv_query_posttype_final == 'crusts'){
@@ -447,6 +460,8 @@ $pizzalayer_global_option_element_style_layers = get_option('pizzalayer_setting_
 
 $pizzalayer_global_option_element_style_topping_fractions = get_option('pizzalayer_setting_topping_fractions');
 
+do_action( 'func_pizzalayer_ui_approws_toppings_after_vars' );
+
 // -- query loop arguments
 $args = array(  
 'post_type' => array('pizzalayer_toppings'),
@@ -473,6 +488,8 @@ $pztp_tli_topping_title = '<div class="pizzalayer-topping-title">' . $pztp_tli_s
 $pztp_tli_short_slug = sanitize_title($pztp_tli_short);
 $PizzalayerControlID = 'halfcontrol-' . $pztp_tli_short_slug;
 $ToppingLayerID = 'pizzalayer-topping-' . $pztp_tli_short_slug;
+
+do_action( 'func_pizzalayer_ui_approws_toppings_in_loop_after_vars' );
 
 // -----------------------------------------------------
 //topping - create URLs for use
@@ -656,14 +673,16 @@ $pizzalayer_toppings_list_array_toppings .= '
 
 
     
-
+do_action( 'func_pizzalayer_ui_approws_toppings_in_loop_end_of_item' );
 
 
 // end post 
 endwhile; //end main cpt loop
 wp_reset_postdata(); 
 
+do_action( 'func_pizzalayer_ui_approws_toppings_before_return' );
 // ==== Finally, structure and return the results by cpt type
 return '<ul class="pizzalayer-toppings-list-linkboxes pizzalayer-ui-menu-approws' . $tpv_query_css_class_final . ' pizzalayer-toppings-style-' . $pizzalayer_global_option_element_style_toppings . ' pizzalayer-layers-style-' . $pizzalayer_global_option_element_style_layers . '">' . $pizzalayer_toppings_list_array_toppings . '</ul>';
 }
 
+do_action( 'pizzalayer_file_topper-ui-lists_end' );
