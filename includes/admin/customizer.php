@@ -20,58 +20,6 @@ function ic_sanitize_image( $file, $setting ) {
 
 /*-- ============================ --*/
 
-
-function pizzalayer_get_layer_options_as_array_OLD($tpv_query_layer_options_posttype){
-//return false if no cpt type passed
-if(!$tpv_query_layer_options_posttype){ return false; } 
-
-// -- assemble query to get options by cpt
-  
-// -- query loop arguments
-$args = array(  
-'post_type' => array('pizzalayer_' . $tpv_query_layer_options_posttype),
-'post_status' => 'publish',
-'posts_per_page' => '-1', 
-'orderby' => 'title', 
-'order' => 'ASC',
-);
-
-// -- ui css class
-
-// -- create array to return
-$pizzalayer_layer_options_array = [];
-    
-// -- get cpt posts and build
-/* Desired output : array(
-            'default' => 'Default',
-            'whole' => 'Whole Pizza Only',
-            'halves' => 'Whole + Halves',
-            'quarters' => 'Whole + Quarters',
-    ); */
-    
-$loop = new WP_Query( $args );        
-while ( $loop->have_posts() ) : $loop->the_post();
-$pztp_tli_short_slug = get_post_field( 'post_name', get_post() );
-//$pztp_tli_short_slug_capitalized = strtoupper($pztp_tli_short_slug);
-$pizzalayer_layer_options_array[$pztp_tli_short_slug] = $pztp_tli_short_slug;
-
-// end post 
-endwhile; //end main cpt loop
-wp_reset_postdata(); 
-return $pizzalayer_layer_options_array;    
-    
-}
-
-
-
-
-/*-- ============================ --*/
-
-
-
-
-
-
 function pizzalayer_get_layer_options_as_array($tpv_query_layer_options_posttype) {
     // Initialize an empty array
     $cuts_array = array();
@@ -295,19 +243,6 @@ $wp_customize->add_control(
     'section' => 'pizzalayer_panel_section_template', // Add a default or your own section
 ) ) );
 
-
-
-
-
-
-
-
-
-
-
-
-
-
 /* =========== SETTING --------> cuts > default slicing  ============== */
 
 $wp_customize->add_setting( 'pizzalayer_setting_cut_defaultcut' , array(
@@ -466,15 +401,15 @@ $wp_customize->add_setting( 'pizzalayer_setting_topping_fractions' , array(
 	'transport'     => 'refresh',
 ) );
 $wp_customize->add_control( 'pizzalayer_setting_topping_fractions_control', array(
-	'label'      => __('Please choose the portions of the pizza where customers can customize their toppings.'),
+	'label'      => __('Topping Portions'),
+	'description'=> 'Please choose the smallest portion of the pizza that customers can choose to put toppings on. If you only want to let customers add toppings on the whole pizza, please select "Whole".',
 	'section'    => 'pizzalayer_panel_section_toppings',
 	'settings'   => 'pizzalayer_setting_topping_fractions',
 	'type'    => 'select',
     'choices'    => array(
-            'default' => 'Default',
-            'whole' => 'Whole Pizza Only',
-            'halves' => 'Whole + Halves',
-            'quarters' => 'Whole + Quarters',
+            'whole' => 'Whole',
+            'halves' => 'Halves',
+            'quarters' => 'Quarters',
     ),
 ) );
 
@@ -671,5 +606,3 @@ $wp_customize->add_control( 'pizzalayer_setting_element_style_topping_choice_men
 /* =========== END ADDING SETTINGS  ============== */ 
 } //function
 add_action( 'customize_register', 'pizzalayer_customize_register', 1 );
-
-
