@@ -11,7 +11,7 @@ function pizzalayer_add_admin_menu() {
         'manage_options',             // Capability
         'pizzalayer_main_menu',           // Menu slug
         'pizzalayer_render_dashboard_home_page',  // Function to display content
-        'dashicons-pizza',            // Icon
+        'dashicons-chart-pie',            // Icon
         83                            // Position
     );
 
@@ -69,6 +69,15 @@ add_submenu_page(
     'edit.php?post_type=pizzalayer_cuts'
 );
 
+/* +===  Submenu: Sizes  ===+ */
+add_submenu_page(
+    'pizzalayer_main_menu',
+    'Pizza Sizes',
+    'Pizza Sizes',
+    'manage_options',
+    'edit.php?post_type=pizzalayer_sizes'
+);
+
 /* +===  Submenu: Preset Pizzas  ===+ */
 add_submenu_page(
     'pizzalayer_main_menu',
@@ -78,11 +87,11 @@ add_submenu_page(
     'edit.php?post_type=pizzalayer_pizzas'
 );
 
-/* +===  Submenu: Shortcode Generator  ===+ */
+/* +===  Submenu: Shortcode Generator (aka Create Embed Code)  ===+ */
 add_submenu_page(
     'pizzalayer_main_menu',    // Parent slug
-    'Shortcode Generator',                    // Page title
-    'Shortcode Generator',                    // Menu title
+    'Create Embed Code',                    // Page title
+    'Create Embed Code',                    // Menu title
     'manage_options',          // Capability
     'pizzalayer_shortcode_generator',         // Menu slug
     'pztpro_shortcode_generator_page' // Callback function
