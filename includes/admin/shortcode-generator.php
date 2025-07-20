@@ -41,7 +41,7 @@ function pztpro_shortcode_generator_page() {
     ) );
 
     echo '<div class="wrap">';
-    echo '<h1>Shortcode Generator</h1>';
+    echo '<h2>Create an embed code to display your pizza</h2>';
     echo '<form id="pztpro_shortcode_generator">';
 
     /* +=== Crust selector ===+ */
