@@ -13,7 +13,7 @@ do_action( 'pizzalayer_file_template_after_vars' );
 if($pizzalayer_template_name_default && file_exists($pizzalayer_templates_folder_path . $pizzalayer_template_name_default . '/')){
     $pizzalayer_template_name = $pizzalayer_template_name_default;
     } else {
-    $pizzalayer_template_name = 'glassy'; 
+    $pizzalayer_template_name = 'orderboard'; 
     };
 
 
@@ -35,20 +35,23 @@ include $pizzalayer_templates_theme_folder_path . $pizzalayer_template_name_defa
 include $pizzalayer_templates_theme_folder_path . $pizzalayer_template_name_default . '/pztp-template-custom.php';
 include $pizzalayer_templates_theme_folder_path . $pizzalayer_template_name_default . '/pztp-template-css.php';
 include $pizzalayer_templates_theme_folder_path . $pizzalayer_template_name_default . '/pztp-template-options.php';
+include $pizzalayer_templates_theme_folder_path . $pizzalayer_template_name_default . '/pztp-template-info.php';
 } else if( is_dir($pizzalayer_templates_folder_path . $pizzalayer_template_name_default) ){
 // -- if the folder is in the plugin directory under '/templates/'
 include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-containers-menu.php';
 include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-containers-presentation.php';
 include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-template-custom.php';
 include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-template-css.php';
-include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-template-options.php';   
+include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-template-options.php';
+include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-template-info.php';
 } else {
 // -- for a fallback, choose the 'glassy' template in the plugin templates
-include Pizzalayer_TEMPLATES_PATH . '/glassy/pztp-containers-menu.php';
-include Pizzalayer_TEMPLATES_PATH . '/glassy/pztp-containers-presentation.php';
-include Pizzalayer_TEMPLATES_PATH . '/glassy/pztp-template-custom.php';
-include Pizzalayer_TEMPLATES_PATH . '/glassy/pztp-template-css.php';
-include Pizzalayer_TEMPLATES_PATH . '/glassy/pztp-template-options.php';   
+include Pizzalayer_TEMPLATES_PATH . '/orderboard/pztp-containers-menu.php';
+include Pizzalayer_TEMPLATES_PATH . '/orderboard/pztp-containers-presentation.php';
+include Pizzalayer_TEMPLATES_PATH . '/orderboard/pztp-template-custom.php';
+include Pizzalayer_TEMPLATES_PATH . '/orderboard/pztp-template-css.php';
+include Pizzalayer_TEMPLATES_PATH . '/orderboard/pztp-template-options.php'; 
+include Pizzalayer_TEMPLATES_PATH . '/orderboard/pztp-template-info.php'; 
 }; //end if
 
 
