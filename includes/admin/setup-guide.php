@@ -1,19 +1,4 @@
 <?php
-/* +===  Hook to add submenu page under pizzalayer_main_menu  ===+ */
-add_action('admin_menu', 'pizzalayer_add_intro_submenu_page');
-
-/* +===  Register the submenu page  ===+ */
-function pizzalayer_add_intro_submenu_page() {
-    add_submenu_page(
-        'pizzalayer_main_menu',                // Parent slug
-        'PizzaLayer Setup Guide',                   // Page title
-        'Setup Guide',                              // Menu title
-        'manage_options',                     // Capability
-        'pizzalayer_intro',                   // Menu slug
-        'pizzalayer_render_dashboard_intro_page' // Callback function
-    );
-}
-
 /* +===  Render the dashboard intro page  ===+ */
 function pizzalayer_render_dashboard_intro_page() {
     ?>
