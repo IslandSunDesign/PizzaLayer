@@ -44,7 +44,7 @@ $pizzalayer_path = plugin_dir_url( __FILE__ );
 $pizzalayer_path_assets = plugin_dir_url( __FILE__ ) . 'assets/';
 $pizzalayer_path_images = plugin_dir_url( __FILE__ ) . 'assets/images/';
 
-/* +===  PLUGIN OPTIONS & DASHBOARD MENU PAGE +=========  */
+/* +===  PLUGIN OPTIONS & DASHBOARD MENU PAGES +=========  */
 include plugin_dir_path( __FILE__ ) . 'includes/admin/dashboard-menu.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/admin-bar-menu.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/customizer.php';
@@ -52,6 +52,7 @@ include plugin_dir_path( __FILE__ ) . 'includes/admin/admin-home.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/setup-guide.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/shortcode-generator.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/preset-pizza-builder.php';
+include plugin_dir_path( __FILE__ ) . 'includes/admin/price-grid.php';
 
 //include plugin_dir_path( __FILE__ ) . 'includes/admin/gutenberg.php';
 
@@ -68,6 +69,7 @@ include plugin_dir_path(__FILE__) . 'includes/init/cpt-cheeses.php';
 include plugin_dir_path(__FILE__) . 'includes/init/cpt-sauces.php';
 include plugin_dir_path(__FILE__) . 'includes/init/cpt-drizzles.php';
 include plugin_dir_path(__FILE__) . 'includes/init/cpt-crusts.php';
+include plugin_dir_path(__FILE__) . 'includes/init/cpt-sizes.php';
 
 /* +===  CREATE CPTs FOR PIZZA PRESETS +=========  */
 include plugin_dir_path(__FILE__) . 'includes/init/cpt-pizza-presets.php';
@@ -92,3 +94,8 @@ include plugin_dir_path(__FILE__) . 'includes/public/topper.php';
 function pizzalayer_sanitize_text( $text ) {
     return sanitize_text_field( wp_kses_post( $text ) );
 }
+
+/* +=== ENQUEUE ADMIN ASSETS FOR EDITING LAYERS ===+ */
+
+
+
