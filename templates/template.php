@@ -1,112 +1,119 @@
 <?php
-do_action( 'pizzalayer_file_template_start' );
+/**
+ * Template Loader for PizzaLayer Templates
+ */
 
-//check global settings which template to load, or default to 'glassy'
-$pizzalayer_template_name_default = get_option( 'pizzalayer_setting_global_template' );
-$pizzalayer_templates_folder_path = plugins_url( '' , __FILE__ );
-$pizzalayer_templates_theme_folder_path = get_stylesheet_directory() . '/pzttemplates/';
-define( 'Pizzalayer_TEMPLATES_PATH', plugin_dir_path( __FILE__ ) );
+if ( ! function_exists( 'pizzalayer_load_template_files' ) ) {
+	function pizzalayer_load_template_files() {
 
-do_action( 'pizzalayer_file_template_after_vars' );
+		do_action( 'pizzalayer_file_template_start' );
 
-//choose and validate template name from query url parameter or plugin options
-if($pizzalayer_template_name_default && file_exists($pizzalayer_templates_folder_path . $pizzalayer_template_name_default . '/')){
-    $pizzalayer_template_name = $pizzalayer_template_name_default;
-    } else {
-    $pizzalayer_template_name = 'orderboard'; 
-    };
+		// +=== Global Vars and Defaults ===+
+		$pizzalayer_template_name_default     = 'glassy';
+		$pizzalayer_template_name_set_by_user = get_option( 'pizzalayer_setting_global_template' );
+		$pizzalayer_templates_folder_path     = plugin_dir_path( __FILE__ );
+		$pizzalayer_templates_theme_folder_path = get_stylesheet_directory() . '/pzttemplates/';
+		define( 'Pizzalayer_TEMPLATES_PATH', $pizzalayer_templates_folder_path );
 
+		do_action( 'pizzalayer_file_template_after_vars' );
 
-//enqueue template-specific stylesheets and javascript
-function pizzalayer_template_glass_enqueue_css_and_js(){
-global $pizzalayer_template_name;
-wp_register_style( 'pizzalayer-template-base-css-' . $pizzalayer_template_name, plugins_url( $pizzalayer_template_name . '/template.css', __FILE__ ) );
-wp_enqueue_style( 'pizzalayer-template-base-css-' . $pizzalayer_template_name, plugins_url( $pizzalayer_template_name . '/template.css', __FILE__ ) );
-}//function
-add_action( 'wp_enqueue_scripts', 'pizzalayer_template_glass_enqueue_css_and_js' );
+		// +=== Choose Template ===+
+		if ( $pizzalayer_template_name_set_by_user && file_exists( $pizzalayer_templates_folder_path . $pizzalayer_template_name_set_by_user . '/' ) ) {
+			$pizzalayer_template_name = $pizzalayer_template_name_set_by_user;
+		} else {
+			$pizzalayer_template_name = $pizzalayer_template_name_default;
+		}
 
+		if ( function_exists( 'write_log' ) ) {
+			write_log( $pizzalayer_template_name . ' | ' . $pizzalayer_template_name_default );
+		}
 
-//load the template files from the theme if folder exists, otherwise load template files from the built-in templates folder
+		// +=== Enqueue Template CSS and JS ===+
+		add_action( 'wp_enqueue_scripts', function () use ( $pizzalayer_template_name ) {
+			wp_register_style(
+				'pizzalayer-template-base-css-' . $pizzalayer_template_name,
+				plugins_url( $pizzalayer_template_name . '/template.css', __FILE__ )
+			);
+			wp_enqueue_style( 'pizzalayer-template-base-css-' . $pizzalayer_template_name );
 
-if( is_dir($pizzalayer_templates_theme_folder_path . $pizzalayer_template_name_default) ){
-// -- if the folder is in the user's theme under '/pzttemplates/'
-include $pizzalayer_templates_theme_folder_path. $pizzalayer_template_name_default . '/pztp-containers-menu.php';
-include $pizzalayer_templates_theme_folder_path . $pizzalayer_template_name_default . '/pztp-containers-presentation.php';
-include $pizzalayer_templates_theme_folder_path . $pizzalayer_template_name_default . '/pztp-template-custom.php';
-include $pizzalayer_templates_theme_folder_path . $pizzalayer_template_name_default . '/pztp-template-css.php';
-include $pizzalayer_templates_theme_folder_path . $pizzalayer_template_name_default . '/pztp-template-options.php';
-include $pizzalayer_templates_theme_folder_path . $pizzalayer_template_name_default . '/pztp-template-info.php';
-} else if( is_dir($pizzalayer_templates_folder_path . $pizzalayer_template_name_default) ){
-// -- if the folder is in the plugin directory under '/templates/'
-include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-containers-menu.php';
-include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-containers-presentation.php';
-include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-template-custom.php';
-include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-template-css.php';
-include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-template-options.php';
-include Pizzalayer_TEMPLATES_PATH . '/' . $pizzalayer_template_name_default . '/pztp-template-info.php';
-} else {
-// -- for a fallback, choose the 'glassy' template in the plugin templates
-include Pizzalayer_TEMPLATES_PATH . '/orderboard/pztp-containers-menu.php';
-include Pizzalayer_TEMPLATES_PATH . '/orderboard/pztp-containers-presentation.php';
-include Pizzalayer_TEMPLATES_PATH . '/orderboard/pztp-template-custom.php';
-include Pizzalayer_TEMPLATES_PATH . '/orderboard/pztp-template-css.php';
-include Pizzalayer_TEMPLATES_PATH . '/orderboard/pztp-template-options.php'; 
-include Pizzalayer_TEMPLATES_PATH . '/orderboard/pztp-template-info.php'; 
-}; //end if
+			wp_register_script(
+				'pizzalayer_template_custom_javascript',
+				plugin_dir_url( __FILE__ ) . $pizzalayer_template_name . '/custom.js',
+				[ 'jquery' ],
+				null,
+				true
+			);
+			wp_enqueue_script( 'pizzalayer_template_custom_javascript' );
+		} );
 
+		// +=== Load Template Files ===+
+		if ( is_dir( $pizzalayer_templates_theme_folder_path . $pizzalayer_template_name ) ) {
+			$template_base = $pizzalayer_templates_theme_folder_path . $pizzalayer_template_name . '/';
+		} elseif ( is_dir( $pizzalayer_templates_folder_path . $pizzalayer_template_name ) ) {
+			$template_base = $pizzalayer_templates_folder_path . $pizzalayer_template_name . '/';
+		} else {
+			$template_base = $pizzalayer_templates_folder_path . $pizzalayer_template_name_default . '/';
+		}
 
-
-
-
-//load custom javascript
-function enqueue_pizzalayer_template_js() {
-    global $pizzalayer_template_name;
-    wp_register_script( 'pizzalayer_template_custom_javascript', plugin_dir_url( __FILE__ ) . $pizzalayer_template_name . '/custom.js', array('jquery'), null, true );
-    wp_enqueue_script('pizzalayer_template_custom_javascript');
+		foreach ( [
+			'pztp-containers-menu.php',
+			'pztp-containers-presentation.php',
+			'pztp-template-custom.php',
+			'pztp-template-css.php',
+			'pztp-template-options.php',
+			'pztp-template-info.php',
+		] as $template_file ) {
+			$template_path = $template_base . $template_file;
+			if ( file_exists( $template_path ) ) {
+				include $template_path;
+			}
+		}
+	} // end pizzalayer_load_template_files()
 }
 
-add_action('wp_enqueue_scripts', 'enqueue_pizzalayer_template_js');
+// +=== Utility Functions ===+
 
-function pizzalayer_template_get_templates(){
-//add the built-in templates
-$pizzalayer_templates_folder_path = plugin_dir_path( __FILE__ );
-do_action( 'func_pizzalayer_template_get_templates_after_folder_path' );
-$pizzalayer_templates_list = '';
-$pizzalayer_templates_directories = glob($pizzalayer_templates_folder_path . '/*' , GLOB_ONLYDIR);
-foreach($pizzalayer_templates_directories as $pizzalayer_templates_directory){
-$pizzalayer_templates_list .= '<li style="">' . basename($pizzalayer_templates_directory) . '</li>';
-}
-//basename($yourpath)
-//$pizzalayer_templates_list = print_r($pizzalayer_templates_directories, true);
-return '<ul class="pizzalayer-templates-list-ul">' . $pizzalayer_templates_list . '</ul><style type="text/css">.pizzalayer-templates-list-ul{padding:8px 16px;font-size:22px;text-transform:uppercase;font-weight:600;}</style>';
+if ( ! function_exists( 'pizzalayer_template_get_templates' ) ) {
+	function pizzalayer_template_get_templates() {
+		$folder = plugin_dir_path( __FILE__ );
+		do_action( 'func_pizzalayer_template_get_templates_after_folder_path' );
+		$list = '';
+		foreach ( glob( $folder . '/*', GLOB_ONLYDIR ) as $dir ) {
+			$list .= '<li>' . basename( $dir ) . '</li>';
+		}
+		return '<ul class="pizzalayer-templates-list-ul">' . $list . '</ul><style>.pizzalayer-templates-list-ul{padding:8px 16px;font-size:22px;text-transform:uppercase;font-weight:600;}</style>';
+	}
 }
 
-function pizzalayer_template_get_templates_as_array(){
-$pizzalayer_templates_folder_path = plugin_dir_path( __FILE__ );
-$pizzalayer_templates_theme_folder_path = get_stylesheet_directory() . '/pzttemplates/';
-do_action( 'func_pizzalayer_template_get_templates_as_array_after_folder_paths' );
-$pizzalayer_templates_list_as_array = [];
+if ( ! function_exists( 'pizzalayer_template_get_templates_as_array' ) ) {
+	function pizzalayer_template_get_templates_as_array() {
+		$list = [];
+		$plugin_path = plugin_dir_path( __FILE__ );
+		$theme_path  = get_stylesheet_directory() . '/pzttemplates/';
 
-//add the built-in templates
-$pizzalayer_templates_directories = glob($pizzalayer_templates_folder_path . '/*' , GLOB_ONLYDIR);
-foreach($pizzalayer_templates_directories as $pizzalayer_templates_directory){
-$pizzalayer_templates_list_as_array[basename($pizzalayer_templates_directory)] = basename($pizzalayer_templates_directory);
+		do_action( 'func_pizzalayer_template_get_templates_as_array_after_folder_paths' );
+
+		foreach ( glob( $plugin_path . '/*', GLOB_ONLYDIR ) as $dir ) {
+			$name         = basename( $dir );
+			$list[ $name ] = $name;
+		}
+
+		if ( is_dir( $theme_path ) ) {
+			foreach ( glob( $theme_path . '/*', GLOB_ONLYDIR ) as $dir ) {
+				$name         = basename( $dir );
+				$list[ $name ] = $name;
+			}
+		}
+
+		return $list;
+	}
 }
 
-//if the 'pzttemplates' directory exists in the active theme's root directory, add templates found in the 'pzttemplates' directory
-if( is_dir($pizzalayer_templates_theme_folder_path) ){
-$pizzalayer_theme_templates_directories = glob($pizzalayer_templates_theme_folder_path . '/*' , GLOB_ONLYDIR);
-foreach($pizzalayer_theme_templates_directories as $pizzalayer_theme_templates_directory){
-$pizzalayer_templates_list_as_array[basename($pizzalayer_theme_templates_directory)] = basename($pizzalayer_theme_templates_directory);
-}
-} //end is_dir
-
-return $pizzalayer_templates_list_as_array;
+if ( ! function_exists( 'pizzalayer_template_get_templates_file_path' ) ) {
+	function pizzalayer_template_get_templates_file_path() {
+		return plugin_dir_path( __FILE__ );
+	}
 }
 
-
-function pizzalayer_template_get_templates_file_path(){
-    return plugin_dir_path( __FILE__ );
-}
-
-do_action( 'pizzalayer_file_template_end' );
+// +=== Execute Template Loader ===+
+pizzalayer_load_template_files();
