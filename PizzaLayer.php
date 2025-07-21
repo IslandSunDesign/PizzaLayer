@@ -54,7 +54,6 @@ include plugin_dir_path( __FILE__ ) . 'includes/admin/shortcode-generator.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/preset-pizza-builder.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/price-grid.php';
 
-//include plugin_dir_path( __FILE__ ) . 'includes/admin/gutenberg.php';
 
 /* +===  CUSTOMIZER CSS  +=========  */
 include plugin_dir_path(__FILE__) . 'includes/public/topper-ui-css.php';
@@ -93,6 +92,16 @@ include plugin_dir_path(__FILE__) . 'includes/public/topper.php';
 /* +=== FIELD SANITIZATION AND SECURITY FUNCTIONS ===+ */
 function pizzalayer_sanitize_text( $text ) {
     return sanitize_text_field( wp_kses_post( $text ) );
+}
+
+function write_log($log) {
+    if (true === WP_DEBUG) {
+        if (is_array($log) || is_object($log)) {
+            error_log(print_r($log, true));
+        } else {
+            error_log($log);
+        }
+    }
 }
 
 /* +=== ENQUEUE ADMIN ASSETS FOR EDITING LAYERS ===+ */
