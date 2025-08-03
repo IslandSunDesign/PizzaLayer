@@ -60,6 +60,15 @@ function pizzalayer_add_admin_menu() {
         'pizzalayer_intro',                   // Menu slug
         'pizzalayer_render_dashboard_intro_page' // Callback function
     );
+    
+    add_submenu_page(
+        'pizzalayer_main_menu',              // Parent slug
+        'My Template',                       // Page title
+        'My Template',                       // Menu title
+        'manage_options',                    // Capability
+        'pizzalayer_my_template',            // Menu slug
+        'pizzalayer_render_my_template_page' // Callback
+    );
 
     // +-- Separator --+
     add_submenu_page(
