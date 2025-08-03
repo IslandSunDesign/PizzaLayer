@@ -29,9 +29,6 @@ global $pizzalayer_template_images_directory;
     
 $pizzalayer_halves_visual_input = '<div id="pizzalayer-halves-control-' . $PizzalayerControlID . '" class="col-sm-12">
 <div class="col-sm-3">1</div><div class="col-sm-3">2</div><div class="col-sm-3">3</div><div class="col-sm-3">4</div>
-
-
-
 <img src="' . $pizzalayer_template_images_directory . 'button-half-pizza-left.png" class="pizzalayer-halves-control pizzalayer-halves-control-half-left"  onClick="SetToppingCoverage(\'half-left\',\'' . $ToppingLayerID . '\');" />
 <img src="' . $pizzalayer_template_images_directory . 'button-half-pizza-whole.png" class="pizzalayer-halves-control pizzalayer-halves-control-whole"  onClick="SetToppingCoverage(\'whole\',\'' . $ToppingLayerID . '\');" />
 <img src="' . $pizzalayer_template_images_directory . 'button-half-pizza-right.png" class="pizzalayer-halves-control pizzalayer-halves-control-half-right"  onClick="SetToppingCoverage(\'half-right\',\'' . $ToppingLayerID . '\');" />
@@ -55,8 +52,12 @@ return $pizzalayer_halves_visual_input . $pizzalayer_halves_form_controls;
 
 function pizzalayer_control_nextprev($PizzalayerPanePrev,$PizzalayerPaneNext,$ControlCSSid){
     if( get_option('pizzalayer_setting_template_glass_display_section_nextprev') != 'show' ){ return ''; };
-if($PizzalayerPaneNext){ $pizzalayer_This_NextLink = '<a href="javascript:PTswitchToMenu(\'' . $PizzalayerPaneNext . '\');" class="pizzalayer-control-nextprev nextprev-next">' . $PizzalayerPaneNext . '  &gt;</a>'; };    
-if($PizzalayerPanePrev){$pizzalayer_This_PrevLink = '<a href="javascript:PTswitchToMenu(\'' . $PizzalayerPanePrev . '\');" class="pizzalayer-control-nextprev nextprev-prev"> &lt; ' . $PizzalayerPanePrev . '</a>';};
+if($PizzalayerPaneNext){
+    $pizzalayer_This_NextLink = '<a href="javascript:PTswitchToMenu(\'' . $PizzalayerPaneNext . '\');" class="pizzalayer-control-nextprev nextprev-next">' . $PizzalayerPaneNext . '  &gt;</a>';
+    } else {$pizzalayer_This_NextLink = '';};    
+if($PizzalayerPanePrev){ 
+    $pizzalayer_This_PrevLink = '<a href="javascript:PTswitchToMenu(\'' . $PizzalayerPanePrev . '\');" class="pizzalayer-control-nextprev nextprev-prev"> &lt; ' . $PizzalayerPanePrev . '</a>';
+} else {$pizzalayer_This_PrevLink = '';};
 do_action( 'func_pizzalayer_control_nextprev_before_return' );
 return '<div id="' . $ControlCSSid .'" class="pizzalayer-control-nextprev col-sm-12">' . $pizzalayer_This_PrevLink . $pizzalayer_This_NextLink . '</div>';
 }
