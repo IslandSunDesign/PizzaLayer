@@ -1,13 +1,28 @@
 <?php
 do_action( 'pizzalayer_file_pztp-template-custom_start' );
 
-function hex2rgba( $color,$alpha ) {
-    if ($color[0] == '#') {
-        $color = substr($color, 1);
+function hex2rgba( $color, $alpha ) {
+    // Remove leading #
+    $color = ltrim( $color, '#' );
+
+    // Expand shorthand form (#abc → #aabbcc)
+    if ( strlen( $color ) === 3 ) {
+        $color = $color[0] . $color[0] .
+                 $color[1] . $color[1] .
+                 $color[2] . $color[2];
     }
-    list($r, $g, $b) = array_map("hexdec", str_split($color, (strlen( $color ) / 3)));
-    //return array( 'red' => $r, 'green' => $g, 'blue' => $b );
-    return 'rgba(' . $r . ',' . $g . ',' . $b . ',' . $alpha . ')';
+
+    // Validate 6-digit hex code
+    if ( !preg_match( '/^[a-f0-9]{6}$/i', $color ) ) {
+        return 'rgba(0,0,0,' . floatval( $alpha ) . ')'; // default fallback
+    }
+
+    // Convert hex to RGB
+    $r = hexdec( substr( $color, 0, 2 ) );
+    $g = hexdec( substr( $color, 2, 2 ) );
+    $b = hexdec( substr( $color, 4, 2 ) );
+
+    return 'rgba(' . $r . ',' . $g . ',' . $b . ',' . floatval( $alpha ) . ')';
 }
 
 
