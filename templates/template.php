@@ -24,9 +24,9 @@ if ( ! function_exists( 'pizzalayer_load_template_files' ) ) {
 			$pizzalayer_template_name = $pizzalayer_template_name_default;
 		}
 
-		if ( function_exists( 'write_log' ) ) {
+	/*	if ( function_exists( 'write_log' ) ) {
 			write_log( $pizzalayer_template_name . ' | ' . $pizzalayer_template_name_default );
-		}
+		} */
 
 		// +=== Enqueue Template CSS and JS ===+
 		add_action( 'wp_enqueue_scripts', function () use ( $pizzalayer_template_name ) {
