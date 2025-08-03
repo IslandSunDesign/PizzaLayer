@@ -260,6 +260,7 @@ background: radial-gradient(circle, rgba(100,6,6,1) 0%, rgba(153,7,8,1) 78%, rgb
 
 .pizzalayer-gradient-maroon-2{background-image: radial-gradient( circle 905.6px at 4.9% 7.9%,  rgba(218,0,0,1) 14.1%, rgba(168,2,144,1) 65%, rgba(102,2,110,1) 90% );}
 
+.pizzalayer-main-logo{max-width:80%;}
 
 body .pizzalayer-header-style-crisp{justify-content:space-between !important;}
 .pizzalayer-header-style-crisp .pizzalayer-main-logo{max-height:50px;}
