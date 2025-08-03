@@ -600,4 +600,74 @@ if($ResetButtonLocation == 'foot'){ return '<a href="javascript:ClearPizza();" t
 return false;
 } //close function
 
+/* +==============================================================+
+   | PIZZALAYER : Render dynamic CPT options with fallback images |
+   +==============================================================+ */
+function pizzalayer_render_options_from_cpt($cpt, $layer_slug) {
+	$args = array(
+		'post_type'      => $cpt,
+		'posts_per_page' => -1,
+		'post_status'    => 'publish',
+		'orderby'        => 'menu_order',
+		'order'          => 'ASC',
+	);
+
+	$query = new WP_Query($args);
+	$html = '<div class="options-grid">';
+
+	// Determine the short singular name of the CPT (e.g. pizzalayer_cheeses → cheese)
+	$short_singular = strtolower(rtrim(str_replace('pizzalayer_', '', $cpt), 's'));
+
+	if ($query->have_posts()) {
+		while ($query->have_posts()) {
+			$query->the_post();
+
+			$title = get_the_title(); // Full display title
+			$desc  = get_the_excerpt();
+			$post_id = get_the_ID();
+
+			// Attempt ACF fields in priority order
+			$image_url = get_field($short_singular . '_layer_image', $post_id);
+
+			if (!$image_url) {
+				$image_url = get_field($short_singular . '_image', $post_id);
+			}
+
+			if (!$image_url) {
+				$image_url = get_the_post_thumbnail_url($post_id, 'medium');
+			}
+
+			// Generate safe slug
+			$title_slug = sanitize_title($title);
+			$layer_slug_formatted = str_replace(' ', '-', strtolower($title)); // used as second param in JS
+			$function_slug = 'pizzalayer-topping-' . $short_singular;
+//'#menu-pizzalayer-topping-' + NewPizzaLayerShort
+      
+			$function_alt = 'pizzalayer-' . $short_singular . '-' . esc_js($title);
+
+			// JS call string
+			$js = "javascript:AddPizzaLayer('', '{$layer_slug_formatted}', '{$image_url}', '" . esc_js($title) . "', '{$function_slug}', '{$function_alt}')";
+
+			// Output card
+			$html .= '<div class="option-card" data-layer="' . esc_attr($layer_slug) . '" data-title="' . esc_attr($title) . '">';
+			$html .= '  <div class="option-circle" style="background-image:url(' . esc_url($image_url) . '); background-size:cover;"></div>';
+			$html .= '  <div class="option-title">' . esc_html($title) . '</div>';
+			$html .= '  <div class="option-description">' . esc_html($desc) . '</div>';
+			$html .= '  <div class="option-action"><button class="add-remove-btn" onclick="' . esc_attr($js) . '">Add</button></div>';
+			$html .= '</div>';
+		}
+		wp_reset_postdata();
+	} else {
+		$html .= '<p>No options available.</p>';
+	}
+
+	$html .= '</div>';
+	return $html;
+}
+
+
+
+
+
+
 do_action( 'pizzalayer_file_pztp-template-custom_end' );
