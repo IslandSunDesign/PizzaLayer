@@ -3,108 +3,83 @@
  * Render the Shortcode Generator page in the admin dashboard.
  */
 function pztpro_shortcode_generator_page() {
-    /* +=== Fetch all published crusts ===+ */
-    $crusts   = get_posts( array(
-        'post_type'      => 'pizzalayer_crusts',
-        'posts_per_page' => -1,
-        'post_status'    => 'publish',
-    ) );
-    /* +=== Fetch all published sauces ===+ */
-    $sauces   = get_posts( array(
-        'post_type'      => 'pizzalayer_sauces',
-        'posts_per_page' => -1,
-        'post_status'    => 'publish',
-    ) );
-    /* +=== Fetch all published cheeses ===+ */
-    $cheeses  = get_posts( array(
-        'post_type'      => 'pizzalayer_cheeses',
-        'posts_per_page' => -1,
-        'post_status'    => 'publish',
-    ) );
-    /* +=== Fetch all published toppings ===+ */
-    $toppings = get_posts( array(
-        'post_type'      => 'pizzalayer_toppings',
-        'posts_per_page' => -1,
-        'post_status'    => 'publish',
-    ) );
-    /* +=== Fetch all published drizzles ===+ */
-    $drizzles = get_posts( array(
-        'post_type'      => 'pizzalayer_drizzles',
-        'posts_per_page' => -1,
-        'post_status'    => 'publish',
-    ) );
-    /* +=== Fetch all published cuts ===+ */
-    $slices   = get_posts( array(
-        'post_type'      => 'pizzalayer_cuts',
-        'posts_per_page' => -1,
-        'post_status'    => 'publish',
-    ) );
+    // +=============================+
+    // | Fetch PizzaLayer CPT Items |
+    // +=============================+
+    $crusts   = get_posts(['post_type' => 'pizzalayer_crusts',   'posts_per_page' => -1, 'post_status' => 'publish']);
+    $sauces   = get_posts(['post_type' => 'pizzalayer_sauces',   'posts_per_page' => -1, 'post_status' => 'publish']);
+    $cheeses  = get_posts(['post_type' => 'pizzalayer_cheeses',  'posts_per_page' => -1, 'post_status' => 'publish']);
+    $toppings = get_posts(['post_type' => 'pizzalayer_toppings', 'posts_per_page' => -1, 'post_status' => 'publish']);
+    $drizzles = get_posts(['post_type' => 'pizzalayer_drizzles', 'posts_per_page' => -1, 'post_status' => 'publish']);
+    $slices   = get_posts(['post_type' => 'pizzalayer_cuts',     'posts_per_page' => -1, 'post_status' => 'publish']);
 
     echo '<div class="wrap">';
-    echo '<h2>Create an embed code to display your pizza</h2>';
+    echo '<h1>Create an embed code to display your pizza</h1>';
+
+    // +==============================+
+    // | Main Selection Field Layout |
+    // +==============================+
+    echo '<div class="postbox" style="padding: 20px; margin-bottom: 30px;">';
     echo '<form id="pztpro_shortcode_generator">';
+    echo '<div style="display:flex; flex-wrap:wrap; gap:20px;">';
 
-    /* +=== Crust selector ===+ */
-    echo '<label for="pztpro_crust">Crust:</label><br>';
-    echo '<select id="pztpro_crust" name="crust" class="widefat">';
-    echo '<option value="">— Select Crust —</option>';
-    foreach ( $crusts as $c ) {
-        echo '<option value="' . esc_attr( $c->post_title ) . '">' . esc_html( $c->post_title ) . '</option>';
-    }
-    echo '</select><br><br>';
+    // Left Column (crust, sauce, cheese, drizzle, slices)
+    echo '<div style="flex:1; min-width:300px;">';
 
-    /* +=== Sauce selector ===+ */
-    echo '<label for="pztpro_sauce">Sauce:</label><br>';
-    echo '<select id="pztpro_sauce" name="sauce" class="widefat">';
-    echo '<option value="">— Select Sauce —</option>';
-    foreach ( $sauces as $s ) {
-        echo '<option value="' . esc_attr( $s->post_title ) . '">' . esc_html( $s->post_title ) . '</option>';
-    }
-    echo '</select><br><br>';
+    $render_field = function( $label, $id, $items, $multiple = false ) {
+        $multiple_attr = $multiple ? ' multiple' : '';
+        $name_attr = $multiple ? $id . '[]' : $id;
+        $placeholder = $multiple ? '' : '<option value="">— Select ' . $label . ' —</option>';
 
-    /* +=== Cheese selector ===+ */
-    echo '<label for="pztpro_cheese">Cheese:</label><br>';
-    echo '<select id="pztpro_cheese" name="cheese" class="widefat">';
-    echo '<option value="">— Select Cheese —</option>';
-    foreach ( $cheeses as $ch ) {
-        echo '<option value="' . esc_attr( $ch->post_title ) . '">' . esc_html( $ch->post_title ) . '</option>';
-    }
-    echo '</select><br><br>';
+        echo '<div style="margin-bottom:20px; padding:15px; background:#f9f9f9; border:1px solid #ccd0d4;">';
+        echo '<label for="pztpro_' . esc_attr( $id ) . '"><strong>' . esc_html( $label ) . ':</strong></label><br>';
+        echo '<select id="pztpro_' . esc_attr( $id ) . '" name="' . esc_attr( $name_attr ) . '" class="widefat" ' . $multiple_attr . '>';
+        echo $placeholder;
+        foreach ( $items as $item ) {
+            echo '<option value="' . esc_attr( $item->post_title ) . '">' . esc_html( $item->post_title ) . '</option>';
+        }
+        echo '</select>';
+        echo '</div>';
+    };
 
-    /* +=== Toppings multi-select ===+ */
-    echo '<label for="pztpro_toppings">Toppings:</label><br>';
-    echo '<select id="pztpro_toppings" name="toppings[]" class="widefat" multiple>';
+    $render_field( 'Crust',   'crust',   $crusts );
+    $render_field( 'Sauce',   'sauce',   $sauces );
+    $render_field( 'Cheese',  'cheese',  $cheeses );
+    $render_field( 'Drizzle', 'drizzle', $drizzles );
+    $render_field( 'Slices',  'slices',  $slices );
+
+    echo '</div>'; // end left column
+
+    // Right Column (Toppings full height)
+    echo '<div style="flex:1; min-width:300px; display:flex; flex-direction:column;">';
+    echo '<div style="flex:1; padding:15px; background:#f9f9f9; border:1px solid #ccd0d4; height:100%;">';
+    echo '<label for="pztpro_toppings"><strong>Toppings:</strong></label><br>';
+    echo '<select id="pztpro_toppings" name="toppings[]" class="widefat" multiple style="min-height:220px;">';
     foreach ( $toppings as $t ) {
         echo '<option value="' . esc_attr( $t->post_title ) . '">' . esc_html( $t->post_title ) . '</option>';
     }
-    echo '</select><br><br>';
+    echo '</select>';
+    echo '</div>';
+    echo '</div>'; // end right column
 
-    /* +=== Drizzle selector ===+ */
-    echo '<label for="pztpro_drizzle">Drizzle:</label><br>';
-    echo '<select id="pztpro_drizzle" name="drizzle" class="widefat">';
-    echo '<option value="">— Select Drizzle —</option>';
-    foreach ( $drizzles as $d ) {
-        echo '<option value="' . esc_attr( $d->post_title ) . '">' . esc_html( $d->post_title ) . '</option>';
-    }
-    echo '</select><br><br>';
-
-    /* +=== Slices selector ===+ */
-    echo '<label for="pztpro_slices">Slices:</label><br>';
-    echo '<select id="pztpro_slices" name="slices" class="widefat">';
-    echo '<option value="">— Select Slices —</option>';
-    foreach ( $slices as $sl ) {
-        echo '<option value="' . esc_attr( $sl->post_title ) . '">' . esc_html( $sl->post_title ) . '</option>';
-    }
-    echo '</select><br><br>';
-
+    echo '</div>'; // end flex container
     echo '</form>';
+    echo '</div>'; // end postbox
 
-    /* +=== Output textarea and copy button ===+ */
-    echo '<h2>Generated Shortcode</h2>';
-    echo '<textarea id="pztpro_shortcode_output" class="widefat" rows="2" readonly></textarea><br><br>';
-    echo '<button id="pztpro_copy_button" class="button button-primary">Copy to Clipboard</button>';
+    // +===============================+
+    // | Shortcode Output & Copy Box  |
+    // +===============================+
+    echo '<div class="postbox" style="padding: 20px;">';
+    echo '<h2 class="hndle">Generated Shortcode</h2>';
+    echo '<div style="display:flex; align-items:center; gap:10px;">';
+    echo '<textarea id="pztpro_shortcode_output" class="widefat" rows="2" readonly style="margin:0;"></textarea>';
+    echo '<button id="pztpro_copy_button" class="button" type="button" title="Copy to Clipboard" style="height:34px;"><span class="dashicons dashicons-clipboard"></span></button>';
+    echo '</div>';
+    echo '</div>';
 
-    /* +=== Inline JavaScript to build and copy shortcode ===+ */
+    // +=============================+
+    // | JavaScript for Shortcode   |
+    // +=============================+
     ?>
     <script>
     (function(){
@@ -120,7 +95,6 @@ function pztpro_shortcode_generator_page() {
                     attrs.push(name + '="' + el.value + '"');
                 }
             });
-            // handle toppings separately (multi-select)
             let tops = Array.from($toppings.selectedOptions).map(o => o.value);
             if (tops.length) {
                 attrs.push('toppings="' + tops.join(',') + '"');
@@ -129,21 +103,19 @@ function pztpro_shortcode_generator_page() {
             $output.value = short;
         }
 
-        // Watch all inputs for change
         document.getElementById('pztpro_shortcode_generator').addEventListener('change', buildShortcode);
 
-        // Copy button handler
         document.getElementById('pztpro_copy_button').addEventListener('click', function(e){
             e.preventDefault();
             $output.select();
             document.execCommand('copy');
         });
 
-        // initialize
         buildShortcode();
     })();
     </script>
     <?php
 
-    echo '</div>';
+    echo '</div>'; // wrap
 }
+
