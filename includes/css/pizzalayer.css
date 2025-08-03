@@ -71,3 +71,24 @@ body .pizzalayer-toppings-wrapper.pizzalayer-toppings-wrapper-static{margin:auto
 .jump {
   animation: jump 0.5s ease;
 }
+
+/* Loading Animation / Background Rotation */
+
+.bg-rotate-wrapper {
+  position: relative;
+  overflow: hidden;
+}
+
+.bg-rotate-wrapper::before {
+  content: '';
+  position: absolute;
+  top: 0; left: 0;
+  width: 100%; height: 100%;
+  background-image: url('your-icon.png');
+  background-size: contain;
+  background-repeat: no-repeat;
+  background-position: center;
+  animation: bg-spin 10s linear infinite;
+  z-index: 0;
+  pointer-events: none;
+}
