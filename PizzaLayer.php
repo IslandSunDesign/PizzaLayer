@@ -111,46 +111,44 @@ function write_log($log) {
     }
 }
 
-/* +=== ENQUEUE ADMIN ASSETS FOR EDITING LAYERS ===+ */
 
-// +=========================================================+
-// | Handle AJAX request to set global template              |
-// +=========================================================+
+
+
+
+// In your main plugin bootstrap (always loaded in admin + ajax):
+if ( ! defined( 'PIZZALAYER_TEMPLATES_PATH' ) ) {
+	define( 'PIZZALAYER_TEMPLATES_PATH', plugin_dir_path( __FILE__ ) . 'templates/' );
+}
+if ( ! defined( 'PIZZALAYER_TEMPLATES_URL' ) ) {
+	define( 'PIZZALAYER_TEMPLATES_URL', plugins_url( 'templates/', __FILE__ ) );
+}
+
+// Register AJAX handler for logged-in users
 add_action( 'wp_ajax_pizzalayer_set_template', 'pizzalayer_ajax_set_template' );
+
 function pizzalayer_ajax_set_template() {
-	check_ajax_referer( 'pizzalayer_set_template_nonce', 'security' );
-
 	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_send_json_error( 'Unauthorized' );
+		wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
 	}
 
-	$template_slug = sanitize_text_field( $_POST['template_slug'] ?? '' );
-	if ( empty( $template_slug ) ) {
-		wp_send_json_error( 'Invalid template slug.' );
+	check_ajax_referer( 'pizzalayer_set_template', 'nonce' );
+
+	$slug = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
+	if ( ! $slug ) {
+		wp_send_json_error( [ 'message' => 'Missing slug' ], 400 );
 	}
 
-	update_option( 'pizzalayer_setting_global_template', $template_slug );
-	wp_send_json_success( 'Template set successfully.' );
+	// Ensure this function is available in ajax context (include its file if needed)
+	if ( ! function_exists( 'pizzalayer_get_available_templates_from_dirs' ) ) {
+		// include_once __DIR__ . '/path-to-file-that-defines-it.php';
+		wp_send_json_error( [ 'message' => 'Template lookup not available' ], 500 );
+	}
+	$templates = pizzalayer_get_available_templates_from_dirs();
+	if ( ! isset( $templates[ $slug ] ) ) {
+		wp_send_json_error( [ 'message' => 'Invalid template' ], 400 );
+	}
+
+	update_option( 'pizzalayer_setting_global_template', $slug );
+	wp_send_json_success( [ 'slug' => $slug ] );
 }
-
-// +=========================================================+
-// | Enqueue admin JS for ajax handler                       |
-// +=========================================================+
-
-add_action( 'admin_enqueue_scripts', 'pizzalayer_admin_enqueue_template_script' );
-function pizzalayer_admin_enqueue_template_script( $hook ) {
-	if ( $hook !== 'toplevel_page_pizzalayer_template' ) return;
-
-	// Enqueue script from /includes/js relative to plugin root
-	$script_path = plugin_dir_url( dirname( __FILE__ ) ) . 'includes/js/pizzalayer-template-select.js';
-
-	wp_enqueue_script( 'pizzalayer-template-select', $script_path, [ 'jquery' ], false, true );
-	wp_localize_script( 'pizzalayer-template-select', 'PizzaLayerTemplate', [
-		'ajax_url' => admin_url( 'admin-ajax.php' ),
-		'nonce'    => wp_create_nonce( 'pizzalayer_set_template_nonce' ),
-	] );
-}
-
-//plugins_url( 'includes/js/pizzalayer-template-select.js', __FILE__ )
-
 
