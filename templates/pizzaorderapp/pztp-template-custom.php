@@ -614,6 +614,7 @@ function pizzalayer_render_options_from_cpt($cpt, $layer_slug) {
 
 	$query = new WP_Query($args);
 	$html = '<div class="options-grid">';
+	$pizzalayer_toppings_list_current_zindex = 400;
 
 	// Determine the short singular name of the CPT (e.g. pizzalayer_cheeses → cheese)
 	$short_singular = strtolower(rtrim(str_replace('pizzalayer_', '', $cpt), 's'));
@@ -621,7 +622,7 @@ function pizzalayer_render_options_from_cpt($cpt, $layer_slug) {
 	if ($query->have_posts()) {
 		while ($query->have_posts()) {
 			$query->the_post();
-
+            
 			$title = get_the_title(); // Full display title
 			$desc  = get_the_excerpt();
 			$post_id = get_the_ID();
@@ -636,17 +637,48 @@ function pizzalayer_render_options_from_cpt($cpt, $layer_slug) {
 			if (!$image_url) {
 				$image_url = get_the_post_thumbnail_url($post_id, 'medium');
 			}
+			
 
-			// Generate safe slug
+			
+			
+			
+
+			// Create vars for JS link work
 			$title_slug = sanitize_title($title);
 			$layer_slug_formatted = str_replace(' ', '-', strtolower($title)); // used as second param in JS
 			$function_slug = 'pizzalayer-topping-' . $short_singular;
 //'#menu-pizzalayer-topping-' + NewPizzaLayerShort
       
 			$function_alt = 'pizzalayer-' . $short_singular . '-' . esc_js($title);
+            $pizzalayer_tli_image = get_field( $short_singular . '_layer_image' );
+		
+		
+					// Generate JS links if cpt = toppings
+					/* $js = "javascript:AddPizzaLayer('', '{$layer_slug_formatted}', '{$image_url}', '" . esc_js($title) . "', '{$function_slug}', '{$function_alt}')"; */
+			if ($cpt == 'pizzalayer_toppings'){
+            $pztp_tli_short = get_the_title();
+            $pztp_tli_topping_title = '<div class="pizzalayer-topping-title">' . $pztp_tli_short . '</div>';
+            $pztp_tli_short_slug = sanitize_title($pztp_tli_short);
+            $pztp_tli_link_remove_layer_link_for_js = 'javascript:RemovePizzaLayer(\'pizzalayer-topping-' . $pztp_tli_short_slug . '\',\'\',\'' . $pztp_tli_short_slug . '\');';
+  
+			$js = "AddPizzaLayer({$pizzalayer_toppings_list_current_zindex}, '{$layer_slug_formatted}', '{$pizzalayer_tli_image}', '" . esc_js($title) . "', '{$function_slug}', '{$function_slug}')";
 
-			// JS call string
-			$js = "javascript:AddPizzaLayer('', '{$layer_slug_formatted}', '{$image_url}', '" . esc_js($title) . "', '{$function_slug}', '{$function_alt}')";
+			} else {
+			
+			// Generate JS links if cpt = crusts,sauces,cheeses,
+			/* $js = "javascript:SwapBasePizzaLayer(\'pizzalayer-base-layer-cut\',\'' . get_the_title() . '\',\'' . $pizzalayer_cuts_list_item_image . '\')"; */
+			$pztp_tli_short = get_the_title();
+            $pztp_tli_topping_title = '<div class="pizzalayer-topping-title">' . $pztp_tli_short . '</div>';
+            $pztp_tli_short_slug = sanitize_title($pztp_tli_short);
+			
+			
+			$js = "SwapBasePizzaLayer('pizzalayer-base-layer-{$short_singular}','{$pztp_tli_short}','{$pizzalayer_tli_image}')";
+			
+			
+			
+			}; //end else
+		
+		    $pizzalayer_toppings_list_current_zindex += 10;
 
 			// Output card
 			$html .= '<div class="option-card" data-layer="' . esc_attr($layer_slug) . '" data-title="' . esc_attr($title) . '">';
