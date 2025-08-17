@@ -1,30 +1,7 @@
-jQuery( document ).ready(function() {
-    PTswitchToMenu('intro');
-    jQuery("#pizzalayer-main-visualizer-container").css("height", jQuery('#pizzalayer-main-visualizer-container').width());
-    jQuery("#pizzalayer-pizza").fadeIn(2500);
-    
-});
-
-jQuery(window).resize(function(){
-  jQuery("#pizzalayer-main-visualizer-container").css("height", jQuery('#pizzalayer-main-visualizer-container').width());
-});
-
-
-
-
-
-
-
-
-
-
-
-
 /* ======================== NEW JAVASCRIPT ======================== */
 
-
 /* +=== PZT: Mobile Order Navigation Logic ===+ */
-jQuery(document).ready(function() {
+jQuery(document).ready(function () {
 
     let tabOrder = ['home', 'crust', 'sauce', 'cheese', 'toppings', 'drizzle', 'slicing', 'order'];
     let currentTab = 0;
@@ -43,40 +20,40 @@ jQuery(document).ready(function() {
         jQuery('.tab-content').removeClass('active');
         jQuery('#tab-' + name).addClass('active');
 
-        tabs.each(function() {
+        tabs.each(function () {
             let t = jQuery(this);
             t.toggleClass('active', t.data('tab') === name);
         });
 
-        dropdown.val(name);
+        if (dropdown.length) dropdown.val(name);
         currentTab = tabOrder.indexOf(name);
 
-        prevBtn.css('display', currentTab === 0 ? 'none' : 'inline-block');
-        nextBtn.text(name === 'home' ? 'Start Building my Pizza' : 'Next');
-        nextBtn.css('display', name === 'order' ? 'none' : 'inline-block');
-
-        if (name === 'order') {
-            populateOrder();
+        if (prevBtn.length) prevBtn.css('display', currentTab === 0 ? 'none' : 'inline-block');
+        if (nextBtn.length) {
+            nextBtn.text(name === 'home' ? 'Start Building my Pizza' : 'Next');
+            nextBtn.css('display', name === 'order' ? 'none' : 'inline-block');
         }
+
+        if (name === 'order') populateOrder();
     }
 
-    tabs.on('click', function() {
+    tabs.on('click', function () {
         showTab(jQuery(this).data('tab'));
     });
 
-    dropdown.on('change', function() {
+    dropdown.on('change', function () {
         showTab(jQuery(this).val());
     });
 
-    nextBtn.on('click', function() {
+    nextBtn.on('click', function () {
         showTab(tabOrder[currentTab + 1] || tabOrder[currentTab]);
     });
 
-    prevBtn.on('click', function() {
+    prevBtn.on('click', function () {
         showTab(tabOrder[currentTab - 1] || tabOrder[currentTab]);
     });
 
-    contentArea.on('click', '.add-remove-btn', function() {
+    contentArea.on('click', '.add-remove-btn', function () {
         let btn = jQuery(this);
         let card = btn.closest('.option-card');
         let layer = card.data('layer');
@@ -93,16 +70,27 @@ jQuery(document).ready(function() {
             }
             toppingsCSV.text('Toppings: ' + selections.toppings.join(','));
         } else {
-            jQuery(`.option-card[data-layer="${layer}"]`).removeClass('selected').find('.add-remove-btn').text('Add');
+            jQuery(`.option-card[data-layer="${layer}"]`)
+                .removeClass('selected')
+                .find('.add-remove-btn').text('Add');
             card.addClass('selected');
             btn.text('Remove');
             selections[layer] = title;
         }
 
-        let circle = card.find('.option-circle');
-        let clone = circle.clone();
-        let r = circle[0].getBoundingClientRect();
-        let p = preview[0].getBoundingClientRect();
+        // --- Safe animation: only if both circle and preview exist
+        const circle = card.find('.option-circle').first();
+        const circleEl = circle.get(0);
+        const previewEl = preview.get(0);
+
+        if (!circleEl || !previewEl) {
+            // Skip the animation gracefully if markup isn’t present
+            return;
+        }
+
+        const clone = circle.clone();
+        const r = circleEl.getBoundingClientRect();
+        const p = previewEl.getBoundingClientRect();
 
         clone.css({
             position: 'fixed',
@@ -110,12 +98,14 @@ jQuery(document).ready(function() {
             top: r.top + 'px',
             width: r.width + 'px',
             height: r.height + 'px',
-            transition: 'all 0.8s ease'
+            transition: 'all 0.8s ease',
+            pointerEvents: 'none',
+            zIndex: 9999
         });
 
         jQuery('body').append(clone);
 
-        requestAnimationFrame(function() {
+        requestAnimationFrame(function () {
             clone.css({
                 left: (p.left + p.width / 2 - r.width / 2) + 'px',
                 top: (p.top + p.height / 2 - r.height / 2) + 'px',
@@ -124,16 +114,16 @@ jQuery(document).ready(function() {
             });
         });
 
-        setTimeout(function() {
+        setTimeout(function () {
             clone.remove();
-        }, 800);
+        }, 820);
     });
 
     function populateOrder() {
         orderSummary.empty();
         toppingsCSV.text('');
 
-        ['crust', 'sauce', 'cheese', 'drizzle', 'slicing'].forEach(function(l) {
+        ['crust', 'sauce', 'cheese', 'drizzle', 'slicing'].forEach(function (l) {
             if (selections[l]) {
                 let box = jQuery('<div>').addClass('order-box');
                 let label = jQuery('<label>').text(l.charAt(0).toUpperCase() + l.slice(1));
@@ -147,9 +137,4 @@ jQuery(document).ready(function() {
     }
 
     showTab('home');
-
 });
-
-
-
-
