@@ -24,8 +24,8 @@ function AddPizzaLayer(NewPizzaLayerIndex,NewPizzaLayerShort,NewPizzaLayerImageU
 if( jQuery('#' + NewPizzaLayerName).length ){ return false; }
 CurrentToppingsCount = parseInt(jQuery('#CurrentToppingsCount').val());
 MaxToppings = jQuery('#MaxToppings').val();
-if( !UnderMaxToppings(CurrentToppingsCount) ){ return false;
-jQuery('#pizzalayer-ui-menu-section-toppings').animate({background:red}, 100 ).wait().animate({background:transparent}, 200 );
+if( !UnderMaxToppings(CurrentToppingsCount) ){ 
+jQuery('#pizzalayer-ui-menu-section-toppings').animate({background:red}, 100 ).wait().animate({background:transparent}, 200 );return false;
 } //if
 var NewPizzaLayerContent = '';
 NewPizzaLayerContent = '<div id="' + NewPizzaLayerName + '" class="pizzalayer-topping ' + NewPizzaLayerName + '" style="z-index:' + NewPizzaLayerIndex + ';"><img title="' + NewPizzaLayerAlt + '" alt="' + NewPizzaLayerAlt + '" src="' + NewPizzaLayerImageUrl + '" onload="jQuery(this).hide().fadeIn(1300);"></div>';
