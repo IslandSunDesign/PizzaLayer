@@ -249,20 +249,6 @@ echo '<div id="pizzalayer-quick-add-modal" style="display:none;">
 
 
 
-function pizzalayer_render_help_page() {
-    ?>
-    <div class="wrap">
-        <h1>PizzaLayer Help</h1>
-        <p>Here you will find help on how to manage your pizza layers and use the plugin effectively:</p>
-        <ul>
-            <li>Manage layers from the Layers tabbed interface</li>
-            <li>Use the shortcode generator to display pizzas on your site</li>
-            <li>Reach out to support if you need help</li>
-        </ul>
-    </div>
-    <?php
-}
-
 
 add_action('wp_ajax_pizzalayer_quick_add_item', 'pizzalayer_quick_add_item');
 
