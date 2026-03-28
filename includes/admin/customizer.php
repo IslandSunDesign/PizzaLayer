@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 
 function ic_sanitize_image( $file, $setting ) {
 

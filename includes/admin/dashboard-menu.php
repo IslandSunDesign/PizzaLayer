@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 add_action('admin_menu', 'pizzalayer_add_admin_menu');
 add_action('admin_enqueue_scripts', 'pizzalayer_enqueue_admin_assets');
 add_action('wp_ajax_pizzalayer_load_cpt_tab', 'pizzalayer_load_cpt_tab');

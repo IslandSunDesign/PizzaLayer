@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 function write_log($log) {
     if (true === WP_DEBUG) {
         if (is_array($log) || is_object($log)) {

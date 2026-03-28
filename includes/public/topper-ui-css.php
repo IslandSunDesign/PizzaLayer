@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 do_action( 'pizzalayer_file_topper-ui-css_start' );
 
 //PIZZA-SPECIFIC CSS - values applied from customizer / global meta

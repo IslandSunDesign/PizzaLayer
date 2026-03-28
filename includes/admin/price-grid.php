@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 // +------------------------------------------------------------+
 // | Pizzalayer Price Grid Admin Interface                      |
 // | File: includes/admin/price-grid.php                        |
@@ -100,6 +101,7 @@ function pizzalayer_render_price_grid_metabox( $post ) {
 add_action( 'save_post', 'pizzalayer_save_topping_grid' );
 function pizzalayer_save_topping_grid( $post_id ) {
 	if ( defined( 'DOING_AUTOSAVE' ) && DOING_AUTOSAVE ) return;
+	if ( ! current_user_can( 'edit_post', $post_id ) ) return;
 	if ( ! isset( $_POST['pizzalayer_grid_nonce'] ) || ! wp_verify_nonce( $_POST['pizzalayer_grid_nonce'], 'pizzalayer_grid_save_' . $post_id ) ) return;
 
 	if ( isset( $_POST['pizzalayer_reset_grid'] ) ) {
@@ -253,6 +255,10 @@ function pizzalayer_render_download_csv_button( $post ) {
 
 add_action( 'admin_post_pizzalayer_download_csv', 'pizzalayer_handle_csv_download' );
 function pizzalayer_handle_csv_download() {
+	if ( ! current_user_can( 'manage_options' ) ) {
+		wp_die( __( 'Unauthorized.', 'pizzalayer' ) );
+	}
+
 	$post_id = isset( $_GET['post_id'] ) ? intval( $_GET['post_id'] ) : 0;
 	$nonce   = isset( $_GET['nonce'] ) ? sanitize_text_field( $_GET['nonce'] ) : '';
 

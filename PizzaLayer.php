@@ -1,5 +1,6 @@
 <?php
- 
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 /**
  
  * @package pizzalayer
@@ -40,10 +41,6 @@ add_action( 'wp_enqueue_scripts', 'pizzalayer_enqueue_css_and_js' );
 include plugin_dir_path( __FILE__ ) . 'templates/template.php';
 
 /* +===  PATH VARIABLES +=========  */
-$pizzalayer_path = plugin_dir_url( __FILE__ );
-$pizzalayer_path_assets = plugin_dir_url( __FILE__ ) . 'assets/';
-$pizzalayer_path_images = plugin_dir_url( __FILE__ ) . 'assets/images/';
-
 define( 'PIZZALAYER_PLUGIN_PATH', plugin_dir_url( __FILE__ ));
 define( 'PIZZALAYER_ASSETS_PATH', plugin_dir_url( __FILE__ ) . 'assets/');
 define( 'PIZZALAYER_IMAGES_PATH', plugin_dir_url( __FILE__ ) . 'assets/images/');
@@ -117,14 +114,6 @@ function write_log($log) {
 
 
 
-
-// In your main plugin bootstrap (always loaded in admin + ajax):
-if ( ! defined( 'PIZZALAYER_TEMPLATES_PATH' ) ) {
-	define( 'PIZZALAYER_TEMPLATES_PATH', plugin_dir_path( __FILE__ ) . 'templates/' );
-}
-if ( ! defined( 'PIZZALAYER_TEMPLATES_URL' ) ) {
-	define( 'PIZZALAYER_TEMPLATES_URL', plugins_url( 'templates/', __FILE__ ) );
-}
 
 // Register AJAX handler for logged-in users
 add_action( 'wp_ajax_pizzalayer_set_template', 'pizzalayer_ajax_set_template' );

@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 // Function to get WordPress post ID given the post title
 function pizzalayer_getIdBySlug( $slug, $posttype ){
    $layer = get_page_by_path($slug,OBJECT,'pizzalayer_' . $posttype);
@@ -78,12 +79,6 @@ $ptpizza_layer_alt = 'Pizza topping : ' . $ptpizza_layer_slug; // topping alt / 
 //PREPARE PIZZA LAYER FROM CURRENT ARRAY ITEM
 $ptpizza_toppings_output_html .= pizzalayer_layer( $ptpizza_layer_index, $ptpizza_layer_slug, $ptpizza_layer_imageurl, $ptpizza_layer_alt );
 }; // END foreach
-
-// PREPARE DRIZZLE AS 5TH LAYER
-$ptpizza_layer_drizzle = pizzalayer_layer_nest(950,'drizzle', '','drizzle') . '</div>';
-
-// ADD PIZZA CUT DIAGRAM AS TOP LAYER
-$ptpizza_layer_cut = pizzalayer_layer_nest(990,'cut', '','Slices') . '</div>';
 
 do_action( 'func_pizzalayer_pizza_dynamic_nested_before_cooking' );
 
@@ -200,7 +195,7 @@ function pizzalayer_static_pizza_func( $atts ) {
     $ptpizza_static_pizza_cheese = $a['cheese'],
     $ptpizza_static_pizza_toppings_array = $a['toppings'],
     $ptpizza_static_pizza_drizzle = $a['drizzle'],
-    $ptpizza_static_pizza_slice = $a['slices'],
+    $ptpizza_static_pizza_cut = $a['slices'],
     );
 }
 add_shortcode( 'pizzalayer-static', 'pizzalayer_static_pizza_func' );

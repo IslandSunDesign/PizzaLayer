@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 // +=========================================================+
 // | Get list of available templates from either plugin or theme source folders |
@@ -35,6 +36,7 @@ function pizzalayer_get_available_templates_from_dirs() {
 // +==================================================+
 
 function pizzalayer_render_my_template_page() {
+	if ( ! current_user_can( 'manage_options' ) ) { return; }
 	$active_template = get_option( 'pizzalayer_setting_global_template', 'default' );
 
 	// Fallback definitions if not already defined elsewhere.

@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 function pizzalayer_render_dashboard_intro_page_layer_guide($pizzalayer_intro_section_cpt_basic,$pizzalayer_intro_section_cpt_example_title){
     return '<h2><span class="dashicons dashicons-list-view"></span> 2. Add ' . $pizzalayer_intro_section_cpt_basic . ' Layers</h2>
@@ -17,6 +18,7 @@ function pizzalayer_render_dashboard_intro_page_layer_guide($pizzalayer_intro_se
 
 /* +===  Render the dashboard intro page  ===+ */
 function pizzalayer_render_dashboard_intro_page() {
+	if ( ! current_user_can( 'manage_options' ) ) { return; }
     ?>
     <div class="wrap">
         <h1><span class="dashicons dashicons-pizza" style="color:#d63638;"></span> Setup Guide</h1>

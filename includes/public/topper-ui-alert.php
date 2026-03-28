@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 do_action( 'pizzalayer_file_topper-ui-alert_before' );
 function pizzalayer_alert($pizzalayer_alert_content,$pizzalayer_alert_style){
     if( !$pizzalayer_alert_content ){ return; }

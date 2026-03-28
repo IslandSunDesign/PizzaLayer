@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 /**
  * PizzaLayer: Object-Oriented Layer Rendering
  *

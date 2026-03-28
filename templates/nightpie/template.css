@@ -1,0 +1,902 @@
+/* ══════════════════════════════════════════════════════════════
+   NIGHTPIE TEMPLATE — template.css
+   Modern dark pizza builder UI with sticky split-screen preview,
+   rounded bubble style, tab navigation, fly-to animation.
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Design Tokens ─────────────────────────────────────────── */
+:root {
+    --np-bg:            #0e0e12;
+    --np-surface:       #18181f;
+    --np-surface-2:     #22222c;
+    --np-surface-3:     #2c2c38;
+    --np-border:        rgba(255,255,255,0.08);
+    --np-border-hover:  rgba(255,255,255,0.18);
+    --np-accent:        #ff5722;
+    --np-accent-dim:    rgba(255,87,34,0.15);
+    --np-accent-glow:   rgba(255,87,34,0.35);
+    --np-text:          #f0f0f4;
+    --np-text-muted:    #888898;
+    --np-text-faint:    #444456;
+    --np-radius-sm:     10px;
+    --np-radius:        16px;
+    --np-radius-lg:     24px;
+    --np-radius-pill:   999px;
+    --np-shadow:        0 4px 24px rgba(0,0,0,0.45);
+    --np-shadow-sm:     0 2px 8px  rgba(0,0,0,0.3);
+    --np-transition:    0.22s cubic-bezier(0.4,0,0.2,1);
+    --np-pizza-col-w:   360px;
+    --np-tabnav-h:      62px;
+    --np-font:          system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
+}
+
+/* ── Base reset scoped to NightPie ─────────────────────────── */
+#np-root,
+#np-root * {
+    box-sizing: border-box;
+}
+#np-root {
+    font-family:  var(--np-font);
+    font-size:    15px;
+    line-height:  1.5;
+    color:        var(--np-text);
+    background:   var(--np-bg);
+    border-radius: var(--np-radius-lg);
+    overflow:     hidden;
+    box-shadow:   var(--np-shadow);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   LAYOUT
+   ══════════════════════════════════════════════════════════════ */
+.np-layout {
+    padding: 0;
+}
+.np-layout__row {
+    min-height: 600px;
+    align-items: stretch;
+}
+
+/* ── LEFT: Pizza sticky column ─────────────────────────────── */
+.np-pizza-col {
+    flex-direction: column;
+    border-right: 1px solid var(--np-border);
+    background: var(--np-surface);
+    min-height: 600px;
+}
+
+.np-pizza-sticky {
+    position: sticky;
+    top: 0;
+    max-height: 100vh;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    padding: 24px 16px 16px;
+    gap: 12px;
+    width: 100%;
+}
+
+.np-pizza-sticky__header {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    font-size: 13px;
+    font-weight: 600;
+    text-transform: uppercase;
+    letter-spacing: 0.08em;
+    color: var(--np-text-muted);
+    align-self: flex-start;
+}
+.np-pizza-sticky__header .fa {
+    color: var(--np-accent);
+    font-size: 15px;
+}
+
+.np-pizza-sticky__canvas {
+    width: 100%;
+    max-width: 320px;
+    aspect-ratio: 1 / 1;
+    position: relative;
+}
+/* Ensure the PizzaLayer pizza div fills the canvas */
+.np-pizza-sticky__canvas #pizzalayer-pizza,
+.np-pizza-sticky__canvas .pizzalayer-pizza-dynamic {
+    width:  100% !important;
+    height: 100% !important;
+    position: relative !important;
+}
+
+.np-pizza-sticky__footer {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    width: 100%;
+    max-width: 320px;
+    gap: 8px;
+}
+
+.np-topping-counter {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    color: var(--np-text-muted);
+    background: var(--np-surface-2);
+    border: 1px solid var(--np-border);
+    border-radius: var(--np-radius-pill);
+    padding: 4px 12px;
+}
+.np-topping-counter .fa {
+    color: var(--np-accent);
+}
+.np-topping-counter-inline {
+    font-size: 12px;
+    color: var(--np-text-muted);
+}
+
+/* ── RIGHT: Tabs column ────────────────────────────────────── */
+.np-tabs-col {
+    background: var(--np-bg);
+    display: flex;
+    flex-direction: column;
+}
+.np-builder {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   TAB NAV
+   ══════════════════════════════════════════════════════════════ */
+.np-tabnav {
+    position: sticky;
+    top: 0;
+    z-index: 50;
+    display: flex;
+    align-items: center;
+    gap: 4px;
+    padding: 12px 16px 0;
+    background: var(--np-bg);
+    border-bottom: 1px solid var(--np-border);
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+    scrollbar-width: none;
+    flex-wrap: nowrap;
+}
+.np-tabnav::-webkit-scrollbar { display: none; }
+
+.np-tab {
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
+    gap:             4px;
+    padding:         8px 14px 12px;
+    border:          none;
+    background:      transparent;
+    color:           var(--np-text-muted);
+    cursor:          pointer;
+    border-radius:   var(--np-radius) var(--np-radius) 0 0;
+    font-size:       12px;
+    font-weight:     600;
+    letter-spacing:  0.03em;
+    transition:      color var(--np-transition), background var(--np-transition);
+    white-space:     nowrap;
+    position:        relative;
+    outline:         none;
+}
+.np-tab:hover {
+    color:       var(--np-text);
+    background:  var(--np-surface-2);
+}
+.np-tab.active {
+    color:       var(--np-accent);
+    background:  var(--np-surface);
+}
+.np-tab.active::after {
+    content:     '';
+    position:    absolute;
+    bottom:      0;
+    left:        12px;
+    right:       12px;
+    height:      3px;
+    background:  var(--np-accent);
+    border-radius: var(--np-radius-pill) var(--np-radius-pill) 0 0;
+}
+.np-tab.np-tab--done:not(.active) {
+    color: #4caf50;
+}
+.np-tab.np-tab--done:not(.active)::after {
+    content: '';
+    position: absolute;
+    bottom: 0;
+    left: 12px;
+    right: 12px;
+    height: 3px;
+    background: #4caf5060;
+    border-radius: var(--np-radius-pill) var(--np-radius-pill) 0 0;
+}
+
+.np-tab__icon {
+    font-size: 16px;
+    line-height: 1;
+}
+.np-tab__label {
+    font-size: 11px;
+}
+
+/* Progress dots */
+.np-progress {
+    display: flex;
+    gap: 6px;
+    padding: 8px 20px 0;
+    background: var(--np-surface);
+    align-items: center;
+    justify-content: center;
+}
+.np-progress__dot {
+    width:  8px;
+    height: 8px;
+    border-radius: var(--np-radius-pill);
+    background: var(--np-surface-3);
+    border: 1px solid var(--np-border);
+    transition: background var(--np-transition), transform var(--np-transition);
+}
+.np-progress__dot.active {
+    background:  var(--np-accent);
+    transform:   scale(1.3);
+    box-shadow:  0 0 8px var(--np-accent-glow);
+}
+.np-progress__dot.done {
+    background: #4caf5080;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PANELS
+   ══════════════════════════════════════════════════════════════ */
+.np-panels {
+    flex: 1;
+    background: var(--np-surface);
+}
+
+.np-panel {
+    display:    none;
+    padding:    24px 20px;
+    min-height: 400px;
+}
+.np-panel.active {
+    display: block;
+    animation: np-fadein 0.25s ease;
+}
+
+@keyframes np-fadein {
+    from { opacity: 0; transform: translateY(6px); }
+    to   { opacity: 1; transform: translateY(0);   }
+}
+
+.np-panel__header {
+    margin-bottom: 20px;
+}
+.np-panel__title {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--np-text);
+    margin: 0 0 6px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+}
+.np-panel__title .fa {
+    color: var(--np-accent);
+    font-size: 18px;
+}
+.np-panel__hint {
+    font-size: 13px;
+    color: var(--np-text-muted);
+    margin: 0;
+}
+
+.np-panel__nav {
+    display:         flex;
+    justify-content: space-between;
+    align-items:     center;
+    margin-top:      28px;
+    padding-top:     20px;
+    border-top:      1px solid var(--np-border);
+    gap:             12px;
+    flex-wrap:       wrap;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   CARD GRID
+   ══════════════════════════════════════════════════════════════ */
+.np-cards-grid {
+    display: grid;
+    gap:     14px;
+}
+.np-cards-grid--exclusive {
+    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
+}
+.np-cards-grid--toppings {
+    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+}
+
+/* ── Individual card ───────────────────────────────────────── */
+.np-card {
+    background:    var(--np-surface-2);
+    border:        1px solid var(--np-border);
+    border-radius: var(--np-radius);
+    padding:       14px;
+    display:       flex;
+    flex-direction: column;
+    gap:           10px;
+    cursor:        pointer;
+    transition:    border-color var(--np-transition),
+                   background   var(--np-transition),
+                   box-shadow   var(--np-transition),
+                   transform    var(--np-transition);
+    position:      relative;
+}
+.np-card:hover {
+    border-color: var(--np-border-hover);
+    background:   var(--np-surface-3);
+    box-shadow:   var(--np-shadow-sm);
+    transform:    translateY(-2px);
+}
+.np-card.np-card--selected {
+    border-color: var(--np-accent);
+    background:   var(--np-accent-dim);
+    box-shadow:   0 0 0 1px var(--np-accent), var(--np-shadow-sm);
+}
+.np-card.np-card--selected .np-card__check {
+    opacity:   1;
+    transform: scale(1);
+}
+.np-card.np-card--selected .np-btn--add {
+    display: none !important;
+}
+.np-card.np-card--selected .np-btn--remove {
+    display: flex !important;
+}
+
+/* Thumb */
+.np-card__thumb-wrap {
+    position:      relative;
+    width:         100%;
+    aspect-ratio:  1 / 1;
+    border-radius: var(--np-radius-sm);
+    overflow:      hidden;
+    background:    var(--np-surface-3);
+    flex-shrink:   0;
+}
+.np-card__thumb {
+    width:      100%;
+    height:     100%;
+    object-fit: cover;
+    display:    block;
+    transition: transform var(--np-transition);
+}
+.np-card:hover .np-card__thumb {
+    transform: scale(1.04);
+}
+.np-card__thumb--placeholder {
+    width:      100%;
+    height:     100%;
+    background: linear-gradient(135deg, var(--np-surface-3) 0%, var(--np-surface-2) 100%);
+}
+
+/* Checkmark overlay */
+.np-card__check {
+    position:      absolute;
+    top:           6px;
+    right:         6px;
+    width:         26px;
+    height:        26px;
+    border-radius: var(--np-radius-pill);
+    background:    var(--np-accent);
+    color:         #fff;
+    display:       flex;
+    align-items:   center;
+    justify-content: center;
+    font-size:     12px;
+    opacity:       0;
+    transform:     scale(0.6);
+    transition:    opacity var(--np-transition), transform var(--np-transition);
+    box-shadow:    0 2px 8px var(--np-accent-glow);
+    pointer-events: none;
+}
+
+/* Card body */
+.np-card__body {
+    display:        flex;
+    flex-direction: column;
+    gap:            6px;
+    flex:           1;
+}
+.np-card__name {
+    font-size:   13px;
+    font-weight: 600;
+    color:       var(--np-text);
+    line-height: 1.3;
+}
+
+/* Card actions */
+.np-card__actions {
+    display:     flex;
+    gap:         6px;
+    flex-wrap:   wrap;
+    margin-top:  auto;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   BUTTONS
+   ══════════════════════════════════════════════════════════════ */
+.np-btn {
+    display:         inline-flex;
+    align-items:     center;
+    gap:             6px;
+    padding:         8px 16px;
+    border-radius:   var(--np-radius-pill);
+    font-size:       13px;
+    font-weight:     600;
+    cursor:          pointer;
+    border:          1px solid transparent;
+    transition:      background var(--np-transition),
+                     border-color var(--np-transition),
+                     color var(--np-transition),
+                     box-shadow var(--np-transition),
+                     transform 0.1s;
+    text-decoration: none;
+    line-height:     1;
+    outline:         none;
+}
+.np-btn:active { transform: scale(0.97); }
+
+/* Primary add */
+.np-btn--add {
+    background: var(--np-accent);
+    color:      #fff;
+    border-color: var(--np-accent);
+    width:      100%;
+    justify-content: center;
+}
+.np-btn--add:hover {
+    background: #e64e1a;
+    box-shadow: 0 4px 14px var(--np-accent-glow);
+}
+
+/* Remove / outline */
+.np-btn--remove {
+    background:   transparent;
+    color:        var(--np-text-muted);
+    border-color: var(--np-border);
+    width:        100%;
+    justify-content: center;
+}
+.np-btn--remove:hover {
+    border-color: #f44336;
+    color:        #f44336;
+}
+
+/* Ghost */
+.np-btn--ghost {
+    background:   transparent;
+    color:        var(--np-text-muted);
+    border-color: var(--np-border);
+}
+.np-btn--ghost:hover {
+    color:        var(--np-text);
+    border-color: var(--np-border-hover);
+    background:   var(--np-surface-2);
+}
+
+/* Nav buttons */
+.np-btn--prev {
+    background:   var(--np-surface-2);
+    color:        var(--np-text-muted);
+    border-color: var(--np-border);
+}
+.np-btn--prev:hover {
+    color:        var(--np-text);
+    border-color: var(--np-border-hover);
+}
+.np-btn--next {
+    background:   var(--np-accent);
+    color:        #fff;
+    border-color: var(--np-accent);
+    margin-left:  auto;
+}
+.np-btn--next:hover {
+    background: #e64e1a;
+    box-shadow: 0 4px 14px var(--np-accent-glow);
+}
+.np-btn--cta {
+    padding:     10px 24px;
+    font-size:   14px;
+    letter-spacing: 0.02em;
+    box-shadow:  0 4px 20px var(--np-accent-glow);
+}
+.np-btn--sm {
+    padding:   5px 12px;
+    font-size: 12px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   COVERAGE SELECTOR (toppings)
+   ══════════════════════════════════════════════════════════════ */
+.np-coverage {
+    margin-top: 6px;
+}
+.np-coverage__label {
+    font-size:   11px;
+    font-weight: 600;
+    color:       var(--np-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    display:     block;
+    margin-bottom: 6px;
+}
+.np-coverage__btns {
+    display:   flex;
+    flex-wrap: wrap;
+    gap:       5px;
+}
+.np-cov-btn {
+    display:      flex;
+    align-items:  center;
+    gap:          5px;
+    padding:      5px 8px;
+    border-radius: var(--np-radius-sm);
+    border:       1px solid var(--np-border);
+    background:   var(--np-surface-3);
+    color:        var(--np-text-muted);
+    font-size:    11px;
+    font-weight:  600;
+    cursor:       pointer;
+    transition:   all var(--np-transition);
+    outline:      none;
+}
+.np-cov-btn:hover {
+    border-color: var(--np-border-hover);
+    color:        var(--np-text);
+}
+.np-cov-btn.active {
+    border-color: var(--np-accent);
+    background:   var(--np-accent-dim);
+    color:        var(--np-accent);
+    box-shadow:   0 0 0 1px var(--np-accent);
+}
+
+/* Coverage mini-icons (2×2 grid representing pizza quadrants) */
+.np-cov-ico {
+    display:             grid;
+    grid-template-columns: repeat(2, 7px);
+    grid-template-rows:  repeat(2, 7px);
+    gap:                 1px;
+    border:              1px solid rgba(255,255,255,0.18);
+    border-radius:       3px;
+    overflow:            hidden;
+    flex-shrink:         0;
+}
+.np-cov-ico::before,
+.np-cov-ico::after,
+.np-cov-ico > span {
+    /* cells generated via CSS: use box-shadow trick or direct approach */
+    content: '';
+    background: var(--np-surface-3);
+}
+
+/* Use simple background + clip-path for each coverage type */
+.np-cov-ico--whole  { background: var(--np-accent); }
+.np-cov-ico--left   { background: linear-gradient(to right, var(--np-accent) 50%, var(--np-surface-3) 50%); }
+.np-cov-ico--right  { background: linear-gradient(to left,  var(--np-accent) 50%, var(--np-surface-3) 50%); }
+.np-cov-ico--q1     { background: linear-gradient(135deg, var(--np-accent) 50%, var(--np-surface-3) 50%); }
+.np-cov-ico--q2     { background: linear-gradient(225deg, var(--np-accent) 50%, var(--np-surface-3) 50%); }
+.np-cov-ico--q3     { background: linear-gradient(315deg, var(--np-accent) 50%, var(--np-surface-3) 50%); }
+.np-cov-ico--q4     { background: linear-gradient(45deg,  var(--np-accent) 50%, var(--np-surface-3) 50%); }
+
+/* ══════════════════════════════════════════════════════════════
+   YOUR PIZZA SUMMARY
+   ══════════════════════════════════════════════════════════════ */
+.np-yourpizza {
+    display:        flex;
+    flex-direction: column;
+    gap:            10px;
+    margin-bottom:  24px;
+}
+.np-yourpizza__row {
+    display:       flex;
+    align-items:   flex-start;
+    gap:           12px;
+    padding:       14px 16px;
+    background:    var(--np-surface-2);
+    border:        1px solid var(--np-border);
+    border-radius: var(--np-radius);
+    transition:    border-color var(--np-transition), background var(--np-transition);
+}
+.np-yourpizza__row.has-selection {
+    border-color: rgba(255,87,34,0.3);
+    background:   var(--np-accent-dim);
+}
+.np-yourpizza__icon {
+    width:         34px;
+    height:        34px;
+    border-radius: var(--np-radius-pill);
+    background:    var(--np-surface-3);
+    border:        1px solid var(--np-border);
+    display:       flex;
+    align-items:   center;
+    justify-content: center;
+    color:         var(--np-accent);
+    font-size:     15px;
+    flex-shrink:   0;
+}
+.np-yourpizza__layer-name {
+    font-size:   12px;
+    font-weight: 600;
+    color:       var(--np-text-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    min-width:   64px;
+    padding-top: 4px;
+    flex-shrink: 0;
+}
+.np-yourpizza__selection {
+    flex:         1;
+    min-width:    0;
+    display:      flex;
+    flex-wrap:    wrap;
+    gap:          6px;
+    align-items:  center;
+}
+.np-yp-none {
+    font-size:  13px;
+    color:      var(--np-text-faint);
+    font-style: italic;
+}
+.np-yourpizza__edit {
+    margin-left:   auto;
+    background:    transparent;
+    border:        1px solid var(--np-border);
+    border-radius: var(--np-radius-pill);
+    color:         var(--np-text-muted);
+    cursor:        pointer;
+    width:         30px;
+    height:        30px;
+    display:       flex;
+    align-items:   center;
+    justify-content: center;
+    font-size:     12px;
+    flex-shrink:   0;
+    transition:    all var(--np-transition);
+}
+.np-yourpizza__edit:hover {
+    color:        var(--np-accent);
+    border-color: var(--np-accent);
+    background:   var(--np-accent-dim);
+}
+
+/* Selection bubbles in summary */
+.np-yp-bubble {
+    display:      inline-flex;
+    align-items:  center;
+    gap:          6px;
+    padding:      4px 10px;
+    background:   var(--np-surface-3);
+    border:       1px solid var(--np-border);
+    border-radius: var(--np-radius-pill);
+    font-size:    12px;
+    font-weight:  600;
+    color:        var(--np-text);
+}
+.np-yp-bubble img {
+    width:        20px;
+    height:       20px;
+    border-radius: var(--np-radius-pill);
+    object-fit:   cover;
+}
+.np-yp-bubble .np-yp-coverage {
+    font-size:  10px;
+    color:      var(--np-text-muted);
+    font-weight: 400;
+}
+.np-yp-bubble .np-yp-remove {
+    background:   transparent;
+    border:       none;
+    cursor:       pointer;
+    color:        var(--np-text-muted);
+    padding:      0;
+    line-height:  1;
+    margin-left:  2px;
+    font-size:    12px;
+    display:      flex;
+    align-items:  center;
+    transition:   color var(--np-transition);
+}
+.np-yp-bubble .np-yp-remove:hover { color: #f44336; }
+
+/* ══════════════════════════════════════════════════════════════
+   EMPTY STATE
+   ══════════════════════════════════════════════════════════════ */
+.np-empty {
+    color:        var(--np-text-muted);
+    font-size:    14px;
+    padding:      24px;
+    text-align:   center;
+    background:   var(--np-surface-2);
+    border:       1px dashed var(--np-border);
+    border-radius: var(--np-radius);
+    grid-column:  1 / -1;
+}
+.np-empty .fa { margin-right: 6px; }
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE MINI-PREVIEW BAR
+   ══════════════════════════════════════════════════════════════ */
+.np-mobile-preview-bar {
+    position:   sticky;
+    top:        0;
+    z-index:    60;
+    background: var(--np-surface);
+    border-bottom: 1px solid var(--np-border);
+    box-shadow: var(--np-shadow-sm);
+}
+.np-mobile-preview-bar__inner {
+    display:     flex;
+    align-items: center;
+    gap:         10px;
+    padding:     8px 14px;
+    height:      56px;
+}
+.np-mobile-preview-bar__label {
+    font-size:   12px;
+    font-weight: 600;
+    color:       var(--np-text-muted);
+    white-space: nowrap;
+    flex-shrink: 0;
+}
+.np-mobile-preview-bar__label .fa {
+    color: var(--np-accent);
+    margin-right: 4px;
+}
+.np-mobile-preview-bar__pizza {
+    flex:        1;
+    min-width:   0;
+    height:      40px;
+    overflow:    hidden;
+    position:    relative;
+    display:     flex;
+    align-items: center;
+    justify-content: center;
+}
+/* Shrink the pizza down into the mini strip */
+.np-mobile-preview-bar__pizza #pizzalayer-pizza,
+.np-mobile-preview-bar__pizza .pizzalayer-pizza-dynamic {
+    width:    40px !important;
+    height:   40px !important;
+    position: relative !important;
+    transform-origin: top left;
+}
+.np-mobile-preview-bar__toggle {
+    background:    transparent;
+    border:        1px solid var(--np-border);
+    border-radius: var(--np-radius-pill);
+    color:         var(--np-text-muted);
+    cursor:        pointer;
+    width:         30px;
+    height:        30px;
+    display:       flex;
+    align-items:   center;
+    justify-content: center;
+    font-size:     12px;
+    transition:    all var(--np-transition);
+    flex-shrink:   0;
+}
+.np-mobile-preview-bar__toggle:hover {
+    color:        var(--np-text);
+    border-color: var(--np-border-hover);
+}
+.np-mobile-preview-bar__expanded {
+    max-height: 0;
+    overflow:   hidden;
+    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
+    display:    flex;
+    justify-content: center;
+    padding:    0 16px;
+    background: var(--np-surface);
+}
+.np-mobile-preview-bar__expanded.open {
+    max-height: 300px;
+    padding:    16px;
+}
+.np-mobile-preview-bar__expanded #pizzalayer-pizza,
+.np-mobile-preview-bar__expanded .pizzalayer-pizza-dynamic {
+    width:    220px !important;
+    height:   220px !important;
+    position: relative !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   FLY-TO ANIMATION CLONE
+   ══════════════════════════════════════════════════════════════ */
+#np-fly-container {
+    position:      fixed;
+    top:           0;
+    left:          0;
+    width:         0;
+    height:        0;
+    overflow:      visible;
+    pointer-events: none;
+    z-index:       9999;
+}
+.np-fly-clone {
+    position:      fixed;
+    border-radius: var(--np-radius);
+    overflow:      hidden;
+    pointer-events: none;
+    box-shadow:    0 4px 20px var(--np-accent-glow);
+    border:        2px solid var(--np-accent);
+    transition:    none; /* transitions applied via JS rAF */
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PizzaLayer core overrides (keep pizza layers stacking right)
+   ══════════════════════════════════════════════════════════════ */
+#np-root .pizzalayer-pizza-dynamic {
+    position: relative;
+}
+#np-root .pizzalayer-pizza-dynamic > div,
+#np-root .pizzalayer-pizza-dynamic img {
+    position: absolute;
+    top:      0;
+    left:     0;
+    width:    100%;
+    height:   100%;
+    object-fit: contain;
+}
+/* Base layers show at their natural z-index */
+#np-root #pizzalayer-toppings-wrapper {
+    position: absolute;
+    top:  0; left: 0;
+    width: 100%; height: 100%;
+    pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 991px) {
+    #np-root {
+        border-radius: var(--np-radius);
+    }
+    .np-panels {
+        min-height: 500px;
+    }
+    .np-cards-grid--exclusive {
+        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
+    }
+}
+
+@media (max-width: 575px) {
+    .np-tabnav {
+        padding: 8px 8px 0;
+        gap: 2px;
+    }
+    .np-tab {
+        padding: 6px 10px 10px;
+    }
+    .np-tab__label {
+        font-size: 10px;
+    }
+    .np-panel {
+        padding: 16px 12px;
+    }
+    .np-cards-grid--exclusive,
+    .np-cards-grid--toppings {
+        grid-template-columns: 1fr 1fr;
+    }
+    .np-yourpizza__layer-name {
+        display: none;
+    }
+}

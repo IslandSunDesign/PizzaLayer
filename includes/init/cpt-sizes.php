@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 // Register Custom Post Type
 function pizzalayer_sizes_custom_post_type() {
 

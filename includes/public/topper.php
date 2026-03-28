@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 global $pizzalayer_path_images;
 
 include plugin_dir_path(__FILE__) . 'topper-ui-lists.php';

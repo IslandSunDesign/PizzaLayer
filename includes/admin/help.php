@@ -1,6 +1,8 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 function pizzalayer_render_help_page() {
+	if ( ! current_user_can( 'manage_options' ) ) { return; }
 	// Build common admin URLs for CPTs and pages
 	$urls = array(
 		'crusts_list'   => admin_url( 'edit.php?post_type=pizzalayer_crusts' ),

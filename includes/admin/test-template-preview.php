@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 /**
  * Plugin/Theme Utility: PizzaLayer Step-by-Step Customizer (App Test)
  *

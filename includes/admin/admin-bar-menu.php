@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 do_action( 'pizzalayer_file_admin-bar-menu_before' );
 
 /**

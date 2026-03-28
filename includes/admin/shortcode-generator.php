@@ -1,8 +1,10 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 /**
  * Render the Shortcode Generator page in the admin dashboard.
  */
 function pztpro_shortcode_generator_page() {
+	if ( ! current_user_can( 'manage_options' ) ) { return; }
     // +=============================+
     // | Fetch PizzaLayer CPT Items |
     // +=============================+

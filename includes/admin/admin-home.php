@@ -1,4 +1,5 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
 /* +======================================================+
  |  PizzaLayer Admin Home (Enhanced Sliders + New Intro) |
  +======================================================+ */
@@ -27,6 +28,7 @@ function pizzalayer_dashboard_home_box_section( $pz_home_box_title, $pz_home_box
 
 /* +===  Render PizzaLayer Dashboard Homepage  ===+ */
 function pizzalayer_render_dashboard_home_page() {
+	if ( ! current_user_can( 'manage_options' ) ) { return; }
 
 	/* +=== Tab content copy ===+ */
 	$pz_panel_crusts_content_description   = '<p>The foundation of every great pizza starts with the perfect crust. From thin and crispy to thick and fluffy, build your base your way.</p>';

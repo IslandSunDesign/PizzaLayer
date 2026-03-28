@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 /* +=== Register the three meta boxes: Preset, Shortcode & Live Preview ===+ */
 add_action( 'add_meta_boxes', 'pizzalayer_register_metaboxes' );
 function pizzalayer_register_metaboxes() {

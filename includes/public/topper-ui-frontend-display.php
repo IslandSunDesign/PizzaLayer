@@ -1,4 +1,6 @@
 <?php
+if ( ! defined( 'ABSPATH' ) ) { exit; }
+
 do_action( 'pizzalayer_file_topper-ui-frontend-display_start' );
 // CUSTOM PIZZA SHORTCODE
 function pizzalayer_custom_shortcode_func( $atts ) {
