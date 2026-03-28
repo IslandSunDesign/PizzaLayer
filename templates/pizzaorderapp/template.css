@@ -9,18 +9,28 @@
 
 /* Nav: tabs row + responsive dropdown */
 #pztp-mobileorder-nav{
-  display:flex; flex-wrap:nowrap; justify-content:center; align-items:center; gap:.5rem;
-  background:var(--pz-surface);
-  height:auto;
-  padding:.5rem 1rem;
-  overflow:auto;
-  -webkit-overflow-scrolling: touch;
+  position: sticky; top: 0; z-index: 10;
+  display:flex; flex-wrap:nowrap; align-items:center; justify-content:center;
+  gap: clamp(.5rem, 1.2vw, 1rem);
+  padding: clamp(1.8vw, 1.8vw, 1.25rem) clamp(1rem, 3vw, 2rem);
   border-bottom:1px solid var(--pz-border);
+  overflow:auto; scroll-behavior:smooth; scroll-padding-inline:1rem;
+  -webkit-overflow-scrolling: touch;
+
+  /* subtle top shadow when sticky */
+  box-shadow: 0 0 0 rgba(0,0,0,0);
+}
+
+/* Edge fade for overflowing tabs (supported browsers) */
+#pztp-mobileorder-nav{
+
+  padding:16px 0;
 }
 
 #pztp-mobileorder-nav::-webkit-scrollbar{ height:6px; }
 #pztp-mobileorder-nav::-webkit-scrollbar-thumb{ background:var(--pz-border); border-radius:999px; }
 
+/* Responsive fallback: dropdown on small screens */
 #pztp-mobileorder-nav-dropdown{
   display:none;
   width:100%;
@@ -29,48 +39,92 @@
   background:var(--pz-surface-alt);
   border:1px solid var(--pz-border);
   border-radius: var(--pz-radius-sm);
+  margin: .5rem 0 0;
+}
+@media (max-width: 640px){
+  #pztp-mobileorder-nav{ display:none; }
+  #pztp-mobileorder-nav-dropdown{ display:block; }
 }
 
 /* Modern tab buttons */
 .tab-btn{
   position:relative;
-  border:none;
+  display:inline-flex; align-items:center; gap:.5rem;
+  border:1px solid transparent;
+  border-color: rgba(0,0,0,.2);
   background:transparent;
-  padding:.65rem .9rem;
+  padding: clamp(.55rem, .6rem + .3vw, .9rem) clamp(1rem, 1.1rem + .6vw, 1.4rem);
   cursor:pointer;
-  font-size:14px;
+  font-size: clamp(1.4rem, .85rem + .6vw, 1.2rem);
   font-weight:600;
   color:var(--pz-muted);
   border-radius:999px;
-  transition: background .2s ease, color .2s ease, transform .06s ease;
+  text-transform: uppercase;
+  letter-spacing:.02em;
+  line-height:1;
+  transition: background .3s ease, color .3s ease, transform .06s ease, box-shadow .2s ease, border-color .2s ease;
   outline: none;
+  -webkit-tap-highlight-color: transparent;
 }
 
-.tab-btn:hover{ background:rgba(0,0,0,.04); color:var(--pz-text); }
+.tab-btn:hover{
+  background: color-mix(in oklab, var(--pz-text) 6%, transparent);
+  color:var(--pz-text);
+}
 @media (prefers-color-scheme: dark){
-  .tab-btn:hover{ background:rgba(255,255,255,.06); }
+  .tab-btn:hover{
+    background: color-mix(in oklab, #fff 8%, transparent);
+  }
 }
 
-/* Active tab pill + underline indicator */
+/* Active tab: filled pill + animated underline */
 .tab-btn.active{
-  color:var(--pz-primary);
-  background:var(--pz-primary-50);
+  color: var(--pz-primary);
+  background: color-mix(in oklab, var(--pz-primary) 14%, transparent);
+  border-color: color-mix(in oklab, var(--pz-primary) 28%, transparent);
 }
 .tab-btn.active::after{
   content:"";
   position:absolute;
-  left:14px; right:14px; bottom:-10px;
+  left:18px; right:18px; bottom:-10px;
   height:3px;
   background:var(--pz-primary);
   border-radius:999px;
+  transform: scaleX(1);
+  transition: transform .25s ease;
+}
+.tab-btn:not(.active)::after{
+  content:"";
+  position:absolute;
+  left:18px; right:18px; bottom:-10px;
+  height:3px;
+  background:transparent;
+  border-radius:999px;
+  transform: scaleX(0);
+}
+
+/* Optional icon support inside buttons */
+.tab-btn .icon{
+  display:inline-block; width:1.1em; height:1.1em;
 }
 
 /* Keyboard focus */
 .tab-btn:focus-visible{
-  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pz-primary) 30%, transparent);
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pz-primary) 26%, transparent);
 }
 
-#pztp-mobileorder-preview { flex-shrink:0; display:flex; justify-content:center; align-items:center; height:40%; background:#fff;overflow:hidden;padding:1% 0; }
+/* Reduced motion */
+@media (prefers-reduced-motion: reduce){
+  .tab-btn, .tab-btn::after{ transition: none !important; }
+}
+
+/* Compact mode for very tight spaces (optional utility) */
+@media (max-width: 360px){
+  .tab-btn{ padding:.5rem .9rem; font-size:.88rem; }
+}
+
+
+#pztp-mobileorder-preview { flex-shrink:0; display:flex; justify-content:center; align-items:center; height:25%; background-color:#ffffff;overflow:hidden;padding:1% 0;margin:8px 0 0 0; }
 #pztp-mobileorder-content { flex-grow:1; overflow-y:auto; padding:1em; border:solid 1px rgba(0,0,0,.2);}
 
 .tab-content { display:none; opacity:0; transform:translateY(10px); transition:opacity 0.4s, transform 0.4s; }
@@ -108,11 +162,165 @@
 .option-card.selected { border-color:#dc3545; background:#f8d7da; }
 .add-remove-btn { background:#dc3545; }
 .add-remove-btn:hover { background:#c82333; }
-#pztp-mobileorder-header { background:#f9e0e0; }
-#pztp-mobileorder-nav { background:#fef2f2; }
-#pztp-mobileorder-preview { background:#fff5f5; }
+#pztp-mobileorder-header { background:rgba(0,0,0,.1); }
+#pztp-mobileorder-nav { background:transparent; }
+#pztp-mobileorder-preview { background:rgba(0,0,0,.1); }
 #pztp-mobileorder-footer { background:#f9e0e0; }
 
 .pztp-live-preview-placeholder{overflow:hidden;}
+
+
+/* ===== Portion Buttons / Icons ===== */
+.pztp-portion-group, .pizzalayer-portion-group{
+  display:flex; flex-wrap:wrap; gap:.5rem; align-items:center;
+}
+.pztp-portion-btn{
+  display:flex; flex-direction:column; align-items:center; justify-content:center;
+  gap:6px; min-width:68px; padding:8px 10px; border:1px solid var(--pz-border, rgba(0,0,0,.12));
+  border-radius:10px; background:#fff; cursor:pointer;
+  transition:box-shadow .2s ease, transform .06s ease, border-color .2s ease;
+}
+.pztp-portion-btn:hover{ box-shadow:0 6px 16px rgba(0,0,0,.08); transform:translateY(-1px); }
+.pztp-portion-btn.is-active{ border-color: var(--pz-accent, #111); box-shadow: 0 8px 18px rgba(0,0,0,.10); }
+
+.pztp-portion-icon{ width:36px; height:36px; display:block; color: var(--pz-accent, #111); }
+.pztp-portion-label{ font-size:.8rem; color:#333; }
+
+/* ===== Fix "black circle" legacy SVGs ===== */
+.pztp-portion-icon circle:not([fill]){ fill: none; }
+.pztp-portion-icon path[fill="black"]{ fill: currentColor !important; }
+.pztp-portion-icon [stroke="black"]{ stroke: currentColor !important; }
+
+/* ===== Center SELECT button on non-toppings ===== */
+#tab-crust .select-btn,
+#tab-sauce .select-btn,
+#tab-cheese .select-btn,
+#tab-drizzle .select-btn,
+#tab-slicing .select-btn,
+.tab-content[data-layer]:not([data-layer="toppings"]) .select-btn{
+  display:inline-flex; margin-left:auto; margin-right:auto; justify-content:center;
+}
+
+/* ===== Preview controls row ===== */
+.pztp-preview-controls{
+  display:flex; justify-content:center; align-items:center; gap:.6rem;
+  padding:10px 0 6px; border-bottom:1px dashed var(--pz-border, #e2e2e2);
+}
+.pztp-preview-btn{
+  display:flex; align-items:center; gap:.45rem;
+  border:1px solid var(--pz-border, rgba(0,0,0,.12)); background:#fff; border-radius:999px;
+  padding:8px 12px; font-size:.9rem; cursor:pointer;
+  transition:box-shadow .2s ease, transform .06s ease;
+}
+.pztp-preview-btn:hover{ box-shadow:0 6px 16px rgba(0,0,0,.08); transform:translateY(-1px); }
+.pztp-preview-btn .pztp-icon{ width:18px; height:18px; }
+
+/* ===== Preview modes ===== */
+.pztp-mobileorder-wrapper{ position:relative; }
+
+/* Full-height preview: hide other UI below */
+.pztp-mode-full #pztp-mobileorder-preview{
+  height: calc(100vh - 160px); /* header + controls + small margin */
+  min-height: 420px;
+}
+.pztp-mode-full #pztp-mobileorder-content,
+.pztp-mode-full #pztp-mobileorder-footer,
+.pztp-mode-full #pztp-mobileorder-nav{ display:none !important; }
+
+/* Default mode: inherit your existing sizes */
+.pztp-mode-default #pztp-mobileorder-preview{ height:auto; }
+
+/* Floating preview (bottom-right in parent; mobile: 100% width centered) */
+.pztp-mode-float #pztp-mobileorder-preview{
+  position:absolute; right:14px; bottom:14px; width:200px; height:200px;
+  border:1px solid var(--pz-border, rgba(0,0,0,.14)); border-radius:14px; background:#fff;
+  box-shadow:0 12px 28px rgba(0,0,0,.18);
+  overflow:hidden; z-index: 50;
+}
+@media (max-width: 720px){
+  .pztp-mode-float #pztp-mobileorder-preview{
+    left:50%; right:auto; transform:translateX(-50%);
+    width: min(560px, calc(100% - 24px)); height: 200px;
+  }
+}
+
+/* Hover overlay with background icons on the floating preview */
+.pztp-mode-float #pztp-mobileorder-preview .pztp-float-overlay{
+  position:absolute; inset:0; display:grid; place-items:center;
+  background: radial-gradient(transparent, rgba(0,0,0,.08));
+  opacity:0; transition:opacity .25s ease;
+}
+.pztp-mode-float #pztp-mobileorder-preview:hover .pztp-float-overlay{ opacity:1; }
+.pztp-float-icons{ display:flex; gap:10px; opacity:.85; }
+.pztp-float-icons svg{ width:28px; height:28px; color:#111; }
+
+/* Home hero pizza (keep your colors but ensure not all-black) */
+.pztp-pizza-svg circle{ fill:#f6d29b; }
+.pztp-pizza-svg .ring{ fill:#ffdcae; }
+.pztp-pizza-svg .toppings circle{ fill:#b22222; }
+.pztp-pizza-svg line{ stroke:#c68b59; stroke-width:3; }
+
+
+/* ===== Nav + Preview Controls Wrapper ===== */
+.pztp-navrow{
+  display:flex;
+  align-items:center;
+  gap:.75rem;
+  width:100%;
+  padding-inline:0; /* keep existing container spacing */
+}
+
+.pztp-navrow__left{
+  flex:0 1 75%;
+  min-width:0; /* allow internal scrolling without breaking layout */
+}
+
+.pztp-navrow__right{
+  flex:0 1 25%;
+  display:flex;
+  justify-content:flex-end;
+  align-items:center;
+  min-width:160px;
+}
+
+/* Keep button nav horizontally scrollable if crowded */
+#pztp-mobileorder-nav{
+  display:flex;
+  flex-wrap:nowrap;
+  align-items:center;
+  gap:.5rem;
+  overflow:auto;
+  -webkit-overflow-scrolling:touch;
+}
+
+/* Make dropdown span full width of the left column when shown */
+#pztp-mobileorder-nav-dropdown{
+  width:100%;
+  margin-bottom:.5rem;
+}
+
+/* Preview-size menu sits to the right; buttons can be styled elsewhere */
+.pztp-preview-size-menu{
+  display:flex;
+  align-items:center;
+  gap:.5rem;
+}
+
+/* --- Responsive tweaks --- */
+@media (max-width: 900px){
+  .pztp-navrow{
+    gap:.5rem;
+  }
+  .pztp-navrow__left{ flex-basis:70%; }
+  .pztp-navrow__right{ flex-basis:30%; }
+}
+
+@media (max-width: 640px){
+  /* Keep on one row but allow tighter fit; icon-only styles can apply to buttons inside */
+  .pztp-navrow__left{ flex-basis:65%; }
+  .pztp-navrow__right{ flex-basis:35%; min-width:auto; }
+  .pztp-preview-size-menu{ gap:.35rem; }
+}
+
 
 

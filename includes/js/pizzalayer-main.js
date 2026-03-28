@@ -35,7 +35,7 @@ jQuery('#pizzalayer-toppings-wrapper').delay(301).append(NewPizzaLayerContent);
 jQuery('#pizzalayer-current-toppings').delay(20).append(NewPizzaLayerCurrentToppingLI).delay(20).fadeIn(400);
 jQuery('#menu-pizzalayer-topping-' + NewPizzaLayerShort).addClass('ToppingSelected');
 jQuery('#' + NewPizzaLayerName).removeClass('tcg-half-left tcg-half-right tcg-whole tcg-quarter-topleft tcg-quarter-topright tcg-quarter-bottomleft tcg-quarter-bottomright');
-ToppingCoverageArea = jQuery("input[type='radio']:checked", '#halfcontrol-' + NewPizzaLayerShort).val();
+ToppingCoverageArea = jQuery("input[type='radio']:checked", '#pztp-topcoverage-control-' + NewPizzaLayerShort).val();
 jQuery('#' + NewPizzaLayerName).addClass('tcg-' + ToppingCoverageArea);
 jQuery('#CurrentToppingsCount').val(CurrentToppingsCount + 1);
 //window.alert('Current Toppings Count = ' + CurrentToppingsCount + '. Max Toppings = ' + MaxToppings);

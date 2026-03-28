@@ -601,49 +601,9 @@ return false;
 } //close function
 
 /* +==============================================================+
-   | PIZZALAYER : Options w/ chooser + icon actions + active UI   |
+   | PIZZALAYER : Render dynamic CPT options with fallback images |
    +==============================================================+ */
-if ( ! function_exists( 'pizzalayer_render_coverage_svg' ) ) {
-	/**
-	 * Render a pie-style coverage icon:
-	 * - faint outer circle (stroke)
-	 * - filled sector for the coverage
-	 */
-	function pizzalayer_render_coverage_svg( $coverage = 'whole', $size = 18 ) {
-		$size = (int) $size;
-		$svg  = '<svg viewBox="0 0 100 100" width="' . $size . '" height="' . $size . '" aria-hidden="true">';
-		// faint outline ring
-		$svg .= '<circle cx="50" cy="50" r="49" fill="none" stroke="currentColor" stroke-opacity=".25" stroke-width="2"/>';
-		switch ( $coverage ) {
-			
-			// Quadrants: full quarter sectors
-			case 'quad-tl': $svg .= '<path d="M50,50 L50,1 A49,49 0 0,0 1,50 Z" fill="currentColor"/>'; break; // TL
-			case 'quad-tr': $svg .= '<path d="M50,50 L99,50 A49,49 0 0,0 50,1 Z" fill="currentColor"/>'; break; // TR
-			case 'quad-bl': $svg .= '<path d="M50,50 L1,50 A49,49 0 0,0 50,99 Z" fill="currentColor"/>'; break; // BL
-			case 'quad-br': $svg .= '<path d="M50,50 L50,99 A49,49 0 0,0 99,50 Z" fill="currentColor"/>'; break; // BR
-			
-			// Halves: full semicircle sectors
-			case 'half-left':
-				$svg .= '<path d="M50,50 L1,50 A49,49 0 0,0 50,1 Z" fill="currentColor"/>';
-				$svg .= '<path d="M50,50 L1,50 A49,49 0 0,0 50,99 Z" fill="currentColor"/>';
-				break;
-			case 'half-right':
-				$svg .= '<path d="M50,50 L99,50 A49,49 0 0,0 50,1 Z" fill="currentColor"/>';
-				$svg .= '<path d="M50,50 L99,50 A49,49 0 0,0 50,99 Z" fill="currentColor"/>';
-				break;
-
-			// Whole: solid disc
-			case 'whole':
-			default:
-				$svg .= '<circle cx="50" cy="50" r="49" fill="currentColor"/>';
-				break;
-		}
-		$svg .= '</svg>';
-		return $svg;
-	}
-}
-
-function pizzalayer_render_options_from_cpt( $cpt, $layer_slug ) {
+function pizzalayer_render_options_from_cpt($cpt, $layer_slug) {
 	$args = array(
 		'post_type'      => $cpt,
 		'posts_per_page' => -1,
@@ -652,455 +612,90 @@ function pizzalayer_render_options_from_cpt( $cpt, $layer_slug ) {
 		'order'          => 'ASC',
 	);
 
-	$query  = new WP_Query( $args );
-	$html   = '<div class="options-grid">';
-	$zindex = 400;
+	$query = new WP_Query($args);
+	$html = '<div class="options-grid">';
+	$pizzalayer_toppings_list_current_zindex = 400;
 
-	$short_singular = strtolower( rtrim( str_replace( 'pizzalayer_', '', $cpt ), 's' ) );
-	$is_topping     = ( 'pizzalayer_toppings' === $cpt );
+	// Determine the short singular name of the CPT (e.g. pizzalayer_cheeses → cheese)
+	$short_singular = strtolower(rtrim(str_replace('pizzalayer_', '', $cpt), 's'));
 
-	if ( $query->have_posts() ) {
-		while ( $query->have_posts() ) {
+	if ($query->have_posts()) {
+		while ($query->have_posts()) {
 			$query->the_post();
-
-			$title   = get_the_title();
-			$desc    = get_the_excerpt();
+            
+			$title = get_the_title(); // Full display title
+			$desc  = get_the_excerpt();
 			$post_id = get_the_ID();
 
-			// Preview image (circle)
-			$image_url = get_field( $short_singular . '_layer_image', $post_id );
-			if ( ! $image_url ) { $image_url = get_field( $short_singular . '_image', $post_id ); }
-			if ( ! $image_url ) { $image_url = get_the_post_thumbnail_url( $post_id, 'medium' ); }
+			// Attempt ACF fields in priority order
+			$image_url = get_field($short_singular . '_layer_image', $post_id);
 
-			// Slugs/IDs
-			$title_slug           = sanitize_title( $title );
-			$layer_slug_formatted = str_replace( ' ', '-', strtolower( $title ) );
-			$function_slug        = 'pizzalayer-topping-' . $short_singular;
-			$function_alt         = 'pizzalayer-' . $short_singular . '-' . esc_js( $title );
-			$item_unique_id       = 'pztp-item-' . $short_singular . '-' . $post_id;
-			$topping_layer_dom_id = 'pizzalayer-topping-' . $title_slug;
-			$pztp_tli_image       = get_field( $short_singular . '_layer_image', $post_id );
+			if (!$image_url) {
+				$image_url = get_field($short_singular . '_image', $post_id);
+			}
 
-			// JS actions
-			if ( $is_topping ) {
-				$js_add    = "AddPizzaLayer('{$zindex}','{$layer_slug_formatted}','{$pztp_tli_image}','" . esc_js( $title ) . "','{$function_slug}','{$function_alt}');";
-				$js_remove = "RemovePizzaLayer('{$topping_layer_dom_id}','','{$title_slug}');";
+			if (!$image_url) {
+				$image_url = get_the_post_thumbnail_url($post_id, 'medium');
+			}
+			
+
+			
+			
+			
+
+			// Create vars for JS link work
+			$title_slug = sanitize_title($title);
+			$layer_slug_formatted = str_replace(' ', '-', strtolower($title)); // used as second param in JS
+			$function_slug = 'pizzalayer-topping-' . $short_singular;
+//'#menu-pizzalayer-topping-' + NewPizzaLayerShort
+      
+			$function_alt = 'pizzalayer-' . $short_singular . '-' . esc_js($title);
+            $pizzalayer_tli_image = get_field( $short_singular . '_layer_image' );
+		
+		
+					// Generate JS links if cpt = toppings
+					/* $js = "javascript:AddPizzaLayer('', '{$layer_slug_formatted}', '{$image_url}', '" . esc_js($title) . "', '{$function_slug}', '{$function_alt}')"; */
+			if ($cpt == 'pizzalayer_toppings'){
+            $pztp_tli_short = get_the_title();
+            $pztp_tli_topping_title = '<div class="pizzalayer-topping-title">' . $pztp_tli_short . '</div>';
+            $pztp_tli_short_slug = sanitize_title($pztp_tli_short);
+            $pztp_tli_link_remove_layer_link_for_js = 'javascript:RemovePizzaLayer(\'pizzalayer-topping-' . $pztp_tli_short_slug . '\',\'\',\'' . $pztp_tli_short_slug . '\');';
+  
+			$js = "AddPizzaLayer({$pizzalayer_toppings_list_current_zindex}, '{$layer_slug_formatted}', '{$pizzalayer_tli_image}', '" . esc_js($title) . "', '{$function_slug}', '{$function_slug}')";
+
 			} else {
-				$js_add    = "SwapBasePizzaLayer('pizzalayer-base-layer-{$short_singular}','" . esc_js( $title ) . "','{$pztp_tli_image}')";
-				$js_remove = '';
-			}
+			
+			// Generate JS links if cpt = crusts,sauces,cheeses,
+			/* $js = "javascript:SwapBasePizzaLayer(\'pizzalayer-base-layer-cut\',\'' . get_the_title() . '\',\'' . $pizzalayer_cuts_list_item_image . '\')"; */
+			$pztp_tli_short = get_the_title();
+            $pztp_tli_topping_title = '<div class="pizzalayer-topping-title">' . $pztp_tli_short . '</div>';
+            $pztp_tli_short_slug = sanitize_title($pztp_tli_short);
+			
+			
+			$js = "SwapBasePizzaLayer('pizzalayer-base-layer-{$short_singular}','{$pztp_tli_short}','{$pizzalayer_tli_image}')";
+			
+			
+			
+			}; //end else
+		
+		    $pizzalayer_toppings_list_current_zindex += 10;
 
-			$zindex += 10;
-
-			/* Hidden inputs (incl. coverage) */
-			$hidden_inputs  = '<div class="pztp-hidden-inputs" style="display:none;">';
-			$hidden_inputs .= '  <input type="hidden" name="pztp[' . esc_attr( $title_slug ) . '][post_id]"   value="' . esc_attr( $post_id ) . '" />';
-			$hidden_inputs .= '  <input type="hidden" name="pztp[' . esc_attr( $title_slug ) . '][layer]"     value="' . esc_attr( $layer_slug ) . '" />';
-			$hidden_inputs .= '  <input type="hidden" name="pztp[' . esc_attr( $title_slug ) . '][title]"     value="' . esc_attr( $title ) . '" />';
-			$hidden_inputs .= '  <input type="hidden" name="pztp[' . esc_attr( $title_slug ) . '][image]"     value="' . esc_url( $pztp_tli_image ? $pztp_tli_image : $image_url ) . '" />';
-			$hidden_inputs .= '  <input type="hidden" name="pztp[' . esc_attr( $title_slug ) . '][dom_id]"    value="' . esc_attr( $topping_layer_dom_id ) . '" />';
-			$hidden_inputs .= '  <input type="hidden" name="pztp[' . esc_attr( $title_slug ) . '][coverage]"  class="pztp-coverage-value" value="whole" data-for="' . esc_attr( $topping_layer_dom_id ) . '" />';
-			$hidden_inputs .= '  <input type="hidden" name="pztp[' . esc_attr( $title_slug ) . '][zindex]"    value="' . esc_attr( $zindex ) . '" />';
-			$hidden_inputs .= '</div>';
-
-			// Legacy radios (hidden)
-			$hidden_inputs .= '
-			<div class="pizzalayer-halves-control-radiobutton-set" style="display:none;">
-				<input type="radio" value="whole" checked>
-				<input type="radio" value="half-left">
-				<input type="radio" value="half-right">
-				<input type="radio" value="top-left">
-				<input type="radio" value="top-right">
-				<input type="radio" value="bottom-left">
-				<input type="radio" value="bottom-right">
-			</div>';
-
-			/* Card */
-			$html .= '<div class="option-card" data-item="' . esc_attr( $item_unique_id ) . '" data-layer="' . esc_attr( $layer_slug ) . '" data-title="' . esc_attr( $title ) . '">';
-			$html .= '  <div class="option-circle" style="background-image:url(' . esc_url( $image_url ) . '); background-size:cover;"></div>';
-			$html .= '  <div class="option-title">' . esc_html( $title ) . '</div>';
-			$html .= '  <div class="option-description">' . esc_html( $desc ) . '</div>';
-
-			$html .= $hidden_inputs;
-
-			// One-row actions (CENTERED)
-			$html .= '  <div class="option-action option-action--row" data-item="' . esc_attr( $item_unique_id ) . '">';
-
-			if ( $is_topping ) {
-				// Coverage toggle (starts as "whole")
-				$html .= '    <button type="button" class="pztp-btn pztp-btn--icon pztp-btn--circle pztp-coverage-toggle" ';
-				$html .=           'data-for="' . esc_attr( $topping_layer_dom_id ) . '" data-current="whole" aria-label="Change coverage">';
-				$html .=            pizzalayer_render_coverage_svg( 'whole', 18 );
-				$html .= '    </button>';
-
-				// Chooser: 4 quads + whole
-				$html .= '    <div class="pztp-action-group pztp-coverage-chooser" data-for="' . esc_attr( $topping_layer_dom_id ) . '" hidden>';
-				$html .= '      <button type="button" class="pztp-btn pztp-btn--icon pztp-btn--circle" data-cov="quad-tl" aria-label="Top-left">'    . pizzalayer_render_coverage_svg( 'quad-tl', 18 ) . '</button>';
-				$html .= '      <button type="button" class="pztp-btn pztp-btn--icon pztp-btn--circle" data-cov="quad-tr" aria-label="Top-right">'   . pizzalayer_render_coverage_svg( 'quad-tr', 18 ) . '</button>';
-				$html .= '      <button type="button" class="pztp-btn pztp-btn--icon pztp-btn--circle" data-cov="quad-bl" aria-label="Bottom-left">' . pizzalayer_render_coverage_svg( 'quad-bl', 18 ) . '</button>';
-				$html .= '      <button type="button" class="pztp-btn pztp-btn--icon pztp-btn--circle" data-cov="quad-br" aria-label="Bottom-right">'. pizzalayer_render_coverage_svg( 'quad-br', 18 ) . '</button>';
-				$html .= '      <button type="button" class="pztp-btn pztp-btn--icon pztp-btn--circle" data-cov="whole"   aria-label="Whole">'       . pizzalayer_render_coverage_svg( 'whole', 18 )   . '</button>';
-				$html .= '    </div>';
-			}
-
-			// Main actions
-			if ( $is_topping ) {
-				// Add / Remove (icons)
-				$html .= '    <div class="pztp-action-group pztp-action-group--main">';
-				// ADD (plus icon)
-				$html .= '      <button type="button" class="pztp-btn add-btn" data-dom="' . esc_attr( $topping_layer_dom_id ) . '" aria-label="Add layer" onclick="' . esc_attr( $js_add ) . '">';
-				$html .= '        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>';
-				$html .= '      </button>';
-				// REMOVE (trash icon) — hidden until added
-				$html .= '      <button type="button" class="pztp-btn remove-btn" data-dom="' . esc_attr( $topping_layer_dom_id ) . '" aria-label="Remove layer" onclick="' . esc_attr( $js_remove ) . '" hidden>';
-				$html .= '        <svg viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M9 3h6l1 2h4v2H4V5h4l1-2zm1 6h2v8h-2V9zm4 0h2v8h-2V9z"/></svg>';
-				$html .= '      </button>';
-				$html .= '    </div>';
-			} else {
-				// BASE layers: conditional "Select" icon button
-				$html .= '    <div class="pztp-action-group pztp-action-group--main">';
-				$html .= '      <button type="button" class="pztp-btn select-btn" data-layer-group="' . esc_attr( $layer_slug ) . '" aria-label="Select" onclick="' . esc_attr( $js_add ) . '">';
-				// default = PLUS
-				$html .= '        <svg class="icon-default" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true"><path d="M11 5h2v6h6v2h-6v6h-2v-6H5v-2h6z"/></svg>';
-				// selected = CHECK-IN-CIRCLE
-				$html .= '        <svg class="icon-selected" viewBox="0 0 24 24" width="18" height="18" aria-hidden="true" style="display:none;"><path d="M12 2a10 10 0 1 0 0 20 10 10 0 0 0 0-20zm-1.2 13.5L8 12.7l1.4-1.4 1.4 1.4 4-4L16.2 10l-5.4 5.5z"/></svg>';
-				$html .= '      </button>';
-				$html .= '    </div>';
-			}
-
-			$html .= '  </div>'; // .option-action
-			$html .= '</div>';    // .option-card
+			// Output card
+			$html .= '<div class="option-card" data-layer="' . esc_attr($layer_slug) . '" data-title="' . esc_attr($title) . '">';
+			$html .= '  <div class="option-circle" style="background-image:url(' . esc_url($image_url) . '); background-size:cover;"></div>';
+			$html .= '  <div class="option-title">' . esc_html($title) . '</div>';
+			$html .= '  <div class="option-description">' . esc_html($desc) . '</div>';
+			$html .= '  <div class="option-action"><button class="add-remove-btn" onclick="' . esc_attr($js) . '">Add</button></div>';
+			$html .= '</div>';
 		}
 		wp_reset_postdata();
 	} else {
 		$html .= '<p>No options available.</p>';
 	}
 
-	$html .= '</div>'; // .options-grid
-
-	/* ---------------- JS: preview "Default" + "Float", chooser toggle, base UI --- */
-	$html .= '<script>
-	(function(){
-
-		/* -------------------- PREVIEW CONTROLS -------------------- */
-		var MAIN_PREVIEW_SEL = "#pztp-mobileorder-preview"; // existing preview pane
-		var FLOAT_ID = "pztp-floating-preview";             // created on demand
-		var PIZZA_CONTENT_SEL = MAIN_PREVIEW_SEL + " .pizzalayer-canvas, " + MAIN_PREVIEW_SEL + " canvas, " + MAIN_PREVIEW_SEL + " img, " + MAIN_PREVIEW_SEL + " .pizzalayer-stage";
-
-		function ensureFloatPane(){
-			var el = document.getElementById(FLOAT_ID);
-			if(el) return el;
-			el = document.createElement("div");
-			el.id = FLOAT_ID;
-			el.setAttribute("role", "region");
-			el.setAttribute("aria-label", "Floating preview");
-			el.innerHTML = document.querySelector(MAIN_PREVIEW_SEL) ? document.querySelector(MAIN_PREVIEW_SEL).innerHTML : "";
-			document.body.appendChild(el);
-			return el;
-		}
-
-		function activateDefaultPreview(){
-			var pv = document.querySelector(MAIN_PREVIEW_SEL);
-			if(!pv) return;
-
-			// Show main, hide float
-			var fp = document.getElementById(FLOAT_ID);
-			if(fp) fp.style.display = "none";
-
-			pv.classList.add("pztp-preview--default");
-			pv.classList.remove("pztp-preview--floating");
-
-			// 25% width on desktop; full-width on small screens (handled in CSS)
-			pv.style.width = "25%";
-			pv.style.maxWidth = "25%";
-			pv.style.overflow = "hidden";
-
-			// Pull pizza content down by 50% and make it 100% width
-			var pc = pv.querySelector(PIZZA_CONTENT_SEL);
-			if(pc){
-				pc.style.transform = "translateY(50%)";
-				pc.style.width = "100%";
-				pc.style.maxWidth = "100%";
-			}
-		}
-
-		function activateFloatingPreview(){
-			// Create/show floating preview container
-			var fp = ensureFloatPane();
-			fp.style.display = "block";
-
-			// Size rules: min 400x400, max 40vw, square-ish box
-			var vpw = Math.max(document.documentElement.clientWidth || 0, window.innerWidth || 0);
-			var target = Math.min(vpw * 0.40, 640); // hard cap width if desired
-			target = Math.max(target, 400);
-			fp.style.width = target + "px";
-			fp.style.height = target + "px";
-
-			// Basic class for CSS position/appearance
-			fp.classList.add("pztp-preview-floatbox");
-
-			// Also keep the main preview in normal flow without forced width
-			var pv = document.querySelector(MAIN_PREVIEW_SEL);
-			if(pv){
-				pv.classList.remove("pztp-preview--default");
-				pv.classList.add("pztp-preview--floating");
-				pv.style.width = "";
-				pv.style.maxWidth = "";
-				pv.style.overflow = "";
-				var pc = pv.querySelector(PIZZA_CONTENT_SEL);
-				if(pc){
-					pc.style.transform = "";
-					pc.style.width = "";
-					pc.style.maxWidth = "";
-				}
-			}
-		}
-
-		// Hook up the new buttons (IDs expected elsewhere in template)
-		document.addEventListener("click", function(e){
-			if(e.target.closest && e.target.closest("#pztp-preview-btn-default")){
-				activateDefaultPreview();
-			}
-			if(e.target.closest && e.target.closest("#pztp-preview-btn-float")){
-				activateFloatingPreview();
-			}
-		}, false);
-
-		/* -------------------- COVERAGE CHOOSER -------------------- */
-		function setToppingCardActiveByDomId(domId, active){
-			var toggle = document.querySelector(".pztp-coverage-toggle[data-for=\'"+domId+"\']");
-			if(!toggle) return;
-			var card = toggle.closest(".option-card");
-			if(!card) return;
-
-			var addBtn = card.querySelector(".add-btn[data-dom=\'"+domId+"\']");
-			var rmBtn  = card.querySelector(".remove-btn[data-dom=\'"+domId+"\']");
-
-			if(addBtn) addBtn.hidden = !!active;
-			if(rmBtn)  rmBtn.hidden  = !active;
-
-			card.classList.toggle("option-card--active", !!active);
-		}
-
-		function setBaseSelection(card){
-			if(!card) return;
-			var layerGroup = card.querySelector(".select-btn")?.getAttribute("data-layer-group");
-			if(!layerGroup) return;
-
-			document.querySelectorAll(".option-card[data-layer=\'"+layerGroup+"\']").forEach(function(c){
-				if(c !== card){
-					c.classList.remove("option-card--selected-base");
-					var selBtn = c.querySelector(".select-btn");
-					if(selBtn){
-						selBtn.classList.remove("is-selected");
-						var d = selBtn.querySelector(".icon-default"); if(d) d.style.display = "";
-						var s = selBtn.querySelector(".icon-selected"); if(s) s.style.display = "none";
-					}
-				}
-			});
-
-			card.classList.add("option-card--selected-base");
-			var btn = card.querySelector(".select-btn");
-			if(btn){
-				btn.classList.add("is-selected");
-				var d = btn.querySelector(".icon-default"); if(d) d.style.display = "none";
-				var s = btn.querySelector(".icon-selected"); if(s) s.style.display = "";
-			}
-		}
-
-		document.addEventListener("click", function(e){
-			var t = e.target;
-
-			// Open coverage chooser
-			var toggle = t.closest && t.closest(".pztp-coverage-toggle");
-			if(toggle){
-				var domId = toggle.getAttribute("data-for");
-				var row   = toggle.parentElement;
-				var chooser = row.querySelector(".pztp-coverage-chooser[data-for=\'"+domId+"\']");
-				if(chooser){
-					toggle.hidden = true;
-					chooser.hidden = false;
-				}
-				return;
-			}
-
-			// Choose coverage
-			var chooserBtn = t.closest && t.closest(".pztp-coverage-chooser .pztp-btn");
-			if(chooserBtn){
-				var chooser = chooserBtn.closest(".pztp-coverage-chooser");
-				var cov     = chooserBtn.getAttribute("data-cov") || "whole";
-				var domId   = chooser.getAttribute("data-for");
-				var row     = chooser.closest(".option-action--row");
-				var toggleBtn  = row.querySelector(".pztp-coverage-toggle[data-for=\'"+domId+"\']");
-
-				var input = document.querySelector("input.pztp-coverage-value[data-for=\'"+domId+"\']");
-				if(input) input.value = cov;
-				try{ if(typeof window.SetToppingCoverage === "function"){ window.SetToppingCoverage(cov, domId); } }catch(e){}
-
-				var iconHTML = chooserBtn.innerHTML;
-				if(toggleBtn){
-					toggleBtn.classList.remove("pztp-fade");
-					void toggleBtn.offsetWidth;
-					toggleBtn.innerHTML = iconHTML;
-					toggleBtn.classList.add("pztp-fade");
-					setTimeout(function(){ toggleBtn.classList.remove("pztp-fade"); }, 600);
-					toggleBtn.setAttribute("data-current", cov);
-				}
-
-				chooser.hidden = true;
-				if(toggleBtn) toggleBtn.hidden  = false;
-				return;
-			}
-		}, false);
-
-		// Toppings: optimistic Add/Remove toggle
-		document.addEventListener("click", function(e){
-			var add = e.target.closest && e.target.closest(".add-btn[data-dom]");
-			if(add){
-				setToppingCardActiveByDomId(add.getAttribute("data-dom"), true);
-				return;
-			}
-			var rm = e.target.closest && e.target.closest(".remove-btn[data-dom]");
-			if(rm){
-				setToppingCardActiveByDomId(rm.getAttribute("data-dom"), false);
-				return;
-			}
-		}, false);
-
-		// Base layers: conditional Select with icon swap + highlight
-		document.addEventListener("click", function(e){
-			var sel = e.target.closest && e.target.closest(".select-btn[data-layer-group]");
-			if(sel){
-				var card = sel.closest(".option-card");
-				setBaseSelection(card);
-				return;
-			}
-		}, false);
-
-		// On load: mark toppings already present
-		document.addEventListener("DOMContentLoaded", function(){
-			document.querySelectorAll(".pztp-coverage-toggle[data-for]").forEach(function(btn){
-				var domId = btn.getAttribute("data-for");
-				var exists = document.getElementById(domId);
-				setToppingCardActiveByDomId(domId, !!exists);
-			});
-		});
-	})();
-	</script>';
-
-	/* ---------------- CSS: preview sizing, float box, nav alignment ------------- */
-	$html .= '<style>
-		[hidden]{display:none !important;}
-
-		/* Option row layout + visual states */
-		.option-action.option-action--row{ display:flex; align-items:center; justify-content:center; gap:.5rem; flex-wrap:nowrap; }
-		.pztp-action-group{ display:flex; align-items:center; gap:.4rem; }
-		.pztp-btn{ --pztp-btn-h: 38px; }
-		.pztp-btn.pztp-btn--icon.pztp-btn--circle{
-			width: var(--pztp-btn-h); height: var(--pztp-btn-h);
-			min-width: var(--pztp-btn-h); min-height: var(--pztp-btn-h);
-			border-radius: 9999px; display:inline-flex; align-items:center; justify-content:center;
-			padding:0; line-height:1;
-		}
-		.pztp-btn svg path, .pztp-btn svg circle{ fill: currentColor; }
-
-		.option-card{
-			transition: box-shadow .25s ease, border-color .25s ease, background-color .25s ease;
-			border:1px solid var(--pz-border, rgba(0,0,0,.12));
-			border-radius:12px; padding:12px;
-		}
-		.option-card--active{
-			border-color: var(--pz-accent, #5bbf2a);
-			box-shadow: 0 0 0 3px color-mix(in srgb, var(--pz-accent, #5bbf2a) 25%, transparent),
-			            0 6px 18px rgba(0,0,0,.12);
-			background-color: color-mix(in srgb, var(--pz-accent, #5bbf2a) 6%, transparent);
-		}
-		.option-card--selected-base{
-			border-color: var(--pz-accent, #5bbf2a);
-			box-shadow: 0 0 0 2px color-mix(in srgb, var(--pz-accent, #5bbf2a) 35%, transparent);
-			background-image: linear-gradient(to bottom, color-mix(in srgb, var(--pz-accent, #5bbf2a) 6%, transparent), transparent);
-		}
-		.select-btn.is-selected .icon-default{ display:none !important; }
-		.select-btn.is-selected .icon-selected{ display:inline !important; }
-		.pztp-fade{ animation: pztpFade .6s ease; }
-		@keyframes pztpFade { from { opacity:.1; transform:scale(.96); } to { opacity:1; transform:scale(1); } }
-
-		/* ---------- Preview: Default mode ---------- */
-		#pztp-mobileorder-preview.pztp-preview--default{
-			/* JS sets width/maxWidth/overflow; this is a safeguard for small screens */
-			transition: width .2s ease, max-width .2s ease, transform .2s ease;
-		}
-		#pztp-mobileorder-preview.pztp-preview--default .pizzalayer-canvas,
-		#pztp-mobileorder-preview.pztp-preview--default canvas,
-		#pztp-mobileorder-preview.pztp-preview--default img,
-		#pztp-mobileorder-preview.pztp-preview--default .pizzalayer-stage{
-			transition: transform .2s ease, width .2s ease, max-width .2s ease;
-		}
-
-		/* ---------- Floating preview box ---------- */
-		#pztp-floating-preview.pztp-preview-floatbox{
-			position: fixed;
-			right: 1rem;
-			bottom: 1rem;
-			background: var(--pz-surface, #fff);
-			border: 1px solid var(--pz-border, rgba(0,0,0,.15));
-			border-radius: 14px;
-			box-shadow: 0 10px 30px rgba(0,0,0,.18);
-			overflow: hidden; /* keep internal scroll if needed */
-			z-index: 9999;
-		}
-		#pztp-floating-preview.pztp-preview-floatbox > *{
-			width: 100% !important;
-			height: 100% !important;
-			object-fit: contain;
-		}
-
-		/* ---------- Preview size icon menu alignment ---------- */
-		/* Place a .pztp-preview-size-menu inside #pztp-mobileorder-nav */
-		#pztp-mobileorder-nav{
-			display:flex; flex-wrap:nowrap; align-items:center; gap:.5rem;
-		}
-		#pztp-mobileorder-nav .pztp-preview-size-menu{
-			margin-left: auto; /* push to right on desktop */
-			display:flex; align-items:center; gap:.5rem;
-		}
-		#pztp-mobileorder-nav .pztp-preview-size-menu .pztp-btn{
-			border:1px solid var(--pz-border, rgba(0,0,0,.15));
-			padding:.45rem .65rem;
-			border-radius:10px;
-			display:inline-flex; align-items:center; gap:.35rem;
-			background: var(--pz-surface, #fff);
-		}
-		#pztp-mobileorder-nav .pztp-preview-size-menu .pztp-btn svg{
-			width:18px; height:18px;
-		}
-		/* Mobile: icon-only, no border, tighter spacing; keep on the right next to dropdown */
-		@media (max-width: 768px){
-			#pztp-mobileorder-nav .pztp-preview-size-menu{
-				margin-left:auto;
-				gap:.35rem;
-			}
-			#pztp-mobileorder-nav .pztp-preview-size-menu .pztp-btn{
-				border:none;
-				padding:.25rem;
-				background:transparent;
-			}
-			#pztp-mobileorder-nav .pztp-preview-size-menu .pztp-btn span{ display:none; } /* hide text labels */
-			/* Default preview should not force 25% width on small screens */
-			#pztp-mobileorder-preview{ width:100% !important; max-width:100% !important; }
-		}
-	</style>';
-
+	$html .= '</div>';
 	return $html;
 }
-
-
-
-
-
-
-
-
 
 
 

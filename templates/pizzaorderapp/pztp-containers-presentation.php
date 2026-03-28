@@ -38,9 +38,27 @@ $pizzalayer_template_glassy_part_header_and_logo = '<header id="pztp-mobileorder
       <img src="' . $pizzalayer_global_option_element_alt_logo . '" alt="Logo" id="pztp-logo">
     </header>';
     
+/* ============= BUILD LAYOUT PART : PREVIEW MODE CONTROLS ============= */
+$pizzalayer_template_glassy_part_preview_controls = '
+<div id="pztp-preview-modes" class="pztp-preview-controls" role="toolbar" aria-label="Preview size controls">
+  <button class="pztp-preview-btn" data-mode="full" title="Full-screen preview" aria-label="Full-screen preview">
+    <svg viewBox="0 0 24 24" class="pztp-icon"><path d="M4 10V4h6M14 4h6v6M4 14v6h6M14 20h6v-6" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"/></svg>
+  </button>
+  <button class="pztp-preview-btn" data-mode="default" title="Default height" aria-label="Default height">
+    <svg viewBox="0 0 24 24" class="pztp-icon"><rect x="3" y="7" width="18" height="10" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/><path d="M3 6h18M3 18h18" stroke="currentColor" stroke-width="2"/></svg>
+  </button>
+  <button class="pztp-preview-btn" data-mode="float" title="Float preview" aria-label="Float preview">
+    <svg viewBox="0 0 24 24" class="pztp-icon"><rect x="3" y="5" width="18" height="14" rx="2" ry="2" fill="none" stroke="currentColor" stroke-width="2"/><rect x="11" y="11" width="8" height="6" rx="1.5" fill="currentColor"/></svg>
+  </button>
+</div>';    
+    
 /* ============= BUILD LAYOUT PART : NAVIGATION   ============= */
 $pizzalayer_template_glassy_part_navigation = '
-<!-- Dropdown Nav for mobile -->
+
+<div class="pztp-navrow" role="navigation" aria-label="Pizza builder navigation">
+  <div class="pztp-navrow__left">
+
+    <!-- Dropdown Nav for mobile -->
     <select id="pztp-mobileorder-nav-dropdown">
       <option value="home">Home</option>
       <option value="crust">Crust</option>
@@ -62,7 +80,15 @@ $pizzalayer_template_glassy_part_navigation = '
       <button class="tab-btn" data-tab="drizzle">Drizzle</button>
       <button class="tab-btn" data-tab="slicing">Slicing</button>
       <button class="tab-btn" data-tab="order">Order</button>
-    </nav>';    
+    </nav>
+  </div>
+
+  <div class="pztp-navrow__right">
+    <div class="pztp-preview-size-menu">
+      ' . $pizzalayer_template_glassy_part_preview_controls . '
+    </div>
+  </div>
+</div>';   
     
 /* ============= BUILD LAYOUT PART : PREVIEW ============= */
 $pizzalayer_template_glassy_part_preview = '<!-- Preview -->
@@ -278,7 +304,7 @@ return '<!-- Pizzalayer : PIZZA DISPLAY NEW ==================== -->
 
 <div id="pztp-containers-presentation" class="pztp-mobileorder-wrapper pizzalayer-template-mobileorder">
 
-    ' . $pizzalayer_template_glassy_part_header_and_logo . $pizzalayer_template_glassy_part_preview . $pizzalayer_template_glassy_part_navigation . '
+    ' . $pizzalayer_template_glassy_part_preview . $pizzalayer_template_glassy_part_navigation . '
 
    
   
@@ -340,6 +366,55 @@ return '<!-- Pizzalayer : PIZZA DISPLAY NEW ==================== -->
         </div>
       </div>
     </footer>
+
+<!-- Portion Icons Sprite -->
+<svg width="0" height="0" style="position:absolute;left:-9999px;visibility:hidden">
+  <defs>
+    <!-- Base circle outline -->
+    <symbol id="pz-portion-outline" viewBox="0 0 100 100">
+      <circle cx="50" cy="50" r="46" fill="none" stroke="currentColor" stroke-width="8"></circle>
+    </symbol>
+
+    <!-- Filled segments use currentColor so they inherit text color -->
+    <symbol id="pz-portion-whole" viewBox="0 0 100 100">
+      <use href="#pz-portion-outline"/>
+      <circle cx="50" cy="50" r="46" fill="currentColor" opacity=".85"></circle>
+    </symbol>
+
+    <symbol id="pz-portion-half" viewBox="0 0 100 100">
+      <use href="#pz-portion-outline"/>
+      <path d="M50,50 L50,4 A46,46 0 1 1 50,96 Z" fill="currentColor" opacity=".85"></path>
+    </symbol>
+
+    <symbol id="pz-portion-half-left" viewBox="0 0 100 100">
+      <use href="#pz-portion-outline"/>
+      <path d="M50,50 L4,50 A46,46 0 1 1 96,50 Z" fill="currentColor" opacity=".85"></path>
+    </symbol>
+
+    <symbol id="pz-portion-half-right" viewBox="0 0 100 100">
+      <use href="#pz-portion-outline"/>
+      <path d="M50,50 L96,50 A46,46 0 1 0 4,50 Z" fill="currentColor" opacity=".85"></path>
+    </symbol>
+
+    <!-- Quadrants: UL, UR, LR, LL -->
+    <symbol id="pz-portion-q-ul" viewBox="0 0 100 100">
+      <use href="#pz-portion-outline"/>
+      <path d="M50,50 L50,4 A46,46 0 0 0 4,50 Z" fill="currentColor" opacity=".85"></path>
+    </symbol>
+    <symbol id="pz-portion-q-ur" viewBox="0 0 100 100">
+      <use href="#pz-portion-outline"/>
+      <path d="M50,50 L96,50 A46,46 0 0 0 50,4 Z" fill="currentColor" opacity=".85"></path>
+    </symbol>
+    <symbol id="pz-portion-q-lr" viewBox="0 0 100 100">
+      <use href="#pz-portion-outline"/>
+      <path d="M50,50 L50,96 A46,46 0 0 0 96,50 Z" fill="currentColor" opacity=".85"></path>
+    </symbol>
+    <symbol id="pz-portion-q-ll" viewBox="0 0 100 100">
+      <use href="#pz-portion-outline"/>
+      <path d="M50,50 L4,50 A46,46 0 0 0 50,96 Z" fill="currentColor" opacity=".85"></path>
+    </symbol>
+  </defs>
+</svg>
 
   </div>
 

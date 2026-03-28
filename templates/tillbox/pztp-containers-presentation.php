@@ -1,38 +1,18 @@
 <?php
-/**
- * Plugin/Theme Utility: PizzaLayer Step-by-Step Customizer (App Test)
- *
- * Shortcode: [pizzalayer-template-app-test]
- *
- * Summary:
- * - Renders a 5-stage pizza customizer (Crust & Size, Sauce, Cheese, Toppings, Checkout).
- * - Populates choices from PizzaLayer CPTs: crusts, sauces, cheeses, toppings.
- * - Includes a slide-up preview "tab" docked at the bottom (open by default), with an overlapping circular handle.
- * - The stage content area auto-fits the remaining viewport height, recalculating on resize and on preview open/close.
- * - Exclusive choices for Crust, Sauce, Cheese; multiple Toppings with coverage options: Whole, Left, Right, and (if desired) Quarters.
- * - Checkout tab shows selected layers as pill tags with “x” remove buttons (grouped by layer type).
- *
- * Usage:
- * - Add this file to your plugin or theme (e.g., include from functions.php or your plugin’s includes/ directory).
- * - Use the shortcode [pizzalayer-template-app-test] on any page/post.
- * - Or call pizzalayer_template_app_test() directly to get the HTML string for embedding elsewhere.
- *
- * Developer Notes:
- * - Sizes are pulled from the 'pizzalayer_sizes' option if present, else a sensible default. Filter via 'pizzalayer_app_sizes'.
- * - Dashicons are enqueued for the minimalist top navigation bar icons.
- * - CPT slugs assumed:
- *     - Crusts:    pizzalayer_crusts
- *     - Sauces:    pizzalayer_sauces
- *     - Cheeses:   pizzalayer_cheeses
- *     - Toppings:  pizzalayer_toppings
- * - This is framework/scaffolding code; hook your pricing/preview-image logic into the noted JS “TODO” sections.
- *
- * @package  PizzaLayer
- * @author   You
- * @version  1.0.0
- */
+$pizzalayer_template_images_directory = plugin_dir_url(__FILE__) .'images/';
+do_action( 'pizzalayer_file_pztp-containers-presentation_start' );
 
-if ( ! function_exists( 'pizzalayer_template_app_test' ) ) {
+/* =============================================
+PIZZALAYER : front-end UI */
+
+
+add_Shortcode( 'pizzalayer-visualizer', 'pizzalayer_toppings_visualizer_func' );
+
+
+/* =============================================
+PIZZALAYER : front-end UI */
+
+
 
 	/**
 	 * Render the PizzaLayer App Test customizer UI.
@@ -40,7 +20,7 @@ if ( ! function_exists( 'pizzalayer_template_app_test' ) ) {
 	 * @param array $atts Shortcode attributes (currently unused).
 	 * @return string HTML markup for the customizer UI.
 	 */
-	function pizzalayer_template_app_test( $atts = array() ) {
+function pizzalayer_toppings_visualizer_func( $atts = array() ) {
 
 		// Ensure Dashicons are available on the front end.
 		if ( ! wp_style_is( 'dashicons', 'enqueued' ) ) {
@@ -622,420 +602,40 @@ if ( ! function_exists( 'pizzalayer_template_app_test' ) ) {
 		<?php
 		return ob_get_clean();
 	}
+
+
+
+
+
+
+
+
+
+
+
+
+
+/* default static displays */
+function pizzalayer_ui_wrapper_pizza_1_start(){ return '<!-- PT : PIZZA -->
+<div id="pizzalayer-pizza" class="pizzalayer-pizza-static">';}
+
+function pizzalayer_ui_wrapper_pizza_1_end(){ return '<div style="clear:both;"></div>
+</div>
+<!-- / PT : PIZZA -->';}
+
+function pizzalayer_ui_wrapper_pizza_dyn_1_start(){ return '<!-- PT : PIZZA -->
+<div id="pizzalayer-pizza" class="pizzalayer-pizza-dynamic">';}
+
+function pizzalayer_ui_wrapper_pizza_dyn_1_end(){ return '<div style="clear:both;"></div>
+</div>
+<!-- / PT : PIZZA -->';}
+
+
+function pizzalayer_ui_container_shell_1(){
+    
+    
+    
+    
 }
 
-/* Register Shortcode */
-if ( ! shortcode_exists( 'pizzalayer-template-app-test' ) ) {
-	add_shortcode( 'pizzalayer-template-app-test', 'pizzalayer_template_app_test' );
-	
-
-
-
-/**
- * PizzaLayer → Preview (submenu) + Full-width Live Preview Page
- * - Parent menu slug: pizzalayer_main_menu
- * - Full-width preview pane
- * - Admin notice: current template + copyable template dir URL
- * - Templates dropdown from all sources
- * - Icon-only button (dashicon) to AJAX-refresh preview WITHOUT saving option
- *
- * @package PizzaLayer
- */
-
-/* +=============================================================+
-   | 0) Bootstrap constants (safe fallbacks)                     |
-   +=============================================================+ */
-if ( ! function_exists( 'pizzalayer_preview_bootstrap_constants' ) ) {
-	function pizzalayer_preview_bootstrap_constants() {
-		if ( ! defined( 'PIZZALAYER_TEMPLATES_PATH' ) || ! defined( 'PIZZALAYER_TEMPLATES_URL' ) ) {
-			$plugin_root   = dirname( dirname( __FILE__ ) ); // plugin/
-			$plugin_folder = basename( $plugin_root );
-			$tpl_path      = trailingslashit( $plugin_root ) . 'templates/';
-			$tpl_url       = trailingslashit( plugins_url( $plugin_folder . '/templates/' ) );
-
-			if ( ! defined( 'PIZZALAYER_TEMPLATES_PATH' ) ) {
-				define( 'PIZZALAYER_TEMPLATES_PATH', $tpl_path );
-			}
-			if ( ! defined( 'PIZZALAYER_TEMPLATES_URL' ) ) {
-				define( 'PIZZALAYER_TEMPLATES_URL', $tpl_url );
-			}
-		}
-	}
-}
-
-/* +=============================================================+
-   | 1) Templates list helper                                    |
-   +=============================================================+ */
-if ( ! function_exists( 'pizzalayer_get_all_templates_map' ) ) {
-	/**
-	 * Return available templates as [slug => path].
-	 * Uses project helper if available; else shallow-scan /templates dir.
-	 *
-	 * @return array
-	 */
-	function pizzalayer_get_all_templates_map() {
-		pizzalayer_preview_bootstrap_constants();
-
-		// Prefer project helper if present.
-		if ( function_exists( 'pizzalayer_get_available_templates_from_dirs' ) ) {
-			$map = (array) pizzalayer_get_available_templates_from_dirs();
-			if ( ! empty( $map ) ) {
-				return $map;
-			}
-		}
-
-		// Fallback scan.
-		$map  = array();
-		$base = trailingslashit( PIZZALAYER_TEMPLATES_PATH );
-
-		if ( is_dir( $base ) && is_readable( $base ) ) {
-			$dirs = glob( $base . '*', GLOB_ONLYDIR );
-			if ( $dirs ) {
-				foreach ( $dirs as $dir ) {
-					$slug        = basename( $dir );
-					$map[ $slug ] = $dir;
-				}
-			}
-		}
-		return $map;
-	}
-}
-
-/* +=============================================================+
-   | 2) Render preview for a given template slug (no save)       |
-   +=============================================================+ */
-if ( ! function_exists( 'pizzalayer_render_preview_for_template' ) ) {
-	/**
-	 * Render preview HTML for a selected template WITHOUT changing the saved option.
-	 *
-	 * @param string $template_slug
-	 * @return string
-	 */
-	function pizzalayer_render_preview_for_template( $template_slug ) {
-		if ( ! function_exists( 'pizzalayer_template_app_test' ) ) {
-			return '<div class="notice notice-warning" style="margin:0;"><p><strong>' .
-				esc_html__( 'Preview function not found:', 'pizzalayer' ) .
-				'</strong> ' .
-				esc_html__( 'The function pizzalayer_template_app_test() is not available. Ensure it is loaded.', 'pizzalayer' ) .
-			'</p></div>';
-		}
-
-		// Temporarily override the option value.
-		$filter = static function( $value ) use ( $template_slug ) {
-			return $template_slug;
-		};
-		add_filter( 'pre_option_pizzalayer_setting_global_template', $filter, 99 );
-
-		ob_start();
-		// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-		echo pizzalayer_template_app_test();
-		$html = ob_get_clean();
-
-		remove_filter( 'pre_option_pizzalayer_setting_global_template', $filter, 99 );
-
-		return $html;
-	}
-}
-
-/* +=============================================================+
-   | 3) AJAX: live-switch preview (no save)                      |
-   +=============================================================+ */
-if ( ! function_exists( 'pizzalayer_ajax_preview_switch_template' ) ) {
-	function pizzalayer_ajax_preview_switch_template() {
-		if ( ! current_user_can( 'manage_options' ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unauthorized', 'pizzalayer' ) ), 403 );
-		}
-
-		check_ajax_referer( 'pizzalayer_preview_switch', 'nonce' );
-
-		$template = isset( $_POST['template'] ) ? sanitize_key( wp_unslash( $_POST['template'] ) ) : '';
-		if ( '' === $template ) {
-			wp_send_json_error( array( 'message' => __( 'Missing template', 'pizzalayer' ) ) );
-		}
-
-		$templates = pizzalayer_get_all_templates_map();
-		if ( empty( $templates[ $template ] ) ) {
-			wp_send_json_error( array( 'message' => __( 'Unknown template', 'pizzalayer' ) ) );
-		}
-
-		pizzalayer_preview_bootstrap_constants();
-
-		$html = pizzalayer_render_preview_for_template( $template );
-
-		wp_send_json_success( array(
-			'html'             => $html,
-			'template'         => $template,
-			'template_dir_url' => trailingslashit( trailingslashit( PIZZALAYER_TEMPLATES_URL ) . $template ),
-		) );
-	}
-	add_action( 'wp_ajax_pizzalayer_preview_switch_template', 'pizzalayer_ajax_preview_switch_template' );
-}
-
-
-
-
-/* +=============================================================+
-   | 4) Register submenu under pizzalayer_main_menu              |
-   +=============================================================+ */
-   
-   /**
- * Tiny helper to safely return int 99 without causing parse issues if pasted oddly.
- * (Some editors accidentally introduce trailing spaces or BOM; this avoids magic numbers inline.)
- *
- * @return int
- */
-if ( ! function_exists( 'ninety_nine_priority_fix_for_php' ) ) {
-	function ninety_nine_priority_fix_for_php() {
-		return 99;
-	}
-}
-
-
-
-if ( ! function_exists( 'pizzalayer_register_preview_submenu' ) ) {
-	function pizzalayer_register_preview_submenu() {
-		$parent_slug = 'pizzalayer_main_menu';
-
-		// Ensure parent exists; if not, create a minimal top-level with this slug.
-		global $menu;
-		$parent_exists = false;
-		if ( is_array( $menu ) ) {
-			foreach ( $menu as $m ) {
-				if ( isset( $m[2] ) && $m[2] === $parent_slug ) {
-					$parent_exists = true;
-					break;
-				}
-			}
-		}
-		if ( ! $parent_exists ) {
-			// Lightweight top-level so submenu will attach cleanly.
-			add_menu_page(
-				__( 'PizzaLayer', 'pizzalayer' ),
-				__( 'PizzaLayer', 'pizzalayer' ),
-				'manage_options',
-				$parent_slug,
-				'__return_null',
-				'dashicons-pizza',
-				56
-			);
-		}
-
-		add_submenu_page(
-			$parent_slug,
-			__( 'PizzaLayer Preview', 'pizzalayer' ),
-			__( 'Preview', 'pizzalayer' ),
-			'manage_options',
-			'pizzalayer-preview',
-			'pizzalayer_render_preview_page'
-		);
-	}
-	// Late priority to let the main menu register first.
-	add_action( 'admin_menu', 'pizzalayer_register_preview_submenu',  ninety_nine_priority_fix_for_php() );
-}
-
-
-
-/* +=============================================================+
-   | 5) Page renderer                                            |
-   +=============================================================+ */
-if ( ! function_exists( 'pizzalayer_render_preview_page' ) ) {
-	function pizzalayer_render_preview_page() {
-		pizzalayer_preview_bootstrap_constants();
-
-		$active_template  = get_option( 'pizzalayer_setting_global_template', 'default' );
-		$template_dir_url = trailingslashit( trailingslashit( PIZZALAYER_TEMPLATES_URL ) . $active_template );
-
-		$templates = pizzalayer_get_all_templates_map();
-		ksort( $templates, SORT_NATURAL | SORT_FLAG_CASE );
-
-		// Non-JS fallback via ?preview_template=
-		$selected_for_preview = isset( $_GET['preview_template'] )
-			? sanitize_key( wp_unslash( $_GET['preview_template'] ) )
-			: $active_template;
-
-		if ( empty( $templates[ $selected_for_preview ] ) ) {
-			$selected_for_preview = $active_template;
-		}
-
-		$nonce = wp_create_nonce( 'pizzalayer_preview_switch' );
-		?>
-		<div class="wrap">
-			<h1><?php esc_html_e( 'PizzaLayer Preview', 'pizzalayer' ); ?></h1>
-
-			<!-- Admin notice -->
-			<div class="notice notice-info is-dismissible" style="margin-top:16px;">
-				<div style="display:flex; gap:16px; align-items:flex-start; flex-wrap:wrap;">
-
-					<div>
-						<p style="margin:0 0 8px 0;">
-							<strong><?php esc_html_e( 'Current Template (saved):', 'pizzalayer' ); ?></strong>
-							<?php echo esc_html( $active_template ); ?>
-                        </p>
-
-						<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-							<label for="pizzalayer-template-dir-url" style="font-weight:600;">
-								<?php esc_html_e( 'Template Directory URL:', 'pizzalayer' ); ?>
-							</label>
-							<input
-								type="text"
-								id="pizzalayer-template-dir-url"
-								class="regular-text"
-								style="min-width:420px;"
-								readonly
-								onfocus="this.select();"
-								value="<?php echo esc_attr( $template_dir_url ); ?>"
-							/>
-							<button type="button" class="button button-secondary" id="pizzalayer-copy-template-url" aria-label="<?php esc_attr_e( 'Copy template directory URL', 'pizzalayer' ); ?>">
-								<span class="dashicons dashicons-clipboard" aria-hidden="true"></span>
-								<span class="screen-reader-text"><?php esc_html_e( 'Copy URL', 'pizzalayer' ); ?></span>
-							</button>
-						</div>
-					</div>
-
-					<div>
-						<p style="margin:0 0 8px 0;">
-							<strong><?php esc_html_e( 'Preview With (does not save):', 'pizzalayer' ); ?></strong>
-						</p>
-						<div style="display:flex; gap:8px; align-items:center; flex-wrap:wrap;">
-							<label class="screen-reader-text" for="pizzalayer-preview-template"><?php esc_html_e( 'Select template to preview', 'pizzalayer' ); ?></label>
-							<select id="pizzalayer-preview-template">
-								<?php foreach ( $templates as $slug => $path ) : ?>
-									<option value="<?php echo esc_attr( $slug ); ?>" <?php selected( $slug, $selected_for_preview ); ?>>
-										<?php echo esc_html( $slug ); ?>
-									</option>
-								<?php endforeach; ?>
-							</select>
-
-							<button
-								type="button"
-								class="button"
-								id="pizzalayer-refresh-preview"
-								aria-label="<?php esc_attr_e( 'Refresh preview with selected template (does not save)', 'pizzalayer' ); ?>"
-								title="<?php esc_attr_e( 'Refresh preview (no save)', 'pizzalayer' ); ?>"
-							>
-								<span class="dashicons dashicons-update" aria-hidden="true"></span>
-								<span class="screen-reader-text"><?php esc_html_e( 'Refresh Preview', 'pizzalayer' ); ?></span>
-							</button>
-
-							<!-- Non-JS fallback -->
-							<a class="button button-link" href="<?php echo esc_url( add_query_arg( 'preview_template', $selected_for_preview ) ); ?>">
-								<?php esc_html_e( 'Reload w/ selected', 'pizzalayer' ); ?>
-							</a>
-						</div>
-						<p class="description" style="margin:.5em 0 0;">
-							<?php esc_html_e( 'Switch the preview without changing the saved template option.', 'pizzalayer' ); ?>
-						</p>
-					</div>
-
-				</div>
-			</div>
-
-			<!-- Full-width preview pane -->
-			<div id="pizzalayer-preview-pane" aria-label="<?php esc_attr_e( 'Full-width preview pane', 'pizzalayer' ); ?>" style="margin:20px -20px 0 -20px; padding:0;">
-				<div class="notice-inline" style="background:#fff; border-top:1px solid #c3c4c7; border-bottom:1px solid #c3c4c7;">
-					<div style="padding:12px 20px; border-bottom:1px solid #dcdcde; display:flex; align-items:center; justify-content:space-between;">
-						<strong><?php esc_html_e( 'Shortcode Preview', 'pizzalayer' ); ?></strong>
-						<span class="description"><?php esc_html_e( 'Rendering pizzalayer_template_app_test()', 'pizzalayer' ); ?></span>
-					</div>
-
-					<div id="pizzalayer-preview-output" style="padding:20px;">
-						<?php
-						// phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
-						echo pizzalayer_render_preview_for_template( $selected_for_preview );
-						?>
-					</div>
-				</div>
-			</div>
-
-			<!-- Inline, dependency-free JS -->
-			<script>
-			(function(){
-				var $ = function(s){ return document.querySelector(s); };
-				var copyBtn     = $('#pizzalayer-copy-template-url');
-				var urlInput    = $('#pizzalayer-template-dir-url');
-				var sel         = $('#pizzalayer-preview-template');
-				var refreshBtn  = $('#pizzalayer-refresh-preview');
-				var out         = $('#pizzalayer-preview-output');
-				var ajaxurl     = window.ajaxurl || '<?php echo esc_js( admin_url( 'admin-ajax.php' ) ); ?>';
-				var nonce       = '<?php echo esc_js( $nonce ); ?>';
-
-				// Clipboard icon
-				if (copyBtn && urlInput) {
-					copyBtn.addEventListener('click', function(){
-						try {
-							urlInput.focus();
-							urlInput.select();
-							document.execCommand('copy');
-							var original = copyBtn.innerHTML;
-							copyBtn.innerHTML = '<span class="dashicons dashicons-yes"></span><span class="screen-reader-text"><?php echo esc_js( __( 'Copied', 'pizzalayer' ) ); ?></span>';
-							setTimeout(function(){ copyBtn.innerHTML = original; }, 1200);
-						} catch(e) { if(window.console){ console.warn('Copy failed:', e); } }
-					});
-				}
-
-				// AJAX refresh (no save)
-				function doRefresh() {
-					if (!sel || !out) return;
-					var template = sel.value || '';
-					if (!template) return;
-
-					if (refreshBtn) {
-						refreshBtn.setAttribute('disabled','disabled');
-						var original = refreshBtn.innerHTML;
-						refreshBtn.dataset._original = original;
-						refreshBtn.innerHTML = '<span class="dashicons dashicons-update pizzalayer-spin"></span>';
-					}
-
-					var xhr = new XMLHttpRequest();
-					var data = new FormData();
-					data.append('action', 'pizzalayer_preview_switch_template');
-					data.append('nonce', nonce);
-					data.append('template', template);
-
-					xhr.open('POST', ajaxurl, true);
-					xhr.onreadystatechange = function(){
-						if (xhr.readyState === 4) {
-							if (refreshBtn) {
-								refreshBtn.removeAttribute('disabled');
-								refreshBtn.innerHTML = refreshBtn.dataset._original || '<span class="dashicons dashicons-update"></span>';
-							}
-							try {
-								var res = JSON.parse(xhr.responseText);
-								if (res && res.success) {
-									out.innerHTML = res.data.html || '';
-									if (urlInput && res.data.template_dir_url) {
-										urlInput.value = res.data.template_dir_url;
-									}
-								} else {
-									alert((res && res.data && res.data.message) ? res.data.message : '<?php echo esc_js( __( 'Preview update failed.', 'pizzalayer' ) ); ?>');
-                                }
-							} catch(e) {
-								if(window.console){ console.error('Bad JSON:', e); }
-								alert('<?php echo esc_js( __( 'Preview update failed due to an unexpected response.', 'pizzalayer' ) ); ?>');
-							}
-						}
-					};
-					xhr.send(data);
-				}
-
-				if (refreshBtn) {
-					refreshBtn.addEventListener('click', doRefresh);
-				}
-				// Optional auto-refresh on change:
-				// if (sel) sel.addEventListener('change', doRefresh);
-			})();
-			</script>
-
-			<style>
-				/* Minimal spinner for dashicons */
-				.pizzalayer-spin {
-					display:inline-block;
-					animation: pizzalayer-spin-key 1s linear infinite;
-					transform-origin: 50% 50%;
-				}
-				@keyframes pizzalayer-spin-key { from { transform: rotate(0deg);} to { transform: rotate(360deg);} }
-			</style>
-		</div>
-		<?php
-	}
-}}
+do_action( 'pizzalayer_file_pztp-containers-presentation_end' );
