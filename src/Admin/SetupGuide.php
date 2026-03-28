@@ -52,107 +52,107 @@ class SetupGuide {
 		$checklist = [
 			[
 				'key'        => 'install',
-				'label'      => 'Install &amp; activate PizzaLayer',
-				'desc'       => 'You\'re reading this — done!',
+				'label'      => __( 'Install &amp; activate PizzaLayer', 'pizzalayer' ),
+				'desc'       => __( 'You\'re reading this — done!', 'pizzalayer' ),
 				'auto_done'  => true,
 				'link'       => null,
 				'link_label' => null,
 			],
 			[
 				'key'        => 'images',
-				'label'      => 'Prepare your layer images',
-				'desc'       => 'Each ingredient needs a transparent PNG layer image (800×800 px). Use PizzaLayer → Layer Image Maker to crop, adjust, and export your images — or create them when adding each item.',
+				'label'      => __( 'Prepare your layer images', 'pizzalayer' ),
+				'desc'       => __( 'Each ingredient needs a transparent PNG layer image (800×800 px). Use PizzaLayer → Layer Image Maker to crop, adjust, and export your images — or create them when adding each item.', 'pizzalayer' ),
 				'auto_done'  => isset( $done['images'] ),
 				'link'       => admin_url( 'admin.php?page=pizzalayer-layer-maker' ),
-				'link_label' => 'Layer Image Maker',
+				'link_label' => __( 'Layer Image Maker', 'pizzalayer' ),
 			],
 			[
 				'key'        => 'crusts',
-				'label'      => 'Add at least one Crust',
-				'desc'       => 'Go to PizzaLayer → Crusts and publish a crust with a layer image.',
+				'label'      => __( 'Add at least one Crust', 'pizzalayer' ),
+				'desc'       => __( 'Go to PizzaLayer → Crusts and publish a crust with a layer image.', 'pizzalayer' ),
 				'auto_done'  => $stats['crusts'] > 0,
 				'link'       => admin_url( 'post-new.php?post_type=pizzalayer_crusts' ),
-				'link_label' => 'Add Crust',
+				'link_label' => __( 'Add Crust', 'pizzalayer' ),
 				'count'      => $stats['crusts'],
 			],
 			[
 				'key'        => 'sauces',
-				'label'      => 'Add at least one Sauce',
-				'desc'       => 'Go to PizzaLayer → Sauces and publish a sauce with a layer image.',
+				'label'      => __( 'Add at least one Sauce', 'pizzalayer' ),
+				'desc'       => __( 'Go to PizzaLayer → Sauces and publish a sauce with a layer image.', 'pizzalayer' ),
 				'auto_done'  => $stats['sauces'] > 0,
 				'link'       => admin_url( 'post-new.php?post_type=pizzalayer_sauces' ),
-				'link_label' => 'Add Sauce',
+				'link_label' => __( 'Add Sauce', 'pizzalayer' ),
 				'count'      => $stats['sauces'],
 			],
 			[
 				'key'        => 'cheeses',
-				'label'      => 'Add at least one Cheese',
-				'desc'       => 'Go to PizzaLayer → Cheeses and publish a cheese with a layer image.',
+				'label'      => __( 'Add at least one Cheese', 'pizzalayer' ),
+				'desc'       => __( 'Go to PizzaLayer → Cheeses and publish a cheese with a layer image.', 'pizzalayer' ),
 				'auto_done'  => $stats['cheeses'] > 0,
 				'link'       => admin_url( 'post-new.php?post_type=pizzalayer_cheeses' ),
-				'link_label' => 'Add Cheese',
+				'link_label' => __( 'Add Cheese', 'pizzalayer' ),
 				'count'      => $stats['cheeses'],
 			],
 			[
 				'key'        => 'toppings',
-				'label'      => 'Add your Toppings',
-				'desc'       => 'Toppings are the heart of the builder — add as many as your menu needs.',
+				'label'      => __( 'Add your Toppings', 'pizzalayer' ),
+				'desc'       => __( 'Toppings are the heart of the builder — add as many as your menu needs.', 'pizzalayer' ),
 				'auto_done'  => $stats['toppings'] > 0,
 				'link'       => admin_url( 'post-new.php?post_type=pizzalayer_toppings' ),
-				'link_label' => 'Add Topping',
+				'link_label' => __( 'Add Topping', 'pizzalayer' ),
 				'count'      => $stats['toppings'],
 			],
 			[
 				'key'        => 'drizzles',
-				'label'      => 'Add Drizzles <em>(optional)</em>',
-				'desc'       => 'Finishing touch layers — hot honey, balsamic, ranch. Optional but delightful.',
+				'label'      => __( 'Add Drizzles <em>(optional)</em>', 'pizzalayer' ),
+				'desc'       => __( 'Finishing touch layers — hot honey, balsamic, ranch. Optional but delightful.', 'pizzalayer' ),
 				'auto_done'  => $stats['drizzles'] > 0 || isset( $done['drizzles'] ),
 				'optional'   => true,
 				'link'       => admin_url( 'post-new.php?post_type=pizzalayer_drizzles' ),
-				'link_label' => 'Add Drizzle',
+				'link_label' => __( 'Add Drizzle', 'pizzalayer' ),
 				'count'      => $stats['drizzles'],
 			],
 			[
 				'key'        => 'cuts',
-				'label'      => 'Add Cut styles <em>(optional)</em>',
-				'desc'       => 'Slice overlay layers — triangle, square, party, whole. Optional.',
+				'label'      => __( 'Add Cut styles <em>(optional)</em>', 'pizzalayer' ),
+				'desc'       => __( 'Slice overlay layers — triangle, square, party, whole. Optional.', 'pizzalayer' ),
 				'auto_done'  => $stats['cuts'] > 0 || isset( $done['cuts'] ),
 				'optional'   => true,
 				'link'       => admin_url( 'post-new.php?post_type=pizzalayer_cuts' ),
-				'link_label' => 'Add Cut Style',
+				'link_label' => __( 'Add Cut Style', 'pizzalayer' ),
 				'count'      => $stats['cuts'],
 			],
 			[
 				'key'        => 'template',
-				'label'      => 'Choose a Template',
-				'desc'       => 'Pick the visual theme for your pizza builder in PizzaLayer → Template.',
+				'label'      => __( 'Choose a Template', 'pizzalayer' ),
+				'desc'       => __( 'Pick the visual theme for your pizza builder in PizzaLayer → Template.', 'pizzalayer' ),
 				'auto_done'  => $has_template,
 				'link'       => admin_url( 'admin.php?page=pizzalayer-template' ),
-				'link_label' => 'Choose Template',
+				'link_label' => __( 'Choose Template', 'pizzalayer' ),
 			],
 			[
 				'key'        => 'settings',
-				'label'      => 'Configure Plugin Settings',
-				'desc'       => 'Set your default crust, sauce, max toppings and other options in PizzaLayer → Settings.',
+				'label'      => __( 'Configure Plugin Settings', 'pizzalayer' ),
+				'desc'       => __( 'Set your default crust, sauce, max toppings and other options in PizzaLayer → Settings. New to WordPress? Use the Settings Wizard for a friendly guided walk-through.', 'pizzalayer' ),
 				'auto_done'  => $has_defaults,
-				'link'       => admin_url( 'admin.php?page=pizzalayer-settings' ),
-				'link_label' => 'Open Settings',
+				'link'       => admin_url( 'admin.php?page=pizzalayer-wizard' ),
+				'link_label' => __( '✦ Settings Wizard', 'pizzalayer' ),
 			],
 			[
 				'key'        => 'shortcode',
-				'label'      => 'Embed the Builder on a page',
-				'desc'       => 'Use the Shortcode Generator to get your <code>[pizza_builder]</code> shortcode, then add it to any page.',
+				'label'      => __( 'Embed the Builder on a page', 'pizzalayer' ),
+				'desc'       => __( 'Use the Shortcode Generator to get your <code>[pizza_builder]</code> shortcode, then add it to any page.', 'pizzalayer' ),
 				'auto_done'  => isset( $done['shortcode'] ),
 				'link'       => admin_url( 'admin.php?page=pizzalayer-shortcodes' ),
-				'link_label' => 'Shortcode Generator',
+				'link_label' => __( 'Shortcode Generator', 'pizzalayer' ),
 			],
 			[
 				'key'        => 'test',
-				'label'      => 'Place a test order end-to-end',
-				'desc'       => 'Visit your builder page as a customer and confirm layers display correctly.',
+				'label'      => __( 'Place a test order end-to-end', 'pizzalayer' ),
+				'desc'       => __( 'Visit your builder page as a customer and confirm layers display correctly.', 'pizzalayer' ),
 				'auto_done'  => isset( $done['test'] ),
 				'link'       => home_url( '/' ),
-				'link_label' => 'View Site',
+				'link_label' => __( 'View Site', 'pizzalayer' ),
 			],
 		];
 
@@ -328,9 +328,17 @@ class SetupGuide {
 		<!-- ══ Header ══════════════════════════════════════════════════ -->
 		<div class="psg-header">
 			<span class="dashicons dashicons-welcome-learn-more psg-header__icon"></span>
-			<div>
-				<h1 class="psg-header__title">Setup Guide</h1>
-				<p class="psg-header__sub">Everything you need to get PizzaLayer up and running — in the right order.</p>
+			<div style="flex:1;">
+				<h1 class="psg-header__title"><?php esc_html_e( 'Setup Guide', 'pizzalayer' ); ?></h1>
+				<p class="psg-header__sub"><?php esc_html_e( 'Everything you need to get PizzaLayer up and running — in the right order.', 'pizzalayer' ); ?></p>
+			</div>
+			<div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer' ) ); ?>" class="button" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff;">
+					<span class="dashicons dashicons-dashboard" style="font-size:14px;width:14px;height:14px;"></span> <?php esc_html_e( 'Dashboard', 'pizzalayer' ); ?>
+				</a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-settings' ) ); ?>" class="button" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff;">
+					<span class="dashicons dashicons-admin-generic" style="font-size:14px;width:14px;height:14px;"></span> <?php esc_html_e( 'Settings', 'pizzalayer' ); ?>
+				</a>
 			</div>
 		</div>
 
@@ -348,8 +356,8 @@ class SetupGuide {
 		<!-- ══ Checklist ════════════════════════════════════════════════ -->
 		<div class="psg-card">
 			<div class="psg-card__head">
-				<h2><span class="dashicons dashicons-yes-alt"></span> Setup Checklist</h2>
-				<p>Work through these steps in order. Auto-detected items update as you add content.</p>
+				<h2><span class="dashicons dashicons-yes-alt"></span> <?php esc_html_e( 'Setup Checklist', 'pizzalayer' ); ?></h2>
+				<p><?php esc_html_e( 'Work through these steps in order. Auto-detected items update as you add content.', 'pizzalayer' ); ?></p>
 			</div>
 			<form method="post" action="">
 				<?php wp_nonce_field( 'pizzalayer_setup_checklist' ); ?>
@@ -371,10 +379,10 @@ class SetupGuide {
 							<div class="psg-cl-title">
 								<?php echo wp_kses_post( $item['label'] ); ?>
 								<?php if ( isset( $item['count'] ) && $item['count'] > 0 ) : ?>
-									<span class="psg-cl-badge"><?php echo esc_html( (string) $item['count'] ); ?> added</span>
+									<span class="psg-cl-badge"><?php echo esc_html( (string) $item['count'] ); ?> <?php esc_html_e( 'added', 'pizzalayer' ); ?></span>
 								<?php endif; ?>
 								<?php if ( $optional ) : ?>
-									<span class="psg-cl-opt-badge">optional</span>
+									<span class="psg-cl-opt-badge"><?php esc_html_e( 'optional', 'pizzalayer' ); ?></span>
 								<?php endif; ?>
 							</div>
 							<div class="psg-cl-desc"><?php echo wp_kses_post( $item['desc'] ); ?></div>
@@ -382,20 +390,20 @@ class SetupGuide {
 						<div class="psg-cl-actions">
 							<?php if ( $item['link'] && ! $auto ) : ?>
 							<a href="<?php echo esc_url( $item['link'] ); ?>" class="button button-small">
-								<?php echo esc_html( $item['link_label'] ?? 'Go' ); ?> →
+								<?php echo esc_html( $item['link_label'] ?? __( 'Go', 'pizzalayer' ) ); ?> →
 							</a>
 							<?php elseif ( $item['link'] ) : ?>
 							<a href="<?php echo esc_url( $item['link'] ); ?>" class="button button-small button-secondary">
-								<?php echo esc_html( $item['link_label'] ?? 'View' ); ?>
+								<?php echo esc_html( $item['link_label'] ?? __( 'View', 'pizzalayer' ) ); ?>
 							</a>
 							<?php endif; ?>
 							<?php if ( ! $auto && ! $is_done ) : ?>
 							<button type="submit" name="pizzalayer_setup_done" value="<?php echo esc_attr( $item['key'] ); ?>" class="button button-small psg-mark-done">
-								<input type="hidden" name="checked" value="1">Mark done
+								<input type="hidden" name="checked" value="1"><?php esc_html_e( 'Mark done', 'pizzalayer' ); ?>
 							</button>
 							<?php elseif ( ! $auto && $is_done ) : ?>
 							<button type="submit" name="pizzalayer_setup_done" value="<?php echo esc_attr( $item['key'] ); ?>" class="button button-small psg-mark-undone">
-								<input type="hidden" name="checked" value="0">Undo
+								<input type="hidden" name="checked" value="0"><?php esc_html_e( 'Undo', 'pizzalayer' ); ?>
 							</button>
 							<?php endif; ?>
 						</div>
@@ -408,8 +416,8 @@ class SetupGuide {
 		<!-- ══ Layer-by-layer guide tabs ══════════════════════════════ -->
 		<div class="psg-card psg-card--tabs">
 			<div class="psg-card__head">
-				<h2><span class="dashicons dashicons-category"></span> Layer-by-Layer Setup Guide</h2>
-				<p>Select a section to see step-by-step instructions for setting it up.</p>
+				<h2><span class="dashicons dashicons-category"></span> <?php esc_html_e( 'Layer-by-Layer Setup Guide', 'pizzalayer' ); ?></h2>
+				<p><?php esc_html_e( 'Select a section to see step-by-step instructions for setting it up.', 'pizzalayer' ); ?></p>
 			</div>
 
 			<nav class="psg-tabnav" role="tablist">
@@ -476,13 +484,13 @@ class SetupGuide {
 		<div class="psg-quickstart-cta">
 			<div class="psg-quickstart-cta__icon">🚀</div>
 			<div class="psg-quickstart-cta__body">
-				<strong>New to PizzaLayer?</strong> Head to the full Help &amp; Reference page for the complete Quickstart guide — five clear steps from a blank install to a live interactive builder.
+				<?php echo wp_kses_post( __( '<strong>New to PizzaLayer?</strong> Head to the full Help &amp; Reference page for the complete Quickstart guide — five clear steps from a blank install to a live interactive builder.', 'pizzalayer' ) ); ?>
 				<div class="psg-quickstart-cta__actions">
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-help&section=quickstart' ) ); ?>" class="button button-primary">
-						<span class="dashicons dashicons-book-alt"></span> View Quickstart Guide
+						<span class="dashicons dashicons-book-alt"></span> <?php esc_html_e( 'View Quickstart Guide', 'pizzalayer' ); ?>
 					</a>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-help' ) ); ?>" class="button">
-						<span class="dashicons dashicons-editor-help"></span> Help &amp; Reference
+						<span class="dashicons dashicons-editor-help"></span> <?php esc_html_e( 'Help &amp; Reference', 'pizzalayer' ); ?>
 					</a>
 				</div>
 			</div>
@@ -495,10 +503,10 @@ class SetupGuide {
 		<div class="psg-card psg-card--help">
 			<span class="dashicons dashicons-sos"></span>
 			<div>
-				<h3>Need help?</h3>
-				<p>Check the documentation or reach out through <a href="https://islandsundesign.com" target="_blank" rel="noopener">IslandSunDesign.com</a>.</p>
+				<h3><?php esc_html_e( 'Need help?', 'pizzalayer' ); ?></h3>
+				<p><?php printf( wp_kses_post( __( 'Check the documentation or reach out through %s.', 'pizzalayer' ) ), '<a href="https://islandsundesign.com" target="_blank" rel="noopener">IslandSunDesign.com</a>' ); ?></p>
 			</div>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer' ) ); ?>" class="button">← Back to Dashboard</a>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer' ) ); ?>" class="button"><?php esc_html_e( '← Back to Dashboard', 'pizzalayer' ); ?></a>
 		</div>
 
 		</div><!-- /.wrap -->

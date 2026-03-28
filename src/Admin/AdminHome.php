@@ -53,66 +53,66 @@ class AdminHome {
 		// ── Layer tab definitions ────────────────────────────────────────
 		$layer_tabs = [
 			'toppings' => [
-				'label' => 'Toppings',
+				'label' => __( 'Toppings', 'pizzalayer' ),
 				'icon'  => 'dashicons-star-filled',
-				'desc'  => 'Toppings are where the action is. Every topping has its own layer image, price data, and coverage options (whole, half, quarters). The visualizer renders each selected topping in real time as your customer builds.',
-				'tip'   => '💡 Use consistent transparent PNGs — 500×500 px works great across all templates.',
+				'desc'  => __( 'Toppings are where the action is. Every topping has its own layer image, price data, and coverage options (whole, half, quarters). The visualizer renders each selected topping in real time as your customer builds.', 'pizzalayer' ),
+				'tip'   => __( '💡 Use consistent transparent PNGs — 500×500 px works great across all templates.', 'pizzalayer' ),
 				'cpt'   => 'toppings',
 				'count' => $stats['toppings'],
 			],
 			'crusts' => [
-				'label' => 'Crusts',
+				'label' => __( 'Crusts', 'pizzalayer' ),
 				'icon'  => 'dashicons-tag',
-				'desc'  => 'Your crust is the canvas. Define every base your pizza can be built on — from thin & crispy to thick & pillowy. Each crust item gets its own layer image that stacks in the live visualizer.',
-				'tip'   => '💡 Use a transparent PNG against a consistent circular canvas for the crispest stacking results.',
+				'desc'  => __( 'Your crust is the canvas. Define every base your pizza can be built on — from thin & crispy to thick & pillowy. Each crust item gets its own layer image that stacks in the live visualizer.', 'pizzalayer' ),
+				'tip'   => __( '💡 Use a transparent PNG against a consistent circular canvas for the crispest stacking results.', 'pizzalayer' ),
 				'cpt'   => 'crusts',
 				'count' => $stats['crusts'],
 			],
 			'sauces' => [
-				'label' => 'Sauces',
+				'label' => __( 'Sauces', 'pizzalayer' ),
 				'icon'  => 'dashicons-admin-generic',
-				'desc'  => 'The sauce defines the flavor direction. Whether it\'s a bold marinara, a smoky BBQ, or a creamy garlic white — each sauce is a distinct layer image that sits on top of the crust in the visualizer.',
-				'tip'   => '💡 Keep sauce layer images semi-transparent around the edges for a natural blending effect.',
+				'desc'  => __( 'The sauce defines the flavor direction. Whether it\'s a bold marinara, a smoky BBQ, or a creamy garlic white — each sauce is a distinct layer image that sits on top of the crust in the visualizer.', 'pizzalayer' ),
+				'tip'   => __( '💡 Keep sauce layer images semi-transparent around the edges for a natural blending effect.', 'pizzalayer' ),
 				'cpt'   => 'sauces',
 				'count' => $stats['sauces'],
 			],
 			'cheeses' => [
-				'label' => 'Cheeses',
+				'label' => __( 'Cheeses', 'pizzalayer' ),
 				'icon'  => 'dashicons-category',
-				'desc'  => 'Cheese sits between sauce and toppings in your stack. Offer mozzarella, provolone, dairy-free alternatives — each with its own visual layer image.',
-				'tip'   => '💡 A subtle melt texture with a slight golden edge makes cheese layers look mouth-wateringly real.',
+				'desc'  => __( 'Cheese sits between sauce and toppings in your stack. Offer mozzarella, provolone, dairy-free alternatives — each with its own visual layer image.', 'pizzalayer' ),
+				'tip'   => __( '💡 A subtle melt texture with a slight golden edge makes cheese layers look mouth-wateringly real.', 'pizzalayer' ),
 				'cpt'   => 'cheeses',
 				'count' => $stats['cheeses'],
 			],
 			'drizzles' => [
-				'label' => 'Drizzles',
+				'label' => __( 'Drizzles', 'pizzalayer' ),
 				'icon'  => 'dashicons-admin-customizer',
-				'desc'  => 'Drizzles are the finishing touch — balsamic glaze, hot honey, ranch swirl. They layer above toppings in the visualizer and give your menu a premium feel with minimal setup.',
-				'tip'   => '💡 Drizzle images look best with a flowing, asymmetric pattern that feels handcrafted.',
+				'desc'  => __( 'Drizzles are the finishing touch — balsamic glaze, hot honey, ranch swirl. They layer above toppings in the visualizer and give your menu a premium feel with minimal setup.', 'pizzalayer' ),
+				'tip'   => __( '💡 Drizzle images look best with a flowing, asymmetric pattern that feels handcrafted.', 'pizzalayer' ),
 				'cpt'   => 'drizzles',
 				'count' => $stats['drizzles'],
 			],
 			'cuts' => [
-				'label' => 'Cuts',
+				'label' => __( 'Cuts', 'pizzalayer' ),
 				'icon'  => 'dashicons-editor-table',
-				'desc'  => 'Define how a finished pizza gets sliced. Square cuts, classic triangles, party-style, or left whole — each cut style gets its own overlay layer that drops on top of the finished pizza.',
-				'tip'   => '💡 Cut overlay PNGs should use a thin line weight with slight transparency so toppings show through.',
+				'desc'  => __( 'Define how a finished pizza gets sliced. Square cuts, classic triangles, party-style, or left whole — each cut style gets its own overlay layer that drops on top of the finished pizza.', 'pizzalayer' ),
+				'tip'   => __( '💡 Cut overlay PNGs should use a thin line weight with slight transparency so toppings show through.', 'pizzalayer' ),
 				'cpt'   => 'cuts',
 				'count' => $stats['cuts'],
 			],
 			'sizes' => [
-				'label' => 'Sizes',
+				'label' => __( 'Sizes', 'pizzalayer' ),
 				'icon'  => 'dashicons-image-rotate',
-				'desc'  => 'Size options define the available pizza dimensions — small, medium, large, party. Each size carries dimension metadata, weight, area, and base price for pricing integrations.',
-				'tip'   => '💡 Set size_area_sqin for accurate topping price-per-area calculations in PizzaLayerPro.',
+				'desc'  => __( 'Size options define the available pizza dimensions — small, medium, large, party. Each size carries dimension metadata, weight, area, and base price for pricing integrations.', 'pizzalayer' ),
+				'tip'   => __( '💡 Set size_area_sqin for accurate topping price-per-area calculations in PizzaLayerPro.', 'pizzalayer' ),
 				'cpt'   => 'sizes',
 				'count' => $stats['sizes'],
 			],
 			'presets' => [
-				'label' => 'Presets',
+				'label' => __( 'Presets', 'pizzalayer' ),
 				'icon'  => 'dashicons-food',
-				'desc'  => 'Pre-configured pizza combinations that customers can start from. Each preset stores a full layer configuration (crust, sauce, cheese, toppings, drizzle, cut) managed via PizzaLayerPro\'s visual builder.',
-				'tip'   => '💡 Use presets to showcase your most popular pizzas — customers can customise further after selecting one.',
+				'desc'  => __( 'Pre-configured pizza combinations that customers can start from. Each preset stores a full layer configuration (crust, sauce, cheese, toppings, drizzle, cut) managed via PizzaLayerPro\'s visual builder.', 'pizzalayer' ),
+				'tip'   => __( '💡 Use presets to showcase your most popular pizzas — customers can customise further after selecting one.', 'pizzalayer' ),
 				'cpt'   => 'presets',
 				'count' => $stats['presets'],
 			],
@@ -122,43 +122,43 @@ class AdminHome {
 		$quick_nav = [
 			[
 				'icon'  => 'dashicons-welcome-learn-more',
-				'label' => 'Setup Guide',
+				'label' => __( 'Setup Guide', 'pizzalayer' ),
 				'href'  => admin_url( 'admin.php?page=pizzalayer-setup' ),
 				'color' => '#2271b1',
 			],
 			[
 				'icon'  => 'dashicons-editor-code',
-				'label' => 'Shortcode Generator',
+				'label' => __( 'Shortcode Generator', 'pizzalayer' ),
 				'href'  => admin_url( 'admin.php?page=pizzalayer-shortcodes' ),
 				'color' => '#00a32a',
 			],
 			[
 				'icon'  => 'dashicons-admin-appearance',
-				'label' => 'Template',
+				'label' => __( 'Template', 'pizzalayer' ),
 				'href'  => admin_url( 'admin.php?page=pizzalayer-template' ),
 				'color' => '#8c5af8',
 			],
 			[
 				'icon'  => 'dashicons-admin-generic',
-				'label' => 'Customizer',
+				'label' => __( 'Customizer', 'pizzalayer' ),
 				'href'  => admin_url( 'admin.php?page=pizzalayer-settings' ),
 				'color' => '#d63638',
 			],
 			[
 				'icon'  => 'dashicons-star-filled',
-				'label' => 'Toppings',
+				'label' => __( 'Toppings', 'pizzalayer' ),
 				'href'  => admin_url( 'edit.php?post_type=pizzalayer_toppings' ),
 				'color' => '#f0b849',
 			],
 			[
 				'icon'  => 'dashicons-media-document',
-				'label' => 'Help',
+				'label' => __( 'Help', 'pizzalayer' ),
 				'href'  => admin_url( 'admin.php?page=pizzalayer-help' ),
 				'color' => '#646970',
 			],
 			[
 				'icon'  => 'dashicons-food',
-				'label' => 'Presets',
+				'label' => __( 'Presets', 'pizzalayer' ),
 				'href'  => admin_url( 'edit.php?post_type=pizzalayer_presets' ),
 				'color' => '#e8692a',
 			],
@@ -166,12 +166,14 @@ class AdminHome {
 
 		// ── Tips rotator ─────────────────────────────────────────────────
 		$tips = [
-			'Keep layer images lean — use WebP or transparent PNG at a consistent canvas size for crisp, predictable stacking.',
-			'Name CPT slugs cleanly (e.g. <code>pepperoni</code>, <code>thin-crust</code>) — they feed directly into CSS classes and JS data keys.',
-			'Offer half and quarter topping coverage to boost average order value without overwhelming the decision.',
-			'Use the <code>[pizza_layer]</code> shortcode to embed a single ingredient image anywhere on your menu pages.',
-			'Cache thumbnails and preload your first visible layer set for a snappier first paint on slower connections.',
-			'Document your price grid rules in the product notes field — your future self will thank you.',
+			__( 'Keep layer images lean — use WebP or transparent PNG at a consistent canvas size for crisp, predictable stacking.', 'pizzalayer' ),
+			/* translators: HTML code element, do not translate <code>pepperoni</code> etc. */
+			__( 'Name CPT slugs cleanly (e.g. <code>pepperoni</code>, <code>thin-crust</code>) — they feed directly into CSS classes and JS data keys.', 'pizzalayer' ),
+			__( 'Offer half and quarter topping coverage to boost average order value without overwhelming the decision.', 'pizzalayer' ),
+			/* translators: [pizza_layer] is a shortcode tag, keep as-is */
+			__( 'Use the <code>[pizza_layer]</code> shortcode to embed a single ingredient image anywhere on your menu pages.', 'pizzalayer' ),
+			__( 'Cache thumbnails and preload your first visible layer set for a snappier first paint on slower connections.', 'pizzalayer' ),
+			__( 'Document your price grid rules in the product notes field — your future self will thank you.', 'pizzalayer' ),
 		];
 
 		?>
@@ -185,18 +187,21 @@ class AdminHome {
 					<span class="dashicons dashicons-pizza plh-header__icon" aria-hidden="true"></span>
 					<div>
 						<h1 class="plh-header__title">PizzaLayer</h1>
-						<p class="plh-header__tagline">The WordPress pizza builder &mdash; v<?php echo esc_html( PIZZALAYER_VERSION ); ?></p>
+						<p class="plh-header__tagline"><?php
+							/* translators: %s = version number */
+							printf( esc_html__( 'The WordPress pizza builder — v%s', 'pizzalayer' ), esc_html( PIZZALAYER_VERSION ) );
+						?></p>
 					</div>
 				</div>
 				<div class="plh-header__actions">
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-template' ) ); ?>" class="button button-primary">
-						<span class="dashicons dashicons-admin-appearance"></span> Template
+						<span class="dashicons dashicons-admin-appearance"></span> <?php esc_html_e( 'Template', 'pizzalayer' ); ?>
 					</a>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-setup' ) ); ?>" class="button">
-						<span class="dashicons dashicons-welcome-learn-more"></span> Setup Guide
+						<span class="dashicons dashicons-welcome-learn-more"></span> <?php esc_html_e( 'Setup Guide', 'pizzalayer' ); ?>
 					</a>
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-shortcodes' ) ); ?>" class="button">
-						<span class="dashicons dashicons-editor-code"></span> Shortcodes
+						<span class="dashicons dashicons-editor-code"></span> <?php esc_html_e( 'Shortcodes', 'pizzalayer' ); ?>
 					</a>
 					<?php
 					// ── Dark mode detection toggle ─────────────────────────────
@@ -231,9 +236,9 @@ class AdminHome {
 			<div class="plh-pro-cta">
 				<span class="plh-pro-cta__icon">🍕</span>
 				<div class="plh-pro-cta__text">
-					<strong>Supercharge with PizzaLayerPro</strong> &mdash;
-					Add WooCommerce cart integration, order pricing grids, and more.
-					<a href="https://pizzalayer.com/pro" target="_blank" rel="noopener">Learn more →</a>
+					<strong><?php esc_html_e( 'Supercharge with PizzaLayerPro', 'pizzalayer' ); ?></strong> &mdash;
+					<?php esc_html_e( 'Add WooCommerce cart integration, order pricing grids, and more.', 'pizzalayer' ); ?>
+					<a href="https://pizzalayer.com/pro" target="_blank" rel="noopener"><?php esc_html_e( 'Learn more →', 'pizzalayer' ); ?></a>
 				</div>
 				<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'pizzalayer_dismiss_pro_cta', '1' ), 'pizzalayer_dismiss_pro_cta' ) ); ?>"
 				   class="plh-pro-cta__dismiss" title="<?php esc_attr_e( 'Dismiss', 'pizzalayer' ); ?>">✕</a>
@@ -263,16 +268,16 @@ class AdminHome {
 			<div class="plh-stats-row">
 				<div class="plh-stat plh-stat--total">
 					<span class="plh-stat__number"><?php echo esc_html( $total ); ?></span>
-					<span class="plh-stat__label">Total Layers</span>
+					<span class="plh-stat__label"><?php esc_html_e( 'Total Layers', 'pizzalayer' ); ?></span>
 				</div>
 				<?php
 				$stat_display = [
-					'toppings' => 'Toppings',
-					'crusts'   => 'Crusts',
-					'sauces'   => 'Sauces',
-					'cheeses'  => 'Cheeses',
-					'drizzles' => 'Drizzles',
-					'cuts'     => 'Cuts',
+					'toppings' => __( 'Toppings', 'pizzalayer' ),
+					'crusts'   => __( 'Crusts', 'pizzalayer' ),
+					'sauces'   => __( 'Sauces', 'pizzalayer' ),
+					'cheeses'  => __( 'Cheeses', 'pizzalayer' ),
+					'drizzles' => __( 'Drizzles', 'pizzalayer' ),
+					'cuts'     => __( 'Cuts', 'pizzalayer' ),
 				];
 				foreach ( $stat_display as $k => $label ) :
 					$warn = $stats[ $k ] === 0 && in_array( $k, $essential, true );
@@ -281,13 +286,13 @@ class AdminHome {
 					<span class="plh-stat__number"><?php echo esc_html( $stats[ $k ] ); ?></span>
 					<span class="plh-stat__label"><?php echo esc_html( $label ); ?></span>
 					<?php if ( $warn ) : ?>
-					<span class="plh-stat__warn-badge">Needs content</span>
+					<span class="plh-stat__warn-badge"><?php esc_html_e( 'Needs content', 'pizzalayer' ); ?></span>
 					<?php endif; ?>
 				</div>
 				<?php endforeach; ?>
 				<div class="plh-stat plh-stat--template">
 					<span class="plh-stat__number plh-stat__number--sm"><?php echo esc_html( ucwords( str_replace( '-', ' ', $active_template ) ) ); ?></span>
-					<span class="plh-stat__label">Active Template</span>
+					<span class="plh-stat__label"><?php esc_html_e( 'Active Template', 'pizzalayer' ); ?></span>
 				</div>
 			</div>
 
@@ -308,31 +313,34 @@ class AdminHome {
 			<div class="plh-hero">
 				<div class="plh-hero__inner">
 					<div class="plh-hero__copy">
-						<h2 class="plh-hero__heading">Build beautiful pizza builders — one layer at a time.</h2>
-						<p class="plh-hero__text">PizzaLayer turns your WordPress site into an interactive pizza configurator. Add your ingredients as layer images, choose a template, drop in a shortcode, and your customers build their perfect pizza in real time.</p>
+						<h2 class="plh-hero__heading"><?php esc_html_e( 'Build beautiful pizza builders — one layer at a time.', 'pizzalayer' ); ?></h2>
+						<p class="plh-hero__text"><?php esc_html_e( 'PizzaLayer turns your WordPress site into an interactive pizza configurator. Add your ingredients as layer images, choose a template, drop in a shortcode, and your customers build their perfect pizza in real time.', 'pizzalayer' ); ?></p>
 						<div class="plh-hero__steps">
 							<div class="plh-hero__step">
 								<span class="plh-hero__step-num">1</span>
-								<span><strong>Add content</strong> — upload crusts, sauces, cheeses &amp; toppings as layer images.</span>
+								<span><strong><?php esc_html_e( 'Add content', 'pizzalayer' ); ?></strong> — <?php esc_html_e( 'upload crusts, sauces, cheeses &amp; toppings as layer images.', 'pizzalayer' ); ?></span>
 							</div>
 							<div class="plh-hero__step">
 								<span class="plh-hero__step-num">2</span>
-								<span><strong>Choose a template</strong> — pick the visual style for your builder UI.</span>
+								<span><strong><?php esc_html_e( 'Choose a template', 'pizzalayer' ); ?></strong> — <?php esc_html_e( 'pick the visual style for your builder UI.', 'pizzalayer' ); ?></span>
 							</div>
 							<div class="plh-hero__step">
 								<span class="plh-hero__step-num">3</span>
-								<span><strong>Embed &amp; go</strong> — paste <code>[pizza_builder]</code> on any page and you're live.</span>
+								<span><strong><?php esc_html_e( 'Embed &amp; go', 'pizzalayer' ); ?></strong> — <?php
+									/* translators: [pizza_builder] is a shortcode, keep as-is */
+									esc_html_e( 'paste [pizza_builder] on any page and you\'re live.', 'pizzalayer' );
+								?></span>
 							</div>
 						</div>
 						<div class="plh-hero__btns">
 							<a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-setup') ); ?>" class="button button-primary">
-								<span class="dashicons dashicons-welcome-learn-more"></span> Setup Guide
+								<span class="dashicons dashicons-welcome-learn-more"></span> <?php esc_html_e( 'Setup Guide', 'pizzalayer' ); ?>
 							</a>
 							<a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-template') ); ?>" class="button">
-								<span class="dashicons dashicons-admin-appearance"></span> Choose Template
+								<span class="dashicons dashicons-admin-appearance"></span> <?php esc_html_e( 'Choose Template', 'pizzalayer' ); ?>
 							</a>
 							<a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-shortcodes') ); ?>" class="button">
-								<span class="dashicons dashicons-editor-code"></span> Shortcodes
+								<span class="dashicons dashicons-editor-code"></span> <?php esc_html_e( 'Shortcodes', 'pizzalayer' ); ?>
 							</a>
 						</div>
 					</div>
@@ -340,26 +348,26 @@ class AdminHome {
 						<div class="plh-hero__stat-pill">
 							<span class="dashicons dashicons-admin-appearance plh-hero__pill-icon"></span>
 							<div>
-								<span class="plh-hero__pill-label">Active Template</span>
-								<span class="plh-hero__pill-val"><?php echo esc_html( $active_template ? ucwords( str_replace('-',' ',$active_template) ) : 'Not set' ); ?></span>
+								<span class="plh-hero__pill-label"><?php esc_html_e( 'Active Template', 'pizzalayer' ); ?></span>
+								<span class="plh-hero__pill-val"><?php echo esc_html( $active_template ? ucwords( str_replace('-',' ',$active_template) ) : __( 'Not set', 'pizzalayer' ) ); ?></span>
 							</div>
 						</div>
 						<div class="plh-hero__stat-pill">
 							<span class="dashicons dashicons-images-alt2 plh-hero__pill-icon"></span>
 							<div>
-								<span class="plh-hero__pill-label">Total Layers Published</span>
+								<span class="plh-hero__pill-label"><?php esc_html_e( 'Total Layers Published', 'pizzalayer' ); ?></span>
 								<span class="plh-hero__pill-val"><?php echo esc_html( $total ); ?></span>
 							</div>
 						</div>
 						<div class="plh-hero__stat-pill">
 							<span class="dashicons dashicons-star-filled plh-hero__pill-icon"></span>
 							<div>
-								<span class="plh-hero__pill-label">Toppings</span>
+								<span class="plh-hero__pill-label"><?php esc_html_e( 'Toppings', 'pizzalayer' ); ?></span>
 								<span class="plh-hero__pill-val"><?php echo esc_html( $stats['toppings'] ); ?></span>
 							</div>
 						</div>
 						<a href="<?php echo esc_url( home_url('/') ); ?>" target="_blank" rel="noopener" class="plh-hero__view-site">
-							<span class="dashicons dashicons-external"></span> View Site
+							<span class="dashicons dashicons-external"></span> <?php esc_html_e( 'View Site', 'pizzalayer' ); ?>
 						</a>
 					</div>
 				</div>
@@ -369,9 +377,9 @@ class AdminHome {
 			<div class="plh-card plh-card--tabs">
 				<div class="plh-card__head">
 					<h2 class="plh-card__title">
-						<span class="dashicons dashicons-category"></span> Layer Manager
+						<span class="dashicons dashicons-category"></span> <?php esc_html_e( 'Layer Manager', 'pizzalayer' ); ?>
 					</h2>
-					<p class="plh-card__subtitle">Select a layer type to learn about it and jump directly to its content.</p>
+					<p class="plh-card__subtitle"><?php esc_html_e( 'Select a layer type to learn about it and jump directly to its content.', 'pizzalayer' ); ?></p>
 				</div>
 
 				<nav class="plh-tabnav" id="plh-layer-tabs" role="tablist">
@@ -403,14 +411,20 @@ class AdminHome {
 							<div class="plh-panel__actions">
 								<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pizzalayer_' . $tab['cpt'] ) ); ?>" class="button">
 									<span class="dashicons dashicons-list-view"></span>
-									View All <?php echo esc_html( $tab['label'] ); ?>
+									<?php
+									/* translators: %s = layer type label e.g. Toppings */
+									printf( esc_html__( 'View All %s', 'pizzalayer' ), esc_html( $tab['label'] ) );
+									?>
 									<?php if ( $tab['count'] > 0 ) : ?>
 									<span class="plh-count-badge"><?php echo esc_html( $tab['count'] ); ?></span>
 									<?php endif; ?>
 								</a>
 								<a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=pizzalayer_' . $tab['cpt'] ) ); ?>" class="button button-primary">
 									<span class="dashicons dashicons-plus-alt2"></span>
-									Add New <?php echo esc_html( rtrim( $tab['label'], 's' ) ); ?>
+									<?php
+									/* translators: %s = layer type singular e.g. Topping */
+									printf( esc_html__( 'Add New %s', 'pizzalayer' ), esc_html( rtrim( $tab['label'], 's' ) ) );
+									?>
 								</a>
 							</div>
 						</div>
@@ -426,7 +440,7 @@ class AdminHome {
 				<div class="plh-card plh-card--feature">
 					<div class="plh-card__icon-header">
 						<span class="dashicons dashicons-admin-tools"></span>
-						<h3>Tips &amp; Tricks</h3>
+						<h3><?php esc_html_e( 'Tips &amp; Tricks', 'pizzalayer' ); ?></h3>
 					</div>
 					<div class="plh-card__content">
 						<div class="plh-rotator-wrap">
@@ -450,16 +464,16 @@ class AdminHome {
 				<div class="plh-card plh-card--feature">
 					<div class="plh-card__icon-header">
 						<span class="dashicons dashicons-editor-code"></span>
-						<h3>Shortcode Reference</h3>
+						<h3><?php esc_html_e( 'Shortcode Reference', 'pizzalayer' ); ?></h3>
 					</div>
 					<div class="plh-card__content">
-						<p><code>[pizza_builder]</code><br><span class="plh-sc-desc">Interactive builder on any page.</span></p>
-						<p><code>[pizza_builder id="pizza-1" max_toppings="5"]</code><br><span class="plh-sc-desc">Multiple builders, different settings.</span></p>
-						<p><code>[pizza_static crust="thin-crust" sauce="tomato" toppings="pepperoni"]</code><br><span class="plh-sc-desc">Static pizza display anywhere.</span></p>
-						<p><code>[pizza_layer type="topping" slug="pepperoni"]</code><br><span class="plh-sc-desc">Single layer image anywhere.</span></p>
+						<p><code>[pizza_builder]</code><br><span class="plh-sc-desc"><?php esc_html_e( 'Interactive builder on any page.', 'pizzalayer' ); ?></span></p>
+						<p><code>[pizza_builder id="pizza-1" max_toppings="5"]</code><br><span class="plh-sc-desc"><?php esc_html_e( 'Multiple builders, different settings.', 'pizzalayer' ); ?></span></p>
+						<p><code>[pizza_static crust="thin-crust" sauce="tomato" toppings="pepperoni"]</code><br><span class="plh-sc-desc"><?php esc_html_e( 'Static pizza display anywhere.', 'pizzalayer' ); ?></span></p>
+						<p><code>[pizza_layer type="topping" slug="pepperoni"]</code><br><span class="plh-sc-desc"><?php esc_html_e( 'Single layer image anywhere.', 'pizzalayer' ); ?></span></p>
 						<p style="margin-top:12px;">
 							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-shortcodes' ) ); ?>" class="button button-secondary">
-								Open Shortcode Generator
+								<?php esc_html_e( 'Open Shortcode Generator', 'pizzalayer' ); ?>
 							</a>
 						</p>
 					</div>
@@ -469,14 +483,20 @@ class AdminHome {
 				<div class="plh-card plh-card--feature">
 					<div class="plh-card__icon-header">
 						<span class="dashicons dashicons-admin-plugins"></span>
-						<h3>Extend PizzaLayer</h3>
+						<h3><?php esc_html_e( 'Extend PizzaLayer', 'pizzalayer' ); ?></h3>
 					</div>
 					<div class="plh-card__content">
-						<p>Create a <strong>child theme template</strong> by adding a directory at <code>/pzttemplates/your-slug/</code>. Copy a base template from the plugin's <code>/templates/</code> folder, then freely edit layout, partials, and CSS.</p>
-						<p>Hook into any part of the builder with the full <strong>action &amp; filter API</strong> — <code>pizzalayer_before_builder</code>, <code>pizzalayer_layer_html</code>, <code>pizzalayer_tab_order</code>, and more.</p>
+						<p><?php
+							/* translators: /pzttemplates/your-slug/ and /templates/ are directory paths, keep as-is */
+							echo wp_kses_post( __( 'Create a <strong>child theme template</strong> by adding a directory at <code>/pzttemplates/your-slug/</code>. Copy a base template from the plugin\'s <code>/templates/</code> folder, then freely edit layout, partials, and CSS.', 'pizzalayer' ) );
+						?></p>
+						<p><?php
+							/* translators: pizzalayer_before_builder etc. are PHP hooks, keep as-is */
+							echo wp_kses_post( __( 'Hook into any part of the builder with the full <strong>action &amp; filter API</strong> — <code>pizzalayer_before_builder</code>, <code>pizzalayer_layer_html</code>, <code>pizzalayer_tab_order</code>, and more.', 'pizzalayer' ) );
+						?></p>
 						<p>
 							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-help' ) ); ?>" class="button button-secondary">
-								Developer Hooks Reference
+								<?php esc_html_e( 'Developer Hooks Reference', 'pizzalayer' ); ?>
 							</a>
 						</p>
 					</div>
@@ -488,9 +508,15 @@ class AdminHome {
 
 			<!-- ══ Credits ════════════════════════════════════════════════ -->
 			<div class="plh-credits">
-				PizzaLayer v<?php echo esc_html( PIZZALAYER_VERSION ); ?> &mdash;
-				crafted by <strong>Ryan Bishop</strong> /
-				<a href="https://islandsundesign.com" target="_blank" rel="noopener">Island Sun Design</a>
+				<?php
+				printf(
+					/* translators: 1: version number, 2: author name, 3: company link HTML */
+					wp_kses_post( __( 'PizzaLayer v%1$s &mdash; crafted by <strong>%2$s</strong> / %3$s', 'pizzalayer' ) ),
+					esc_html( PIZZALAYER_VERSION ),
+					'Ryan Bishop',
+					'<a href="https://islandsundesign.com" target="_blank" rel="noopener">Island Sun Design</a>'
+				);
+				?>
 			</div>
 
 		</div><!-- /.plh-wrap -->

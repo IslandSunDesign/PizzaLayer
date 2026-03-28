@@ -66,9 +66,11 @@ final class Plugin {
 		$blocks = new Blocks\BlockRegistrar();
 		$this->loader->add_action( 'init', $blocks, 'register' );
 
-		// REST API (public — available on front and admin)
-		$rest_api = new Api\PizzaRestApi();
-		$this->loader->add_action( 'rest_api_init', $rest_api, 'register_routes' );
+		// REST API — opt-in only (disabled by default; enabled via Settings → Advanced)
+		if ( get_option( 'pizzalayer_setting_adv_rest_api_enabled', 'no' ) === 'yes' ) {
+			$rest_api = new Api\PizzaRestApi();
+			$this->loader->add_action( 'rest_api_init', $rest_api, 'register_routes' );
+		}
 
 		// ── Live template preview override (front-end + admin) ───────────
 		// Must run outside is_admin() — the iframe loads on the front-end.

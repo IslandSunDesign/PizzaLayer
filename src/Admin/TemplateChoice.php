@@ -20,7 +20,7 @@ class TemplateChoice {
 		     && wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'pizzalayer_activate_template' ) ) {
 			$slug = sanitize_key( $_POST['pizzalayer_activate_template'] );
 			update_option( 'pizzalayer_setting_global_template', $slug );
-			echo '<div class="notice notice-success is-dismissible"><p>Template <strong>' . esc_html( $slug ) . '</strong> activated.</p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p>' . sprintf( esc_html__( 'Template %s activated.', 'pizzalayer' ), '<strong>' . esc_html( $slug ) . '</strong>' ) . '</p></div>';
 		}
 
 		$active = (string) get_option( 'pizzalayer_setting_global_template', 'nightpie' );
@@ -29,7 +29,7 @@ class TemplateChoice {
 		if ( isset( $_POST['pizzalayer_template_settings_save'], $_POST['_wpnonce'] )
 		     && wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'pizzalayer_template_settings_save' ) ) {
 			$this->save_template_settings();
-			echo '<div class="notice notice-success is-dismissible"><p><strong>Template settings saved.</strong></p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p><strong>' . esc_html__( 'Template settings saved.', 'pizzalayer' ) . '</strong></p></div>';
 			// Re-read active after save
 			$active = (string) get_option( 'pizzalayer_setting_global_template', 'nightpie' );
 		}
@@ -129,15 +129,15 @@ class TemplateChoice {
 		<div class="ptc-header">
 			<span class="dashicons dashicons-admin-appearance ptc-header__icon"></span>
 			<div>
-				<h1 class="ptc-header__title">Choose a Template</h1>
-				<p class="ptc-header__sub">Select the visual style for your pizza builder. Preview any template live, then activate it — your content and settings stay intact.</p>
+				<h1 class="ptc-header__title"><?php esc_html_e( 'Choose a Template', 'pizzalayer' ); ?></h1>
+				<p class="ptc-header__sub"><?php esc_html_e( 'Select the visual style for your pizza builder. Preview any template live, then activate it — your content and settings stay intact.', 'pizzalayer' ); ?></p>
 			</div>
 			<div class="ptc-header__actions">
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-settings' ) ); ?>" class="button">
-					<span class="dashicons dashicons-admin-generic"></span> Settings
+					<span class="dashicons dashicons-admin-generic"></span> <?php esc_html_e( 'Settings', 'pizzalayer' ); ?>
 				</a>
 				<button type="button" class="button ptc-edit-preview-url" id="ptc-edit-preview-url">
-					<span class="dashicons dashicons-admin-links"></span> Preview URL
+					<span class="dashicons dashicons-admin-links"></span> <?php esc_html_e( 'Preview URL', 'pizzalayer' ); ?>
 				</button>
 			</div>
 		</div>
@@ -149,15 +149,15 @@ class TemplateChoice {
 				<input type="hidden" name="pizzalayer_save_preview_url" value="1">
 				<label class="ptc-preview-url-label">
 					<span class="dashicons dashicons-admin-links"></span>
-					Preview page URL — enter any page on your site that contains <code>[pizza_builder]</code>:
+					<?php echo wp_kses_post( __( 'Preview page URL — enter any page on your site that contains <code>[pizza_builder]</code>:', 'pizzalayer' ) ); ?>
 				</label>
 				<div class="ptc-preview-url-row">
 					<input type="url" name="pizzalayer_template_preview_url"
 					       class="ptc-preview-url-input"
 					       value="<?php echo esc_attr( (string) get_option( 'pizzalayer_template_preview_url', '' ) ); ?>"
 					       placeholder="<?php echo esc_attr( $preview_page_url ); ?>">
-					<button type="submit" class="button button-primary">Save</button>
-					<button type="button" class="button ptc-cancel-preview-url" id="ptc-cancel-preview-url">Cancel</button>
+					<button type="submit" class="button button-primary"><?php esc_html_e( 'Save', 'pizzalayer' ); ?></button>
+					<button type="button" class="button ptc-cancel-preview-url" id="ptc-cancel-preview-url"><?php esc_html_e( 'Cancel', 'pizzalayer' ); ?></button>
 				</div>
 			</form>
 		</div>
@@ -168,7 +168,7 @@ class TemplateChoice {
 		     && wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'pizzalayer_save_preview_url' ) ) {
 			$url = esc_url_raw( wp_unslash( $_POST['pizzalayer_template_preview_url'] ?? '' ) );
 			update_option( 'pizzalayer_template_preview_url', $url );
-			echo '<div class="notice notice-success is-dismissible"><p>Preview URL saved.</p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p>' . esc_html__( 'Preview URL saved.', 'pizzalayer' ) . '</p></div>';
 		}
 		?>
 
@@ -176,20 +176,20 @@ class TemplateChoice {
 		<div class="ptc-notice ptc-notice--info">
 			<span class="dashicons dashicons-info-outline"></span>
 			Auto-detected preview page: <strong><?php echo esc_html( $preview_page_url ); ?></strong>
-			— click <strong>Preview URL</strong> above to change it.
+			<?php esc_html_e( '— click', 'pizzalayer' ); ?> <strong><?php esc_html_e( 'Preview URL', 'pizzalayer' ); ?></strong> <?php esc_html_e( 'above to change it.', 'pizzalayer' ); ?>
 		</div>
 		<?php elseif ( $preview_page_url === trailingslashit( home_url( '/' ) ) ) : ?>
 		<div class="ptc-notice ptc-notice--warn">
 			<span class="dashicons dashicons-warning"></span>
 			No page with <code>[pizza_builder]</code> found — previewing the homepage.
-			Click <strong>Preview URL</strong> above to set the correct page.
+			<?php esc_html_e( 'Click', 'pizzalayer' ); ?> <strong><?php esc_html_e( 'Preview URL', 'pizzalayer' ); ?></strong> <?php esc_html_e( 'above to set the correct page.', 'pizzalayer' ); ?>
 		</div>
 		<?php endif; ?>
 
 		<?php if ( empty( $templates ) ) : ?>
 		<div class="ptc-card ptc-empty">
 			<span class="dashicons dashicons-warning"></span>
-			<p>No templates found. Make sure at least the <code>nightpie</code> folder exists in the plugin's <code>/templates/</code> directory.</p>
+			<p><?php echo wp_kses_post( __( 'No templates found. Make sure at least the <code>nightpie</code> folder exists in the plugin&#8217;s <code>/templates/</code> directory.', 'pizzalayer' ) ); ?></p>
 		</div>
 		<?php else : ?>
 
@@ -200,30 +200,30 @@ class TemplateChoice {
 					<span class="dashicons dashicons-admin-appearance"></span>
 					<?php echo esc_html( count( $templates ) ); ?> template<?php echo count( $templates ) !== 1 ? 's' : ''; ?> available
 				</div>
-				<h2 class="ptc-hero__heading">Pick your style, then make it yours.</h2>
-				<p class="ptc-hero__body">Each template is a complete, self-contained builder experience — different layout, different feel, same content. Hover a card to preview it live in the pane on the right. When you find the one, hit <strong>Activate</strong>.</p>
-				<p class="ptc-hero__body">Once activated, the <strong>Template Settings</strong> panel below lets you fine-tune colors, fonts, and layout options specific to that template.</p>
+				<h2 class="ptc-hero__heading"><?php esc_html_e( 'Pick your style, then make it yours.', 'pizzalayer' ); ?></h2>
+				<p class="ptc-hero__body"><?php echo wp_kses_post( __( 'Each template is a complete, self-contained builder experience — different layout, different feel, same content. Hover a card to preview it live in the pane on the right. When you find the one, hit <strong>Activate</strong>.', 'pizzalayer' ) ); ?></p>
+				<p class="ptc-hero__body"><?php echo wp_kses_post( __( 'Once activated, the <strong>Template Settings</strong> panel below lets you fine-tune colors, fonts, and layout options specific to that template.', 'pizzalayer' ) ); ?></p>
 			</div>
 			<div class="ptc-hero__right">
 				<div class="ptc-hero__pill">
 					<span class="dashicons dashicons-yes-alt ptc-hero__pill-icon ptc-hero__pill-icon--green"></span>
 					<div>
-						<span class="ptc-hero__pill-label">Currently Active</span>
+						<span class="ptc-hero__pill-label"><?php esc_html_e( 'Currently Active', 'pizzalayer' ); ?></span>
 						<span class="ptc-hero__pill-val"><?php echo esc_html( $active_name ); ?></span>
 					</div>
 				</div>
 				<div class="ptc-hero__pill">
 					<span class="dashicons dashicons-welcome-learn-more ptc-hero__pill-icon"></span>
 					<div>
-						<span class="ptc-hero__pill-label">How it works</span>
-						<span class="ptc-hero__pill-val ptc-hero__pill-val--sm">Hover → Preview → Activate → Customise</span>
+						<span class="ptc-hero__pill-label"><?php esc_html_e( 'How it works', 'pizzalayer' ); ?></span>
+						<span class="ptc-hero__pill-val ptc-hero__pill-val--sm"><?php esc_html_e( 'Hover → Preview → Activate → Customise', 'pizzalayer' ); ?></span>
 					</div>
 				</div>
 				<div class="ptc-hero__pill">
 					<span class="dashicons dashicons-shield ptc-hero__pill-icon"></span>
 					<div>
-						<span class="ptc-hero__pill-label">Safe to switch</span>
-						<span class="ptc-hero__pill-val ptc-hero__pill-val--sm">Content &amp; settings are never affected</span>
+						<span class="ptc-hero__pill-label"><?php esc_html_e( 'Safe to switch', 'pizzalayer' ); ?></span>
+						<span class="ptc-hero__pill-val ptc-hero__pill-val--sm"><?php esc_html_e( 'Content &amp; settings are never affected', 'pizzalayer' ); ?></span>
 					</div>
 				</div>
 			</div>
@@ -265,7 +265,7 @@ class TemplateChoice {
 						<div class="ptc-item__name">
 							<?php echo esc_html( $info['name'] ?? ucwords( str_replace( '-', ' ', $slug ) ) ); ?>
 							<?php if ( $is_active ) : ?>
-							<span class="ptc-item__active-badge">Active</span>
+							<span class="ptc-item__active-badge"><?php esc_html_e( 'Active', 'pizzalayer' ); ?></span>
 							<?php endif; ?>
 						</div>
 						<?php if ( ! empty( $info['description'] ) ) : ?>
@@ -286,7 +286,7 @@ class TemplateChoice {
 						<button type="button" class="button ptc-preview-btn"
 						        data-preview-url="<?php echo esc_attr( $purl ); ?>"
 						        data-name="<?php echo esc_attr( $info['name'] ?? $slug ); ?>">
-							<span class="dashicons dashicons-visibility"></span> Preview
+							<span class="dashicons dashicons-visibility"></span> <?php esc_html_e( 'Preview', 'pizzalayer' ); ?>
 						</button>
 						<?php endif; ?>
 						<?php if ( $is_active ) : ?>
@@ -295,7 +295,7 @@ class TemplateChoice {
 						<button class="button button-primary ptc-activate-btn"
 						        data-slug="<?php echo esc_attr( $slug ); ?>"
 						        data-name="<?php echo esc_attr( $info['name'] ?? $slug ); ?>">
-							Activate
+						<?php esc_html_e( 'Activate', 'pizzalayer' ); ?>
 						</button>
 						<?php endif; ?>
 					</div>
@@ -320,7 +320,7 @@ class TemplateChoice {
 						<span></span><span></span><span></span>
 					</div>
 					<div class="ptc-preview-bar__url" id="ptc-preview-label">
-						<?php echo esc_html( $info['name'] ?? ucwords( str_replace( '-', ' ', $active ) ) ); ?> — Live Preview
+						<?php echo esc_html( $info['name'] ?? ucwords( str_replace( '-', ' ', $active ) ) ); ?> — <?php esc_html_e( 'Live Preview', 'pizzalayer' ); ?>
 					</div>
 					<div class="ptc-preview-bar__actions">
 						<button type="button" class="ptc-preview-bar__btn" id="ptc-preview-reload" title="Reload preview">
@@ -357,20 +357,20 @@ class TemplateChoice {
 			<div class="ptc-modal__box">
 				<div class="ptc-modal__header">
 					<h2 id="ptc-modal-title" class="ptc-modal__title">
-						<span class="dashicons dashicons-admin-appearance"></span> Activate Template?
+						<span class="dashicons dashicons-admin-appearance"></span> <?php esc_html_e( 'Activate Template?', 'pizzalayer' ); ?>
 					</h2>
 				</div>
 				<div class="ptc-modal__body">
-					<p>Activating <strong id="ptc-modal-name"></strong> will apply it to your live site immediately.</p>
-					<p class="ptc-modal__note">Your existing content and settings are unaffected — only the front-end visual design will change.</p>
+					<p><?php esc_html_e( 'Activating', 'pizzalayer' ); ?> <strong id="ptc-modal-name"></strong> <?php esc_html_e( 'will apply it to your live site immediately.', 'pizzalayer' ); ?></p>
+					<p class="ptc-modal__note"><?php esc_html_e( 'Your existing content and settings are unaffected — only the front-end visual design will change.', 'pizzalayer' ); ?></p>
 				</div>
 				<div class="ptc-modal__footer">
-					<button id="ptc-modal-cancel" class="button button-secondary">Cancel</button>
+					<button id="ptc-modal-cancel" class="button button-secondary"><?php esc_html_e( 'Cancel', 'pizzalayer' ); ?></button>
 					<form method="post" action="" id="ptc-activate-form" style="display:inline;">
 						<?php wp_nonce_field( 'pizzalayer_activate_template' ); ?>
 						<input type="hidden" name="pizzalayer_activate_template" id="ptc-modal-slug" value="">
 						<button type="submit" class="button button-primary">
-							<span class="dashicons dashicons-yes"></span> Yes, Activate
+							<span class="dashicons dashicons-yes"></span> <?php esc_html_e( 'Yes, Activate', 'pizzalayer' ); ?>
 						</button>
 					</form>
 				</div>
@@ -386,7 +386,7 @@ class TemplateChoice {
 					<h2>
 						<span class="dashicons dashicons-admin-appearance"></span>
 						<?php echo esc_html( ucwords( str_replace( '-', ' ', $active ) ) ); ?> Template Settings
-						<span class="ptc-settings-card__badge">Active Template</span>
+						<span class="ptc-settings-card__badge"><?php esc_html_e( 'Active Template', 'pizzalayer' ); ?></span>
 					</h2>
 					<p>These settings apply only to the <strong><?php echo esc_html( ucwords( str_replace( '-', ' ', $active ) ) ); ?></strong> template. Switching templates shows that template\'s settings instead.</p>
 				</div>
@@ -504,7 +504,7 @@ class TemplateChoice {
 
 				<div class="ptc-settings-save-row">
 					<button type="submit" class="button button-primary ptc-settings-save-btn">
-						<span class="dashicons dashicons-saved"></span> Save Template Settings
+						<span class="dashicons dashicons-saved"></span> <?php esc_html_e( 'Save Template Settings', 'pizzalayer' ); ?>
 					</button>
 				</div>
 			</form>
@@ -513,7 +513,7 @@ class TemplateChoice {
 		<div class="ptc-settings-card ptc-settings-card--empty">
 			<div class="ptc-settings-card__head">
 				<h2><span class="dashicons dashicons-admin-appearance"></span> <?php echo esc_html( ucwords( str_replace( '-', ' ', $active ) ) ); ?> Template Settings</h2>
-				<p>This template has no customizable settings.</p>
+				<p><?php esc_html_e( 'This template has no customizable settings.', 'pizzalayer' ); ?></p>
 			</div>
 		</div>
 		<?php endif; ?>
@@ -696,18 +696,16 @@ class TemplateChoice {
 
 	/* Template item row */
 	.ptc-item {
-		display: grid;
-		grid-template-columns: 72px 1fr auto;
+		display: flex;
+		flex-direction: column;
 		gap: 10px;
-		align-items: center;
-		padding: 10px 12px;
+		align-items: stretch;
+		padding: 14px 16px;
 		border-bottom: 1px solid #e8eaed;
-		cursor: pointer;
 		transition: background 0.12s;
 		position: relative;
 	}
 	.ptc-item:last-of-type { border-bottom: none; }
-	.ptc-item:hover { background: #fff; }
 	.ptc-item--active { background: #fff; }
 	.ptc-item--previewing { background: #f0f5ff; }
 	.ptc-item--active.ptc-item--previewing { background: #f0f5ff; }
@@ -732,8 +730,8 @@ class TemplateChoice {
 
 	/* Thumbnail */
 	.ptc-item__thumb {
-		width: 72px; height: 48px;
-		border-radius: 6px;
+		width: 100%; height: 140px;
+		border-radius: 8px;
 		overflow: hidden;
 		position: relative;
 		background: #1a1e23;
@@ -781,7 +779,7 @@ class TemplateChoice {
 	.ptc-item__tag { background:#ebebeb; color:#555; font-size:10px; padding:1px 5px; border-radius:3px; }
 
 	/* Action column */
-	.ptc-item__action { flex-shrink: 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
+	.ptc-item__action { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
 	.ptc-item__check {
 		color: #00a32a;
 		font-size: 22px !important; width: 22px !important; height: 22px !important;

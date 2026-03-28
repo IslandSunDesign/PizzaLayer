@@ -158,24 +158,25 @@ class ContentHub {
 
 		<!-- ══ Header ═══════════════════════════════════════════════════ -->
 		<div class="plch-header" id="plch-header">
+			<span class="dashicons <?php echo esc_attr( $active_meta['icon'] ); ?> plch-header__icon" id="plch-header-icon"
+			      style="color:<?php echo esc_attr( $active_meta['color'] ); ?>;font-size:32px;width:32px;height:32px;flex-shrink:0;"></span>
 			<div class="plch-header__left">
 				<h1 class="plch-header__title" id="plch-header-title">
-					<span class="dashicons <?php echo esc_attr( $active_meta['icon'] ); ?> plch-header-icon"
-					      style="color:<?php echo esc_attr( $active_meta['color'] ); ?>"></span>
 					<span id="plch-header-label"><?php echo esc_html( $active_meta['label'] ); ?></span>
 				</h1>
 				<p class="plch-header__desc" id="plch-header-desc"><?php echo esc_html( $active_meta['desc'] ); ?></p>
 			</div>
 			<div class="plch-header__actions">
 				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . $active_cpt ) ); ?>"
-				   class="button plch-wp-list-btn" id="plch-wp-list-btn" title="Open native WordPress list for this post type">
+				   class="button plch-wp-list-btn" id="plch-wp-list-btn" title="<?php esc_attr_e( 'Open WordPress list', 'pizzalayer' ); ?>"
+				   style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff;">
 					<span class="dashicons dashicons-list-view"></span>
-					<span id="plch-wp-list-label">WP List</span>
+					<span id="plch-wp-list-label"><?php esc_html_e( 'WP List', 'pizzalayer' ); ?></span>
 				</a>
 				<a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . $active_cpt ) ); ?>"
 				   class="button button-primary plch-add-btn" id="plch-add-btn">
 					<span class="dashicons dashicons-plus-alt2"></span>
-					Add New <span id="plch-add-singular"><?php echo esc_html( $active_meta['singular'] ); ?></span>
+					<?php esc_html_e( 'Add New', 'pizzalayer' ); ?> <span id="plch-add-singular"><?php echo esc_html( $active_meta['singular'] ); ?></span>
 				</a>
 			</div>
 		</div>
@@ -357,23 +358,22 @@ class ContentHub {
 
 	/* ── Header ────────────────────────────────────────────────────── */
 	.plch-header {
-		display: flex; align-items: flex-start; justify-content: space-between;
+		display: flex; align-items: center; justify-content: space-between;
 		gap: 16px; flex-wrap: wrap;
-		background: #fff; border: 1px solid #e0e3e7; border-radius: 10px;
+		background: linear-gradient(135deg, #1a1e23 0%, #2d3748 100%);
+		color: #fff; border-radius: 10px;
 		padding: 20px 24px; margin-bottom: 18px;
-		transition: border-color .2s;
+	}
+	.plch-header__icon {
+		font-size: 32px !important; width: 32px !important; height: 32px !important;
+		flex-shrink: 0;
 	}
 	.plch-header__left { flex: 1; min-width: 0; }
 	.plch-header__title {
-		margin: 0 0 4px; font-size: 20px; font-weight: 700;
+		margin: 0 0 4px; font-size: 20px; font-weight: 700; color: #fff;
 		display: flex; align-items: center; gap: 10px;
-		transition: color .2s;
 	}
-	.plch-header__title .dashicons {
-		font-size: 22px !important; width: 22px !important; height: 22px !important;
-		transition: color .2s;
-	}
-	.plch-header__desc { margin: 0; font-size: 13px; color: #646970; transition: opacity .2s; }
+	.plch-header__desc { margin: 0; font-size: 13px; color: #8d97a5; }
 	.plch-add-btn {
 		display: inline-flex !important; align-items: center; gap: 6px;
 		white-space: nowrap; transition: background .2s, border-color .2s;

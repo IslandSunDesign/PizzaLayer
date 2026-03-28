@@ -27,8 +27,16 @@ class LayerImageMaker {
 		wp_enqueue_media();   // needed so we can offer "Send to Media Library"
 		?>
 		<div class="wrap plim-wrap">
-		<h1 class="wp-heading-inline"><span class="dashicons dashicons-format-image" style="font-size:26px;width:26px;height:26px;vertical-align:middle;margin-right:8px;color:#ff6b35;"></span>Layer Image Maker</h1>
-		<p class="plim-intro">Upload any image, crop it to the correct aspect ratio for your pizza layers, adjust colour and transparency, then download the result as a transparent PNG.</p>
+		<?php $this->render_styles(); ?>
+
+		<!-- ══ Header ══════════════════════════════════════════════════ -->
+		<div class="plim-header">
+			<span class="dashicons dashicons-format-image plim-header__icon"></span>
+			<div>
+				<h1 class="plim-header__title"><?php esc_html_e( 'Layer Image Maker', 'pizzalayer' ); ?></h1>
+				<p class="plim-header__sub"><?php esc_html_e( 'Upload an image, crop it to the correct aspect ratio for your pizza layers, adjust colour and transparency, then download as a transparent PNG.', 'pizzalayer' ); ?></p>
+			</div>
+		</div>
 
 		<div class="plim-shell" id="plim-shell">
 
@@ -37,20 +45,20 @@ class LayerImageMaker {
 
 				<!-- Upload zone -->
 				<div class="plim-card" id="plim-upload-card">
-					<h2 class="plim-card-h"><span class="dashicons dashicons-upload"></span> Image Source</h2>
-					<div class="plim-drop-zone" id="plim-drop-zone" tabindex="0" role="button" aria-label="Upload image">
+					<h2 class="plim-card-h"><span class="dashicons dashicons-upload"></span> <?php esc_html_e( 'Image Source', 'pizzalayer' ); ?></h2>
+					<div class="plim-drop-zone" id="plim-drop-zone" tabindex="0" role="button" aria-aria-label="<?php esc_attr_e( 'Upload image', 'pizzalayer' ); ?>">
 						<span class="dashicons dashicons-format-image plim-drop-icon"></span>
-						<p>Drop an image here, or click to browse</p>
+						<p><?php esc_html_e( 'Drop an image here, or click to browse', 'pizzalayer' ); ?></p>
 						<input type="file" id="plim-file-input" accept="image/*" style="display:none;">
 					</div>
 					<button type="button" class="button plim-media-btn" id="plim-media-btn">
-						<span class="dashicons dashicons-admin-media"></span> Choose from Media Library
+						<span class="dashicons dashicons-admin-media"></span> <?php esc_html_e( 'Choose from Media Library', 'pizzalayer' ); ?>
 					</button>
 				</div>
 
 				<!-- Aspect ratio -->
 				<div class="plim-card" id="plim-ratio-card">
-					<h2 class="plim-card-h"><span class="dashicons dashicons-image-crop"></span> Guide Overlay</h2>
+					<h2 class="plim-card-h"><span class="dashicons dashicons-image-crop"></span> <?php esc_html_e( 'Guide Overlay', 'pizzalayer' ); ?></h2>
 					<label class="plim-label">Aspect Ratio
 						<select id="plim-aspect-preset" class="plim-select">
 							<option value="1/1">1:1 — Square</option>
@@ -68,29 +76,29 @@ class LayerImageMaker {
 					</div>
 					<label class="plim-label plim-toggle-row">
 						<input type="checkbox" id="plim-show-guide" checked>
-						Show pizza outline guide
+						<?php esc_html_e( 'Show pizza outline guide', 'pizzalayer' ); ?>
 					</label>
 					<label class="plim-label plim-toggle-row" style="margin-top:4px;">
 						<input type="checkbox" id="plim-show-thirds" checked>
-						Show rule-of-thirds grid
+						<?php esc_html_e( 'Show rule-of-thirds grid', 'pizzalayer' ); ?>
 					</label>
 				</div>
 
 				<!-- Adjustments -->
 				<div class="plim-card" id="plim-adj-card">
-					<h2 class="plim-card-h"><span class="dashicons dashicons-admin-appearance"></span> Adjustments
-						<button type="button" class="plim-reset-adj button-link" id="plim-reset-adj" title="Reset all adjustments">↺ Reset</button>
+					<h2 class="plim-card-h"><span class="dashicons dashicons-admin-appearance"></span> <?php esc_html_e( 'Adjustments', 'pizzalayer' ); ?>
+						<button type="button" class="plim-reset-adj button-link" id="plim-reset-adj" title="<?php esc_attr_e( 'Reset all adjustments', 'pizzalayer' ); ?>">↺ <?php esc_html_e( 'Reset', 'pizzalayer' ); ?></button>
 					</h2>
 
 					<?php
 					$sliders = [
-						[ 'id' => 'plim-brightness',  'label' => 'Brightness',  'min' => -100, 'max' => 100, 'def' => 0,   'unit' => '' ],
-						[ 'id' => 'plim-contrast',    'label' => 'Contrast',    'min' => -100, 'max' => 100, 'def' => 0,   'unit' => '' ],
-						[ 'id' => 'plim-saturation',  'label' => 'Saturation',  'min' => -100, 'max' => 100, 'def' => 0,   'unit' => '' ],
-						[ 'id' => 'plim-hue',         'label' => 'Hue Shift',   'min' => -180, 'max' => 180, 'def' => 0,   'unit' => '°' ],
-						[ 'id' => 'plim-blur',        'label' => 'Blur',        'min' => 0,    'max' => 20,  'def' => 0,   'unit' => 'px' ],
-						[ 'id' => 'plim-sharpen',     'label' => 'Sharpen',     'min' => 0,    'max' => 10,  'def' => 0,   'unit' => '' ],
-						[ 'id' => 'plim-opacity',     'label' => 'Opacity',     'min' => 0,    'max' => 100, 'def' => 100, 'unit' => '%' ],
+						[ 'id' => 'plim-brightness',  'label' => __( 'Brightness', 'pizzalayer' ),  'min' => -100, 'max' => 100, 'def' => 0,   'unit' => '' ],
+						[ 'id' => 'plim-contrast',    'label' => __( 'Contrast', 'pizzalayer' ),    'min' => -100, 'max' => 100, 'def' => 0,   'unit' => '' ],
+						[ 'id' => 'plim-saturation',  'label' => __( 'Saturation', 'pizzalayer' ),  'min' => -100, 'max' => 100, 'def' => 0,   'unit' => '' ],
+						[ 'id' => 'plim-hue',         'label' => __( 'Hue Shift', 'pizzalayer' ),   'min' => -180, 'max' => 180, 'def' => 0,   'unit' => '°' ],
+						[ 'id' => 'plim-blur',        'label' => __( 'Blur', 'pizzalayer' ),        'min' => 0,    'max' => 20,  'def' => 0,   'unit' => 'px' ],
+						[ 'id' => 'plim-sharpen',     'label' => __( 'Sharpen', 'pizzalayer' ),     'min' => 0,    'max' => 10,  'def' => 0,   'unit' => '' ],
+						[ 'id' => 'plim-opacity',     'label' => __( 'Opacity', 'pizzalayer' ),     'min' => 0,    'max' => 100, 'def' => 100, 'unit' => '%' ],
 					];
 					foreach ( $sliders as $s ) {
 						$mid = esc_attr( $s['id'] );
@@ -115,7 +123,7 @@ class LayerImageMaker {
 					<div class="plim-separator"></div>
 					<label class="plim-label plim-toggle-row">
 						<input type="checkbox" id="plim-remove-bg">
-						Remove background (threshold)
+						<?php esc_html_e( 'Remove background (threshold)', 'pizzalayer' ); ?>
 					</label>
 					<div id="plim-bg-row" class="plim-slider-row" style="display:none;">
 						<label class="plim-slider-label" for="plim-bg-thresh">
@@ -125,14 +133,14 @@ class LayerImageMaker {
 					</div>
 					<label class="plim-label plim-toggle-row" id="plim-bg-invert-row" style="display:none;margin-top:4px;">
 						<input type="checkbox" id="plim-bg-invert">
-						Invert selection (keep background)
+						<?php esc_html_e( 'Invert selection (keep background)', 'pizzalayer' ); ?>
 					</label>
 				</div>
 
 				<!-- Output -->
 				<div class="plim-card" id="plim-out-card">
-					<h2 class="plim-card-h"><span class="dashicons dashicons-download"></span> Export</h2>
-					<label class="plim-label">Output size
+					<h2 class="plim-card-h"><span class="dashicons dashicons-download"></span> <?php esc_html_e( 'Export', 'pizzalayer' ); ?></h2>
+					<label class="plim-label"><?php esc_html_e( 'Output size', 'pizzalayer' ); ?>
 						<select id="plim-out-size" class="plim-select">
 							<option value="512">512 px</option>
 							<option value="1024" selected>1024 px</option>
@@ -140,15 +148,15 @@ class LayerImageMaker {
 							<option value="original">Original</option>
 						</select>
 					</label>
-					<label class="plim-label" style="margin-top:6px;">File name
+					<label class="plim-label" style="margin-top:6px;"><?php esc_html_e( 'File name', 'pizzalayer' ); ?>
 						<input type="text" id="plim-filename" class="plim-text-input" placeholder="layer-image" value="layer-image">
 					</label>
 					<div class="plim-out-btns">
 						<button type="button" class="button button-primary plim-btn-full" id="plim-download-btn" disabled>
-							<span class="dashicons dashicons-download"></span> Download PNG
+							<span class="dashicons dashicons-download"></span> <?php esc_html_e( 'Download PNG', 'pizzalayer' ); ?>
 						</button>
 						<button type="button" class="button plim-btn-full" id="plim-send-media-btn" disabled>
-							<span class="dashicons dashicons-admin-media"></span> Send to Media Library
+							<span class="dashicons dashicons-admin-media"></span> <?php esc_html_e( 'Send to Media Library', 'pizzalayer' ); ?>
 						</button>
 					</div>
 					<p class="plim-out-note" id="plim-out-note"></p>
@@ -160,38 +168,38 @@ class LayerImageMaker {
 			<main class="plim-canvas-area" id="plim-canvas-area">
 				<div class="plim-canvas-toolbar" id="plim-canvas-toolbar">
 					<span class="plim-tool-group">
-						<button type="button" class="plim-tool-btn plim-tool-btn--active" id="plim-tool-crop" title="Crop / pan (C)">
-							<span class="dashicons dashicons-image-crop"></span> Crop
+						<button type="button" class="plim-tool-btn plim-tool-btn--active" id="plim-tool-crop" title="<?php esc_attr_e( 'Crop / pan (C)', 'pizzalayer' ); ?>">
+							<span class="dashicons dashicons-image-crop"></span> <?php esc_html_e( 'Crop', 'pizzalayer' ); ?>
 						</button>
-						<button type="button" class="plim-tool-btn" id="plim-tool-move" title="Pan (M)">
-							<span class="dashicons dashicons-move"></span> Pan
+						<button type="button" class="plim-tool-btn" id="plim-tool-move" title="<?php esc_attr_e( 'Pan (M)', 'pizzalayer' ); ?>">
+							<span class="dashicons dashicons-move"></span> <?php esc_html_e( 'Pan', 'pizzalayer' ); ?>
 						</button>
 					</span>
 					<span class="plim-tool-group">
-						<button type="button" class="plim-tool-btn" id="plim-zoom-out" title="Zoom out (-)">
+						<button type="button" class="plim-tool-btn" id="plim-zoom-out" title="<?php esc_attr_e( 'Zoom out (-)', 'pizzalayer' ); ?>">
 							<span class="dashicons dashicons-minus"></span>
 						</button>
 						<span class="plim-zoom-level" id="plim-zoom-level">100%</span>
-						<button type="button" class="plim-tool-btn" id="plim-zoom-in" title="Zoom in (+)">
+						<button type="button" class="plim-tool-btn" id="plim-zoom-in" title="<?php esc_attr_e( 'Zoom in (+)', 'pizzalayer' ); ?>">
 							<span class="dashicons dashicons-plus"></span>
 						</button>
-						<button type="button" class="plim-tool-btn" id="plim-zoom-fit" title="Fit (F)">
+						<button type="button" class="plim-tool-btn" id="plim-zoom-fit" title="<?php esc_attr_e( 'Fit (F)', 'pizzalayer' ); ?>">
 							<span class="dashicons dashicons-fullscreen-alt"></span>
 						</button>
 					</span>
 					<span class="plim-tool-group">
-						<button type="button" class="plim-tool-btn" id="plim-rotate-ccw" title="Rotate 90° left">
+						<button type="button" class="plim-tool-btn" id="plim-rotate-ccw" title="<?php esc_attr_e( 'Rotate 90° left', 'pizzalayer' ); ?>">
 							<span class="dashicons dashicons-undo"></span>
 						</button>
-						<button type="button" class="plim-tool-btn" id="plim-rotate-cw" title="Rotate 90° right">
+						<button type="button" class="plim-tool-btn" id="plim-rotate-cw" title="<?php esc_attr_e( 'Rotate 90° right', 'pizzalayer' ); ?>">
 							<span class="dashicons dashicons-redo"></span>
 						</button>
-						<button type="button" class="plim-tool-btn" id="plim-flip-h" title="Flip horizontal">⇄</button>
-						<button type="button" class="plim-tool-btn" id="plim-flip-v" title="Flip vertical">⇅</button>
+						<button type="button" class="plim-tool-btn" id="plim-flip-h" title="<?php esc_attr_e( 'Flip horizontal', 'pizzalayer' ); ?>">⇄</button>
+						<button type="button" class="plim-tool-btn" id="plim-flip-v" title="<?php esc_attr_e( 'Flip vertical', 'pizzalayer' ); ?>">⇅</button>
 					</span>
 					<span class="plim-tool-group plim-tool-group--right">
-						<button type="button" class="plim-tool-btn" id="plim-undo-btn" title="Undo (Ctrl+Z)" disabled>
-							<span class="dashicons dashicons-undo"></span> Undo
+						<button type="button" class="plim-tool-btn" id="plim-undo-btn" title="<?php esc_attr_e( 'Undo (Ctrl+Z)', 'pizzalayer' ); ?>" disabled>
+							<span class="dashicons dashicons-undo"></span> <?php esc_html_e( 'Undo', 'pizzalayer' ); ?>
 						</button>
 						<span class="plim-img-info" id="plim-img-info"></span>
 					</span>
@@ -201,7 +209,7 @@ class LayerImageMaker {
 				<div class="plim-stage" id="plim-stage">
 					<div class="plim-empty-state" id="plim-empty-state">
 						<span class="dashicons dashicons-format-image" style="font-size:52px;width:52px;height:52px;color:#ddd;"></span>
-						<p>Upload an image to get started</p>
+						<p><?php esc_html_e( 'Upload an image to get started', 'pizzalayer' ); ?></p>
 					</div>
 					<!-- Display canvas (what user sees) -->
 					<canvas id="plim-canvas" style="display:none;"></canvas>
@@ -215,33 +223,31 @@ class LayerImageMaker {
 						<div class="plim-preview-thumb plim-preview-thumb--dark" id="plim-preview-dark">
 							<canvas id="plim-thumb-canvas-dark"></canvas>
 						</div>
-						<span class="plim-preview-label">On dark</span>
+						<span class="plim-preview-label"><?php esc_html_e( 'On dark', 'pizzalayer' ); ?></span>
 					</div>
 					<div class="plim-preview-item">
 						<div class="plim-preview-thumb plim-preview-thumb--check" id="plim-preview-check">
 							<canvas id="plim-thumb-canvas-check"></canvas>
 						</div>
-						<span class="plim-preview-label">Transparency</span>
+						<span class="plim-preview-label"><?php esc_html_e( 'Transparency', 'pizzalayer' ); ?></span>
 					</div>
 					<div class="plim-preview-item">
 						<div class="plim-preview-thumb plim-preview-thumb--pizza" id="plim-preview-pizza">
 							<canvas id="plim-thumb-canvas-pizza"></canvas>
 						</div>
-						<span class="plim-preview-label">On pizza base</span>
+						<span class="plim-preview-label"><?php esc_html_e( 'On pizza base', 'pizzalayer' ); ?></span>
 					</div>
 					<div class="plim-preview-item">
 						<div class="plim-preview-thumb plim-preview-thumb--light" id="plim-preview-light">
 							<canvas id="plim-thumb-canvas-light"></canvas>
 						</div>
-						<span class="plim-preview-label">On light</span>
+						<span class="plim-preview-label"><?php esc_html_e( 'On light', 'pizzalayer' ); ?></span>
 					</div>
 				</div>
 			</main>
 
 		</div><!-- /.plim-shell -->
 		</div><!-- /.wrap -->
-
-		<?php $this->render_styles(); ?>
 
 		<script>
 		window.plimConfig = {
@@ -307,6 +313,19 @@ class LayerImageMaker {
 		/* ── Wrap ───────────────────────────────────────────── */
 		.plim-wrap { max-width: 1600px; }
 		.plim-intro { color: #646970; margin: 4px 0 16px; font-size: 13px; }
+
+		/* ── Header ─────────────────────────────────────────── */
+		.plim-header {
+			display: flex; align-items: center; gap: 16px; flex-wrap: wrap;
+			background: linear-gradient(135deg, #1a1e23 0%, #2d3748 100%);
+			color: #fff; border-radius: 10px; padding: 22px 28px; margin-bottom: 20px;
+		}
+		.plim-header__icon {
+			font-size: 36px !important; width: 36px !important; height: 36px !important;
+			color: #ff6b35; flex-shrink: 0;
+		}
+		.plim-header__title { margin: 0; font-size: 22px; font-weight: 700; color: #fff; }
+		.plim-header__sub   { margin: 3px 0 0; color: #8d97a5; font-size: 13px; }
 
 		/* ── Shell: sidebar + canvas side-by-side ───────────── */
 		.plim-shell {

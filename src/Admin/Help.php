@@ -32,19 +32,17 @@ class Help {
 
 		<!-- ══ Header ═══════════════════════════════════════════════════ -->
 		<div class="plhelp-header">
-			<div>
-				<h1 class="plhelp-header__title">
-					<span class="dashicons dashicons-editor-help"></span>
-					PizzaLayer Help &amp; Reference
-				</h1>
-				<p class="plhelp-header__sub">Full documentation for setup, content management, shortcodes, templates, and development.</p>
+			<span class="dashicons dashicons-editor-help plhelp-header__icon"></span>
+			<div style="flex:1;">
+				<h1 class="plhelp-header__title"><?php esc_html_e( 'Help &amp; Reference', 'pizzalayer' ); ?></h1>
+				<p class="plhelp-header__sub"><?php esc_html_e( 'Full documentation for setup, content management, shortcodes, templates, and development.', 'pizzalayer' ); ?></p>
 			</div>
-			<div style="display:flex;gap:8px;flex-wrap:wrap;">
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-setup' ) ); ?>" class="button">
-					<span class="dashicons dashicons-welcome-learn-more"></span> Setup Guide
+			<div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-setup' ) ); ?>" class="button" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff;">
+					<span class="dashicons dashicons-welcome-learn-more" style="font-size:14px;width:14px;height:14px;"></span> <?php esc_html_e( 'Setup Guide', 'pizzalayer' ); ?>
 				</a>
-				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-shortcodes' ) ); ?>" class="button">
-					<span class="dashicons dashicons-editor-code"></span> Shortcode Generator
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-shortcodes' ) ); ?>" class="button" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff;">
+					<span class="dashicons dashicons-editor-code" style="font-size:14px;width:14px;height:14px;"></span> <?php esc_html_e( 'Shortcodes', 'pizzalayer' ); ?>
 				</a>
 			</div>
 		</div>
@@ -75,14 +73,14 @@ class Help {
 
 	private function get_sections(): array {
 		return [
-			'quickstart' => [ 'icon' => '🚀', 'title' => 'Quickstart'           ],
-			'content'    => [ 'icon' => '📦', 'title' => 'Managing Content'      ],
-			'layers'     => [ 'icon' => '📚', 'title' => 'Layer Type Reference'  ],
-			'shortcodes' => [ 'icon' => '</>', 'title' => 'Shortcodes'            ],
-			'shapes'     => [ 'icon' => '◉',  'title' => 'Shape & Animation'     ],
-			'templates'  => [ 'icon' => '🎨', 'title' => 'Template System'       ],
-			'faq'        => [ 'icon' => '❓', 'title' => 'FAQ'                   ],
-			'developer'  => [ 'icon' => '⚙',  'title' => 'Developer Reference'   ],
+			'quickstart' => [ 'icon' => '🚀', 'title' => __( 'Quickstart', 'pizzalayer' )           ],
+			'content'    => [ 'icon' => '📦', 'title' => __( 'Managing Content', 'pizzalayer' )      ],
+			'layers'     => [ 'icon' => '📚', 'title' => __( 'Layer Type Reference', 'pizzalayer' )  ],
+			'shortcodes' => [ 'icon' => '</>', 'title' => __( 'Shortcodes', 'pizzalayer' )            ],
+			'shapes'     => [ 'icon' => '◉',  'title' => __( 'Shape & Animation', 'pizzalayer' )     ],
+			'templates'  => [ 'icon' => '🎨', 'title' => __( 'Template System', 'pizzalayer' )       ],
+			'faq'        => [ 'icon' => '❓', 'title' => __( 'FAQ', 'pizzalayer' )                   ],
+			'developer'  => [ 'icon' => '⚙',  'title' => __( 'Developer Reference', 'pizzalayer' )   ],
 		];
 	}
 
@@ -904,11 +902,10 @@ PizzaLayer\Blocks\BlockRegistrar  — Gutenberg block registration'
 		background: linear-gradient(135deg,#1a1e23,#2d3748);
 		border-radius: 10px; padding: 22px 28px; margin-bottom: 20px;
 	}
-	.plhelp-header__title { margin: 0 0 4px; font-size: 22px; font-weight: 700; color: #fff; display: flex; align-items: center; gap: 10px; }
-	.plhelp-header__title .dashicons { color: #ff6b35; font-size: 24px !important; width: 24px !important; height: 24px !important; }
+	.plhelp-header__icon { font-size: 36px !important; width: 36px !important; height: 36px !important; color: #ff6b35; flex-shrink: 0; }
+	.plhelp-header__title { margin: 0 0 4px; font-size: 22px; font-weight: 700; color: #fff; }
 	.plhelp-header__sub { margin: 0; color: #8d97a5; font-size: 13px; }
 	.plhelp-header .button { display: inline-flex; align-items: center; gap: 5px; }
-	.plhelp-header .dashicons { font-size: 14px !important; width: 14px !important; height: 14px !important; }
 
 	/* ── Layout ───────────────────────────────────────────────────── */
 	.plhelp-layout { display: flex; gap: 0; align-items: flex-start; background: #fff; border: 1px solid #e0e3e7; border-radius: 10px; overflow: hidden; }

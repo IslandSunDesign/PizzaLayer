@@ -61,23 +61,23 @@ class AdminBar {
 			'title' => '<span class="ab-icon dashicons dashicons-pizza pzlab-root-icon"></span>'
 			         . '<span class="ab-label">PizzaLayer</span>',
 			'href'  => $dashboard,
-			'meta'  => [ 'title' => 'PizzaLayer Dashboard' ],
+			'meta'  => [ 'title' => __( 'PizzaLayer Dashboard', 'pizzalayer' ) ],
 		] );
 
 		// ── Dashboard link ───────────────────────────────────────────────
 		$bar->add_menu( [
 			'parent' => 'pizzalayer',
 			'id'     => 'pizzalayer-dashboard',
-			'title'  => '<span class="dashicons dashicons-dashboard pzlab-icon"></span> Dashboard',
+			'title'  => '<span class="dashicons dashicons-dashboard pzlab-icon"></span> ' . esc_html__( 'Dashboard', 'pizzalayer' ),
 			'href'   => $dashboard,
-			'meta'   => [ 'title' => 'PizzaLayer Dashboard' ],
+			'meta'   => [ 'title' => __( 'PizzaLayer Dashboard', 'pizzalayer' ) ],
 		] );
 
 		// ── CONTENT group separator ──────────────────────────────────────
 		$bar->add_menu( [
 			'parent' => 'pizzalayer',
 			'id'     => 'pizzalayer-grp-content',
-			'title'  => '<span class="pzlab-group-label">Content</span>',
+			'title'  => '<span class="pzlab-group-label">' . esc_html__( 'Content', 'pizzalayer' ) . '</span>',
 			'href'   => $hub,
 			'meta'   => [ 'class' => 'pzlab-group-header' ],
 		] );
@@ -95,25 +95,25 @@ class AdminBar {
 				'title'  => '<span class="dashicons ' . esc_attr( $meta['icon'] ) . ' pzlab-icon"></span>'
 				          . esc_html( $meta['label'] ),
 				'href'   => $list_url,
-				'meta'   => [ 'class' => 'pzlab-cpt-row', 'title' => 'Manage ' . $meta['label'] ],
+				'meta'   => [ 'class' => 'pzlab-cpt-row', 'title' => sprintf( __( 'Manage %s', 'pizzalayer' ), $meta['label'] ) ],
 			] );
 
 			// Sub-link: All
 			$bar->add_menu( [
 				'parent' => 'pizzalayer-cpt-' . $slug,
 				'id'     => 'pizzalayer-cpt-' . $slug . '-all',
-				'title'  => '<span class="dashicons dashicons-list-view pzlab-icon"></span> All ' . esc_html( $meta['label'] ),
+				'title'  => '<span class="dashicons dashicons-list-view pzlab-icon"></span> ' . sprintf( esc_html__( 'All %s', 'pizzalayer' ), esc_html( $meta['label'] ) ),
 				'href'   => $list_url,
-				'meta'   => [ 'title' => 'View all ' . $meta['label'] ],
+				'meta'   => [ 'title' => sprintf( __( 'View all %s', 'pizzalayer' ), $meta['label'] ) ],
 			] );
 
 			// Sub-link: Add New
 			$bar->add_menu( [
 				'parent' => 'pizzalayer-cpt-' . $slug,
 				'id'     => 'pizzalayer-cpt-' . $slug . '-new',
-				'title'  => '<span class="dashicons dashicons-plus-alt2 pzlab-icon"></span> Add New ' . esc_html( $meta['singular'] ),
+				'title'  => '<span class="dashicons dashicons-plus-alt2 pzlab-icon"></span> ' . sprintf( esc_html__( 'Add New %s', 'pizzalayer' ), esc_html( $meta['singular'] ) ),
 				'href'   => $new_url,
-				'meta'   => [ 'title' => 'Add a new ' . $meta['singular'] ],
+				'meta'   => [ 'title' => sprintf( __( 'Add a new %s', 'pizzalayer' ), $meta['singular'] ) ],
 			] );
 		}
 
@@ -121,7 +121,7 @@ class AdminBar {
 		$bar->add_menu( [
 			'parent' => 'pizzalayer',
 			'id'     => 'pizzalayer-grp-addnew',
-			'title'  => '<span class="pzlab-group-label">Add New</span>',
+			'title'  => '<span class="pzlab-group-label">' . esc_html__( 'Add New', 'pizzalayer' ) . '</span>',
 			'href'   => '#',
 			'meta'   => [ 'class' => 'pzlab-group-header' ],
 		] );
@@ -131,9 +131,9 @@ class AdminBar {
 			$bar->add_menu( [
 				'parent' => 'pizzalayer',
 				'id'     => 'pizzalayer-new-' . $slug,
-				'title'  => '<span class="pzlab-addnew-plus">+</span> New ' . esc_html( $meta['singular'] ),
+				'title'  => '<span class="pzlab-addnew-plus">+</span> ' . sprintf( esc_html__( 'New %s', 'pizzalayer' ), esc_html( $meta['singular'] ) ),
 				'href'   => admin_url( 'post-new.php?post_type=pizzalayer_' . $slug ),
-				'meta'   => [ 'class' => 'pzlab-addnew-item', 'title' => 'Add new ' . $meta['singular'] ],
+				'meta'   => [ 'class' => 'pzlab-addnew-item', 'title' => sprintf( __( 'Add new %s', 'pizzalayer' ), $meta['singular'] ) ],
 			] );
 		}
 
@@ -141,7 +141,7 @@ class AdminBar {
 		$bar->add_menu( [
 			'parent' => 'pizzalayer',
 			'id'     => 'pizzalayer-grp-tools',
-			'title'  => '<span class="pzlab-group-label">Tools</span>',
+			'title'  => '<span class="pzlab-group-label">' . esc_html__( 'Tools', 'pizzalayer' ) . '</span>',
 			'href'   => '#',
 			'meta'   => [ 'class' => 'pzlab-group-header' ],
 		] );
@@ -151,37 +151,37 @@ class AdminBar {
 			[
 				'id'    => 'pizzalayer-setup',
 				'icon'  => 'dashicons-welcome-learn-more',
-				'label' => 'Setup Guide',
+				'label' => __( 'Setup Guide', 'pizzalayer' ),
 				'href'  => admin_url( 'admin.php?page=pizzalayer-setup' ),
-				'tip'   => 'Step-by-step onboarding guide',
+				'tip'   => __( 'Step-by-step onboarding guide', 'pizzalayer' ),
 			],
 			[
 				'id'    => 'pizzalayer-shortcodes',
 				'icon'  => 'dashicons-editor-code',
-				'label' => 'Shortcode Generator',
+				'label' => __( 'Shortcode Generator', 'pizzalayer' ),
 				'href'  => admin_url( 'admin.php?page=pizzalayer-shortcodes' ),
-				'tip'   => 'Build shortcodes with a visual UI',
+				'tip'   => __( 'Build shortcodes with a visual UI', 'pizzalayer' ),
 			],
 			[
 				'id'    => 'pizzalayer-template',
 				'icon'  => 'dashicons-admin-appearance',
-				'label' => 'Template',
+				'label' => __( 'Template', 'pizzalayer' ),
 				'href'  => admin_url( 'admin.php?page=pizzalayer-template' ),
-				'tip'   => 'Switch or preview templates',
+				'tip'   => __( 'Switch or preview templates', 'pizzalayer' ),
 			],
 			[
 				'id'    => 'pizzalayer-settings',
 				'icon'  => 'dashicons-admin-settings',
-				'label' => 'Settings',
+				'label' => __( 'Settings', 'pizzalayer' ),
 				'href'  => admin_url( 'admin.php?page=pizzalayer-settings' ),
-				'tip'   => 'Global plugin settings',
+				'tip'   => __( 'Global plugin settings', 'pizzalayer' ),
 			],
 			[
 				'id'    => 'pizzalayer-help',
 				'icon'  => 'dashicons-editor-help',
-				'label' => 'Help & Reference',
+				'label' => __( 'Help & Reference', 'pizzalayer' ),
 				'href'  => admin_url( 'admin.php?page=pizzalayer-help' ),
-				'tip'   => 'Full documentation and developer reference',
+				'tip'   => __( 'Full documentation and developer reference', 'pizzalayer' ),
 			],
 		];
 
@@ -197,9 +197,9 @@ class AdminBar {
 
 		// ── Tool sub-links: Shortcode Generator actions ──────────────────
 		$sc_types = [
-			[ 'label' => 'Builder shortcode',  'hash' => '#builder' ],
-			[ 'label' => 'Static shortcode',   'hash' => '#static'  ],
-			[ 'label' => 'Layer image shortcode', 'hash' => '#layer' ],
+			[ 'label' => __( 'Builder shortcode', 'pizzalayer' ),  'hash' => '#builder' ],
+			[ 'label' => __( 'Static shortcode', 'pizzalayer' ),   'hash' => '#static'  ],
+			[ 'label' => __( 'Layer image shortcode', 'pizzalayer' ), 'hash' => '#layer' ],
 		];
 		foreach ( $sc_types as $sc ) {
 			$bar->add_menu( [
@@ -212,10 +212,10 @@ class AdminBar {
 
 		// ── Settings sub-links ───────────────────────────────────────────
 		$settings_sections = [
-			[ 'label' => 'Default Layers',  'id' => 'defaults' ],
-			[ 'label' => 'Pizza Shape',     'id' => 'shape'    ],
-			[ 'label' => 'Layer Animation', 'id' => 'animation'],
-			[ 'label' => 'Branding',        'id' => 'branding' ],
+			[ 'label' => __( 'Default Layers', 'pizzalayer' ),  'id' => 'defaults' ],
+			[ 'label' => __( 'Pizza Shape', 'pizzalayer' ),     'id' => 'shape'    ],
+			[ 'label' => __( 'Layer Animation', 'pizzalayer' ), 'id' => 'animation'],
+			[ 'label' => __( 'Branding', 'pizzalayer' ),        'id' => 'branding' ],
 		];
 		foreach ( $settings_sections as $sec ) {
 			$bar->add_menu( [
@@ -228,14 +228,14 @@ class AdminBar {
 
 		// ── Help sub-links (section navigation) ──────────────────────────
 		$help_sections = [
-			[ 'key' => 'quickstart', 'label' => 'Quickstart Guide'       ],
-			[ 'key' => 'content',    'label' => 'Managing Content'       ],
-			[ 'key' => 'layers',     'label' => 'Layer Type Reference'   ],
-			[ 'key' => 'shortcodes', 'label' => 'Shortcode Reference'    ],
-			[ 'key' => 'shapes',     'label' => 'Shape & Animation'      ],
-			[ 'key' => 'templates',  'label' => 'Template System'        ],
-			[ 'key' => 'faq',        'label' => 'FAQ'                    ],
-			[ 'key' => 'developer',  'label' => 'Developer Reference'    ],
+			[ 'key' => 'quickstart', 'label' => __( 'Quickstart Guide', 'pizzalayer' )       ],
+			[ 'key' => 'content',    'label' => __( 'Managing Content', 'pizzalayer' )       ],
+			[ 'key' => 'layers',     'label' => __( 'Layer Type Reference', 'pizzalayer' )   ],
+			[ 'key' => 'shortcodes', 'label' => __( 'Shortcode Reference', 'pizzalayer' )    ],
+			[ 'key' => 'shapes',     'label' => __( 'Shape & Animation', 'pizzalayer' )      ],
+			[ 'key' => 'templates',  'label' => __( 'Template System', 'pizzalayer' )        ],
+			[ 'key' => 'faq',        'label' => __( 'FAQ', 'pizzalayer' )                    ],
+			[ 'key' => 'developer',  'label' => __( 'Developer Reference', 'pizzalayer' )    ],
 		];
 		foreach ( $help_sections as $sec ) {
 			$bar->add_menu( [
@@ -251,9 +251,9 @@ class AdminBar {
 			$bar->add_menu( [
 				'parent' => 'pizzalayer',
 				'id'     => 'pizzalayer-view-demo',
-				'title'  => '<span class="dashicons dashicons-visibility pzlab-icon"></span> View Demo',
+				'title'  => '<span class="dashicons dashicons-visibility pzlab-icon"></span> ' . esc_html__( 'View Demo', 'pizzalayer' ),
 				'href'   => home_url( '/?pizzalayer_demo=1' ),
-				'meta'   => [ 'target' => '_blank', 'title' => 'Open front-end demo in new tab' ],
+				'meta'   => [ 'target' => '_blank', 'title' => __( 'Open front-end demo in new tab', 'pizzalayer' ) ],
 			] );
 		}
 

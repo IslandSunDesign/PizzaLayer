@@ -49,7 +49,7 @@ class LayerImageMetaBox {
 			$post_type = 'pizzalayer_' . $slug;
 			add_meta_box(
 				'pizzalayer_layer_image_maker',
-				'<span class="dashicons dashicons-format-image" style="color:#ff6b35;font-size:14px;width:14px;height:14px;vertical-align:middle;margin-right:5px;"></span> Layer Image Maker',
+				'<span class="dashicons dashicons-format-image" style="color:#ff6b35;font-size:14px;width:14px;height:14px;vertical-align:middle;margin-right:5px;"></span> ' . esc_html__( 'Layer Image Maker', 'pizzalayer' ),
 				[ $this, 'render_meta_box' ],
 				$post_type,
 				'side',
@@ -130,19 +130,19 @@ class LayerImageMetaBox {
 				<div class="pzlmb-current">
 					<img src="<?php echo esc_url( $current_url ); ?>" alt="Current layer image"
 					     class="pzlmb-current-img" id="pzlmb-current-img-<?php echo esc_attr( $slug ); ?>">
-					<span class="pzlmb-current-label">Current layer image</span>
+					<span class="pzlmb-current-label"><?php esc_html_e( 'Current layer image', 'pizzalayer' ); ?></span>
 				</div>
 				<?php else : ?>
 				<div class="pzlmb-empty">
 					<span class="dashicons dashicons-format-image pzlmb-empty-icon"></span>
-					<span class="pzlmb-empty-label">No layer image set</span>
+					<span class="pzlmb-empty-label"><?php esc_html_e( 'No layer image set', 'pizzalayer' ); ?></span>
 				</div>
 				<?php endif; ?>
 
 				<button type="button" class="button pzlmb-open-btn"
 				        id="pzlmb-open-btn-<?php echo esc_attr( $slug ); ?>">
 					<span class="dashicons dashicons-edit"></span>
-					<?php echo $current_url ? 'Edit / Replace Layer Image' : 'Create Layer Image'; ?>
+					<?php echo $current_url ? esc_html__( 'Edit / Replace Layer Image', 'pizzalayer' ) : esc_html__( 'Create Layer Image', 'pizzalayer' ); ?>
 				</button>
 			</div>
 
@@ -152,13 +152,13 @@ class LayerImageMetaBox {
 				<!-- Source buttons -->
 				<div class="pzlmb-source-row">
 					<div class="pzlmb-drop-zone" id="pzlmb-drop-<?php echo esc_attr( $slug ); ?>"
-					     tabindex="0" role="button" aria-label="Upload image">
+					     tabindex="0" role="button" aria-label="<?php esc_attr_e( 'Upload image', 'pizzalayer' ); ?>">
 						<span class="dashicons dashicons-upload"></span>
-						<span>Drop / click to upload</span>
+						<span><?php esc_html_e( 'Drop / click to upload', 'pizzalayer' ); ?></span>
 						<input type="file" class="pzlmb-file-input" accept="image/*" style="display:none;">
 					</div>
 					<button type="button" class="button pzlmb-media-btn">
-						<span class="dashicons dashicons-admin-media"></span> Media Library
+						<span class="dashicons dashicons-admin-media"></span> <?php esc_html_e( 'Media Library', 'pizzalayer' ); ?>
 					</button>
 				</div>
 
@@ -166,7 +166,7 @@ class LayerImageMetaBox {
 				<div class="pzlmb-stage" id="pzlmb-stage-<?php echo esc_attr( $slug ); ?>">
 					<div class="pzlmb-canvas-empty" id="pzlmb-canvas-empty-<?php echo esc_attr( $slug ); ?>">
 						<span class="dashicons dashicons-format-image"></span>
-						<p>Upload an image to begin</p>
+						<p><?php esc_html_e( 'Upload an image to begin', 'pizzalayer' ); ?></p>
 					</div>
 					<canvas class="pzlmb-canvas" style="display:none;max-width:100%;"></canvas>
 					<svg class="pzlmb-guide-svg" style="display:none;position:absolute;top:0;left:0;pointer-events:none;width:100%;height:100%;"></svg>
@@ -174,13 +174,13 @@ class LayerImageMetaBox {
 
 				<!-- Mini toolbar -->
 				<div class="pzlmb-toolbar">
-					<button type="button" class="pzlmb-tbtn pzlmb-tbtn--rotate-ccw" title="Rotate left">↺</button>
-					<button type="button" class="pzlmb-tbtn pzlmb-tbtn--rotate-cw"  title="Rotate right">↻</button>
-					<button type="button" class="pzlmb-tbtn pzlmb-tbtn--flip-h"     title="Flip H">⇄</button>
-					<button type="button" class="pzlmb-tbtn pzlmb-tbtn--flip-v"     title="Flip V">⇅</button>
+					<button type="button" class="pzlmb-tbtn pzlmb-tbtn--rotate-ccw" title="<?php esc_attr_e( 'Rotate left', 'pizzalayer' ); ?>">↺</button>
+					<button type="button" class="pzlmb-tbtn pzlmb-tbtn--rotate-cw"  title="<?php esc_attr_e( 'Rotate right', 'pizzalayer' ); ?>">↻</button>
+					<button type="button" class="pzlmb-tbtn pzlmb-tbtn--flip-h"     title="<?php esc_attr_e( 'Flip H', 'pizzalayer' ); ?>">⇄</button>
+					<button type="button" class="pzlmb-tbtn pzlmb-tbtn--flip-v"     title="<?php esc_attr_e( 'Flip V', 'pizzalayer' ); ?>">⇅</button>
 					<span class="pzlmb-toolbar-sep"></span>
 					<label class="pzlmb-tbtn-label" title="Show guide">
-						<input type="checkbox" class="pzlmb-show-guide" checked> Guide
+						<input type="checkbox" class="pzlmb-show-guide" checked> <?php esc_html_e( 'Guide', 'pizzalayer' ); ?>
 					</label>
 				</div>
 
@@ -188,10 +188,10 @@ class LayerImageMetaBox {
 				<div class="pzlmb-adj">
 					<?php
 					$mb_sliders = [
-						[ 'key' => 'brightness', 'label' => 'Bright', 'min' => -100, 'max' => 100, 'def' => 0   ],
-						[ 'key' => 'contrast',   'label' => 'Contrast','min' => -100, 'max' => 100, 'def' => 0   ],
-						[ 'key' => 'saturation', 'label' => 'Sat',    'min' => -100, 'max' => 100, 'def' => 0   ],
-						[ 'key' => 'opacity',    'label' => 'Opacity', 'min' => 0,   'max' => 100, 'def' => 100 ],
+						[ 'key' => 'brightness', 'label' => __( 'Bright', 'pizzalayer' ), 'min' => -100, 'max' => 100, 'def' => 0   ],
+						[ 'key' => 'contrast',   'label' => __( 'Contrast', 'pizzalayer' ),'min' => -100, 'max' => 100, 'def' => 0   ],
+						[ 'key' => 'saturation', 'label' => __( 'Sat', 'pizzalayer' ),    'min' => -100, 'max' => 100, 'def' => 0   ],
+						[ 'key' => 'opacity',    'label' => __( 'Opacity', 'pizzalayer' ), 'min' => 0,   'max' => 100, 'def' => 100 ],
 					];
 					foreach ( $mb_sliders as $s ) : ?>
 					<div class="pzlmb-adj-row">
@@ -202,16 +202,16 @@ class LayerImageMetaBox {
 						<span class="pzlmb-adj-val"><?php echo (int) $s['def']; ?></span>
 					</div>
 					<?php endforeach; ?>
-					<button type="button" class="button-link pzlmb-reset-adj">↺ Reset</button>
+					<button type="button" class="button-link pzlmb-reset-adj">↺ <?php esc_html_e( 'Reset', 'pizzalayer' ); ?></button>
 				</div>
 
 				<!-- Action row -->
 				<div class="pzlmb-actions">
 					<button type="button" class="button button-primary pzlmb-set-btn" disabled>
 						<span class="dashicons dashicons-yes"></span>
-						Set as <?php echo esc_html( $singular ); ?> Layer Image
+						<?php printf( esc_html__( 'Set as %s Layer Image', 'pizzalayer' ), esc_html( $singular ) ); ?>
 					</button>
-					<button type="button" class="button pzlmb-cancel-btn">Cancel</button>
+					<button type="button" class="button pzlmb-cancel-btn"><?php esc_html_e( 'Cancel', 'pizzalayer' ); ?></button>
 				</div>
 				<p class="pzlmb-status" id="pzlmb-status-<?php echo esc_attr( $slug ); ?>"></p>
 			</div>
@@ -663,7 +663,7 @@ class LayerImageMetaBox {
 										// Build current preview if it didn't exist
 										var div = $prompt ? $prompt.querySelector('.pzlmb-empty') : null;
 										if(div){
-											div.outerHTML = '<div class="pzlmb-current"><img src="'+d.data.url+'" alt="Current layer image" class="pzlmb-current-img" id="pzlmb-current-img-<?php echo esc_js( $slug ); ?>"><span class="pzlmb-current-label">Current layer image</span></div>';
+											div.outerHTML = '<div class="pzlmb-current"><img src="'+d.data.url+'" alt="Current layer image" class="pzlmb-current-img" id="pzlmb-current-img-<?php echo esc_js( $slug ); ?>"><span class="pzlmb-current-label"><?php esc_html_e( 'Current layer image', 'pizzalayer' ); ?></span></div>';
 										}
 									}
 									// Update open button text

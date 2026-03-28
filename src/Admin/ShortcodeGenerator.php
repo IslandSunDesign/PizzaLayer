@@ -46,9 +46,14 @@ class ShortcodeGenerator {
 		<!-- ══ Header ════════════════════════════════════════════════ -->
 		<div class="pscg-header">
 			<span class="dashicons dashicons-editor-code pscg-header__icon"></span>
-			<div>
-				<h1 class="pscg-header__title">Shortcode Generator</h1>
-				<p class="pscg-header__sub">Configure any PizzaLayer shortcode and copy it directly to your clipboard.</p>
+			<div style="flex:1;">
+				<h1 class="pscg-header__title"><?php esc_html_e( 'Shortcode Generator', 'pizzalayer' ); ?></h1>
+				<p class="pscg-header__sub"><?php esc_html_e( 'Configure any PizzaLayer shortcode and copy it directly to your clipboard.', 'pizzalayer' ); ?></p>
+			</div>
+			<div style="display:flex;gap:8px;flex-wrap:wrap;flex-shrink:0;">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-help#shortcodes' ) ); ?>" class="button" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff;">
+					<span class="dashicons dashicons-editor-help" style="font-size:14px;width:14px;height:14px;"></span> <?php esc_html_e( 'Shortcode Docs', 'pizzalayer' ); ?>
+				</a>
 			</div>
 		</div>
 

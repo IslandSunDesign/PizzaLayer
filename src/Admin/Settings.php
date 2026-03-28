@@ -159,6 +159,7 @@ class Settings {
 		'pizzalayer_setting_adv_custom_js',
 		'pizzalayer_setting_adv_debug_mode',
 		'pizzalayer_setting_adv_disable_css',
+		'pizzalayer_setting_adv_rest_api_enabled',
 		'pizzalayer_setting_adv_rest_cache_ttl',
 		'pizzalayer_setting_adv_log_level',
 		// Plainlist template settings
@@ -211,7 +212,7 @@ class Settings {
 		if ( isset( $_POST['pizzalayer_settings_save'], $_POST['_wpnonce'] )
 		     && wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'pizzalayer_settings_save' ) ) {
 			$this->save_settings();
-			echo '<div class="notice notice-success is-dismissible"><p><strong>Settings saved.</strong></p></div>';
+			echo '<div class="notice notice-success is-dismissible"><p><strong>' . esc_html__( 'Settings saved.', 'pizzalayer' ) . '</strong></p></div>';
 		}
 
 		if ( $import_msg ) {
@@ -252,37 +253,44 @@ class Settings {
 		<div class="wrap pset-wrap">
 		<?php $this->render_styles(); ?>
 
-		<div class="pset-header">
-			<span class="dashicons dashicons-admin-settings pset-header__icon"></span>
-			<div>
-				<h1 class="pset-header__title">Settings</h1>
-				<p class="pset-header__sub">All plugin settings in one place. These replace the old WordPress Customizer panel.</p>
+		<div class="pset-header" style="display:flex;align-items:center;gap:16px;justify-content:space-between;flex-wrap:wrap;">
+			<div style="display:flex;align-items:center;gap:16px;">
+				<span class="dashicons dashicons-admin-settings pset-header__icon"></span>
+				<div>
+					<h1 class="pset-header__title"><?php esc_html_e( 'Settings', 'pizzalayer' ); ?></h1>
+					<p class="pset-header__sub"><?php esc_html_e( 'All plugin settings in one place. New to PizzaLayer? Try the Settings Wizard for a plain-English guided walk-through.', 'pizzalayer' ); ?></p>
+				</div>
 			</div>
+			<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-wizard' ) ); ?>" class="button" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff;white-space:nowrap;">
+				<span class="dashicons dashicons-welcome-learn-more" style="margin-top:3px;margin-right:4px;"></span>
+				<?php esc_html_e( '✦ Settings Wizard', 'pizzalayer' ); ?>
+			</a>
 		</div>
 
 		<!-- ── Quick-jump pill nav ─────────────────────────────────────── -->
 		<nav class="pset-quickjump" aria-label="Jump to section">
 			<?php
 			$pset_sections = [
-				'default-layers'      => [ 'dashicons-category',        'Default Layers' ],
-				'toppings'            => [ 'dashicons-star-filled',      'Toppings' ],
-				'pizza-display'       => [ 'dashicons-pizza',            'Pizza Display' ],
-				'pizza-shape'         => [ 'dashicons-image-crop',       'Pizza Shape' ],
-				'layer-animation'     => [ 'dashicons-controls-play',    'Animations' ],
-				'crust-options'       => [ 'dashicons-tag',              'Crust' ],
-				'sauce-cheese'        => [ 'dashicons-admin-generic',    'Sauce & Cheese' ],
-				'ui-styles'           => [ 'dashicons-art',              'UI Styles' ],
-				'branding'            => [ 'dashicons-admin-customizer', 'Branding' ],
-				'plugin-settings'     => [ 'dashicons-info-outline',     'Plugin' ],
-				'builder-layout'      => [ 'dashicons-layout',           'Layout' ],
-				'pricing-cart'        => [ 'dashicons-cart',             'Pricing' ],
-				'typography'          => [ 'dashicons-editor-textcolor', 'Typography' ],
-				'colour-palette'      => [ 'dashicons-color-picker',     'Colours' ],
-				'spacing-borders'     => [ 'dashicons-editor-expand',    'Spacing' ],
-				'topping-display'     => [ 'dashicons-images-alt2',      'Topping Display' ],
-				'accessibility-perf'  => [ 'dashicons-universal-access', 'A11y & Perf' ],
-				'customer-experience' => [ 'dashicons-smiley',           'Customer UX' ],
-				'advanced-dev'        => [ 'dashicons-editor-code',      'Advanced' ],
+				'default-layers'      => [ 'dashicons-category',        __( 'Default Layers', 'pizzalayer' ) ],
+				'toppings'            => [ 'dashicons-star-filled',      __( 'Toppings', 'pizzalayer' ) ],
+				'pizza-display'       => [ 'dashicons-pizza',            __( 'Pizza Display', 'pizzalayer' ) ],
+				'pizza-shape'         => [ 'dashicons-image-crop',       __( 'Pizza Shape', 'pizzalayer' ) ],
+				'layer-animation'     => [ 'dashicons-controls-play',    __( 'Animations', 'pizzalayer' ) ],
+				'crust-options'       => [ 'dashicons-tag',              __( 'Crust', 'pizzalayer' ) ],
+				'sauce-cheese'        => [ 'dashicons-admin-generic',    __( 'Sauce & Cheese', 'pizzalayer' ) ],
+				'ui-styles'           => [ 'dashicons-art',              __( 'UI Styles', 'pizzalayer' ) ],
+				'branding'            => [ 'dashicons-admin-customizer', __( 'Branding', 'pizzalayer' ) ],
+				'plugin-settings'     => [ 'dashicons-info-outline',     __( 'Plugin', 'pizzalayer' ) ],
+				'builder-layout'      => [ 'dashicons-layout',           __( 'Layout', 'pizzalayer' ) ],
+				'pricing-cart'        => [ 'dashicons-cart',             __( 'Pricing', 'pizzalayer' ) ],
+				'typography'          => [ 'dashicons-editor-textcolor', __( 'Typography', 'pizzalayer' ) ],
+				'colour-palette'      => [ 'dashicons-color-picker',     __( 'Colours', 'pizzalayer' ) ],
+				'spacing-borders'     => [ 'dashicons-editor-expand',    __( 'Spacing', 'pizzalayer' ) ],
+				'topping-display'     => [ 'dashicons-images-alt2',      __( 'Topping Display', 'pizzalayer' ) ],
+				'accessibility-perf'  => [ 'dashicons-universal-access', __( 'A11y & Perf', 'pizzalayer' ) ],
+				'customer-experience' => [ 'dashicons-smiley',           __( 'Customer UX', 'pizzalayer' ) ],
+				'advanced-dev'        => [ 'dashicons-editor-code',      __( 'Advanced', 'pizzalayer' ) ],
+				'data-backup'         => [ 'dashicons-database-import',   __( 'Import/Export', 'pizzalayer' ) ],
 			];
 			if ( $active_template ) {
 				$pset_sections['template-settings'] = [ 'dashicons-admin-appearance', ucwords( str_replace( '-', ' ', $active_template ) ) . ' Template' ];
@@ -307,18 +315,18 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="default-layers">
 				<div>
-					<h2><span class="dashicons dashicons-category"></span> Default Layers</h2>
-					<p>These layers are pre-selected when the builder loads, unless overridden by the shortcode attribute.</p>
+					<h2><span class="dashicons dashicons-category"></span> <?php esc_html_e( 'Default Layers', 'pizzalayer' ); ?></h2>
+					<p><?php esc_html_e( 'These layers are pre-selected when the builder loads, unless overridden by the shortcode attribute.', 'pizzalayer' ); ?></p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-default-layers"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
 			</div>
 			<div class="pset-card__body" id="pset-body-default-layers">
 				<div class="pset-grid pset-grid--layers">
-					<?php $this->render_layer_picker( 'Default Crust',   'pizzalayer_setting_crust_defaultcrust',     $crusts,   $g('pizzalayer_setting_crust_defaultcrust') ); ?>
-					<?php $this->render_layer_picker( 'Default Sauce',   'pizzalayer_setting_sauce_defaultsauce',     $sauces,   $g('pizzalayer_setting_sauce_defaultsauce') ); ?>
-					<?php $this->render_layer_picker( 'Default Cheese',  'pizzalayer_setting_cheese_defaultcheese',   $cheeses,  $g('pizzalayer_setting_cheese_defaultcheese') ); ?>
-					<?php $this->render_layer_picker( 'Default Drizzle', 'pizzalayer_setting_drizzle_defaultdrizzle', $drizzles, $g('pizzalayer_setting_drizzle_defaultdrizzle') ); ?>
-					<?php $this->render_layer_picker( 'Default Cut',     'pizzalayer_setting_cut_defaultcut',         $cuts,     $g('pizzalayer_setting_cut_defaultcut') ); ?>
+					<?php $this->render_layer_picker( __( 'Default Crust',   'pizzalayer' ), 'pizzalayer_setting_crust_defaultcrust',     $crusts,   $g('pizzalayer_setting_crust_defaultcrust') ); ?>
+					<?php $this->render_layer_picker( __( 'Default Sauce',   'pizzalayer' ), 'pizzalayer_setting_sauce_defaultsauce',     $sauces,   $g('pizzalayer_setting_sauce_defaultsauce') ); ?>
+					<?php $this->render_layer_picker( __( 'Default Cheese',  'pizzalayer' ), 'pizzalayer_setting_cheese_defaultcheese',   $cheeses,  $g('pizzalayer_setting_cheese_defaultcheese') ); ?>
+					<?php $this->render_layer_picker( __( 'Default Drizzle', 'pizzalayer' ), 'pizzalayer_setting_drizzle_defaultdrizzle', $drizzles, $g('pizzalayer_setting_drizzle_defaultdrizzle') ); ?>
+					<?php $this->render_layer_picker( __( 'Default Cut',     'pizzalayer' ), 'pizzalayer_setting_cut_defaultcut',         $cuts,     $g('pizzalayer_setting_cut_defaultcut') ); ?>
 				</div>
 			</div>
 		</div>
@@ -328,17 +336,17 @@ class Settings {
 			<div class="pset-modal__backdrop"></div>
 			<div class="pset-modal__box">
 				<div class="pset-modal__head">
-					<h3 id="pset-modal-title" class="pset-modal__title">Choose a layer</h3>
-					<button type="button" class="pset-modal__close" aria-label="Close">&times;</button>
+					<h3 id="pset-modal-title" class="pset-modal__title"><?php esc_html_e( 'Choose a layer', 'pizzalayer' ); ?></h3>
+					<button type="button" class="pset-modal__close" aria-label="<?php esc_attr_e( 'Close', 'pizzalayer' ); ?>">&times;</button>
 				</div>
 				<div class="pset-modal__search-wrap">
 					<span class="dashicons dashicons-search pset-modal__search-icon"></span>
-					<input type="text" id="pset-modal-search" class="pset-modal__search" placeholder="Search&#8230;" autocomplete="off">
+					<input type="text" id="pset-modal-search" class="pset-modal__search" placeholder="<?php esc_attr_e( 'Searchâ¦', 'pizzalayer' ); ?>" autocomplete="off">
 				</div>
 				<div id="pset-modal-grid" class="pset-modal__grid"></div>
 				<div class="pset-modal__foot">
 					<button type="button" class="pset-modal__clear button">
-						<span class="dashicons dashicons-dismiss"></span> Clear selection
+						<span class="dashicons dashicons-dismiss"></span> <?php esc_html_e( 'Clear selection', 'pizzalayer' ); ?>
 					</button>
 				</div>
 			</div>
@@ -348,7 +356,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="toppings">
 				<div>
-					<h2><span class="dashicons dashicons-star-filled"></span> Toppings</h2>
+					<h2><span class="dashicons dashicons-star-filled"></span> <?php esc_html_e( 'Toppings', 'pizzalayer' ); ?></h2>
 					<p>Controls how many toppings customers can add and what pizza fractions are available.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-toppings"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -356,13 +364,13 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-toppings">
 				<div class="pset-grid">
 					<div class="pset-field">
-						<label>Max Toppings</label>
-						<p class="pset-desc">Maximum number of toppings a customer can add. 0 = unlimited.</p>
+						<label><?php esc_html_e( 'Max Toppings', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Maximum number of toppings a customer can add. 0 = unlimited.', 'pizzalayer' ); ?></p>
 						<input type="number" name="pizzalayer_setting_topping_maxtoppings" min="0"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_topping_maxtoppings') ); ?>" class="pset-input">
 					</div>
 					<div class="pset-field pset-field--full">
-						<label>Topping Portions</label>
+						<label><?php esc_html_e( 'Topping Portions', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">Choose which coverage options are available when customers apply toppings. <strong>Whole</strong> is always shown first. Uncheck any portions you do not want to offer.</p>
 						<?php
 						$_saved_fractions = get_option( 'pizzalayer_setting_topping_fractions', [] );
@@ -419,7 +427,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="pizza-display">
 				<div>
-					<h2><span class="dashicons dashicons-pizza"></span> Pizza Display</h2>
+					<h2><span class="dashicons dashicons-pizza"></span> <?php esc_html_e( 'Pizza Display', 'pizzalayer' ); ?></h2>
 					<p>Control the size and appearance of the pizza visualizer circle.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-pizza-display"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -427,26 +435,26 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-pizza-display">
 				<div class="pset-grid">
 					<div class="pset-field">
-						<label>Max Size</label>
+						<label><?php esc_html_e( 'Max Size', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">Max size (px or %). Include unit — e.g. <code>500px</code> or <code>100%</code>.</p>
 						<input type="text" name="pizzalayer_setting_pizza_size_max"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_pizza_size_max') ); ?>" class="pset-input" placeholder="500px">
 					</div>
 					<div class="pset-field">
-						<label>Min Size</label>
-						<p class="pset-desc">Min size (px or %). Include unit.</p>
+						<label><?php esc_html_e( 'Min Size', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Min size (px or %). Include unit.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_pizza_size_min"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_pizza_size_min') ); ?>" class="pset-input" placeholder="200px">
 					</div>
 					<div class="pset-field">
-						<label>Border Width</label>
+						<label><?php esc_html_e( 'Border Width', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">Any valid CSS width, e.g. <code>2px</code>.</p>
 						<input type="text" name="pizzalayer_setting_pizza_border"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_pizza_border') ); ?>" class="pset-input" placeholder="2px">
 					</div>
 					<div class="pset-field">
-						<label>Border Color</label>
-						<p class="pset-desc">Color for the pizza border.</p>
+						<label><?php esc_html_e( 'Border Color', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Color for the pizza border.', 'pizzalayer' ); ?></p>
 						<div class="pset-color-wrap">
 							<input type="color" id="pset-color-pizza_border_color" name="pizzalayer_setting_pizza_border_color"
 							       value="<?php echo esc_attr( $g('pizzalayer_setting_pizza_border_color', '#d4a04c') ); ?>" class="pset-color">
@@ -460,8 +468,8 @@ class Settings {
 						</div>
 					</div>
 					<div class="pset-field">
-						<label>Accent Color</label>
-						<p class="pset-desc">Global accent color used in templates.</p>
+						<label><?php esc_html_e( 'Accent Color', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Global accent color used in templates.', 'pizzalayer' ); ?></p>
 						<div class="pset-color-wrap">
 							<input type="color" id="pset-color-global_color" name="pizzalayer_setting_global_color"
 							       value="<?php echo esc_attr( $g('pizzalayer_setting_global_color', '#ff6b35') ); ?>" class="pset-color">
@@ -482,7 +490,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="pizza-shape">
 				<div>
-					<h2><span class="dashicons dashicons-image-crop"></span> Pizza Shape</h2>
+					<h2><span class="dashicons dashicons-image-crop"></span> <?php esc_html_e( 'Pizza Shape', 'pizzalayer' ); ?></h2>
 					<p>Controls the shape of the pizza preview in the builder. Can be overridden per-shortcode with <code>pizza_shape="..."</code>.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-pizza-shape"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -490,8 +498,8 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-pizza-shape">
 				<div class="pset-grid">
 					<div class="pset-field">
-						<label>Shape Preset</label>
-						<p class="pset-desc">Choose a shape for the pizza visualizer.</p>
+						<label><?php esc_html_e( 'Shape Preset', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Choose a shape for the pizza visualizer.', 'pizzalayer' ); ?></p>
 						<select name="pizzalayer_setting_pizza_shape" class="pset-select" id="pset-pizza-shape">
 							<?php foreach ( [
 								'round'     => '⬤ Round (circle)',
@@ -532,7 +540,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="layer-animation">
 				<div>
-					<h2><span class="dashicons dashicons-controls-play"></span> Layer Animation</h2>
+					<h2><span class="dashicons dashicons-controls-play"></span> <?php esc_html_e( 'Layer Animation', 'pizzalayer' ); ?></h2>
 					<p>Animation played when a layer is added to the pizza preview. Can be overridden per-shortcode with <code>layer_anim="..."</code>.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-layer-animation"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -540,7 +548,7 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-layer-animation">
 				<div class="pset-grid">
 					<div class="pset-field">
-						<label>Animation Style</label>
+						<label><?php esc_html_e( 'Animation Style', 'pizzalayer' ); ?></label>
 						<select name="pizzalayer_setting_layer_anim" class="pset-select" id="pset-layer-anim">
 							<?php foreach ( [
 								'fade'     => '✦ Fade In (default)',
@@ -556,7 +564,7 @@ class Settings {
 					</div>
 					<div class="pset-field" id="pset-anim-speed-field">
 						<label>Animation Speed <span class="pset-hint" id="pset-anim-speed-label">(<?php echo esc_html( $g('pizzalayer_setting_layer_anim_speed', '320') ); ?>ms)</span></label>
-						<p class="pset-desc">Duration of the layer animation. Ignored when style is Instant.</p>
+						<p class="pset-desc"><?php esc_html_e( 'Duration of the layer animation. Ignored when style is Instant.', 'pizzalayer' ); ?></p>
 						<div class="pset-range-wrap">
 							<input type="range" name="pizzalayer_setting_layer_anim_speed" id="pset-anim-speed"
 							       min="80" max="800" step="20"
@@ -568,8 +576,8 @@ class Settings {
 					</div>
 					<div class="pset-field pset-anim-demo-wrap" style="display:flex;align-items:center;gap:12px;">
 						<div>
-							<label>Preview</label>
-							<p class="pset-desc">Click the button to preview the selected animation.</p>
+							<label><?php esc_html_e( 'Preview', 'pizzalayer' ); ?></label>
+							<p class="pset-desc"><?php esc_html_e( 'Click the button to preview the selected animation.', 'pizzalayer' ); ?></p>
 							<button type="button" class="button" id="pset-anim-preview-btn">▶ Preview animation</button>
 						</div>
 						<div id="pset-anim-demo" style="
@@ -586,7 +594,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="crust-options">
 				<div>
-					<h2><span class="dashicons dashicons-tag"></span> Crust Options</h2>
+					<h2><span class="dashicons dashicons-tag"></span> <?php esc_html_e( 'Crust Options', 'pizzalayer' ); ?></h2>
 					<p>Fine-tune how the crust layer is sized and spaced in the visualizer.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-crust-options"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -601,7 +609,7 @@ class Settings {
 						<label>Crust Padding
 							<span class="pset-hint" id="pset-spc-crust_padding-lbl">(<?php echo esc_html( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_crust_padding','0')) ); ?>px)</span>
 						</label>
-						<p class="pset-desc">Inset padding applied to the crust layer image.</p>
+						<p class="pset-desc"><?php esc_html_e( 'Inset padding applied to the crust layer image.', 'pizzalayer' ); ?></p>
 						<div class="pset-range__wrap">
 							<input type="range" id="pset-spc-crust_padding-range" min="0" max="80" step="1"
 							       value="<?php echo esc_attr( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_crust_padding','0')) ); ?>"
@@ -622,7 +630,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="sauce-cheese">
 				<div>
-					<h2><span class="dashicons dashicons-admin-generic"></span> Sauce &amp; Cheese Options</h2>
+					<h2><span class="dashicons dashicons-admin-generic"></span> <?php esc_html_e( 'Sauce &amp; Cheese Options', 'pizzalayer' ); ?></h2>
 					<p>Adjust padding and inset distances for the sauce and cheese layers.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-sauce-cheese"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -633,7 +641,7 @@ class Settings {
 						<label>Sauce Padding
 							<span class="pset-hint" id="pset-spc-sauce_padding-lbl">(<?php echo esc_html( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_sauce_padding','0')) ); ?>px)</span>
 						</label>
-						<p class="pset-desc">Padding between sauce and crust edge.</p>
+						<p class="pset-desc"><?php esc_html_e( 'Padding between sauce and crust edge.', 'pizzalayer' ); ?></p>
 						<div class="pset-range__wrap">
 							<input type="range" id="pset-spc-sauce_padding-range" min="0" max="80" step="1"
 							       value="<?php echo esc_attr( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_sauce_padding','0')) ); ?>"
@@ -650,7 +658,7 @@ class Settings {
 						<label>Cheese Distance from Edge
 							<span class="pset-hint" id="pset-spc-cheese_dist-lbl">(<?php echo esc_html( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_cheese_setting_cheesedistance','0')) ); ?>px)</span>
 						</label>
-						<p class="pset-desc">How far inset the cheese layer is.</p>
+						<p class="pset-desc"><?php esc_html_e( 'How far inset the cheese layer is.', 'pizzalayer' ); ?></p>
 						<div class="pset-range__wrap">
 							<input type="range" id="pset-spc-cheese_dist-range" min="0" max="80" step="1"
 							       value="<?php echo esc_attr( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_cheese_setting_cheesedistance','0')) ); ?>"
@@ -667,7 +675,7 @@ class Settings {
 						<label>Cheese Padding
 							<span class="pset-hint" id="pset-spc-cheese_padding-lbl">(<?php echo esc_html( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_cheese_padding','0')) ); ?>px)</span>
 						</label>
-						<p class="pset-desc">Padding between cheese and toppings.</p>
+						<p class="pset-desc"><?php esc_html_e( 'Padding between cheese and toppings.', 'pizzalayer' ); ?></p>
 						<div class="pset-range__wrap">
 							<input type="range" id="pset-spc-cheese_padding-range" min="0" max="80" step="1"
 							       value="<?php echo esc_attr( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_cheese_padding','0')) ); ?>"
@@ -688,7 +696,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="ui-styles">
 				<div>
-					<h2><span class="dashicons dashicons-art"></span> UI Element Styles</h2>
+					<h2><span class="dashicons dashicons-art"></span> <?php esc_html_e( 'UI Element Styles', 'pizzalayer' ); ?></h2>
 					<p>These control the visual style of selection cards in the builder.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-ui-styles"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -704,7 +712,7 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Toppings Style</label>
+						<label><?php esc_html_e( 'Toppings Style', 'pizzalayer' ); ?></label>
 						<select name="pizzalayer_setting_element_style_toppings" class="pset-select">
 							<?php foreach ( [ 'default'=>'Default','controlbox'=>'Control Box','thumbcorner'=>'Thumb Corner','bgtoggle'=>'Background Toggle','modern'=>'Modern Offset','cornertag'=>'Corner Tag','appadd'=>'App Add' ] as $v => $l ) : ?>
 							<option value="<?php echo esc_attr( $v ); ?>"<?php selected( $g('pizzalayer_setting_element_style_toppings'), $v ); ?>><?php echo esc_html( $l ); ?></option>
@@ -712,7 +720,7 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Topping Choice Menu Style</label>
+						<label><?php esc_html_e( 'Topping Choice Menu Style', 'pizzalayer' ); ?></label>
 						<select name="pizzalayer_setting_element_style_topping_choice_menu" class="pset-select">
 							<?php foreach ( [ 'default'=>'Default','minimal'=>'Minimal','iconwfraction'=>'Icon (with fraction)','iconnofraction'=>'Icon (no fraction)' ] as $v => $l ) : ?>
 							<option value="<?php echo esc_attr( $v ); ?>"<?php selected( $g('pizzalayer_setting_element_style_topping_choice_menu'), $v ); ?>><?php echo esc_html( $l ); ?></option>
@@ -720,8 +728,8 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Show Thumbnails</label>
-						<p class="pset-desc">Show thumbnail images in menu UI.</p>
+						<label><?php esc_html_e( 'Show Thumbnails', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Show thumbnail images in menu UI.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_show_thumbnails" value="no">
 							<input type="checkbox" name="pizzalayer_setting_show_thumbnails" value="yes"<?php checked( $g('pizzalayer_setting_show_thumbnails', 'yes'), 'yes' ); ?>>
@@ -737,7 +745,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="branding">
 				<div>
-					<h2><span class="dashicons dashicons-admin-customizer"></span> Branding</h2>
+					<h2><span class="dashicons dashicons-admin-customizer"></span> <?php esc_html_e( 'Branding', 'pizzalayer' ); ?></h2>
 					<p>Logo, colours, tagline, and custom copy shown in the builder's branded areas.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-branding"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -760,11 +768,11 @@ class Settings {
 							<div class="pset-logo-picker__actions">
 								<button type="button" class="button" id="pset-logo-select-btn">
 									<span class="dashicons dashicons-upload"></span>
-									<?php echo $logoVal ? 'Change Logo' : 'Select / Upload Logo'; ?>
+									<?php echo $logoVal ? esc_html__( 'Change Logo', 'pizzalayer' ) : esc_html__( 'Select / Upload Logo', 'pizzalayer' ); ?>
 								</button>
 								<?php if ( $logoVal ) : ?>
 								<button type="button" class="button pset-logo-remove-btn" id="pset-logo-remove-btn" style="color:#b32d2e;border-color:#b32d2e;">
-									<span class="dashicons dashicons-trash"></span> Remove
+									<span class="dashicons dashicons-trash"></span> <?php esc_html_e( 'Remove', 'pizzalayer' ); ?>
 								</button>
 								<?php endif; ?>
 							</div>
@@ -779,38 +787,38 @@ class Settings {
 					</div>
 
 					<div class="pset-field">
-						<label>Logo Display Width</label>
+						<label><?php esc_html_e( 'Logo Display Width', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">CSS width for the logo image, e.g. <code>120px</code> or <code>auto</code>.</p>
 						<input type="text" name="pizzalayer_setting_branding_logo_width"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_logo_width') ); ?>" class="pset-input" placeholder="120px">
 					</div>
 
 					<div class="pset-field">
-						<label>Logo Display Height</label>
+						<label><?php esc_html_e( 'Logo Display Height', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">CSS height for the logo image, e.g. <code>40px</code> or <code>auto</code>.</p>
 						<input type="text" name="pizzalayer_setting_branding_logo_height"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_logo_height') ); ?>" class="pset-input" placeholder="40px">
 					</div>
 
 					<div class="pset-field">
-						<label>Logo Alt Text</label>
-						<p class="pset-desc">Accessibility alt text for the logo image.</p>
+						<label><?php esc_html_e( 'Logo Alt Text', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Accessibility alt text for the logo image.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_branding_logo_alt"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_logo_alt') ); ?>" class="pset-input" placeholder="Your restaurant name">
 					</div>
 
 					<!-- Brand tagline -->
 					<div class="pset-field pset-field--full">
-						<label>Brand Tagline</label>
-						<p class="pset-desc">Short slogan shown beneath the logo in templates that support it (e.g. "Build your perfect pizza").</p>
+						<label><?php esc_html_e( 'Brand Tagline', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Short slogan shown beneath the logo in templates that support it (e.g. "Build your perfect pizza").', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_branding_tagline"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_tagline') ); ?>" class="pset-input pset-input--wide" placeholder="Build your perfect pizza">
 					</div>
 
 					<!-- Brand colours -->
 					<div class="pset-field">
-						<label>Brand Primary Colour</label>
-						<p class="pset-desc">Main brand colour — used for buttons, accents, and active states in supported templates.</p>
+						<label><?php esc_html_e( 'Brand Primary Colour', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Main brand colour — used for buttons, accents, and active states in supported templates.', 'pizzalayer' ); ?></p>
 						<div class="pset-color-wrap">
 							<input type="color" id="pset-color-branding_primary" name="pizzalayer_setting_branding_primary_color"
 							       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_primary_color', '#ff6b35') ); ?>" class="pset-color">
@@ -822,8 +830,8 @@ class Settings {
 					</div>
 
 					<div class="pset-field">
-						<label>Brand Secondary Colour</label>
-						<p class="pset-desc">Supporting brand colour — used for secondary buttons and highlights.</p>
+						<label><?php esc_html_e( 'Brand Secondary Colour', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Supporting brand colour — used for secondary buttons and highlights.', 'pizzalayer' ); ?></p>
 						<div class="pset-color-wrap">
 							<input type="color" id="pset-color-branding_secondary" name="pizzalayer_setting_branding_secondary_color"
 							       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_secondary_color', '#2d3748') ); ?>" class="pset-color">
@@ -836,20 +844,20 @@ class Settings {
 
 					<!-- Builder copy -->
 					<div class="pset-field pset-field--full">
-						<label>Content Above Menu Icons</label>
-						<p class="pset-desc">Intro text or custom HTML shown above the builder tab icons. Use Visual mode for rich text, Text tab for raw HTML.</p>
+						<label><?php esc_html_e( 'Content Above Menu Icons', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Intro text or custom HTML shown above the builder tab icons. Use Visual mode for rich text, Text tab for raw HTML.', 'pizzalayer' ); ?></p>
 						<?php wp_editor( $g('pizzalayer_setting_branding_menu_title'), 'pzl_editor_menu_title', [ 'textarea_name' => 'pizzalayer_setting_branding_menu_title', 'media_buttons' => false, 'teeny' => true, 'textarea_rows' => 4, 'tinymce' => [ 'toolbar1' => 'bold,italic,underline,link,unlink,removeformat,code' ], 'quicktags' => [ 'buttons' => 'strong,em,link,code,close' ] ] ); ?>
 					</div>
 
 					<div class="pset-field pset-field--full">
-						<label>Header Custom Content</label>
-						<p class="pset-desc">Custom HTML for the branding area in the builder header (logo area, above the tabs). Use Text tab for raw HTML with image tags etc.</p>
+						<label><?php esc_html_e( 'Header Custom Content', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Custom HTML for the branding area in the builder header (logo area, above the tabs). Use Text tab for raw HTML with image tags etc.', 'pizzalayer' ); ?></p>
 						<?php wp_editor( $g('pizzalayer_setting_branding_header_custom_content'), 'pzl_editor_header_content', [ 'textarea_name' => 'pizzalayer_setting_branding_header_custom_content', 'media_buttons' => true, 'teeny' => true, 'textarea_rows' => 4, 'tinymce' => [ 'toolbar1' => 'bold,italic,underline,link,unlink,image,removeformat,code' ], 'quicktags' => [ 'buttons' => 'strong,em,link,img,code,close' ] ] ); ?>
 					</div>
 
 					<div class="pset-field pset-field--full">
-						<label>Builder Footer Text</label>
-						<p class="pset-desc">Optional text or HTML shown in the footer of the builder (e.g. allergen notice, T&amp;Cs link).</p>
+						<label><?php esc_html_e( 'Builder Footer Text', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Optional text or HTML shown in the footer of the builder (e.g. allergen notice, T&amp;Cs link).', 'pizzalayer' ); ?></p>
 						<?php wp_editor( $g('pizzalayer_setting_branding_footer_text'), 'pzl_editor_footer_text', [ 'textarea_name' => 'pizzalayer_setting_branding_footer_text', 'media_buttons' => false, 'teeny' => true, 'textarea_rows' => 3, 'tinymce' => [ 'toolbar1' => 'bold,italic,underline,link,unlink,removeformat,code' ], 'quicktags' => [ 'buttons' => 'strong,em,link,code,close' ] ] ); ?>
 					</div>
 
@@ -861,7 +869,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="plugin-settings">
 				<div>
-					<h2><span class="dashicons dashicons-info-outline"></span> Plugin Settings</h2>
+					<h2><span class="dashicons dashicons-info-outline"></span> <?php esc_html_e( 'Plugin Settings', 'pizzalayer' ); ?></h2>
 					<p>Announcement bar text and builder help content shown to customers.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-plugin-settings"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -869,13 +877,13 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-plugin-settings">
 				<div class="pset-grid pset-grid--wide">
 					<div class="pset-field pset-field--full">
-						<label>Demo / Announcement Bar</label>
-						<p class="pset-desc">If set, this message appears as an announcement bar above all pages using PizzaLayer. Leave empty to disable.</p>
+						<label><?php esc_html_e( 'Demo / Announcement Bar', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'If set, this message appears as an announcement bar above all pages using PizzaLayer. Leave empty to disable.', 'pizzalayer' ); ?></p>
 						<textarea name="pizzalayer_setting_settings_demonotice" class="pset-textarea" rows="2" placeholder="e.g. Now open for online ordering! Order before 8pm for same-day delivery."><?php echo esc_textarea( $g('pizzalayer_setting_settings_demonotice') ); ?></textarea>
 					</div>
 					<div class="pset-field pset-field--full">
-						<label>Help Screen Content</label>
-						<p class="pset-desc">Content shown in the builder's help modal/tab when customers click the help icon.</p>
+						<label><?php esc_html_e( 'Help Screen Content', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Content shown in the builder\'s help modal/tab when customers click the help icon.', 'pizzalayer' ); ?></p>
 						<textarea name="pizzalayer_setting_global_help_content" class="pset-textarea" rows="4"><?php echo esc_textarea( $g('pizzalayer_setting_global_help_content') ); ?></textarea>
 					</div>
 				</div>
@@ -887,7 +895,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="builder-layout">
 				<div>
-					<h2><span class="dashicons dashicons-layout"></span> Builder Layout &amp; Behaviour</h2>
+					<h2><span class="dashicons dashicons-layout"></span> <?php esc_html_e( 'Builder Layout &amp; Behaviour', 'pizzalayer' ); ?></h2>
 					<p>Control how the pizza builder is laid out and how customers interact with it.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-builder-layout"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -895,8 +903,8 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-builder-layout">
 				<div class="pset-grid">
 					<div class="pset-field">
-						<label>Builder Layout Mode</label>
-						<p class="pset-desc">How the builder panels are arranged on screen.</p>
+						<label><?php esc_html_e( 'Builder Layout Mode', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'How the builder panels are arranged on screen.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_layout_mode','stacked'); ?>
 						<select name="pizzalayer_setting_layout_mode" class="pset-select">
 							<?php foreach(['stacked'=>'Stacked (vertical)','split-ltr'=>'Side-by-side (pizza left, menu right)','split-rtl'=>'Side-by-side (menu left, pizza right)','floating'=>'Floating pizza overlay','fullscreen'=>'Full-screen immersive'] as $ov=>$ol):?>
@@ -905,22 +913,22 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Builder Width</label>
+						<label><?php esc_html_e( 'Builder Width', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">Maximum width of the builder container, e.g. <code>900px</code> or <code>100%</code>.</p>
 						<input type="text" name="pizzalayer_setting_layout_builder_width"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_layout_builder_width','')); ?>"
 						       class="pset-input" placeholder="100%">
 					</div>
 					<div class="pset-field">
-						<label>Mobile Breakpoint (px)</label>
-						<p class="pset-desc">Screen width at which the mobile layout activates.</p>
+						<label><?php esc_html_e( 'Mobile Breakpoint (px)', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Screen width at which the mobile layout activates.', 'pizzalayer' ); ?></p>
 						<input type="number" name="pizzalayer_setting_layout_mobile_bp"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_layout_mobile_bp','')); ?>"
 						       class="pset-input" placeholder="768">
 					</div>
 					<div class="pset-field">
-						<label>Mobile Layout</label>
-						<p class="pset-desc">How the builder stacks on small screens.</p>
+						<label><?php esc_html_e( 'Mobile Layout', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'How the builder stacks on small screens.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_layout_mobile','pizza-top'); ?>
 						<select name="pizzalayer_setting_layout_mobile" class="pset-select">
 							<?php foreach(['pizza-top'=>'Pizza on top, menu below','menu-top'=>'Menu on top, pizza below','menu-only'=>'Hidden pizza (menu only)','sticky-pizza'=>'Sticky pizza (fixed top)'] as $ov=>$ol):?>
@@ -929,8 +937,8 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Step-by-Step Mode</label>
-						<p class="pset-desc">Guide customers through one layer category at a time.</p>
+						<label><?php esc_html_e( 'Step-by-Step Mode', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Guide customers through one layer category at a time.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_layout_step_by_step" value="no">
 							<input type="checkbox" name="pizzalayer_setting_layout_step_by_step" value="yes"<?php checked((string)get_option('pizzalayer_setting_layout_step_by_step','no'),'yes');?>>
@@ -939,8 +947,8 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>Auto-Advance Steps</label>
-						<p class="pset-desc">Automatically move to the next step after a selection.</p>
+						<label><?php esc_html_e( 'Auto-Advance Steps', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Automatically move to the next step after a selection.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_layout_auto_advance" value="no">
 							<input type="checkbox" name="pizzalayer_setting_layout_auto_advance" value="yes"<?php checked((string)get_option('pizzalayer_setting_layout_auto_advance','no'),'yes');?>>
@@ -949,15 +957,15 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>Tab Order</label>
+						<label><?php esc_html_e( 'Tab Order', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">Comma-separated list of tabs in display order. E.g. <code>crust, sauce, cheese, toppings, drizzle, slicing</code>.</p>
 						<input type="text" name="pizzalayer_setting_layout_tab_order"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_layout_tab_order','')); ?>"
 						       class="pset-input" placeholder="crust, sauce, cheese, toppings, drizzle, slicing">
 					</div>
 					<div class="pset-field">
-						<label>Hide Empty Categories</label>
-						<p class="pset-desc">Don't show tabs for categories with no published items.</p>
+						<label><?php esc_html_e( 'Hide Empty Categories', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Don\'t show tabs for categories with no published items.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_layout_hide_empty" value="no">
 							<input type="checkbox" name="pizzalayer_setting_layout_hide_empty" value="yes"<?php checked((string)get_option('pizzalayer_setting_layout_hide_empty','no'),'yes');?>>
@@ -966,8 +974,8 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>Keyboard Navigation</label>
-						<p class="pset-desc">Allow customers to navigate the builder with arrow keys.</p>
+						<label><?php esc_html_e( 'Keyboard Navigation', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Allow customers to navigate the builder with arrow keys.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_layout_keyboard_nav" value="no">
 							<input type="checkbox" name="pizzalayer_setting_layout_keyboard_nav" value="yes"<?php checked((string)get_option('pizzalayer_setting_layout_keyboard_nav','no'),'yes');?>>
@@ -976,8 +984,8 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>Sticky Builder Header</label>
-						<p class="pset-desc">Keep the pizza preview pinned while scrolling the menu.</p>
+						<label><?php esc_html_e( 'Sticky Builder Header', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Keep the pizza preview pinned while scrolling the menu.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_layout_sticky_header" value="no">
 							<input type="checkbox" name="pizzalayer_setting_layout_sticky_header" value="yes"<?php checked((string)get_option('pizzalayer_setting_layout_sticky_header','no'),'yes');?>>
@@ -993,7 +1001,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="pricing-cart">
 				<div>
-					<h2><span class="dashicons dashicons-cart"></span> Pricing &amp; Cart</h2>
+					<h2><span class="dashicons dashicons-cart"></span> <?php esc_html_e( 'Pricing &amp; Cart', 'pizzalayer' ); ?></h2>
 					<p>How prices are calculated, displayed, and passed to the cart.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-pricing-cart"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -1001,8 +1009,8 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-pricing-cart">
 				<div class="pset-grid">
 					<div class="pset-field">
-						<label>Price Display Mode</label>
-						<p class="pset-desc">How prices are shown to customers in the builder UI.</p>
+						<label><?php esc_html_e( 'Price Display Mode', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'How prices are shown to customers in the builder UI.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_price_display_mode','total'); ?>
 						<select name="pizzalayer_setting_price_display_mode" class="pset-select">
 							<?php foreach(['total'=>'Show total only','per-item'=>'Show per-item prices','per-item-total'=>'Show per-item + running total','hidden'=>'Hide all prices'] as $ov=>$ol):?>
@@ -1011,15 +1019,15 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Base Price</label>
-						<p class="pset-desc">Default starting price before any layer selections.</p>
+						<label><?php esc_html_e( 'Base Price', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Default starting price before any layer selections.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_price_base"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_price_base','')); ?>"
 						       class="pset-input" placeholder="0.00">
 					</div>
 					<div class="pset-field">
-						<label>Currency Symbol Position</label>
-						<p class="pset-desc">Where the currency symbol appears relative to the amount.</p>
+						<label><?php esc_html_e( 'Currency Symbol Position', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Where the currency symbol appears relative to the amount.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_price_currency_pos','before'); ?>
 						<select name="pizzalayer_setting_price_currency_pos" class="pset-select">
 							<?php foreach(['before'=>'Before (e.g. $10.00)','after'=>'After (e.g. 10.00€)'] as $ov=>$ol):?>
@@ -1028,8 +1036,8 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Price Update Animation</label>
-						<p class="pset-desc">Visual effect when the running total changes.</p>
+						<label><?php esc_html_e( 'Price Update Animation', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Visual effect when the running total changes.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_price_update_anim','fade'); ?>
 						<select name="pizzalayer_setting_price_update_anim" class="pset-select">
 							<?php foreach(['fade'=>'Fade','countup'=>'Count-up','flash'=>'Flash highlight','none'=>'None'] as $ov=>$ol):?>
@@ -1068,7 +1076,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="typography">
 				<div>
-					<h2><span class="dashicons dashicons-editor-textcolor"></span> Typography</h2>
+					<h2><span class="dashicons dashicons-editor-textcolor"></span> <?php esc_html_e( 'Typography', 'pizzalayer' ); ?></h2>
 					<p>Font families, sizes, and weights used throughout the builder UI.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-typography"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -1076,8 +1084,8 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-typography">
 				<div class="pset-grid">
 					<div class="pset-field">
-						<label>Primary Font Family</label>
-						<p class="pset-desc">Font used for headings and labels in the builder.</p>
+						<label><?php esc_html_e( 'Primary Font Family', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Font used for headings and labels in the builder.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_typo_font_family','inherit'); ?>
 						<select name="pizzalayer_setting_typo_font_family" class="pset-select">
 							<?php foreach(['inherit'=>'Inherit from theme','system'=>'System UI (sans-serif)','georgia'=>'Georgia (serif)','courier'=>'Courier New (monospace)','google'=>'Custom Google Font (see below)'] as $ov=>$ol):?>
@@ -1086,22 +1094,22 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Custom Google Font Name</label>
+						<label><?php esc_html_e( 'Custom Google Font Name', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">e.g. <code>Roboto</code>, <code>Lato</code>, <code>Playfair Display</code></p>
 						<input type="text" name="pizzalayer_setting_typo_google_font"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_google_font','')); ?>"
 						       class="pset-input" placeholder="Roboto">
 					</div>
 					<div class="pset-field">
-						<label>Base Font Size</label>
+						<label><?php esc_html_e( 'Base Font Size', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">Root font size for the builder, e.g. <code>15px</code> or <code>1rem</code>.</p>
 						<input type="text" name="pizzalayer_setting_typo_base_size"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_base_size','')); ?>"
 						       class="pset-input" placeholder="15px">
 					</div>
 					<div class="pset-field">
-						<label>Heading Font Weight</label>
-						<p class="pset-desc">Weight applied to section headings inside the builder.</p>
+						<label><?php esc_html_e( 'Heading Font Weight', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Weight applied to section headings inside the builder.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_typo_heading_fw','700'); ?>
 						<select name="pizzalayer_setting_typo_heading_fw" class="pset-select">
 							<?php foreach(['400'=>'400 — Regular','500'=>'500 — Medium','600'=>'600 — Semi-Bold','700'=>'700 — Bold','800'=>'800 — Extra Bold','900'=>'900 — Black'] as $ov=>$ol):?>
@@ -1110,22 +1118,22 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Label Font Size</label>
-						<p class="pset-desc">Size of item name labels in the menu grid.</p>
+						<label><?php esc_html_e( 'Label Font Size', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Size of item name labels in the menu grid.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_typo_label_size"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_label_size','')); ?>"
 						       class="pset-input" placeholder="13px">
 					</div>
 					<div class="pset-field">
-						<label>Price Font Size</label>
-						<p class="pset-desc">Size of price figures in the builder.</p>
+						<label><?php esc_html_e( 'Price Font Size', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Size of price figures in the builder.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_typo_price_size"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_price_size','')); ?>"
 						       class="pset-input" placeholder="14px">
 					</div>
 					<div class="pset-field">
-						<label>Button Font Weight</label>
-						<p class="pset-desc">Weight for text inside action buttons.</p>
+						<label><?php esc_html_e( 'Button Font Weight', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Weight for text inside action buttons.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_typo_btn_fw','600'); ?>
 						<select name="pizzalayer_setting_typo_btn_fw" class="pset-select">
 							<?php foreach(['400'=>'400 — Regular','600'=>'600 — Semi-Bold','700'=>'700 — Bold'] as $ov=>$ol):?>
@@ -1134,15 +1142,15 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Letter Spacing (headings)</label>
+						<label><?php esc_html_e( 'Letter Spacing (headings)', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">CSS letter-spacing for section headings, e.g. <code>0.05em</code>.</p>
 						<input type="text" name="pizzalayer_setting_typo_letter_sp"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_letter_sp','')); ?>"
 						       class="pset-input" placeholder="0">
 					</div>
 					<div class="pset-field">
-						<label>Text Transform (labels)</label>
-						<p class="pset-desc">Case transformation for item name labels.</p>
+						<label><?php esc_html_e( 'Text Transform (labels)', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Case transformation for item name labels.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_typo_text_transform','none'); ?>
 						<select name="pizzalayer_setting_typo_text_transform" class="pset-select">
 							<?php foreach(['none'=>'None','uppercase'=>'Uppercase','lowercase'=>'Lowercase','capitalize'=>'Capitalize'] as $ov=>$ol):?>
@@ -1158,7 +1166,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="colour-palette">
 				<div>
-					<h2><span class="dashicons dashicons-color-picker"></span> Global Colour Palette</h2>
+					<h2><span class="dashicons dashicons-color-picker"></span> <?php esc_html_e( 'Global Colour Palette', 'pizzalayer' ); ?></h2>
 					<p>Fine-grained color control for every UI surface in the builder.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-colour-palette"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -1193,14 +1201,14 @@ class Settings {
 					<div class="pset-modal__box" style="max-width:400px;">
 						<div class="pset-modal__head">
 							<h3 class="pset-modal__title">Apply preset: <span id="pset-palette-modal-name"></span></h3>
-							<button type="button" class="pset-modal__close" id="pset-palette-modal-cancel" aria-label="Close">&times;</button>
+							<button type="button" class="pset-modal__close" id="pset-palette-modal-cancel" aria-label="<?php esc_attr_e( 'Close', 'pizzalayer' ); ?>">&times;</button>
 						</div>
 						<div style="padding:16px 20px;">
-							<p style="font-size:13px;color:#3c434a;margin:0 0 12px;">This will replace all 15 colour palette values below with the selected preset. Your current colours will be overwritten.</p>
+							<p style="font-size:13px;color:#3c434a;margin:0 0 12px;"><?php esc_html_e( 'This will replace all 15 colour palette values below with the selected preset. Your current colours will be overwritten.', 'pizzalayer' ); ?></p>
 							<div id="pset-palette-modal-swatches" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;"></div>
 							<div style="display:flex;gap:8px;justify-content:flex-end;">
-								<button type="button" class="button" id="pset-palette-modal-cancel2">Cancel</button>
-								<button type="button" class="button button-primary" id="pset-palette-modal-apply">Apply Preset</button>
+								<button type="button" class="button" id="pset-palette-modal-cancel2"><?php esc_html_e( 'Cancel', 'pizzalayer' ); ?></button>
+								<button type="button" class="button button-primary" id="pset-palette-modal-apply"><?php esc_html_e( 'Apply Preset', 'pizzalayer' ); ?></button>
 							</div>
 						</div>
 					</div>
@@ -1209,21 +1217,21 @@ class Settings {
 				<div class="pset-grid">
 					<?php
 					$color_palette_fields = [
-						['pizzalayer_setting_color_bg',          'Builder Background',       '#f5f5f5'],
-						['pizzalayer_setting_color_menu_bg',     'Menu Panel Background',    '#ffffff'],
-						['pizzalayer_setting_color_card_bg',     'Card Background',          '#ffffff'],
-						['pizzalayer_setting_color_card_border', 'Card Border Color',        '#e0e0e0'],
-						['pizzalayer_setting_color_selected',    'Selected Card Highlight',  '#ff6b35'],
-						['pizzalayer_setting_color_tab_bg',      'Tab Bar Background',       '#ffffff'],
-						['pizzalayer_setting_color_tab_active',  'Active Tab Color',         '#ff6b35'],
-						['pizzalayer_setting_color_tab_text',    'Tab Text Color',           '#333333'],
-						['pizzalayer_setting_color_btn_bg',      'Primary Button Background','#ff6b35'],
-						['pizzalayer_setting_color_btn_text',    'Primary Button Text',      '#ffffff'],
-						['pizzalayer_setting_color_btn2_bg',     'Secondary Button Background','#f0f0f0'],
-						['pizzalayer_setting_color_body_text',   'Body Text Color',          '#222222'],
-						['pizzalayer_setting_color_muted_text',  'Muted / Helper Text',      '#777777'],
-						['pizzalayer_setting_color_error',       'Error / Warning Color',    '#d32f2f'],
-						['pizzalayer_setting_color_success',     'Success / Confirmed Color','#388e3c'],
+						['pizzalayer_setting_color_bg',          __( 'Builder Background', 'pizzalayer' ),       '#f5f5f5'],
+						['pizzalayer_setting_color_menu_bg',     __( 'Menu Panel Background', 'pizzalayer' ),    '#ffffff'],
+						['pizzalayer_setting_color_card_bg',     __( 'Card Background', 'pizzalayer' ),          '#ffffff'],
+						['pizzalayer_setting_color_card_border', __( 'Card Border Color', 'pizzalayer' ),        '#e0e0e0'],
+						['pizzalayer_setting_color_selected',    __( 'Selected Card Highlight', 'pizzalayer' ),  '#ff6b35'],
+						['pizzalayer_setting_color_tab_bg',      __( 'Tab Bar Background', 'pizzalayer' ),       '#ffffff'],
+						['pizzalayer_setting_color_tab_active',  __( 'Active Tab Color', 'pizzalayer' ),         '#ff6b35'],
+						['pizzalayer_setting_color_tab_text',    __( 'Tab Text Color', 'pizzalayer' ),           '#333333'],
+						['pizzalayer_setting_color_btn_bg',      __( 'Primary Button Background', 'pizzalayer' ),'#ff6b35'],
+						['pizzalayer_setting_color_btn_text',    __( 'Primary Button Text', 'pizzalayer' ),      '#ffffff'],
+						['pizzalayer_setting_color_btn2_bg',     __( 'Secondary Button Background', 'pizzalayer' ),'#f0f0f0'],
+						['pizzalayer_setting_color_body_text',   __( 'Body Text Color', 'pizzalayer' ),          '#222222'],
+						['pizzalayer_setting_color_muted_text',  __( 'Muted / Helper Text', 'pizzalayer' ),      '#777777'],
+						['pizzalayer_setting_color_error',       __( 'Error / Warning Color', 'pizzalayer' ),    '#d32f2f'],
+						['pizzalayer_setting_color_success',     __( 'Success / Confirmed Color', 'pizzalayer' ),'#388e3c'],
 					];
 					foreach ( $color_palette_fields as [$key, $label, $default] ) :
 						$val = (string) get_option( $key, '' );
@@ -1256,7 +1264,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="spacing-borders">
 				<div>
-					<h2><span class="dashicons dashicons-editor-expand"></span> Spacing &amp; Borders</h2>
+					<h2><span class="dashicons dashicons-editor-expand"></span> <?php esc_html_e( 'Spacing &amp; Borders', 'pizzalayer' ); ?></h2>
 					<p>Control padding, gaps, border radii, and dividers across the builder UI.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-spacing-borders"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -1306,8 +1314,8 @@ class Settings {
 					<?php $_render_spacing_slider( 'pizzalayer_setting_spacing_btn_radius',  'Button Border Radius',   'Corner rounding for buttons in the builder.',            6, 40 ); ?>
 					<?php $_render_spacing_slider( 'pizzalayer_setting_spacing_tab_height',  'Tab Bar Height',         'Height of the layer category tab bar.',                 48, 100 ); ?>
 					<div class="pset-field">
-						<label>Card Box Shadow</label>
-						<p class="pset-desc">Shadow preset for item cards.</p>
+						<label><?php esc_html_e( 'Card Box Shadow', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Shadow preset for item cards.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_spacing_shadow',''); ?>
 						<select name="pizzalayer_setting_spacing_shadow" class="pset-select">
 							<?php foreach([''=>'None','sm'=>'Subtle (sm)','md'=>'Medium (md)','lg'=>'Elevated (lg)','custom'=>'Custom CSS (see below)'] as $ov=>$ol):?>
@@ -1316,15 +1324,15 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Custom Box Shadow CSS</label>
-						<p class="pset-desc">Used when "Custom CSS" is selected above.</p>
+						<label><?php esc_html_e( 'Custom Box Shadow CSS', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Used when "Custom CSS" is selected above.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_spacing_shadow_css"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_shadow_css','')); ?>"
 						       class="pset-input" placeholder="0 4px 12px rgba(0,0,0,0.15)">
 					</div>
 					<div class="pset-field">
-						<label>Section Divider Style</label>
-						<p class="pset-desc">Visual divider style between builder sections.</p>
+						<label><?php esc_html_e( 'Section Divider Style', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Visual divider style between builder sections.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_spacing_divider','solid'); ?>
 						<select name="pizzalayer_setting_spacing_divider" class="pset-select">
 							<?php foreach(['solid'=>'Solid line','dashed'=>'Dashed line','dotted'=>'Dotted line','none'=>'None'] as $ov=>$ol):?>
@@ -1340,7 +1348,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="topping-display">
 				<div>
-					<h2><span class="dashicons dashicons-images-alt2"></span> Topping Display</h2>
+					<h2><span class="dashicons dashicons-images-alt2"></span> <?php esc_html_e( 'Topping Display', 'pizzalayer' ); ?></h2>
 					<p>Fine-grained control over how toppings appear on the pizza visualizer and in the menu.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-topping-display"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -1348,8 +1356,8 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-topping-display">
 				<div class="pset-grid">
 					<div class="pset-field">
-						<label>Topping Thumbnail Size</label>
-						<p class="pset-desc">Size of the topping image in the menu grid.</p>
+						<label><?php esc_html_e( 'Topping Thumbnail Size', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Size of the topping image in the menu grid.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_topping_thumb_size',''); ?>
 						<select name="pizzalayer_setting_topping_thumb_size" class="pset-select" id="pset-topping-size-preset">
 							<?php foreach([''=>'Default (theme)','48px'=>'Small (48px)','72px'=>'Medium (72px)','96px'=>'Large (96px)','custom'=>'Custom (see below)'] as $ov=>$ol):?>
@@ -1358,29 +1366,29 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Custom Thumbnail Size</label>
+						<label><?php esc_html_e( 'Custom Thumbnail Size', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">Used when "Custom" is selected above, e.g. <code>80px</code>.</p>
 						<input type="text" name="pizzalayer_setting_topping_thumb_custom"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_topping_thumb_custom','')); ?>"
 						       class="pset-input" placeholder="72px">
 					</div>
 					<div class="pset-field">
-						<label>Topping Columns (desktop)</label>
-						<p class="pset-desc">Number of topping columns in the menu grid on large screens.</p>
+						<label><?php esc_html_e( 'Topping Columns (desktop)', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Number of topping columns in the menu grid on large screens.', 'pizzalayer' ); ?></p>
 						<input type="number" name="pizzalayer_setting_topping_cols_desktop"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_topping_cols_desktop','')); ?>"
 						       class="pset-input" placeholder="4" min="1" max="8">
 					</div>
 					<div class="pset-field">
-						<label>Topping Columns (mobile)</label>
-						<p class="pset-desc">Number of topping columns on small screens.</p>
+						<label><?php esc_html_e( 'Topping Columns (mobile)', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Number of topping columns on small screens.', 'pizzalayer' ); ?></p>
 						<input type="number" name="pizzalayer_setting_topping_cols_mobile"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_topping_cols_mobile','')); ?>"
 						       class="pset-input" placeholder="2" min="1" max="4">
 					</div>
 					<div class="pset-field">
-						<label>Topping Placement Mode</label>
-						<p class="pset-desc">How toppings are positioned over the pizza visualizer.</p>
+						<label><?php esc_html_e( 'Topping Placement Mode', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'How toppings are positioned over the pizza visualizer.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_topping_placement','scattered'); ?>
 						<select name="pizzalayer_setting_topping_placement" class="pset-select">
 							<?php foreach(['scattered'=>'Scattered (random)','grid'=>'Grid pattern','rings'=>'Concentric rings','center'=>'Center cluster','edge'=>'Edge ring'] as $ov=>$ol):?>
@@ -1390,7 +1398,7 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label>Topping Visualizer Size <span class="pset-hint" id="pset-topping-vis-label">(<?php echo esc_html((string)get_option('pizzalayer_setting_topping_vis_size','20')); ?>%)</span></label>
-						<p class="pset-desc">Size of each topping image on the pizza preview (% of pizza width).</p>
+						<p class="pset-desc"><?php esc_html_e( 'Size of each topping image on the pizza preview (% of pizza width).', 'pizzalayer' ); ?></p>
 						<div class="pset-range-wrap">
 							<input type="range" name="pizzalayer_setting_topping_vis_size"
 							       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_topping_vis_size','20')); ?>"
@@ -1401,7 +1409,7 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label>Topping Opacity on Pizza <span class="pset-hint" id="pset-topping-op-label">(<?php echo esc_html((string)get_option('pizzalayer_setting_topping_vis_opacity','100')); ?>%)</span></label>
-						<p class="pset-desc">Opacity of topping images in the visualizer.</p>
+						<p class="pset-desc"><?php esc_html_e( 'Opacity of topping images in the visualizer.', 'pizzalayer' ); ?></p>
 						<div class="pset-range-wrap">
 							<input type="range" name="pizzalayer_setting_topping_vis_opacity"
 							       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_topping_vis_opacity','100')); ?>"
@@ -1411,8 +1419,8 @@ class Settings {
 						</div>
 					</div>
 					<div class="pset-field">
-						<label>Show Topping Count Badge</label>
-						<p class="pset-desc">Display a quantity badge on topping cards when count &gt; 0.</p>
+						<label><?php esc_html_e( 'Show Topping Count Badge', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Display a quantity badge on topping cards when count &gt; 0.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_topping_show_badge" value="no">
 							<input type="checkbox" name="pizzalayer_setting_topping_show_badge" value="yes"<?php checked((string)get_option('pizzalayer_setting_topping_show_badge','no'),'yes');?>>
@@ -1421,8 +1429,8 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>Group Toppings by Category</label>
-						<p class="pset-desc">Separate toppings into category sub-groups in the menu.</p>
+						<label><?php esc_html_e( 'Group Toppings by Category', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Separate toppings into category sub-groups in the menu.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_topping_group_cats" value="no">
 							<input type="checkbox" name="pizzalayer_setting_topping_group_cats" value="yes"<?php checked((string)get_option('pizzalayer_setting_topping_group_cats','no'),'yes');?>>
@@ -1431,8 +1439,8 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>Topping Sort Order</label>
-						<p class="pset-desc">How toppings are sorted in the menu grid.</p>
+						<label><?php esc_html_e( 'Topping Sort Order', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'How toppings are sorted in the menu grid.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_topping_sort','menu'); ?>
 						<select name="pizzalayer_setting_topping_sort" class="pset-select">
 							<?php foreach(['menu'=>'Manual (WordPress menu order)','alpha_asc'=>'Alphabetical (A–Z)','alpha_desc'=>'Alphabetical (Z–A)','price_asc'=>'Price (low to high)','price_desc'=>'Price (high to low)'] as $ov=>$ol):?>
@@ -1448,7 +1456,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="accessibility-perf">
 				<div>
-					<h2><span class="dashicons dashicons-universal-access"></span> Accessibility &amp; Performance</h2>
+					<h2><span class="dashicons dashicons-universal-access"></span> <?php esc_html_e( 'Accessibility &amp; Performance', 'pizzalayer' ); ?></h2>
 					<p>WCAG accessibility aids and front-end performance options.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-accessibility-perf"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -1456,8 +1464,8 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-accessibility-perf">
 				<div class="pset-grid">
 					<div class="pset-field">
-						<label>Reduce Motion</label>
-						<p class="pset-desc">Disable all animations for users who prefer reduced motion.</p>
+						<label><?php esc_html_e( 'Reduce Motion', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Disable all animations for users who prefer reduced motion.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_a11y_reduce_motion" value="no">
 							<input type="checkbox" name="pizzalayer_setting_a11y_reduce_motion" value="yes"<?php checked((string)get_option('pizzalayer_setting_a11y_reduce_motion','no'),'yes');?>>
@@ -1466,8 +1474,8 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>High Contrast Mode</label>
-						<p class="pset-desc">Force high-contrast colors for all builder UI elements.</p>
+						<label><?php esc_html_e( 'High Contrast Mode', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Force high-contrast colors for all builder UI elements.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_a11y_high_contrast" value="no">
 							<input type="checkbox" name="pizzalayer_setting_a11y_high_contrast" value="yes"<?php checked((string)get_option('pizzalayer_setting_a11y_high_contrast','no'),'yes');?>>
@@ -1476,8 +1484,8 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>Focus Ring Style</label>
-						<p class="pset-desc">Style of the keyboard-focus ring on interactive elements.</p>
+						<label><?php esc_html_e( 'Focus Ring Style', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Style of the keyboard-focus ring on interactive elements.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_a11y_focus_ring','default'); ?>
 						<select name="pizzalayer_setting_a11y_focus_ring" class="pset-select">
 							<?php foreach(['default'=>'Theme default','bold'=>'Bold outline (high visibility)','glow'=>'Glow ring','none'=>'None (not recommended)'] as $ov=>$ol):?>
@@ -1486,8 +1494,8 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>ARIA Labels Language</label>
-						<p class="pset-desc">Language used for auto-generated ARIA accessibility labels.</p>
+						<label><?php esc_html_e( 'ARIA Labels Language', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Language used for auto-generated ARIA accessibility labels.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_a11y_aria_lang','inherit'); ?>
 						<select name="pizzalayer_setting_a11y_aria_lang" class="pset-select">
 							<?php foreach(['inherit'=>'Inherit from WordPress','en'=>'English','es'=>'Spanish','fr'=>'French','de'=>'German','it'=>'Italian','pt'=>'Portuguese'] as $ov=>$ol):?>
@@ -1496,8 +1504,8 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Lazy-Load Topping Images</label>
-						<p class="pset-desc">Only load topping images when they scroll into view.</p>
+						<label><?php esc_html_e( 'Lazy-Load Topping Images', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Only load topping images when they scroll into view.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_perf_lazy_load" value="no">
 							<input type="checkbox" name="pizzalayer_setting_perf_lazy_load" value="yes"<?php checked((string)get_option('pizzalayer_setting_perf_lazy_load','yes'),'yes');?>>
@@ -1506,7 +1514,7 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>Preload Builder Assets</label>
+						<label><?php esc_html_e( 'Preload Builder Assets', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">Add <code>&lt;link rel="preload"&gt;</code> hints for critical builder assets.</p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_perf_preload_assets" value="no">
@@ -1516,8 +1524,8 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>Image Format Preference</label>
-						<p class="pset-desc">Preferred image format for layer images.</p>
+						<label><?php esc_html_e( 'Image Format Preference', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Preferred image format for layer images.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_perf_img_format','auto'); ?>
 						<select name="pizzalayer_setting_perf_img_format" class="pset-select">
 							<?php foreach(['auto'=>'Auto (browser-determined)','webp'=>'Prefer WebP','legacy'=>'Force JPEG/PNG only'] as $ov=>$ol):?>
@@ -1526,8 +1534,8 @@ class Settings {
 						</select>
 					</div>
 					<div class="pset-field">
-						<label>Client-Side Caching</label>
-						<p class="pset-desc">Cache layer data in the browser for faster repeat visits.</p>
+						<label><?php esc_html_e( 'Client-Side Caching', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Cache layer data in the browser for faster repeat visits.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_perf_cache','session'); ?>
 						<select name="pizzalayer_setting_perf_cache" class="pset-select">
 							<?php foreach(['session'=>'Session only','1d'=>'24 hours','7d'=>'7 days','off'=>'Disabled'] as $ov=>$ol):?>
@@ -1543,7 +1551,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="customer-experience">
 				<div>
-					<h2><span class="dashicons dashicons-smiley"></span> Customer Experience</h2>
+					<h2><span class="dashicons dashicons-smiley"></span> <?php esc_html_e( 'Customer Experience', 'pizzalayer' ); ?></h2>
 					<p>Notifications, confirmations, and micro-copy shown to customers during the ordering flow.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-customer-experience"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -1551,8 +1559,8 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-customer-experience">
 				<div class="pset-grid">
 					<div class="pset-field">
-						<label>Show "Pizza Summary" Panel</label>
-						<p class="pset-desc">Display a running summary of selected layers alongside the visualizer.</p>
+						<label><?php esc_html_e( 'Show "Pizza Summary" Panel', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Display a running summary of selected layers alongside the visualizer.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_cx_show_summary" value="no">
 							<input type="checkbox" name="pizzalayer_setting_cx_show_summary" value="yes"<?php checked((string)get_option('pizzalayer_setting_cx_show_summary','no'),'yes');?>>
@@ -1561,8 +1569,8 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>Toast Notification Style</label>
-						<p class="pset-desc">Style of the pop-up when a layer is added or removed.</p>
+						<label><?php esc_html_e( 'Toast Notification Style', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Style of the pop-up when a layer is added or removed.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_cx_toast_style','bottom-right'); ?>
 						<select name="pizzalayer_setting_cx_toast_style" class="pset-select">
 							<?php foreach(['bottom-right'=>'Slide-in (bottom-right)','top-center'=>'Slide-in (top-center)','inline'=>'Inline below visualizer','none'=>'None'] as $ov=>$ol):?>
@@ -1572,7 +1580,7 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label>Toast Duration <span class="pset-hint" id="pset-cx-toast-label">(<?php echo esc_html((string)get_option('pizzalayer_setting_cx_toast_duration','2000')); ?>ms)</span></label>
-						<p class="pset-desc">How long the toast notification stays visible.</p>
+						<p class="pset-desc"><?php esc_html_e( 'How long the toast notification stays visible.', 'pizzalayer' ); ?></p>
 						<div class="pset-range-wrap">
 							<input type="range" name="pizzalayer_setting_cx_toast_duration"
 							       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_toast_duration','2000')); ?>"
@@ -1582,29 +1590,29 @@ class Settings {
 						</div>
 					</div>
 					<div class="pset-field">
-						<label>"Added" Confirmation Text</label>
-						<p class="pset-desc">Message shown when an item is added to the pizza.</p>
+						<label><?php esc_html_e( '"Added" Confirmation Text', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Message shown when an item is added to the pizza.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_cx_text_added"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_text_added','Added to your pizza!')); ?>"
 						       class="pset-input" placeholder="Added to your pizza!">
 					</div>
 					<div class="pset-field">
-						<label>"Removed" Confirmation Text</label>
-						<p class="pset-desc">Message shown when an item is removed.</p>
+						<label><?php esc_html_e( '"Removed" Confirmation Text', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Message shown when an item is removed.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_cx_text_removed"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_text_removed','Removed from your pizza.')); ?>"
 						       class="pset-input" placeholder="Removed from your pizza.">
 					</div>
 					<div class="pset-field">
-						<label>Max Toppings Warning Text</label>
-						<p class="pset-desc">Shown when the customer tries to exceed the topping limit.</p>
+						<label><?php esc_html_e( 'Max Toppings Warning Text', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Shown when the customer tries to exceed the topping limit.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_cx_text_max_toppings"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_text_max_toppings','You\'ve reached the maximum number of toppings.')); ?>"
 						       class="pset-input" placeholder="You've reached the maximum number of toppings.">
 					</div>
 					<div class="pset-field">
-						<label>Show "Start Over" Button</label>
-						<p class="pset-desc">Display a button that resets all selections to defaults.</p>
+						<label><?php esc_html_e( 'Show "Start Over" Button', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Display a button that resets all selections to defaults.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_cx_show_start_over" value="no">
 							<input type="checkbox" name="pizzalayer_setting_cx_show_start_over" value="yes"<?php checked((string)get_option('pizzalayer_setting_cx_show_start_over','yes'),'yes');?>>
@@ -1613,15 +1621,15 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>"Start Over" Button Label</label>
-						<p class="pset-desc">Custom text for the reset button.</p>
+						<label><?php esc_html_e( '"Start Over" Button Label', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Custom text for the reset button.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_cx_start_over_label"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_start_over_label','Start Over')); ?>"
 						       class="pset-input" placeholder="Start Over">
 					</div>
 					<div class="pset-field">
-						<label>Show Special Instructions Field</label>
-						<p class="pset-desc">Allow customers to add free-text notes to their order.</p>
+						<label><?php esc_html_e( 'Show Special Instructions Field', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Allow customers to add free-text notes to their order.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_cx_special_instructions" value="no">
 							<input type="checkbox" name="pizzalayer_setting_cx_special_instructions" value="yes"<?php checked((string)get_option('pizzalayer_setting_cx_special_instructions','no'),'yes');?>>
@@ -1630,22 +1638,22 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>Special Instructions Placeholder</label>
-						<p class="pset-desc">Hint text inside the special instructions text box.</p>
+						<label><?php esc_html_e( 'Special Instructions Placeholder', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Hint text inside the special instructions text box.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_cx_special_instr_placeholder"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_special_instr_placeholder','Any special requests? (optional)')); ?>"
 						       class="pset-input" placeholder="Any special requests? (optional)">
 					</div>
 					<div class="pset-field">
-						<label>Special Instructions Max Length</label>
-						<p class="pset-desc">Maximum characters allowed in the instructions field.</p>
+						<label><?php esc_html_e( 'Special Instructions Max Length', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Maximum characters allowed in the instructions field.', 'pizzalayer' ); ?></p>
 						<input type="number" name="pizzalayer_setting_cx_special_instr_max"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_special_instr_max','300')); ?>"
 						       class="pset-input" placeholder="300">
 					</div>
 					<div class="pset-field">
-						<label>Order Review Modal</label>
-						<p class="pset-desc">Show a "Review your order" confirmation dialog before adding to cart.</p>
+						<label><?php esc_html_e( 'Order Review Modal', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Show a "Review your order" confirmation dialog before adding to cart.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_cx_review_modal" value="no">
 							<input type="checkbox" name="pizzalayer_setting_cx_review_modal" value="yes"<?php checked((string)get_option('pizzalayer_setting_cx_review_modal','no'),'yes');?>>
@@ -1661,7 +1669,7 @@ class Settings {
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="advanced-dev">
 				<div>
-					<h2><span class="dashicons dashicons-editor-code"></span> Advanced &amp; Developer</h2>
+					<h2><span class="dashicons dashicons-editor-code"></span> <?php esc_html_e( 'Advanced &amp; Developer', 'pizzalayer' ); ?></h2>
 					<p>Custom CSS injection, debug tools, and low-level overrides for developers.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-advanced-dev"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
@@ -1669,18 +1677,18 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-advanced-dev">
 				<div class="pset-grid pset-grid--wide">
 					<div class="pset-field pset-field--full">
-						<label>Custom CSS (injected into builder pages)</label>
+						<label><?php esc_html_e( 'Custom CSS (injected into builder pages)', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">CSS added inside a <code>&lt;style&gt;</code> tag on every page containing a PizzaLayer builder. Use with care.</p>
 						<textarea name="pizzalayer_setting_adv_custom_css" class="pset-textarea pset-textarea--code" rows="6" placeholder="/* Your custom CSS here */"><?php echo esc_textarea((string)get_option('pizzalayer_setting_adv_custom_css','')); ?></textarea>
 					</div>
 					<div class="pset-field pset-field--full">
-						<label>Custom JS (runs after builder initialises)</label>
+						<label><?php esc_html_e( 'Custom JS (runs after builder initialises)', 'pizzalayer' ); ?></label>
 						<p class="pset-desc">JavaScript run after the builder initialises. Useful for custom tracking or integrations. Outputs in <code>&lt;wp_footer&gt;</code>.</p>
 						<textarea name="pizzalayer_setting_adv_custom_js" class="pset-textarea pset-textarea--code" rows="6" placeholder="// Your custom JS here"><?php echo esc_textarea((string)get_option('pizzalayer_setting_adv_custom_js','')); ?></textarea>
 					</div>
 					<div class="pset-field">
-						<label>Debug Mode</label>
-						<p class="pset-desc">Log builder events and state changes to the browser console.</p>
+						<label><?php esc_html_e( 'Debug Mode', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Log builder events and state changes to the browser console.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_adv_debug_mode" value="no">
 							<input type="checkbox" name="pizzalayer_setting_adv_debug_mode" value="yes"<?php checked((string)get_option('pizzalayer_setting_adv_debug_mode','no'),'yes');?>>
@@ -1689,8 +1697,8 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>Disable All Plugin CSS</label>
-						<p class="pset-desc">Prevent PizzaLayer from enqueueing any front-end stylesheets.</p>
+						<label><?php esc_html_e( 'Disable All Plugin CSS', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Prevent PizzaLayer from enqueueing any front-end stylesheets.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_adv_disable_css" value="no">
 							<input type="checkbox" name="pizzalayer_setting_adv_disable_css" value="yes"<?php checked((string)get_option('pizzalayer_setting_adv_disable_css','no'),'yes');?>>
@@ -1699,21 +1707,72 @@ class Settings {
 						</label>
 					</div>
 					<div class="pset-field">
-						<label>REST API Cache TTL (seconds)</label>
-						<p class="pset-desc">How long to cache REST API responses server-side. 0 = no cache.</p>
+						<label><?php esc_html_e( 'Enable REST API', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Enables the PizzaLayer REST API endpoints (used by developers and headless setups). Not needed for normal shortcode/block usage — leave off unless you specifically need it.', 'pizzalayer' ); ?></p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_adv_rest_api_enabled" value="no">
+							<input type="checkbox" name="pizzalayer_setting_adv_rest_api_enabled" value="yes"<?php checked((string)get_option('pizzalayer_setting_adv_rest_api_enabled','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label"><?php esc_html_e( 'Enable REST API endpoints', 'pizzalayer' ); ?></span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label><?php esc_html_e( 'REST API Cache TTL (seconds)', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'How long to cache REST API responses server-side. 0 = no cache. Only applies when REST API is enabled above.', 'pizzalayer' ); ?></p>
 						<input type="number" name="pizzalayer_setting_adv_rest_cache_ttl"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_adv_rest_cache_ttl','300')); ?>"
 						       class="pset-input" placeholder="300">
 					</div>
 					<div class="pset-field">
-						<label>Server Log Level</label>
-						<p class="pset-desc">Verbosity of server-side logging to the WordPress debug log.</p>
+						<label><?php esc_html_e( 'Server Log Level', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Verbosity of server-side logging to the WordPress debug log.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_adv_log_level','off'); ?>
 						<select name="pizzalayer_setting_adv_log_level" class="pset-select">
 							<?php foreach(['off'=>'Off','errors'=>'Errors only','warnings'=>'Warnings + Errors','all'=>'All (verbose)'] as $ov=>$ol):?>
 							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
 							<?php endforeach;?>
 						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+
+
+		<!-- ══ Section: Import / Export ══════════════════════════════════ -->
+		<div class="pset-card" id="pset-card-data-backup">
+			<div class="pset-card__head">
+				<div>
+					<h2>
+						<span class="dashicons dashicons-database-import"></span>
+						<?php esc_html_e( 'Import / Export Settings', 'pizzalayer' ); ?>
+					</h2>
+					<p class="pset-desc"><?php esc_html_e( 'Back up your settings as a JSON file, or restore them on a new site.', 'pizzalayer' ); ?></p>
+				</div>
+				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-data-backup"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
+			</div>
+			<div class="pset-card__body" id="pset-body-data-backup">
+				<div class="pset-grid pset-grid--wide">
+					<div class="pset-field">
+						<label><?php esc_html_e( 'Export Settings', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Download all current PizzaLayer settings as a JSON file. Use this to back up your configuration or copy it to another site.', 'pizzalayer' ); ?></p>
+						<a href="<?php echo esc_url( wp_nonce_url( admin_url( 'admin-post.php?action=pizzalayer_export_settings' ), 'pizzalayer_export_settings' ) ); ?>"
+						   class="button button-secondary">
+							<span class="dashicons dashicons-download" style="margin-top:3px;margin-right:4px;"></span>
+							<?php esc_html_e( 'Download Settings JSON', 'pizzalayer' ); ?>
+						</a>
+					</div>
+					<div class="pset-field">
+						<label><?php esc_html_e( 'Import Settings', 'pizzalayer' ); ?></label>
+						<p class="pset-desc"><?php esc_html_e( 'Restore settings from a previously exported JSON file. This will overwrite your current settings.', 'pizzalayer' ); ?></p>
+						<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;margin-bottom:8px;">
+							<input type="file" name="pizzalayer_import_file" accept=".json,application/json" style="max-width:280px;">
+							<button type="submit" name="pizzalayer_import_settings" value="1" class="button button-secondary"
+							        onclick="return confirm('<?php esc_attr_e( 'This will overwrite your current settings. Continue?', 'pizzalayer' ); ?>');">
+								<span class="dashicons dashicons-upload" style="margin-top:3px;margin-right:4px;"></span>
+								<?php esc_html_e( 'Import JSON', 'pizzalayer' ); ?>
+							</button>
+						</div>
+						<p class="pset-desc" style="color:#b32d2e;"><?php esc_html_e( 'Importing will replace all current settings immediately. Export a backup first.', 'pizzalayer' ); ?></p>
 					</div>
 				</div>
 			</div>
@@ -1734,14 +1793,24 @@ class Settings {
 			<div class="pset-card__body" style="padding:18px 24px;">
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-template#template-settings' ) ); ?>" class="button button-primary">
 					<span class="dashicons dashicons-admin-appearance" style="margin-top:3px;"></span>
-					Open <?php echo esc_html( ucwords( str_replace( '-', ' ', $active_template ) ) ); ?> Template Settings
+					<?php printf( esc_html__( 'Open %s Template Settings', 'pizzalayer' ), esc_html( ucwords( str_replace( '-', ' ', $active_template ) ) ) ); ?>
 				</a>
 				<p style="margin-top:12px;font-size:13px;color:#646970;">Settings for the active template are now configured directly alongside the template selector.</p>
 			</div>
 		</div>
 		<?php endif; ?>
 
+		</div><!-- /.pset-main -->
 		</div><!-- /.pset-layout -->
+
+		<!-- ══ Save Bar ══════════════════════════════════════════════ -->
+		<div style="position:sticky;bottom:0;z-index:100;background:linear-gradient(to top,#1a1e23 80%,transparent);padding:14px 0 4px;margin-top:20px;text-align:right;">
+			<button type="submit" class="button button-primary" style="display:inline-flex;align-items:center;gap:7px;font-size:14px;padding:8px 22px;height:auto;line-height:1.4;">
+				<span class="dashicons dashicons-saved" style="font-size:16px;width:16px;height:16px;"></span>
+				<?php esc_html_e( 'Save Settings', 'pizzalayer' ); ?>
+			</button>
+		</div>
+
 		</form>
 		</div><!-- /.wrap -->
 		<?php $this->render_styles_sidebar(); ?>
@@ -1772,7 +1841,7 @@ class Settings {
 
 		if ( headers_sent() ) {
 			// Headers already committed — use a JS Blob download as fallback
-			echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Exporting…</title></head><body>';
+			echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Exporting&hellip;</title></head><body>';
 			echo '<script>';
 			printf( 'var d=%s;', $json ); // phpcs:ignore WordPress.Security.EscapeOutput
 			echo 'var b=new Blob([JSON.stringify(d,null,2)],{type:"application/json"});';
@@ -1795,18 +1864,18 @@ class Settings {
 
 	private function import_settings(): string {
 		if ( empty( $_FILES['pizzalayer_import_file']['tmp_name'] ) ) {
-			return '<div class="notice notice-error is-dismissible"><p><strong>Import failed:</strong> no file received.</p></div>';
+			return '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__( 'Import failed:', 'pizzalayer' ) . '</strong> ' . esc_html__( 'no file received.', 'pizzalayer' ) . '</p></div>';
 		}
 
 		$tmp  = $_FILES['pizzalayer_import_file']['tmp_name']; // phpcs:ignore
 		$raw  = file_get_contents( $tmp ); // phpcs:ignore WordPress.WP.AlternativeFunctions
 		if ( ! $raw ) {
-			return '<div class="notice notice-error is-dismissible"><p><strong>Import failed:</strong> could not read file.</p></div>';
+			return '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__( 'Import failed:', 'pizzalayer' ) . '</strong> ' . esc_html__( 'could not read file.', 'pizzalayer' ) . '</p></div>';
 		}
 
 		$data = json_decode( $raw, true );
 		if ( ! is_array( $data ) ) {
-			return '<div class="notice notice-error is-dismissible"><p><strong>Import failed:</strong> invalid JSON.</p></div>';
+			return '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__( 'Import failed:', 'pizzalayer' ) . '</strong> ' . esc_html__( 'invalid JSON.', 'pizzalayer' ) . '</p></div>';
 		}
 
 		$allowed = array_flip( self::OPTIONS );
@@ -1838,7 +1907,11 @@ class Settings {
 			$count++;
 		}
 
-		$msg = sprintf( '<strong>Import successful:</strong> %d settings restored.', $count );
+		$msg = sprintf(
+			/* translators: %d = number of settings restored */
+			'<strong>' . esc_html__( 'Import successful:', 'pizzalayer' ) . '</strong> ' . esc_html__( '%d settings restored.', 'pizzalayer' ),
+			$count
+		);
 		return '<div class="notice notice-success is-dismissible"><p>' . $msg . '</p></div>';
 	}
 
@@ -1994,6 +2067,7 @@ class Settings {
 			// Advanced
 			'pizzalayer_setting_adv_debug_mode',
 			'pizzalayer_setting_adv_disable_css',
+			'pizzalayer_setting_adv_rest_api_enabled',
 		];
 		$textarea_options = [
 			// Global help content (plain text)
@@ -2124,7 +2198,7 @@ class Settings {
 		<div class="pset-field">
 			<label><?php echo esc_html( $label ); ?></label>
 			<select name="<?php echo esc_attr( $key ); ?>" class="pset-select">
-				<option value="">— None / Plugin default —</option>
+				<option value=""><?php esc_html_e( __( '— None / Plugin default —', 'pizzalayer' ), 'pizzalayer' ); ?></option>
 				<?php foreach ( $posts as $p ) :
 					$slug = sanitize_title( $p->post_title );
 				?>
@@ -2177,7 +2251,7 @@ class Settings {
 				<span class="pset-layer-trigger__name"><?php echo esc_html( $active_title ); ?></span>
 				<?php else : ?>
 				<span class="pset-layer-trigger__placeholder dashicons dashicons-plus-alt2"></span>
-				<span class="pset-layer-trigger__name pset-hint">None selected</span>
+				<span class="pset-layer-trigger__name pset-hint"><?php esc_html_e( 'None selected', 'pizzalayer' ); ?></span>
 				<?php endif; ?>
 				<span class="pset-layer-trigger__edit dashicons dashicons-edit"></span>
 			</button>
