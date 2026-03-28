@@ -198,25 +198,12 @@ class PizzaBuilder {
 		string $toppings = '',
 		string $drizzle  = '',
 		string $cut      = '',
-		string $preset   = ''
+		string $preset   = '' // kept for backward compatibility — ignored
 	): string {
-		// Load preset
-		if ( $preset ) {
-			$preset_id = $this->get_id_by_slug( $preset, 'pizzas' );
-			if ( $preset_id ) {
-				$crust   = $crust   ?: ( (string) ( get_field( 'preset_chosen_crust',   $preset_id ) ?? '' ) );
-				$sauce   = $sauce   ?: ( (string) ( get_field( 'preset_chosen_sauce',   $preset_id ) ?? '' ) );
-				$cheese  = $cheese  ?: ( (string) ( get_field( 'preset_chosen_cheese',  $preset_id ) ?? '' ) );
-				$drizzle = $drizzle ?: ( (string) ( get_field( 'preset_chosen_drizzle', $preset_id ) ?? '' ) );
-				$cut     = $cut     ?: ( (string) ( get_field( 'preset_chosen_cut',     $preset_id ) ?? '' ) );
-				if ( ! $toppings ) {
-					$preset_tops = get_field( 'preset_chosen_toppings', $preset_id );
-					if ( is_array( $preset_tops ) ) { $toppings = implode( ',', $preset_tops ); }
-				}
-			}
-		}
+		// Preset lookup removed (Pizza Presets CPT has been retired).
+		// Pass layers directly via shortcode attributes instead.
 
-		$layers = apply_filters( 'pizzalayer_static_layers', compact( 'crust', 'sauce', 'cheese', 'toppings', 'drizzle', 'cut' ), compact( 'preset' ) );
+		$layers = apply_filters( 'pizzalayer_static_layers', compact( 'crust', 'sauce', 'cheese', 'toppings', 'drizzle', 'cut' ), [] );
 		extract( $layers ); // phpcs:ignore WordPress.PHP.DontExtract
 
 		do_action( 'pizzalayer_before_static_pizza', $layers );

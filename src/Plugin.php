@@ -47,6 +47,18 @@ final class Plugin {
 		$this->loader->add_action( 'enqueue_block_editor_assets', $assets, 'enqueue_block_editor' );
 		$this->loader->add_action( 'admin_enqueue_scripts',       $assets, 'enqueue_admin' );
 
+		// Frontend Settings — apply all Settings page options to the front end.
+		// Priority 20 ensures handles registered by enqueue_frontend already exist.
+		$frontend_settings = new Frontend\FrontendSettings();
+		$this->loader->add_action( 'wp_enqueue_scripts', $frontend_settings, 'inject_inline_styles',    20 );
+		$this->loader->add_action( 'wp_enqueue_scripts', $frontend_settings, 'apply_performance',       20 );
+		$this->loader->add_action( 'wp_enqueue_scripts', $frontend_settings, 'localise_js_data',        25 );
+		$this->loader->add_action( 'wp_enqueue_scripts', $frontend_settings, 'inject_a11y_css',         20 );
+		$this->loader->add_action( 'wp_head',            $frontend_settings, 'inject_custom_code',      99 );
+		$this->loader->add_action( 'wp_footer',          $frontend_settings, 'inject_custom_footer_js', 99 );
+		$this->loader->add_filter( 'pizzalayer_query_args_toppings', $frontend_settings, 'apply_sort_filter', 10, 2 );
+		$this->loader->add_filter( 'pizzalayer_tab_order',           $frontend_settings, 'apply_tab_order',   10, 2 );
+
 		// Shortcodes (registered on init)
 		$this->loader->add_action( 'init', $this, 'register_shortcodes' );
 
@@ -71,6 +83,10 @@ final class Plugin {
 
 			$admin_bar = new Admin\AdminBar();
 			$this->loader->add_action( 'admin_bar_menu', $admin_bar, 'register', 100 );
+
+			// Settings export — must run before any HTML output
+			$settings = new Admin\Settings();
+			$this->loader->add_action( 'admin_post_pizzalayer_export_settings', $settings, 'handle_export' );
 
 			// AJAX: template switcher
 			$this->loader->add_action( 'wp_ajax_pizzalayer_set_template', $this, 'ajax_set_template' );

@@ -18,7 +18,6 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  *   ├─ 💧 Drizzles     [All]  [+ New]
  *   ├─ ✂  Cuts         [All]  [+ New]
  *   ├─ 📏 Sizes        [All]  [+ New]
- *   ├─ 🍕 Presets      [All]  [+ New]
  *   │
  *   ├─ ── ADD NEW ──
  *   ├─ + New Topping
@@ -28,7 +27,6 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  *   ├─ + New Drizzle
  *   ├─ + New Cut
  *   ├─ + New Size
- *   ├─ + New Preset
  *   │
  *   ├─ ── TOOLS ──
  *   ├─ 📋 Setup Guide
@@ -48,7 +46,7 @@ class AdminBar {
 		'drizzles' => [ 'label' => 'Drizzles', 'singular' => 'Drizzle',  'emoji' => '💧', 'icon' => 'dashicons-admin-customizer' ],
 		'cuts'     => [ 'label' => 'Cuts',     'singular' => 'Cut',      'emoji' => '✂',  'icon' => 'dashicons-editor-table'     ],
 		'sizes'    => [ 'label' => 'Sizes',    'singular' => 'Size',     'emoji' => '📏', 'icon' => 'dashicons-image-rotate'     ],
-		'pizzas'   => [ 'label' => 'Presets',  'singular' => 'Preset',   'emoji' => '🍕', 'icon' => 'dashicons-pizza'            ],
+
 	];
 
 	public function register( \WP_Admin_Bar $bar ): void {

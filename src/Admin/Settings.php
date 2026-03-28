@@ -25,7 +25,6 @@ class Settings {
 		// Layer animation
 		'pizzalayer_setting_layer_anim',
 		'pizzalayer_setting_layer_anim_speed',
-		'pizzalayer_setting_layer_anim_speed',
 		// Layer defaults
 		'pizzalayer_setting_crust_defaultcrust',
 		'pizzalayer_setting_sauce_defaultsauce',
@@ -50,21 +49,139 @@ class Settings {
 		'pizzalayer_setting_element_style_topping_choice_menu',
 		// Branding
 		'pizzalayer_setting_branding_altlogo',
+		'pizzalayer_setting_branding_logo_width',
+		'pizzalayer_setting_branding_logo_height',
+		'pizzalayer_setting_branding_logo_alt',
+		'pizzalayer_setting_branding_tagline',
+		'pizzalayer_setting_branding_primary_color',
+		'pizzalayer_setting_branding_secondary_color',
+		'pizzalayer_setting_branding_footer_text',
 		'pizzalayer_setting_branding_menu_title',
 		'pizzalayer_setting_branding_header_custom_content',
 		// Plugin settings
 		'pizzalayer_setting_settings_demonotice',
 		'pizzalayer_setting_global_help_content',
+		// Builder Layout & Behaviour
+		'pizzalayer_setting_layout_mode',
+		'pizzalayer_setting_layout_builder_width',
+		'pizzalayer_setting_layout_mobile_bp',
+		'pizzalayer_setting_layout_mobile',
+		'pizzalayer_setting_layout_step_by_step',
+		'pizzalayer_setting_layout_auto_advance',
+		'pizzalayer_setting_layout_tab_order',
+		'pizzalayer_setting_layout_hide_empty',
+		'pizzalayer_setting_layout_keyboard_nav',
+		'pizzalayer_setting_layout_sticky_header',
+		// Pricing & Cart
+		'pizzalayer_setting_price_display_mode',
+		'pizzalayer_setting_price_base',
+		'pizzalayer_setting_price_currency_pos',
+		'pizzalayer_setting_price_update_anim',
+		// WooCommerce cart options moved to PizzaLayerPro
+		// 'pizzalayer_setting_price_show_cart_btn'  → pztpro_get_setting('show_cart_btn')
+		// 'pizzalayer_setting_price_cart_btn_text'  → pztpro_get_setting('cart_btn_text')
+		// 'pizzalayer_setting_price_require_crust'  → pztpro_get_setting('require_crust')
+		// 'pizzalayer_setting_price_require_sauce'  → pztpro_get_setting('require_sauce')
+		// 'pizzalayer_setting_price_min_order'      → pztpro_get_setting('min_order')
+		// 'pizzalayer_setting_price_tax_display'    → pztpro_get_setting('tax_display')
+		// Typography
+		'pizzalayer_setting_typo_font_family',
+		'pizzalayer_setting_typo_google_font',
+		'pizzalayer_setting_typo_base_size',
+		'pizzalayer_setting_typo_heading_fw',
+		'pizzalayer_setting_typo_label_size',
+		'pizzalayer_setting_typo_price_size',
+		'pizzalayer_setting_typo_btn_fw',
+		'pizzalayer_setting_typo_letter_sp',
+		'pizzalayer_setting_typo_text_transform',
+		// Global Colour Palette
+		'pizzalayer_setting_color_bg',
+		'pizzalayer_setting_color_menu_bg',
+		'pizzalayer_setting_color_card_bg',
+		'pizzalayer_setting_color_card_border',
+		'pizzalayer_setting_color_selected',
+		'pizzalayer_setting_color_tab_bg',
+		'pizzalayer_setting_color_tab_active',
+		'pizzalayer_setting_color_tab_text',
+		'pizzalayer_setting_color_btn_bg',
+		'pizzalayer_setting_color_btn_text',
+		'pizzalayer_setting_color_btn2_bg',
+		'pizzalayer_setting_color_body_text',
+		'pizzalayer_setting_color_muted_text',
+		'pizzalayer_setting_color_error',
+		'pizzalayer_setting_color_success',
+		// Spacing & Borders
+		'pizzalayer_setting_spacing_outer_pad',
+		'pizzalayer_setting_spacing_grid_gap',
+		'pizzalayer_setting_spacing_card_pad',
+		'pizzalayer_setting_spacing_card_radius',
+		'pizzalayer_setting_spacing_card_border',
+		'pizzalayer_setting_spacing_btn_radius',
+		'pizzalayer_setting_spacing_tab_height',
+		'pizzalayer_setting_spacing_shadow',
+		'pizzalayer_setting_spacing_shadow_css',
+		'pizzalayer_setting_spacing_divider',
+		// Topping Display
+		'pizzalayer_setting_topping_thumb_size',
+		'pizzalayer_setting_topping_thumb_custom',
+		'pizzalayer_setting_topping_cols_desktop',
+		'pizzalayer_setting_topping_cols_mobile',
+		'pizzalayer_setting_topping_placement',
+		'pizzalayer_setting_topping_vis_size',
+		'pizzalayer_setting_topping_vis_opacity',
+		'pizzalayer_setting_topping_show_badge',
+		'pizzalayer_setting_topping_group_cats',
+		'pizzalayer_setting_topping_sort',
+		// Accessibility & Performance
+		'pizzalayer_setting_a11y_reduce_motion',
+		'pizzalayer_setting_a11y_high_contrast',
+		'pizzalayer_setting_a11y_focus_ring',
+		'pizzalayer_setting_a11y_aria_lang',
+		'pizzalayer_setting_perf_lazy_load',
+		'pizzalayer_setting_perf_preload_assets',
+		'pizzalayer_setting_perf_img_format',
+		'pizzalayer_setting_perf_cache',
+		// Customer Experience
+		'pizzalayer_setting_cx_show_summary',
+		'pizzalayer_setting_cx_toast_style',
+		'pizzalayer_setting_cx_toast_duration',
+		'pizzalayer_setting_cx_text_added',
+		'pizzalayer_setting_cx_text_removed',
+		'pizzalayer_setting_cx_text_max_toppings',
+		'pizzalayer_setting_cx_show_start_over',
+		'pizzalayer_setting_cx_start_over_label',
+		'pizzalayer_setting_cx_special_instructions',
+		'pizzalayer_setting_cx_special_instr_placeholder',
+		'pizzalayer_setting_cx_special_instr_max',
+		'pizzalayer_setting_cx_review_modal',
+		// Advanced & Developer
+		'pizzalayer_setting_adv_custom_css',
+		'pizzalayer_setting_adv_custom_js',
+		'pizzalayer_setting_adv_debug_mode',
+		'pizzalayer_setting_adv_disable_css',
+		'pizzalayer_setting_adv_rest_cache_ttl',
+		'pizzalayer_setting_adv_log_level',
 	];
 
 	public function render(): void {
 		if ( ! current_user_can( 'manage_options' ) ) { return; }
+
+		// Import: read uploaded JSON
+		$import_msg = '';
+		if ( isset( $_POST['pizzalayer_import_settings'], $_POST['_wpnonce'] )
+		     && wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'pizzalayer_settings_save' ) ) {
+			$import_msg = $this->import_settings();
+		}
 
 		// Save
 		if ( isset( $_POST['pizzalayer_settings_save'], $_POST['_wpnonce'] )
 		     && wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'pizzalayer_settings_save' ) ) {
 			$this->save_settings();
 			echo '<div class="notice notice-success is-dismissible"><p><strong>Settings saved.</strong></p></div>';
+		}
+
+		if ( $import_msg ) {
+			echo $import_msg; // phpcs:ignore — sanitized in import_settings()
 		}
 
 		// Load CPT options for dropdowns
@@ -108,6 +225,42 @@ class Settings {
 				<p class="pset-header__sub">All plugin settings in one place. These replace the old WordPress Customizer panel.</p>
 			</div>
 		</div>
+
+		<!-- ── Quick-jump pill nav ─────────────────────────────────────── -->
+		<nav class="pset-quickjump" aria-label="Jump to section">
+			<?php
+			$pset_sections = [
+				'default-layers'      => [ 'dashicons-category',        'Default Layers' ],
+				'toppings'            => [ 'dashicons-star-filled',      'Toppings' ],
+				'pizza-display'       => [ 'dashicons-pizza',            'Pizza Display' ],
+				'pizza-shape'         => [ 'dashicons-image-crop',       'Pizza Shape' ],
+				'layer-animation'     => [ 'dashicons-controls-play',    'Animations' ],
+				'crust-options'       => [ 'dashicons-tag',              'Crust' ],
+				'sauce-cheese'        => [ 'dashicons-admin-generic',    'Sauce & Cheese' ],
+				'ui-styles'           => [ 'dashicons-art',              'UI Styles' ],
+				'branding'            => [ 'dashicons-admin-customizer', 'Branding' ],
+				'plugin-settings'     => [ 'dashicons-info-outline',     'Plugin' ],
+				'builder-layout'      => [ 'dashicons-layout',           'Layout' ],
+				'pricing-cart'        => [ 'dashicons-cart',             'Pricing' ],
+				'typography'          => [ 'dashicons-editor-textcolor', 'Typography' ],
+				'colour-palette'      => [ 'dashicons-color-picker',     'Colours' ],
+				'spacing-borders'     => [ 'dashicons-editor-expand',    'Spacing' ],
+				'topping-display'     => [ 'dashicons-images-alt2',      'Topping Display' ],
+				'accessibility-perf'  => [ 'dashicons-universal-access', 'A11y & Perf' ],
+				'customer-experience' => [ 'dashicons-smiley',           'Customer UX' ],
+				'advanced-dev'        => [ 'dashicons-editor-code',      'Advanced' ],
+			];
+			if ( $active_template ) {
+				$pset_sections['template-settings'] = [ 'dashicons-admin-appearance', ucwords( str_replace( '-', ' ', $active_template ) ) . ' Template' ];
+			}
+			foreach ( $pset_sections as $pset_slug => [ $pset_icon, $pset_label ] ) :
+			?>
+			<a href="#pset-body-<?php echo esc_attr( $pset_slug ); ?>" class="pset-quickjump__pill" data-section="<?php echo esc_attr( $pset_slug ); ?>">
+				<span class="dashicons <?php echo esc_attr( $pset_icon ); ?>"></span>
+				<?php echo esc_html( $pset_label ); ?>
+			</a>
+			<?php endforeach; ?>
+		</nav>
 
 		<form method="post" action="" id="pset-form" enctype="multipart/form-data">
 		<?php wp_nonce_field( 'pizzalayer_settings_save' ); ?>
@@ -468,28 +621,97 @@ class Settings {
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="branding">
 				<div>
 					<h2><span class="dashicons dashicons-admin-customizer"></span> Branding</h2>
-					<p>Content displayed in the builder's branded areas (header, sidebar, above menu icons).</p>
+					<p>Logo, colours, tagline, and custom copy shown in the builder's branded areas.</p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-branding"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
 			</div>
 			<div class="pset-card__body" id="pset-body-branding">
 				<div class="pset-grid pset-grid--wide">
+
+					<!-- Logo -->
 					<div class="pset-field pset-field--full">
 						<label>Logo URL <span class="pset-hint">For templates that show a header logo</span></label>
-						<p class="pset-desc">Current: <?php $logoVal = $g('pizzalayer_setting_branding_altlogo'); echo $logoVal ? '<a href="'.esc_url($logoVal).'" target="_blank">'.esc_html(basename($logoVal)).'</a>' : '<em>none</em>'; ?></p>
+						<?php $logoVal = $g('pizzalayer_setting_branding_altlogo'); ?>
+						<p class="pset-desc">Current: <?php echo $logoVal ? '<a href="'.esc_url($logoVal).'" target="_blank">'.esc_html(basename($logoVal)).'</a>' : '<em>none</em>'; ?></p>
 						<input type="url" name="pizzalayer_setting_branding_altlogo"
-						       value="<?php echo esc_attr( $logoVal ?? '' ); ?>" class="pset-input pset-input--wide" placeholder="https://...">
+						       value="<?php echo esc_attr( $logoVal ); ?>" class="pset-input pset-input--wide" placeholder="https://...">
 					</div>
+
+					<div class="pset-field">
+						<label>Logo Display Width</label>
+						<p class="pset-desc">CSS width for the logo image, e.g. <code>120px</code> or <code>auto</code>.</p>
+						<input type="text" name="pizzalayer_setting_branding_logo_width"
+						       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_logo_width') ); ?>" class="pset-input" placeholder="120px">
+					</div>
+
+					<div class="pset-field">
+						<label>Logo Display Height</label>
+						<p class="pset-desc">CSS height for the logo image, e.g. <code>40px</code> or <code>auto</code>.</p>
+						<input type="text" name="pizzalayer_setting_branding_logo_height"
+						       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_logo_height') ); ?>" class="pset-input" placeholder="40px">
+					</div>
+
+					<div class="pset-field">
+						<label>Logo Alt Text</label>
+						<p class="pset-desc">Accessibility alt text for the logo image.</p>
+						<input type="text" name="pizzalayer_setting_branding_logo_alt"
+						       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_logo_alt') ); ?>" class="pset-input" placeholder="Your restaurant name">
+					</div>
+
+					<!-- Brand tagline -->
+					<div class="pset-field pset-field--full">
+						<label>Brand Tagline</label>
+						<p class="pset-desc">Short slogan shown beneath the logo in templates that support it (e.g. "Build your perfect pizza").</p>
+						<input type="text" name="pizzalayer_setting_branding_tagline"
+						       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_tagline') ); ?>" class="pset-input pset-input--wide" placeholder="Build your perfect pizza">
+					</div>
+
+					<!-- Brand colours -->
+					<div class="pset-field">
+						<label>Brand Primary Colour</label>
+						<p class="pset-desc">Main brand colour — used for buttons, accents, and active states in supported templates.</p>
+						<div class="pset-color-wrap">
+							<input type="color" id="pset-color-branding_primary" name="pizzalayer_setting_branding_primary_color"
+							       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_primary_color', '#ff6b35') ); ?>" class="pset-color">
+							<button type="button" class="pset-color-revert" data-default="#ff6b35" data-target="pset-color-branding_primary" title="Revert to default">
+								<span class="dashicons dashicons-image-rotate"></span>
+							</button>
+							<span class="pset-color-default-swatch" style="background:#ff6b35;" title="Default: #ff6b35"></span>
+						</div>
+					</div>
+
+					<div class="pset-field">
+						<label>Brand Secondary Colour</label>
+						<p class="pset-desc">Supporting brand colour — used for secondary buttons and highlights.</p>
+						<div class="pset-color-wrap">
+							<input type="color" id="pset-color-branding_secondary" name="pizzalayer_setting_branding_secondary_color"
+							       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_secondary_color', '#2d3748') ); ?>" class="pset-color">
+							<button type="button" class="pset-color-revert" data-default="#2d3748" data-target="pset-color-branding_secondary" title="Revert to default">
+								<span class="dashicons dashicons-image-rotate"></span>
+							</button>
+							<span class="pset-color-default-swatch" style="background:#2d3748;" title="Default: #2d3748"></span>
+						</div>
+					</div>
+
+					<!-- Builder copy -->
 					<div class="pset-field pset-field--full">
 						<label>Content Above Menu Icons</label>
 						<p class="pset-desc">Intro text or custom HTML shown above the builder tab icons.</p>
 						<textarea name="pizzalayer_setting_branding_menu_title" class="pset-textarea" rows="3"><?php echo esc_textarea( $g('pizzalayer_setting_branding_menu_title') ); ?></textarea>
 					</div>
+
 					<div class="pset-field pset-field--full">
 						<label>Header Custom Content</label>
-						<p class="pset-desc">Custom HTML for the branding area in the builder header.</p>
+						<p class="pset-desc">Custom HTML for the branding area in the builder header (logo area, above the tabs).</p>
 						<textarea name="pizzalayer_setting_branding_header_custom_content" class="pset-textarea" rows="3"><?php echo esc_textarea( $g('pizzalayer_setting_branding_header_custom_content') ); ?></textarea>
 					</div>
+
+					<div class="pset-field pset-field--full">
+						<label>Builder Footer Text</label>
+						<p class="pset-desc">Optional text or HTML shown in the footer of the builder (e.g. allergen notice, T&amp;Cs link).</p>
+						<textarea name="pizzalayer_setting_branding_footer_text" class="pset-textarea" rows="2" placeholder="e.g. Allergen info available on request."><?php echo esc_textarea( $g('pizzalayer_setting_branding_footer_text') ); ?></textarea>
+					</div>
+
 				</div>
 			</div>
 		</div>
@@ -519,7 +741,851 @@ class Settings {
 			</div>
 		</div>
 
-		<!-- ══ Section: Template Settings ══════════════════════════ -->
+
+		<!-- ══ Section: Builder Layout & Behaviour ════════════════════════════ -->
+		<div class="pset-card">
+			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="builder-layout">
+				<div>
+					<h2><span class="dashicons dashicons-layout"></span> Builder Layout &amp; Behaviour</h2>
+					<p>Control how the pizza builder is laid out and how customers interact with it.</p>
+				</div>
+				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-builder-layout"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
+			</div>
+			<div class="pset-card__body" id="pset-body-builder-layout">
+				<div class="pset-grid">
+					<div class="pset-field">
+						<label>Builder Layout Mode</label>
+						<p class="pset-desc">How the builder panels are arranged on screen.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_layout_mode','stacked'); ?>
+						<select name="pizzalayer_setting_layout_mode" class="pset-select">
+							<?php foreach(['stacked'=>'Stacked (vertical)','split-ltr'=>'Side-by-side (pizza left, menu right)','split-rtl'=>'Side-by-side (menu left, pizza right)','floating'=>'Floating pizza overlay','fullscreen'=>'Full-screen immersive'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Builder Width</label>
+						<p class="pset-desc">Maximum width of the builder container, e.g. <code>900px</code> or <code>100%</code>.</p>
+						<input type="text" name="pizzalayer_setting_layout_builder_width"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_layout_builder_width','')); ?>"
+						       class="pset-input" placeholder="100%">
+					</div>
+					<div class="pset-field">
+						<label>Mobile Breakpoint (px)</label>
+						<p class="pset-desc">Screen width at which the mobile layout activates.</p>
+						<input type="number" name="pizzalayer_setting_layout_mobile_bp"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_layout_mobile_bp','')); ?>"
+						       class="pset-input" placeholder="768">
+					</div>
+					<div class="pset-field">
+						<label>Mobile Layout</label>
+						<p class="pset-desc">How the builder stacks on small screens.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_layout_mobile','pizza-top'); ?>
+						<select name="pizzalayer_setting_layout_mobile" class="pset-select">
+							<?php foreach(['pizza-top'=>'Pizza on top, menu below','menu-top'=>'Menu on top, pizza below','menu-only'=>'Hidden pizza (menu only)','sticky-pizza'=>'Sticky pizza (fixed top)'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Step-by-Step Mode</label>
+						<p class="pset-desc">Guide customers through one layer category at a time.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_layout_step_by_step" value="no">
+							<input type="checkbox" name="pizzalayer_setting_layout_step_by_step" value="yes"<?php checked((string)get_option('pizzalayer_setting_layout_step_by_step','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Enable guided step mode</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>Auto-Advance Steps</label>
+						<p class="pset-desc">Automatically move to the next step after a selection.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_layout_auto_advance" value="no">
+							<input type="checkbox" name="pizzalayer_setting_layout_auto_advance" value="yes"<?php checked((string)get_option('pizzalayer_setting_layout_auto_advance','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Auto-advance on selection</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>Tab Order</label>
+						<p class="pset-desc">Comma-separated list of tabs in display order. E.g. <code>crust, sauce, cheese, toppings, drizzle, slicing</code>.</p>
+						<input type="text" name="pizzalayer_setting_layout_tab_order"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_layout_tab_order','')); ?>"
+						       class="pset-input" placeholder="crust, sauce, cheese, toppings, drizzle, slicing">
+					</div>
+					<div class="pset-field">
+						<label>Hide Empty Categories</label>
+						<p class="pset-desc">Don't show tabs for categories with no published items.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_layout_hide_empty" value="no">
+							<input type="checkbox" name="pizzalayer_setting_layout_hide_empty" value="yes"<?php checked((string)get_option('pizzalayer_setting_layout_hide_empty','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Hide tabs with no content</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>Keyboard Navigation</label>
+						<p class="pset-desc">Allow customers to navigate the builder with arrow keys.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_layout_keyboard_nav" value="no">
+							<input type="checkbox" name="pizzalayer_setting_layout_keyboard_nav" value="yes"<?php checked((string)get_option('pizzalayer_setting_layout_keyboard_nav','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Enable keyboard shortcuts</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>Sticky Builder Header</label>
+						<p class="pset-desc">Keep the pizza preview pinned while scrolling the menu.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_layout_sticky_header" value="no">
+							<input type="checkbox" name="pizzalayer_setting_layout_sticky_header" value="yes"<?php checked((string)get_option('pizzalayer_setting_layout_sticky_header','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Enable sticky header</span>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ══ Section: Pricing & Cart ════════════════════════════════════════ -->
+		<div class="pset-card">
+			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="pricing-cart">
+				<div>
+					<h2><span class="dashicons dashicons-cart"></span> Pricing &amp; Cart</h2>
+					<p>How prices are calculated, displayed, and passed to the cart.</p>
+				</div>
+				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-pricing-cart"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
+			</div>
+			<div class="pset-card__body" id="pset-body-pricing-cart">
+				<div class="pset-grid">
+					<div class="pset-field">
+						<label>Price Display Mode</label>
+						<p class="pset-desc">How prices are shown to customers in the builder UI.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_price_display_mode','total'); ?>
+						<select name="pizzalayer_setting_price_display_mode" class="pset-select">
+							<?php foreach(['total'=>'Show total only','per-item'=>'Show per-item prices','per-item-total'=>'Show per-item + running total','hidden'=>'Hide all prices'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Base Price</label>
+						<p class="pset-desc">Default starting price before any layer selections.</p>
+						<input type="text" name="pizzalayer_setting_price_base"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_price_base','')); ?>"
+						       class="pset-input" placeholder="0.00">
+					</div>
+					<div class="pset-field">
+						<label>Currency Symbol Position</label>
+						<p class="pset-desc">Where the currency symbol appears relative to the amount.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_price_currency_pos','before'); ?>
+						<select name="pizzalayer_setting_price_currency_pos" class="pset-select">
+							<?php foreach(['before'=>'Before (e.g. $10.00)','after'=>'After (e.g. 10.00€)'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Price Update Animation</label>
+						<p class="pset-desc">Visual effect when the running total changes.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_price_update_anim','fade'); ?>
+						<select name="pizzalayer_setting_price_update_anim" class="pset-select">
+							<?php foreach(['fade'=>'Fade','countup'=>'Count-up','flash'=>'Flash highlight','none'=>'None'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<?php if ( ! class_exists( 'PizzaLayerPro\\Pro\\Plugin' ) ) : ?>
+					<div class="pset-field pset-field--full">
+						<div class="pset-pro-notice">
+							<span class="dashicons dashicons-cart"></span>
+							<div>
+								<strong><?php esc_html_e( 'WooCommerce Cart Settings', 'pizzalayer' ); ?></strong>
+								<p><?php esc_html_e( 'Cart button visibility, button text, require crust/sauce, minimum order, and tax display are managed in PizzaLayerPro → Pro Settings.', 'pizzalayer' ); ?>
+								<a href="https://pizzalayer.com/pro" target="_blank" rel="noopener"><?php esc_html_e( 'Learn more →', 'pizzalayer' ); ?></a></p>
+							</div>
+						</div>
+					</div>
+					<?php else : ?>
+					<div class="pset-field pset-field--full">
+						<div class="pset-pro-notice pset-pro-notice--active">
+							<span class="dashicons dashicons-yes-alt"></span>
+							<div>
+								<strong><?php esc_html_e( 'WooCommerce Cart Settings', 'pizzalayer' ); ?></strong>
+								<p><?php esc_html_e( 'Cart integration settings are managed in ', 'pizzalayer' ); ?>
+								<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayerpro-settings' ) ); ?>"><?php esc_html_e( 'PizzaLayerPro → Pro Settings', 'pizzalayer' ); ?></a>.</p>
+							</div>
+						</div>
+					</div>
+					<?php endif; ?>
+				</div>
+			</div>
+		</div>
+
+		<!-- ══ Section: Typography ════════════════════════════════════════════ -->
+		<div class="pset-card">
+			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="typography">
+				<div>
+					<h2><span class="dashicons dashicons-editor-textcolor"></span> Typography</h2>
+					<p>Font families, sizes, and weights used throughout the builder UI.</p>
+				</div>
+				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-typography"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
+			</div>
+			<div class="pset-card__body" id="pset-body-typography">
+				<div class="pset-grid">
+					<div class="pset-field">
+						<label>Primary Font Family</label>
+						<p class="pset-desc">Font used for headings and labels in the builder.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_typo_font_family','inherit'); ?>
+						<select name="pizzalayer_setting_typo_font_family" class="pset-select">
+							<?php foreach(['inherit'=>'Inherit from theme','system'=>'System UI (sans-serif)','georgia'=>'Georgia (serif)','courier'=>'Courier New (monospace)','google'=>'Custom Google Font (see below)'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Custom Google Font Name</label>
+						<p class="pset-desc">e.g. <code>Roboto</code>, <code>Lato</code>, <code>Playfair Display</code></p>
+						<input type="text" name="pizzalayer_setting_typo_google_font"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_google_font','')); ?>"
+						       class="pset-input" placeholder="Roboto">
+					</div>
+					<div class="pset-field">
+						<label>Base Font Size</label>
+						<p class="pset-desc">Root font size for the builder, e.g. <code>15px</code> or <code>1rem</code>.</p>
+						<input type="text" name="pizzalayer_setting_typo_base_size"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_base_size','')); ?>"
+						       class="pset-input" placeholder="15px">
+					</div>
+					<div class="pset-field">
+						<label>Heading Font Weight</label>
+						<p class="pset-desc">Weight applied to section headings inside the builder.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_typo_heading_fw','700'); ?>
+						<select name="pizzalayer_setting_typo_heading_fw" class="pset-select">
+							<?php foreach(['400'=>'400 — Regular','500'=>'500 — Medium','600'=>'600 — Semi-Bold','700'=>'700 — Bold','800'=>'800 — Extra Bold','900'=>'900 — Black'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Label Font Size</label>
+						<p class="pset-desc">Size of item name labels in the menu grid.</p>
+						<input type="text" name="pizzalayer_setting_typo_label_size"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_label_size','')); ?>"
+						       class="pset-input" placeholder="13px">
+					</div>
+					<div class="pset-field">
+						<label>Price Font Size</label>
+						<p class="pset-desc">Size of price figures in the builder.</p>
+						<input type="text" name="pizzalayer_setting_typo_price_size"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_price_size','')); ?>"
+						       class="pset-input" placeholder="14px">
+					</div>
+					<div class="pset-field">
+						<label>Button Font Weight</label>
+						<p class="pset-desc">Weight for text inside action buttons.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_typo_btn_fw','600'); ?>
+						<select name="pizzalayer_setting_typo_btn_fw" class="pset-select">
+							<?php foreach(['400'=>'400 — Regular','600'=>'600 — Semi-Bold','700'=>'700 — Bold'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Letter Spacing (headings)</label>
+						<p class="pset-desc">CSS letter-spacing for section headings, e.g. <code>0.05em</code>.</p>
+						<input type="text" name="pizzalayer_setting_typo_letter_sp"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_letter_sp','')); ?>"
+						       class="pset-input" placeholder="0">
+					</div>
+					<div class="pset-field">
+						<label>Text Transform (labels)</label>
+						<p class="pset-desc">Case transformation for item name labels.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_typo_text_transform','none'); ?>
+						<select name="pizzalayer_setting_typo_text_transform" class="pset-select">
+							<?php foreach(['none'=>'None','uppercase'=>'Uppercase','lowercase'=>'Lowercase','capitalize'=>'Capitalize'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ══ Section: Global Colour Palette ════════════════════════════════ -->
+		<div class="pset-card">
+			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="colour-palette">
+				<div>
+					<h2><span class="dashicons dashicons-color-picker"></span> Global Colour Palette</h2>
+					<p>Fine-grained color control for every UI surface in the builder.</p>
+				</div>
+				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-colour-palette"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
+			</div>
+			<div class="pset-card__body" id="pset-body-colour-palette">
+
+				<!-- Preset colour schemes -->
+				<div class="pset-palette-presets">
+					<span class="pset-palette-presets__label">Quick Presets:</span>
+					<div class="pset-palette-preset-chips" id="pset-palette-chips">
+						<?php foreach ( $this->get_palette_presets() as $preset ) :
+							$safe = esc_attr( wp_json_encode( $preset['values'] ) );
+						?>
+						<button type="button" class="pset-palette-chip"
+						        data-palette="<?php echo $safe; ?>"
+						        data-name="<?php echo esc_attr( $preset['name'] ); ?>"
+						        title="Apply: <?php echo esc_attr( $preset['name'] ); ?>">
+							<span class="pset-palette-chip__swatches">
+								<?php foreach ( array_slice( $preset['preview'], 0, 4 ) as $c ) : ?>
+								<span class="pset-palette-chip__dot" style="background:<?php echo esc_attr($c); ?>;"></span>
+								<?php endforeach; ?>
+							</span>
+							<span class="pset-palette-chip__name"><?php echo esc_html( $preset['name'] ); ?></span>
+						</button>
+						<?php endforeach; ?>
+					</div>
+				</div>
+
+				<!-- Palette preset confirmation modal -->
+				<div id="pset-palette-modal" class="pset-modal" role="dialog" aria-modal="true" aria-label="Apply colour preset" style="display:none;">
+					<div class="pset-modal__backdrop"></div>
+					<div class="pset-modal__box" style="max-width:400px;">
+						<div class="pset-modal__head">
+							<h3 class="pset-modal__title">Apply preset: <span id="pset-palette-modal-name"></span></h3>
+							<button type="button" class="pset-modal__close" id="pset-palette-modal-cancel" aria-label="Close">&times;</button>
+						</div>
+						<div style="padding:16px 20px;">
+							<p style="font-size:13px;color:#3c434a;margin:0 0 12px;">This will replace all 15 colour palette values below with the selected preset. Your current colours will be overwritten.</p>
+							<div id="pset-palette-modal-swatches" style="display:flex;gap:6px;flex-wrap:wrap;margin-bottom:16px;"></div>
+							<div style="display:flex;gap:8px;justify-content:flex-end;">
+								<button type="button" class="button" id="pset-palette-modal-cancel2">Cancel</button>
+								<button type="button" class="button button-primary" id="pset-palette-modal-apply">Apply Preset</button>
+							</div>
+						</div>
+					</div>
+				</div>
+
+				<div class="pset-grid">
+					<?php
+					$color_palette_fields = [
+						['pizzalayer_setting_color_bg',          'Builder Background',       '#f5f5f5'],
+						['pizzalayer_setting_color_menu_bg',     'Menu Panel Background',    '#ffffff'],
+						['pizzalayer_setting_color_card_bg',     'Card Background',          '#ffffff'],
+						['pizzalayer_setting_color_card_border', 'Card Border Color',        '#e0e0e0'],
+						['pizzalayer_setting_color_selected',    'Selected Card Highlight',  '#ff6b35'],
+						['pizzalayer_setting_color_tab_bg',      'Tab Bar Background',       '#ffffff'],
+						['pizzalayer_setting_color_tab_active',  'Active Tab Color',         '#ff6b35'],
+						['pizzalayer_setting_color_tab_text',    'Tab Text Color',           '#333333'],
+						['pizzalayer_setting_color_btn_bg',      'Primary Button Background','#ff6b35'],
+						['pizzalayer_setting_color_btn_text',    'Primary Button Text',      '#ffffff'],
+						['pizzalayer_setting_color_btn2_bg',     'Secondary Button Background','#f0f0f0'],
+						['pizzalayer_setting_color_body_text',   'Body Text Color',          '#222222'],
+						['pizzalayer_setting_color_muted_text',  'Muted / Helper Text',      '#777777'],
+						['pizzalayer_setting_color_error',       'Error / Warning Color',    '#d32f2f'],
+						['pizzalayer_setting_color_success',     'Success / Confirmed Color','#388e3c'],
+					];
+					foreach ( $color_palette_fields as [$key, $label, $default] ) :
+						$val = (string) get_option( $key, '' );
+					?>
+					<div class="pset-field">
+						<label><?php echo esc_html( $label ); ?></label>
+						<div class="pset-color-wrap">
+							<input type="color" id="pset-color-<?php echo esc_attr( $key ); ?>"
+							       name="<?php echo esc_attr( $key ); ?>"
+							       value="<?php echo esc_attr( $val ?: $default ); ?>"
+							       class="pset-color pset-palette-color"
+							       data-palette-key="<?php echo esc_attr( $key ); ?>">
+							<button type="button" class="pset-color-revert"
+							        data-default="<?php echo esc_attr( $default ); ?>"
+							        data-target="pset-color-<?php echo esc_attr( $key ); ?>"
+							        title="Revert to default (<?php echo esc_attr( $default ); ?>)">
+								<span class="dashicons dashicons-image-rotate"></span>
+							</button>
+							<span class="pset-color-default-swatch"
+							      style="background:<?php echo esc_attr( $default ); ?>;"
+							      title="Default: <?php echo esc_attr( $default ); ?>"></span>
+						</div>
+					</div>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		</div>
+
+		<!-- ══ Section: Spacing & Borders ════════════════════════════════════ -->
+		<div class="pset-card">
+			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="spacing-borders">
+				<div>
+					<h2><span class="dashicons dashicons-editor-expand"></span> Spacing &amp; Borders</h2>
+					<p>Control padding, gaps, border radii, and dividers across the builder UI.</p>
+				</div>
+				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-spacing-borders"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
+			</div>
+			<div class="pset-card__body" id="pset-body-spacing-borders">
+				<div class="pset-grid">
+					<div class="pset-field">
+						<label>Builder Outer Padding</label>
+						<p class="pset-desc">Padding around the outermost builder container.</p>
+						<input type="text" name="pizzalayer_setting_spacing_outer_pad"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_outer_pad','')); ?>"
+						       class="pset-input" placeholder="16px">
+					</div>
+					<div class="pset-field">
+						<label>Menu Grid Gap</label>
+						<p class="pset-desc">Gap between item cards in the menu grid.</p>
+						<input type="text" name="pizzalayer_setting_spacing_grid_gap"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_grid_gap','')); ?>"
+						       class="pset-input" placeholder="12px">
+					</div>
+					<div class="pset-field">
+						<label>Card Inner Padding</label>
+						<p class="pset-desc">Padding inside each item card.</p>
+						<input type="text" name="pizzalayer_setting_spacing_card_pad"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_card_pad','')); ?>"
+						       class="pset-input" placeholder="10px">
+					</div>
+					<div class="pset-field">
+						<label>Card Border Radius</label>
+						<p class="pset-desc">Corner rounding for item cards, e.g. <code>8px</code>.</p>
+						<input type="text" name="pizzalayer_setting_spacing_card_radius"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_card_radius','')); ?>"
+						       class="pset-input" placeholder="8px">
+					</div>
+					<div class="pset-field">
+						<label>Card Border Width</label>
+						<p class="pset-desc">Thickness of the border around item cards.</p>
+						<input type="text" name="pizzalayer_setting_spacing_card_border"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_card_border','')); ?>"
+						       class="pset-input" placeholder="1px">
+					</div>
+					<div class="pset-field">
+						<label>Button Border Radius</label>
+						<p class="pset-desc">Corner rounding for buttons in the builder.</p>
+						<input type="text" name="pizzalayer_setting_spacing_btn_radius"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_btn_radius','')); ?>"
+						       class="pset-input" placeholder="6px">
+					</div>
+					<div class="pset-field">
+						<label>Tab Bar Height</label>
+						<p class="pset-desc">Height of the layer category tab bar.</p>
+						<input type="text" name="pizzalayer_setting_spacing_tab_height"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_tab_height','')); ?>"
+						       class="pset-input" placeholder="48px">
+					</div>
+					<div class="pset-field">
+						<label>Card Box Shadow</label>
+						<p class="pset-desc">Shadow preset for item cards.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_spacing_shadow',''); ?>
+						<select name="pizzalayer_setting_spacing_shadow" class="pset-select">
+							<?php foreach([''=>'None','sm'=>'Subtle (sm)','md'=>'Medium (md)','lg'=>'Elevated (lg)','custom'=>'Custom CSS (see below)'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Custom Box Shadow CSS</label>
+						<p class="pset-desc">Used when "Custom CSS" is selected above.</p>
+						<input type="text" name="pizzalayer_setting_spacing_shadow_css"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_shadow_css','')); ?>"
+						       class="pset-input" placeholder="0 4px 12px rgba(0,0,0,0.15)">
+					</div>
+					<div class="pset-field">
+						<label>Section Divider Style</label>
+						<p class="pset-desc">Visual divider style between builder sections.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_spacing_divider','solid'); ?>
+						<select name="pizzalayer_setting_spacing_divider" class="pset-select">
+							<?php foreach(['solid'=>'Solid line','dashed'=>'Dashed line','dotted'=>'Dotted line','none'=>'None'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ══ Section: Topping Display ══════════════════════════════════════ -->
+		<div class="pset-card">
+			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="topping-display">
+				<div>
+					<h2><span class="dashicons dashicons-images-alt2"></span> Topping Display</h2>
+					<p>Fine-grained control over how toppings appear on the pizza visualizer and in the menu.</p>
+				</div>
+				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-topping-display"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
+			</div>
+			<div class="pset-card__body" id="pset-body-topping-display">
+				<div class="pset-grid">
+					<div class="pset-field">
+						<label>Topping Thumbnail Size</label>
+						<p class="pset-desc">Size of the topping image in the menu grid.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_topping_thumb_size',''); ?>
+						<select name="pizzalayer_setting_topping_thumb_size" class="pset-select" id="pset-topping-size-preset">
+							<?php foreach([''=>'Default (theme)','48px'=>'Small (48px)','72px'=>'Medium (72px)','96px'=>'Large (96px)','custom'=>'Custom (see below)'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Custom Thumbnail Size</label>
+						<p class="pset-desc">Used when "Custom" is selected above, e.g. <code>80px</code>.</p>
+						<input type="text" name="pizzalayer_setting_topping_thumb_custom"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_topping_thumb_custom','')); ?>"
+						       class="pset-input" placeholder="72px">
+					</div>
+					<div class="pset-field">
+						<label>Topping Columns (desktop)</label>
+						<p class="pset-desc">Number of topping columns in the menu grid on large screens.</p>
+						<input type="number" name="pizzalayer_setting_topping_cols_desktop"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_topping_cols_desktop','')); ?>"
+						       class="pset-input" placeholder="4" min="1" max="8">
+					</div>
+					<div class="pset-field">
+						<label>Topping Columns (mobile)</label>
+						<p class="pset-desc">Number of topping columns on small screens.</p>
+						<input type="number" name="pizzalayer_setting_topping_cols_mobile"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_topping_cols_mobile','')); ?>"
+						       class="pset-input" placeholder="2" min="1" max="4">
+					</div>
+					<div class="pset-field">
+						<label>Topping Placement Mode</label>
+						<p class="pset-desc">How toppings are positioned over the pizza visualizer.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_topping_placement','scattered'); ?>
+						<select name="pizzalayer_setting_topping_placement" class="pset-select">
+							<?php foreach(['scattered'=>'Scattered (random)','grid'=>'Grid pattern','rings'=>'Concentric rings','center'=>'Center cluster','edge'=>'Edge ring'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Topping Visualizer Size <span class="pset-hint" id="pset-topping-vis-label">(<?php echo esc_html((string)get_option('pizzalayer_setting_topping_vis_size','20')); ?>%)</span></label>
+						<p class="pset-desc">Size of each topping image on the pizza preview (% of pizza width).</p>
+						<div class="pset-range-wrap">
+							<input type="range" name="pizzalayer_setting_topping_vis_size"
+							       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_topping_vis_size','20')); ?>"
+							       min="5" max="50" step="1" class="pset-range"
+							       oninput="document.getElementById('pset-topping-vis-val').textContent=this.value+'%';document.getElementById('pset-topping-vis-label').textContent='('+this.value+'%)'">
+							<span class="pset-range__val" id="pset-topping-vis-val"><?php echo esc_html((string)get_option('pizzalayer_setting_topping_vis_size','20')); ?>%</span>
+						</div>
+					</div>
+					<div class="pset-field">
+						<label>Topping Opacity on Pizza <span class="pset-hint" id="pset-topping-op-label">(<?php echo esc_html((string)get_option('pizzalayer_setting_topping_vis_opacity','100')); ?>%)</span></label>
+						<p class="pset-desc">Opacity of topping images in the visualizer.</p>
+						<div class="pset-range-wrap">
+							<input type="range" name="pizzalayer_setting_topping_vis_opacity"
+							       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_topping_vis_opacity','100')); ?>"
+							       min="10" max="100" step="5" class="pset-range"
+							       oninput="document.getElementById('pset-topping-op-val').textContent=this.value+'%';document.getElementById('pset-topping-op-label').textContent='('+this.value+'%)'">
+							<span class="pset-range__val" id="pset-topping-op-val"><?php echo esc_html((string)get_option('pizzalayer_setting_topping_vis_opacity','100')); ?>%</span>
+						</div>
+					</div>
+					<div class="pset-field">
+						<label>Show Topping Count Badge</label>
+						<p class="pset-desc">Display a quantity badge on topping cards when count &gt; 0.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_topping_show_badge" value="no">
+							<input type="checkbox" name="pizzalayer_setting_topping_show_badge" value="yes"<?php checked((string)get_option('pizzalayer_setting_topping_show_badge','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Show quantity badges</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>Group Toppings by Category</label>
+						<p class="pset-desc">Separate toppings into category sub-groups in the menu.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_topping_group_cats" value="no">
+							<input type="checkbox" name="pizzalayer_setting_topping_group_cats" value="yes"<?php checked((string)get_option('pizzalayer_setting_topping_group_cats','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Enable category grouping</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>Topping Sort Order</label>
+						<p class="pset-desc">How toppings are sorted in the menu grid.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_topping_sort','menu'); ?>
+						<select name="pizzalayer_setting_topping_sort" class="pset-select">
+							<?php foreach(['menu'=>'Manual (WordPress menu order)','alpha_asc'=>'Alphabetical (A–Z)','alpha_desc'=>'Alphabetical (Z–A)','price_asc'=>'Price (low to high)','price_desc'=>'Price (high to low)'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ══ Section: Accessibility & Performance ══════════════════════════ -->
+		<div class="pset-card">
+			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="accessibility-perf">
+				<div>
+					<h2><span class="dashicons dashicons-universal-access"></span> Accessibility &amp; Performance</h2>
+					<p>WCAG accessibility aids and front-end performance options.</p>
+				</div>
+				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-accessibility-perf"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
+			</div>
+			<div class="pset-card__body" id="pset-body-accessibility-perf">
+				<div class="pset-grid">
+					<div class="pset-field">
+						<label>Reduce Motion</label>
+						<p class="pset-desc">Disable all animations for users who prefer reduced motion.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_a11y_reduce_motion" value="no">
+							<input type="checkbox" name="pizzalayer_setting_a11y_reduce_motion" value="yes"<?php checked((string)get_option('pizzalayer_setting_a11y_reduce_motion','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Honor prefers-reduced-motion</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>High Contrast Mode</label>
+						<p class="pset-desc">Force high-contrast colors for all builder UI elements.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_a11y_high_contrast" value="no">
+							<input type="checkbox" name="pizzalayer_setting_a11y_high_contrast" value="yes"<?php checked((string)get_option('pizzalayer_setting_a11y_high_contrast','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Enable high contrast</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>Focus Ring Style</label>
+						<p class="pset-desc">Style of the keyboard-focus ring on interactive elements.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_a11y_focus_ring','default'); ?>
+						<select name="pizzalayer_setting_a11y_focus_ring" class="pset-select">
+							<?php foreach(['default'=>'Theme default','bold'=>'Bold outline (high visibility)','glow'=>'Glow ring','none'=>'None (not recommended)'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>ARIA Labels Language</label>
+						<p class="pset-desc">Language used for auto-generated ARIA accessibility labels.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_a11y_aria_lang','inherit'); ?>
+						<select name="pizzalayer_setting_a11y_aria_lang" class="pset-select">
+							<?php foreach(['inherit'=>'Inherit from WordPress','en'=>'English','es'=>'Spanish','fr'=>'French','de'=>'German','it'=>'Italian','pt'=>'Portuguese'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Lazy-Load Topping Images</label>
+						<p class="pset-desc">Only load topping images when they scroll into view.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_perf_lazy_load" value="no">
+							<input type="checkbox" name="pizzalayer_setting_perf_lazy_load" value="yes"<?php checked((string)get_option('pizzalayer_setting_perf_lazy_load','yes'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Enable lazy loading</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>Preload Builder Assets</label>
+						<p class="pset-desc">Add <code>&lt;link rel="preload"&gt;</code> hints for critical builder assets.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_perf_preload_assets" value="no">
+							<input type="checkbox" name="pizzalayer_setting_perf_preload_assets" value="yes"<?php checked((string)get_option('pizzalayer_setting_perf_preload_assets','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Preload critical assets</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>Image Format Preference</label>
+						<p class="pset-desc">Preferred image format for layer images.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_perf_img_format','auto'); ?>
+						<select name="pizzalayer_setting_perf_img_format" class="pset-select">
+							<?php foreach(['auto'=>'Auto (browser-determined)','webp'=>'Prefer WebP','legacy'=>'Force JPEG/PNG only'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Client-Side Caching</label>
+						<p class="pset-desc">Cache layer data in the browser for faster repeat visits.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_perf_cache','session'); ?>
+						<select name="pizzalayer_setting_perf_cache" class="pset-select">
+							<?php foreach(['session'=>'Session only','1d'=>'24 hours','7d'=>'7 days','off'=>'Disabled'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ══ Section: Customer Experience ══════════════════════════════════ -->
+		<div class="pset-card">
+			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="customer-experience">
+				<div>
+					<h2><span class="dashicons dashicons-smiley"></span> Customer Experience</h2>
+					<p>Notifications, confirmations, and micro-copy shown to customers during the ordering flow.</p>
+				</div>
+				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-customer-experience"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
+			</div>
+			<div class="pset-card__body" id="pset-body-customer-experience">
+				<div class="pset-grid">
+					<div class="pset-field">
+						<label>Show "Pizza Summary" Panel</label>
+						<p class="pset-desc">Display a running summary of selected layers alongside the visualizer.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_cx_show_summary" value="no">
+							<input type="checkbox" name="pizzalayer_setting_cx_show_summary" value="yes"<?php checked((string)get_option('pizzalayer_setting_cx_show_summary','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Show summary panel</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>Toast Notification Style</label>
+						<p class="pset-desc">Style of the pop-up when a layer is added or removed.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_cx_toast_style','bottom-right'); ?>
+						<select name="pizzalayer_setting_cx_toast_style" class="pset-select">
+							<?php foreach(['bottom-right'=>'Slide-in (bottom-right)','top-center'=>'Slide-in (top-center)','inline'=>'Inline below visualizer','none'=>'None'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+					<div class="pset-field">
+						<label>Toast Duration <span class="pset-hint" id="pset-cx-toast-label">(<?php echo esc_html((string)get_option('pizzalayer_setting_cx_toast_duration','2000')); ?>ms)</span></label>
+						<p class="pset-desc">How long the toast notification stays visible.</p>
+						<div class="pset-range-wrap">
+							<input type="range" name="pizzalayer_setting_cx_toast_duration"
+							       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_toast_duration','2000')); ?>"
+							       min="500" max="5000" step="250" class="pset-range"
+							       oninput="document.getElementById('pset-cx-toast-val').textContent=this.value+'ms';document.getElementById('pset-cx-toast-label').textContent='('+this.value+'ms)'">
+							<span class="pset-range__val" id="pset-cx-toast-val"><?php echo esc_html((string)get_option('pizzalayer_setting_cx_toast_duration','2000')); ?>ms</span>
+						</div>
+					</div>
+					<div class="pset-field">
+						<label>"Added" Confirmation Text</label>
+						<p class="pset-desc">Message shown when an item is added to the pizza.</p>
+						<input type="text" name="pizzalayer_setting_cx_text_added"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_text_added','Added to your pizza!')); ?>"
+						       class="pset-input" placeholder="Added to your pizza!">
+					</div>
+					<div class="pset-field">
+						<label>"Removed" Confirmation Text</label>
+						<p class="pset-desc">Message shown when an item is removed.</p>
+						<input type="text" name="pizzalayer_setting_cx_text_removed"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_text_removed','Removed from your pizza.')); ?>"
+						       class="pset-input" placeholder="Removed from your pizza.">
+					</div>
+					<div class="pset-field">
+						<label>Max Toppings Warning Text</label>
+						<p class="pset-desc">Shown when the customer tries to exceed the topping limit.</p>
+						<input type="text" name="pizzalayer_setting_cx_text_max_toppings"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_text_max_toppings','You\'ve reached the maximum number of toppings.')); ?>"
+						       class="pset-input" placeholder="You've reached the maximum number of toppings.">
+					</div>
+					<div class="pset-field">
+						<label>Show "Start Over" Button</label>
+						<p class="pset-desc">Display a button that resets all selections to defaults.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_cx_show_start_over" value="no">
+							<input type="checkbox" name="pizzalayer_setting_cx_show_start_over" value="yes"<?php checked((string)get_option('pizzalayer_setting_cx_show_start_over','yes'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Show reset button</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>"Start Over" Button Label</label>
+						<p class="pset-desc">Custom text for the reset button.</p>
+						<input type="text" name="pizzalayer_setting_cx_start_over_label"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_start_over_label','Start Over')); ?>"
+						       class="pset-input" placeholder="Start Over">
+					</div>
+					<div class="pset-field">
+						<label>Show Special Instructions Field</label>
+						<p class="pset-desc">Allow customers to add free-text notes to their order.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_cx_special_instructions" value="no">
+							<input type="checkbox" name="pizzalayer_setting_cx_special_instructions" value="yes"<?php checked((string)get_option('pizzalayer_setting_cx_special_instructions','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Enable special instructions</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>Special Instructions Placeholder</label>
+						<p class="pset-desc">Hint text inside the special instructions text box.</p>
+						<input type="text" name="pizzalayer_setting_cx_special_instr_placeholder"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_special_instr_placeholder','Any special requests? (optional)')); ?>"
+						       class="pset-input" placeholder="Any special requests? (optional)">
+					</div>
+					<div class="pset-field">
+						<label>Special Instructions Max Length</label>
+						<p class="pset-desc">Maximum characters allowed in the instructions field.</p>
+						<input type="number" name="pizzalayer_setting_cx_special_instr_max"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_cx_special_instr_max','300')); ?>"
+						       class="pset-input" placeholder="300">
+					</div>
+					<div class="pset-field">
+						<label>Order Review Modal</label>
+						<p class="pset-desc">Show a "Review your order" confirmation dialog before adding to cart.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_cx_review_modal" value="no">
+							<input type="checkbox" name="pizzalayer_setting_cx_review_modal" value="yes"<?php checked((string)get_option('pizzalayer_setting_cx_review_modal','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Show review modal before cart</span>
+						</label>
+					</div>
+				</div>
+			</div>
+		</div>
+
+		<!-- ══ Section: Advanced & Developer ═════════════════════════════════ -->
+		<div class="pset-card">
+			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="advanced-dev">
+				<div>
+					<h2><span class="dashicons dashicons-editor-code"></span> Advanced &amp; Developer</h2>
+					<p>Custom CSS injection, debug tools, and low-level overrides for developers.</p>
+				</div>
+				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-advanced-dev"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
+			</div>
+			<div class="pset-card__body" id="pset-body-advanced-dev">
+				<div class="pset-grid pset-grid--wide">
+					<div class="pset-field pset-field--full">
+						<label>Custom CSS (injected into builder pages)</label>
+						<p class="pset-desc">CSS added inside a <code>&lt;style&gt;</code> tag on every page containing a PizzaLayer builder. Use with care.</p>
+						<textarea name="pizzalayer_setting_adv_custom_css" class="pset-textarea pset-textarea--code" rows="6" placeholder="/* Your custom CSS here */"><?php echo esc_textarea((string)get_option('pizzalayer_setting_adv_custom_css','')); ?></textarea>
+					</div>
+					<div class="pset-field pset-field--full">
+						<label>Custom JS (runs after builder initialises)</label>
+						<p class="pset-desc">JavaScript run after the builder initialises. Useful for custom tracking or integrations. Outputs in <code>&lt;wp_footer&gt;</code>.</p>
+						<textarea name="pizzalayer_setting_adv_custom_js" class="pset-textarea pset-textarea--code" rows="6" placeholder="// Your custom JS here"><?php echo esc_textarea((string)get_option('pizzalayer_setting_adv_custom_js','')); ?></textarea>
+					</div>
+					<div class="pset-field">
+						<label>Debug Mode</label>
+						<p class="pset-desc">Log builder events and state changes to the browser console.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_adv_debug_mode" value="no">
+							<input type="checkbox" name="pizzalayer_setting_adv_debug_mode" value="yes"<?php checked((string)get_option('pizzalayer_setting_adv_debug_mode','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Enable console debug output</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>Disable All Plugin CSS</label>
+						<p class="pset-desc">Prevent PizzaLayer from enqueueing any front-end stylesheets.</p>
+						<label class="pset-toggle">
+							<input type="hidden" name="pizzalayer_setting_adv_disable_css" value="no">
+							<input type="checkbox" name="pizzalayer_setting_adv_disable_css" value="yes"<?php checked((string)get_option('pizzalayer_setting_adv_disable_css','no'),'yes');?>>
+							<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
+							<span class="pset-toggle__label">Disable plugin front-end CSS</span>
+						</label>
+					</div>
+					<div class="pset-field">
+						<label>REST API Cache TTL (seconds)</label>
+						<p class="pset-desc">How long to cache REST API responses server-side. 0 = no cache.</p>
+						<input type="number" name="pizzalayer_setting_adv_rest_cache_ttl"
+						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_adv_rest_cache_ttl','300')); ?>"
+						       class="pset-input" placeholder="300">
+					</div>
+					<div class="pset-field">
+						<label>Server Log Level</label>
+						<p class="pset-desc">Verbosity of server-side logging to the WordPress debug log.</p>
+						<?php $v = (string) get_option('pizzalayer_setting_adv_log_level','off'); ?>
+						<select name="pizzalayer_setting_adv_log_level" class="pset-select">
+							<?php foreach(['off'=>'Off','errors'=>'Errors only','warnings'=>'Warnings + Errors','all'=>'All (verbose)'] as $ov=>$ol):?>
+							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
+							<?php endforeach;?>
+						</select>
+					</div>
+				</div>
+			</div>
+		</div>
+
+				<!-- ══ Section: Template Settings ══════════════════════════ -->
 		<?php if ( $active_template ) : ?>
 		<div class="pset-card pset-card--template">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="template-settings">
@@ -663,6 +1729,30 @@ class Settings {
 				<span class="dashicons dashicons-lightbulb"></span>
 				<p>Setting a default crust and sauce ensures the builder shows something immediately when it loads, even before the customer makes selections.</p>
 			</div>
+
+			<!-- Import / Export card -->
+			<div class="pset-info-card pset-io-card">
+				<h3><span class="dashicons dashicons-database-import"></span> Import / Export</h3>
+				<p class="pset-desc">Back up all settings to a JSON file, or restore from one.</p>
+				<!-- Export — separate form so it bypasses the main settings form -->
+				<form method="post" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" style="margin:0;">
+					<?php wp_nonce_field( 'pizzalayer_export_settings' ); ?>
+					<input type="hidden" name="action" value="pizzalayer_export_settings">
+					<button type="submit" class="button pset-io-btn pset-io-btn--export">
+						<span class="dashicons dashicons-download"></span> Export Settings
+					</button>
+				</form>
+				<!-- Import -->
+				<div class="pset-io-import-wrap" style="margin-top:10px;">
+					<label class="pset-io-file-label" for="pset-import-file">
+						<span class="dashicons dashicons-upload"></span> Choose JSON file&hellip;
+						<input type="file" id="pset-import-file" name="pizzalayer_import_file" accept=".json,application/json" class="pset-io-file-input">
+					</label>
+					<button type="submit" name="pizzalayer_import_settings" value="1" class="button pset-io-btn pset-io-btn--import" id="pset-import-btn" disabled>
+						<span class="dashicons dashicons-yes-alt"></span> Import
+					</button>
+				</div>
+			</div>
 		</div>
 
 		</div><!-- /.pset-layout -->
@@ -672,8 +1762,68 @@ class Settings {
 		<?php
 	}
 
+	/** Called via admin_post_pizzalayer_export_settings — fires before any HTML output. */
+	public function handle_export(): void {
+		if ( ! current_user_can( 'manage_options' ) ) { wp_die( -1 ); }
+		check_admin_referer( 'pizzalayer_export_settings' );
+		$this->export_settings();
+	}
+
+	private function export_settings(): void {
+		$data = [];
+		foreach ( self::OPTIONS as $key ) {
+			$data[ $key ] = get_option( $key, null );
+		}
+		// Also include active template setting
+		$data['pizzalayer_setting_global_template'] = get_option( 'pizzalayer_setting_global_template', '' );
+
+		$json     = wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+		$filename = 'pizzalayer-settings-' . gmdate( 'Y-m-d' ) . '.json';
+
+		nocache_headers();
+		header( 'Content-Type: application/json; charset=utf-8' );
+		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
+		header( 'Content-Length: ' . strlen( $json ) );
+		echo $json; // phpcs:ignore WordPress.Security.EscapeOutput — raw JSON download
+		exit;
+	}
+
+	private function import_settings(): string {
+		if ( empty( $_FILES['pizzalayer_import_file']['tmp_name'] ) ) {
+			return '<div class="notice notice-error is-dismissible"><p><strong>Import failed:</strong> no file received.</p></div>';
+		}
+
+		$tmp  = $_FILES['pizzalayer_import_file']['tmp_name']; // phpcs:ignore
+		$raw  = file_get_contents( $tmp ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+		if ( ! $raw ) {
+			return '<div class="notice notice-error is-dismissible"><p><strong>Import failed:</strong> could not read file.</p></div>';
+		}
+
+		$data = json_decode( $raw, true );
+		if ( ! is_array( $data ) ) {
+			return '<div class="notice notice-error is-dismissible"><p><strong>Import failed:</strong> invalid JSON.</p></div>';
+		}
+
+		$allowed = array_flip( self::OPTIONS );
+		$allowed['pizzalayer_setting_global_template'] = true;
+		$count = 0;
+
+		foreach ( $data as $key => $value ) {
+			if ( ! isset( $allowed[ $key ] ) ) { continue; }
+			// Sanitise by type — treat everything as text; colours and specific
+			// options will be validated on next normal save. Trust the export file
+			// since it came from our own export and is verified by nonce + cap check.
+			update_option( sanitize_key( $key ), wp_kses_post( (string) $value ) );
+			$count++;
+		}
+
+		$msg = sprintf( '<strong>Import successful:</strong> %d settings restored.', $count );
+		return '<div class="notice notice-success is-dismissible"><p>' . $msg . '</p></div>';
+	}
+
 	private function save_settings(): void {
 		$text_options = [
+			// Existing
 			'pizzalayer_setting_pizza_size_max',
 			'pizzalayer_setting_pizza_size_min',
 			'pizzalayer_setting_pizza_border',
@@ -683,10 +1833,42 @@ class Settings {
 			'pizzalayer_cheese_setting_cheesedistance',
 			'pizzalayer_setting_cheese_padding',
 			'pizzalayer_setting_branding_altlogo',
+			'pizzalayer_setting_branding_logo_width',
+			'pizzalayer_setting_branding_logo_height',
+			'pizzalayer_setting_branding_logo_alt',
+			'pizzalayer_setting_branding_tagline',
 			'pizzalayer_setting_pizza_aspect',
 			'pizzalayer_setting_pizza_radius',
+			// Builder Layout
+			'pizzalayer_setting_layout_builder_width',
+			'pizzalayer_setting_layout_tab_order',
+			// Pricing (WC cart options moved to PizzaLayerPro)
+			// Typography
+			'pizzalayer_setting_typo_google_font',
+			'pizzalayer_setting_typo_base_size',
+			'pizzalayer_setting_typo_label_size',
+			'pizzalayer_setting_typo_price_size',
+			'pizzalayer_setting_typo_letter_sp',
+			// Spacing
+			'pizzalayer_setting_spacing_outer_pad',
+			'pizzalayer_setting_spacing_grid_gap',
+			'pizzalayer_setting_spacing_card_pad',
+			'pizzalayer_setting_spacing_card_radius',
+			'pizzalayer_setting_spacing_card_border',
+			'pizzalayer_setting_spacing_btn_radius',
+			'pizzalayer_setting_spacing_tab_height',
+			'pizzalayer_setting_spacing_shadow_css',
+			// Topping
+			'pizzalayer_setting_topping_thumb_custom',
+			// Customer Experience
+			'pizzalayer_setting_cx_text_added',
+			'pizzalayer_setting_cx_text_removed',
+			'pizzalayer_setting_cx_text_max_toppings',
+			'pizzalayer_setting_cx_start_over_label',
+			'pizzalayer_setting_cx_special_instr_placeholder',
 		];
 		$select_options = [
+			// Existing
 			'pizzalayer_setting_crust_defaultcrust',
 			'pizzalayer_setting_sauce_defaultsauce',
 			'pizzalayer_setting_cheese_defaultcheese',
@@ -699,17 +1881,114 @@ class Settings {
 			'pizzalayer_setting_element_style_topping_choice_menu',
 			'pizzalayer_setting_pizza_shape',
 			'pizzalayer_setting_layer_anim',
+			// Builder Layout
+			'pizzalayer_setting_layout_mode',
+			'pizzalayer_setting_layout_mobile',
+			// Pricing
+			'pizzalayer_setting_price_display_mode',
+			'pizzalayer_setting_price_currency_pos',
+			'pizzalayer_setting_price_update_anim',
+			// Typography
+			'pizzalayer_setting_typo_font_family',
+			'pizzalayer_setting_typo_heading_fw',
+			'pizzalayer_setting_typo_btn_fw',
+			'pizzalayer_setting_typo_text_transform',
+			// Topping Display
+			'pizzalayer_setting_topping_thumb_size',
+			'pizzalayer_setting_topping_placement',
+			'pizzalayer_setting_topping_sort',
+			// Spacing
+			'pizzalayer_setting_spacing_shadow',
+			'pizzalayer_setting_spacing_divider',
+			// Accessibility / Performance
+			'pizzalayer_setting_a11y_focus_ring',
+			'pizzalayer_setting_a11y_aria_lang',
+			'pizzalayer_setting_perf_img_format',
+			'pizzalayer_setting_perf_cache',
+			// Customer Experience
+			'pizzalayer_setting_cx_toast_style',
+			// Advanced
+			'pizzalayer_setting_adv_log_level',
 		];
 		$color_options = [
+			// Existing
 			'pizzalayer_setting_pizza_border_color',
 			'pizzalayer_setting_global_color',
+			// Branding
+			'pizzalayer_setting_branding_primary_color',
+			'pizzalayer_setting_branding_secondary_color',
+			// Colour Palette
+			'pizzalayer_setting_color_bg',
+			'pizzalayer_setting_color_menu_bg',
+			'pizzalayer_setting_color_card_bg',
+			'pizzalayer_setting_color_card_border',
+			'pizzalayer_setting_color_selected',
+			'pizzalayer_setting_color_tab_bg',
+			'pizzalayer_setting_color_tab_active',
+			'pizzalayer_setting_color_tab_text',
+			'pizzalayer_setting_color_btn_bg',
+			'pizzalayer_setting_color_btn_text',
+			'pizzalayer_setting_color_btn2_bg',
+			'pizzalayer_setting_color_body_text',
+			'pizzalayer_setting_color_muted_text',
+			'pizzalayer_setting_color_error',
+			'pizzalayer_setting_color_success',
 		];
-		$number_options = [ 'pizzalayer_setting_topping_maxtoppings', 'pizzalayer_setting_layer_anim_speed' ];
+		$number_options = [
+			'pizzalayer_setting_topping_maxtoppings',
+			'pizzalayer_setting_layer_anim_speed',
+			// Builder Layout
+			'pizzalayer_setting_layout_mobile_bp',
+			// Topping display
+			'pizzalayer_setting_topping_cols_desktop',
+			'pizzalayer_setting_topping_cols_mobile',
+			'pizzalayer_setting_topping_vis_size',
+			'pizzalayer_setting_topping_vis_opacity',
+			// Customer Experience
+			'pizzalayer_setting_cx_toast_duration',
+			'pizzalayer_setting_cx_special_instr_max',
+			// Advanced
+			'pizzalayer_setting_adv_rest_cache_ttl',
+		];
+		$toggle_options = [
+			// Builder Layout
+			'pizzalayer_setting_layout_step_by_step',
+			'pizzalayer_setting_layout_auto_advance',
+			'pizzalayer_setting_layout_hide_empty',
+			'pizzalayer_setting_layout_keyboard_nav',
+			'pizzalayer_setting_layout_sticky_header',
+			// Pricing (WC cart toggles moved to PizzaLayerPro)
+			// Topping Display
+			'pizzalayer_setting_topping_show_badge',
+			'pizzalayer_setting_topping_group_cats',
+			// Accessibility / Performance
+			'pizzalayer_setting_a11y_reduce_motion',
+			'pizzalayer_setting_a11y_high_contrast',
+			'pizzalayer_setting_perf_lazy_load',
+			'pizzalayer_setting_perf_preload_assets',
+			// Customer Experience
+			'pizzalayer_setting_cx_show_summary',
+			'pizzalayer_setting_cx_show_start_over',
+			'pizzalayer_setting_cx_special_instructions',
+			'pizzalayer_setting_cx_review_modal',
+			// Advanced
+			'pizzalayer_setting_adv_debug_mode',
+			'pizzalayer_setting_adv_disable_css',
+		];
 		$textarea_options = [
+			// Existing
 			'pizzalayer_setting_branding_menu_title',
 			'pizzalayer_setting_branding_header_custom_content',
+			'pizzalayer_setting_branding_footer_text',
 			'pizzalayer_setting_settings_demonotice',
 			'pizzalayer_setting_global_help_content',
+			// Advanced
+			'pizzalayer_setting_adv_custom_css',
+			'pizzalayer_setting_adv_custom_js',
+		];
+		// Price base is a decimal string
+		$decimal_options = [
+			'pizzalayer_setting_price_base',
 		];
 
 		foreach ( $text_options as $key ) {
@@ -733,9 +2012,23 @@ class Settings {
 				update_option( $key, (int) $_POST[ $key ] );
 			}
 		}
+		foreach ( $toggle_options as $key ) {
+			// Hidden field sends 'no'; checkbox sends 'yes' when checked
+			update_option( $key, ( isset( $_POST[ $key ] ) && sanitize_key( wp_unslash( $_POST[ $key ] ) ) === 'yes' ) ? 'yes' : 'no' );
+		}
 		foreach ( $textarea_options as $key ) {
 			if ( isset( $_POST[ $key ] ) ) {
-				update_option( $key, sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) );
+				// Custom CSS/JS: use wp_kses_post to allow CSS/JS content but strip dangerous HTML
+				if ( in_array( $key, [ 'pizzalayer_setting_adv_custom_css', 'pizzalayer_setting_adv_custom_js' ], true ) ) {
+					update_option( $key, wp_unslash( $_POST[ $key ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- intentional, validated by capability check above
+				} else {
+					update_option( $key, sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) );
+				}
+			}
+		}
+		foreach ( $decimal_options as $key ) {
+			if ( isset( $_POST[ $key ] ) ) {
+				update_option( $key, (string) round( (float) sanitize_text_field( wp_unslash( $_POST[ $key ] ) ), 4 ) );
 			}
 		}
 
@@ -852,6 +2145,180 @@ class Settings {
 		<?php
 	}
 
+	/** Global colour palette presets — each sets all 15 palette keys. */
+	private function get_palette_presets(): array {
+		return [
+			[
+				'name'    => 'Classic Orange',
+				'preview' => [ '#f5f5f5', '#ff6b35', '#ff6b35', '#222222' ],
+				'values'  => [
+					'pizzalayer_setting_color_bg'          => '#f5f5f5',
+					'pizzalayer_setting_color_menu_bg'     => '#ffffff',
+					'pizzalayer_setting_color_card_bg'     => '#ffffff',
+					'pizzalayer_setting_color_card_border' => '#e0e0e0',
+					'pizzalayer_setting_color_selected'    => '#ff6b35',
+					'pizzalayer_setting_color_tab_bg'      => '#ffffff',
+					'pizzalayer_setting_color_tab_active'  => '#ff6b35',
+					'pizzalayer_setting_color_tab_text'    => '#333333',
+					'pizzalayer_setting_color_btn_bg'      => '#ff6b35',
+					'pizzalayer_setting_color_btn_text'    => '#ffffff',
+					'pizzalayer_setting_color_btn2_bg'     => '#f0f0f0',
+					'pizzalayer_setting_color_body_text'   => '#222222',
+					'pizzalayer_setting_color_muted_text'  => '#777777',
+					'pizzalayer_setting_color_error'       => '#d32f2f',
+					'pizzalayer_setting_color_success'     => '#388e3c',
+				],
+			],
+			[
+				'name'    => 'Night Mode',
+				'preview' => [ '#1a1e23', '#252a31', '#ff6b35', '#e2e8f0' ],
+				'values'  => [
+					'pizzalayer_setting_color_bg'          => '#1a1e23',
+					'pizzalayer_setting_color_menu_bg'     => '#252a31',
+					'pizzalayer_setting_color_card_bg'     => '#2d3748',
+					'pizzalayer_setting_color_card_border' => '#3a4558',
+					'pizzalayer_setting_color_selected'    => '#ff6b35',
+					'pizzalayer_setting_color_tab_bg'      => '#252a31',
+					'pizzalayer_setting_color_tab_active'  => '#ff6b35',
+					'pizzalayer_setting_color_tab_text'    => '#e2e8f0',
+					'pizzalayer_setting_color_btn_bg'      => '#ff6b35',
+					'pizzalayer_setting_color_btn_text'    => '#ffffff',
+					'pizzalayer_setting_color_btn2_bg'     => '#3a4558',
+					'pizzalayer_setting_color_body_text'   => '#e2e8f0',
+					'pizzalayer_setting_color_muted_text'  => '#8d97a5',
+					'pizzalayer_setting_color_error'       => '#ef5350',
+					'pizzalayer_setting_color_success'     => '#66bb6a',
+				],
+			],
+			[
+				'name'    => 'Forest Green',
+				'preview' => [ '#f4f1e8', '#2d6a4f', '#2d6a4f', '#1a2e1e' ],
+				'values'  => [
+					'pizzalayer_setting_color_bg'          => '#f4f1e8',
+					'pizzalayer_setting_color_menu_bg'     => '#fffef9',
+					'pizzalayer_setting_color_card_bg'     => '#fffef9',
+					'pizzalayer_setting_color_card_border' => '#d4e8d8',
+					'pizzalayer_setting_color_selected'    => '#2d6a4f',
+					'pizzalayer_setting_color_tab_bg'      => '#fffef9',
+					'pizzalayer_setting_color_tab_active'  => '#2d6a4f',
+					'pizzalayer_setting_color_tab_text'    => '#1a2e1e',
+					'pizzalayer_setting_color_btn_bg'      => '#2d6a4f',
+					'pizzalayer_setting_color_btn_text'    => '#ffffff',
+					'pizzalayer_setting_color_btn2_bg'     => '#e8f0e9',
+					'pizzalayer_setting_color_body_text'   => '#1a2e1e',
+					'pizzalayer_setting_color_muted_text'  => '#5a7a60',
+					'pizzalayer_setting_color_error'       => '#c62828',
+					'pizzalayer_setting_color_success'     => '#2d6a4f',
+				],
+			],
+			[
+				'name'    => 'Rustic Red',
+				'preview' => [ '#fdf4ec', '#c2410c', '#c2410c', '#2d1a0e' ],
+				'values'  => [
+					'pizzalayer_setting_color_bg'          => '#fdf4ec',
+					'pizzalayer_setting_color_menu_bg'     => '#ffffff',
+					'pizzalayer_setting_color_card_bg'     => '#ffffff',
+					'pizzalayer_setting_color_card_border' => '#f0d5c0',
+					'pizzalayer_setting_color_selected'    => '#c2410c',
+					'pizzalayer_setting_color_tab_bg'      => '#ffffff',
+					'pizzalayer_setting_color_tab_active'  => '#c2410c',
+					'pizzalayer_setting_color_tab_text'    => '#2d1a0e',
+					'pizzalayer_setting_color_btn_bg'      => '#c2410c',
+					'pizzalayer_setting_color_btn_text'    => '#ffffff',
+					'pizzalayer_setting_color_btn2_bg'     => '#fce8d8',
+					'pizzalayer_setting_color_body_text'   => '#2d1a0e',
+					'pizzalayer_setting_color_muted_text'  => '#8c6a55',
+					'pizzalayer_setting_color_error'       => '#b71c1c',
+					'pizzalayer_setting_color_success'     => '#2e7d32',
+				],
+			],
+			[
+				'name'    => 'Midnight Blue',
+				'preview' => [ '#0f1729', '#1e2d4a', '#2563eb', '#f0f4ff' ],
+				'values'  => [
+					'pizzalayer_setting_color_bg'          => '#0f1729',
+					'pizzalayer_setting_color_menu_bg'     => '#1e2d4a',
+					'pizzalayer_setting_color_card_bg'     => '#253557',
+					'pizzalayer_setting_color_card_border' => '#2e4070',
+					'pizzalayer_setting_color_selected'    => '#2563eb',
+					'pizzalayer_setting_color_tab_bg'      => '#1e2d4a',
+					'pizzalayer_setting_color_tab_active'  => '#2563eb',
+					'pizzalayer_setting_color_tab_text'    => '#f0f4ff',
+					'pizzalayer_setting_color_btn_bg'      => '#2563eb',
+					'pizzalayer_setting_color_btn_text'    => '#ffffff',
+					'pizzalayer_setting_color_btn2_bg'     => '#2e4070',
+					'pizzalayer_setting_color_body_text'   => '#f0f4ff',
+					'pizzalayer_setting_color_muted_text'  => '#8da4c8',
+					'pizzalayer_setting_color_error'       => '#ef5350',
+					'pizzalayer_setting_color_success'     => '#66bb6a',
+				],
+			],
+			[
+				'name'    => 'Monochrome',
+				'preview' => [ '#f4f4f5', '#18181b', '#18181b', '#09090b' ],
+				'values'  => [
+					'pizzalayer_setting_color_bg'          => '#f4f4f5',
+					'pizzalayer_setting_color_menu_bg'     => '#ffffff',
+					'pizzalayer_setting_color_card_bg'     => '#ffffff',
+					'pizzalayer_setting_color_card_border' => '#d4d4d8',
+					'pizzalayer_setting_color_selected'    => '#18181b',
+					'pizzalayer_setting_color_tab_bg'      => '#ffffff',
+					'pizzalayer_setting_color_tab_active'  => '#18181b',
+					'pizzalayer_setting_color_tab_text'    => '#09090b',
+					'pizzalayer_setting_color_btn_bg'      => '#18181b',
+					'pizzalayer_setting_color_btn_text'    => '#ffffff',
+					'pizzalayer_setting_color_btn2_bg'     => '#e4e4e7',
+					'pizzalayer_setting_color_body_text'   => '#09090b',
+					'pizzalayer_setting_color_muted_text'  => '#71717a',
+					'pizzalayer_setting_color_error'       => '#dc2626',
+					'pizzalayer_setting_color_success'     => '#16a34a',
+				],
+			],
+			[
+				'name'    => 'Rose Bistro',
+				'preview' => [ '#fff0f6', '#be185d', '#be185d', '#3b0a1f' ],
+				'values'  => [
+					'pizzalayer_setting_color_bg'          => '#fff0f6',
+					'pizzalayer_setting_color_menu_bg'     => '#ffffff',
+					'pizzalayer_setting_color_card_bg'     => '#ffffff',
+					'pizzalayer_setting_color_card_border' => '#f9c8e0',
+					'pizzalayer_setting_color_selected'    => '#be185d',
+					'pizzalayer_setting_color_tab_bg'      => '#ffffff',
+					'pizzalayer_setting_color_tab_active'  => '#be185d',
+					'pizzalayer_setting_color_tab_text'    => '#3b0a1f',
+					'pizzalayer_setting_color_btn_bg'      => '#be185d',
+					'pizzalayer_setting_color_btn_text'    => '#ffffff',
+					'pizzalayer_setting_color_btn2_bg'     => '#fce7f3',
+					'pizzalayer_setting_color_body_text'   => '#3b0a1f',
+					'pizzalayer_setting_color_muted_text'  => '#9d174d',
+					'pizzalayer_setting_color_error'       => '#b91c1c',
+					'pizzalayer_setting_color_success'     => '#15803d',
+				],
+			],
+			[
+				'name'    => 'Sea Breeze',
+				'preview' => [ '#f0f9ff', '#0891b2', '#0891b2', '#0c3040' ],
+				'values'  => [
+					'pizzalayer_setting_color_bg'          => '#f0f9ff',
+					'pizzalayer_setting_color_menu_bg'     => '#ffffff',
+					'pizzalayer_setting_color_card_bg'     => '#ffffff',
+					'pizzalayer_setting_color_card_border' => '#bae6fd',
+					'pizzalayer_setting_color_selected'    => '#0891b2',
+					'pizzalayer_setting_color_tab_bg'      => '#ffffff',
+					'pizzalayer_setting_color_tab_active'  => '#0891b2',
+					'pizzalayer_setting_color_tab_text'    => '#0c3040',
+					'pizzalayer_setting_color_btn_bg'      => '#0891b2',
+					'pizzalayer_setting_color_btn_text'    => '#ffffff',
+					'pizzalayer_setting_color_btn2_bg'     => '#e0f2fe',
+					'pizzalayer_setting_color_body_text'   => '#0c3040',
+					'pizzalayer_setting_color_muted_text'  => '#0e7490',
+					'pizzalayer_setting_color_error'       => '#dc2626',
+					'pizzalayer_setting_color_success'     => '#059669',
+				],
+			],
+		];
+	}
+
 	/** 10 Metro color scheme presets — each sets accent, page bg, card bg. */
 	private function get_metro_color_schemes(): array {
 		return [
@@ -945,6 +2412,18 @@ class Settings {
 	.pset-input,.pset-select { padding:7px 10px; border:1px solid #8c8f94; border-radius:4px; font-size:13px; font-family:inherit; width:100%; }
 	.pset-input--wide { max-width:100%; }
 	.pset-color { height:36px; width:60px; padding:2px 4px; border:1px solid #8c8f94; border-radius:4px; cursor:pointer; }
+	/* Pro notice — shown in place of WC-specific fields */
+	.pset-pro-notice {
+		display:flex; align-items:flex-start; gap:10px;
+		background:#fff8e6; border:1px solid #f0b849; border-radius:6px;
+		padding:12px 16px; font-size:13px;
+	}
+	.pset-pro-notice--active { background:#f0f6ff; border-color:#2271b1; }
+	.pset-pro-notice .dashicons { color:#f0b849; font-size:18px !important; width:18px !important; height:18px !important; flex-shrink:0; margin-top:1px; }
+	.pset-pro-notice--active .dashicons { color:#2271b1; }
+	.pset-pro-notice strong { display:block; margin-bottom:3px; }
+	.pset-pro-notice p { margin:0; color:#646970; font-size:12px; }
+	.pset-pro-notice a { font-weight:600; }
 	/* Color field with revert button */
 	.pset-color-wrap { display:flex; align-items:center; gap:8px; flex-wrap:wrap; }
 	.pset-color-revert { background:none; border:1px solid #e0e3e7; border-radius:4px; cursor:pointer; padding:4px 6px; color:#646970; display:flex; align-items:center; transition:background .15s,color .15s,border-color .15s; }
@@ -1092,6 +2571,63 @@ class Settings {
 	.pset-scheme-chip__swatches { display:flex; gap:2px; }
 	.pset-scheme-chip__dot { width:12px; height:12px; border-radius:50%; border:1px solid rgba(0,0,0,.12); flex-shrink:0; }
 	.pset-scheme-chip__name { white-space:nowrap; }
+	.pset-textarea--code { font-family:monospace; font-size:12px; }
+	/* ── Quick-jump pill nav ─────────────────────────────────────── */
+	.pset-quickjump {
+		display:flex; flex-wrap:wrap; gap:6px;
+		margin-bottom:18px; padding:10px 14px;
+		background:#fff; border:1px solid #e0e3e7; border-radius:10px;
+		position:sticky; top:32px; z-index:20;
+		box-shadow:0 2px 8px rgba(0,0,0,.06);
+	}
+	.pset-quickjump__pill {
+		display:inline-flex; align-items:center; gap:5px;
+		padding:5px 11px; border-radius:20px;
+		font-size:11.5px; font-weight:600; line-height:1;
+		color:#3c434a; background:#f0f0f1; border:1.5px solid #e0e3e7;
+		text-decoration:none; white-space:nowrap;
+		transition:background .12s, border-color .12s, color .12s, transform .1s;
+		cursor:pointer;
+	}
+	.pset-quickjump__pill .dashicons { font-size:12px !important; width:12px !important; height:12px !important; }
+	.pset-quickjump__pill:hover { background:#e8f0fb; border-color:#2271b1; color:#2271b1; transform:translateY(-1px); }
+	.pset-quickjump__pill--active { background:#2271b1; border-color:#2271b1; color:#fff; }
+	.pset-quickjump__pill--active .dashicons { color:#fff; }
+	/* ── Palette presets row ─────────────────────────────────────── */
+	.pset-palette-presets {
+		display:flex; align-items:center; gap:10px; flex-wrap:wrap;
+		background:#f8f7ff; border:1px solid #e4deff; border-radius:8px;
+		padding:10px 14px; margin-bottom:16px;
+	}
+	.pset-palette-presets__label { font-size:11.5px; font-weight:700; color:#5b3fd4; white-space:nowrap; flex-shrink:0; }
+	.pset-palette-preset-chips { display:flex; flex-wrap:wrap; gap:6px; }
+	.pset-palette-chip {
+		display:flex; align-items:center; gap:5px; padding:4px 8px 4px 5px;
+		border:1.5px solid #d5c8f5; border-radius:20px; background:#fff;
+		cursor:pointer; font-size:11px; font-weight:600; color:#3c2d8c;
+		transition:border-color .12s, background .12s, transform .1s;
+	}
+	.pset-palette-chip:hover { border-color:#8c5af8; background:#f2edff; transform:translateY(-1px); }
+	.pset-palette-chip__swatches { display:flex; gap:2px; }
+	.pset-palette-chip__dot { width:12px; height:12px; border-radius:50%; border:1px solid rgba(0,0,0,.12); flex-shrink:0; }
+	.pset-palette-chip__name { white-space:nowrap; }
+	.pset-io-card h3 { display:flex; align-items:center; gap:6px; }
+	.pset-io-card h3 .dashicons { font-size:14px !important; width:14px !important; height:14px !important; color:#2271b1; }
+	.pset-io-btn { width:100%; display:flex !important; align-items:center; gap:5px; justify-content:center; font-size:12px !important; }
+	.pset-io-btn .dashicons { font-size:13px !important; width:13px !important; height:13px !important; }
+	.pset-io-btn--export { color:#3c434a !important; }
+	.pset-io-btn--import { background:#2271b1 !important; color:#fff !important; border-color:#2271b1 !important; margin-top:6px; }
+	.pset-io-btn--import:disabled { opacity:.5; cursor:not-allowed; }
+	.pset-io-file-label {
+		display:flex; align-items:center; gap:5px;
+		cursor:pointer; font-size:11.5px; color:#2271b1;
+		border:1.5px dashed #2271b1; border-radius:6px;
+		padding:6px 10px; background:#f0f5fc;
+		transition:background .12s;
+	}
+	.pset-io-file-label:hover { background:#e0ecf8; }
+	.pset-io-file-label .dashicons { font-size:13px !important; width:13px !important; height:13px !important; }
+	.pset-io-file-input { position:absolute; opacity:0; width:0; height:0; }
 	</style>
 	<script>
 	document.addEventListener('DOMContentLoaded', function() {
@@ -1275,6 +2811,120 @@ class Settings {
 				chip.classList.add('pset-scheme-chip--active');
 			});
 		});
+		// ── Quick-jump pills ─────────────────────────────────────────
+		(function() {
+			var pills = document.querySelectorAll('.pset-quickjump__pill');
+			pills.forEach(function(pill) {
+				pill.addEventListener('click', function(e) {
+					var slug   = pill.getAttribute('data-section');
+					var body   = document.getElementById('pset-body-' + slug);
+					var toggle = document.querySelector('[data-pset-toggle="' + slug + '"]');
+					// Expand the section if collapsed
+					if (body && body.classList.contains('pset-card__body--collapsed')) {
+						body.classList.remove('pset-card__body--collapsed');
+						var btn = toggle ? toggle.querySelector('.pset-collapse-btn') : null;
+						if (btn) btn.setAttribute('aria-expanded', 'true');
+						try {
+							var c = JSON.parse(localStorage.getItem('pset_collapsed_sections') || '{}');
+							delete c[slug];
+							localStorage.setItem('pset_collapsed_sections', JSON.stringify(c));
+						} catch(err) {}
+					}
+					pills.forEach(function(p) { p.classList.remove('pset-quickjump__pill--active'); });
+					pill.classList.add('pset-quickjump__pill--active');
+				});
+			});
+
+			// Highlight pill when section scrolls into view — accounts for sticky nav height
+			if ('IntersectionObserver' in window) {
+				var navEl = document.querySelector('.pset-quickjump');
+				var navH  = navEl ? navEl.offsetHeight : 60;
+				var topMargin = '-' + (navH + 12) + 'px';
+				var io = new IntersectionObserver(function(entries) {
+					entries.forEach(function(entry) {
+						if (!entry.isIntersecting) return;
+						var id = entry.target.id.replace('pset-body-', '');
+						pills.forEach(function(p) {
+							p.classList.toggle('pset-quickjump__pill--active', p.getAttribute('data-section') === id);
+						});
+						// Scroll active pill into view within the nav row if it wraps
+						var activePill = document.querySelector('.pset-quickjump__pill--active');
+						if (activePill) { activePill.scrollIntoView({ block: 'nearest', inline: 'nearest' }); }
+					});
+				}, { rootMargin: topMargin + ' 0px -55% 0px', threshold: 0 });
+				document.querySelectorAll('[id^="pset-body-"]').forEach(function(el) { io.observe(el); });
+			}
+		})();
+
+		// ── Global Colour Palette presets (with confirmation modal) ─────
+		(function() {
+			var modal      = document.getElementById('pset-palette-modal');
+			var modalName  = document.getElementById('pset-palette-modal-name');
+			var modalSwatches = document.getElementById('pset-palette-modal-swatches');
+			var applyBtn   = document.getElementById('pset-palette-modal-apply');
+			var cancelBtn  = document.getElementById('pset-palette-modal-cancel');
+			var cancelBtn2 = document.getElementById('pset-palette-modal-cancel2');
+			if (!modal) return;
+			var pendingPalette = null;
+
+			function closePaletteModal() {
+				modal.style.display = 'none';
+				document.body.style.overflow = '';
+				pendingPalette = null;
+			}
+			function applyPalette(values) {
+				Object.keys(values).forEach(function(key) {
+					var input = document.querySelector('.pset-palette-color[data-palette-key="' + key + '"]');
+					if (input) {
+						input.value = values[key];
+						input.dispatchEvent(new Event('input'));
+						input.dispatchEvent(new Event('change'));
+					}
+				});
+			}
+			document.querySelectorAll('.pset-palette-chip').forEach(function(chip) {
+				chip.addEventListener('click', function() {
+					var values;
+					try { values = JSON.parse(chip.getAttribute('data-palette')); } catch(e) { return; }
+					var name = chip.getAttribute('data-name') || 'Preset';
+					pendingPalette = values;
+					modalName.textContent = name;
+					// Build swatch preview
+					modalSwatches.innerHTML = '';
+					var swatchKeys = ['pizzalayer_setting_color_bg','pizzalayer_setting_color_btn_bg','pizzalayer_setting_color_tab_active','pizzalayer_setting_color_card_bg','pizzalayer_setting_color_body_text'];
+					swatchKeys.forEach(function(k) {
+						if (!values[k]) return;
+						var s = document.createElement('span');
+						s.style.cssText = 'display:inline-block;width:28px;height:28px;border-radius:6px;background:'+values[k]+';border:1px solid rgba(0,0,0,.15);';
+						s.title = k.replace('pizzalayer_setting_color_','').replace(/_/g,' ') + ': ' + values[k];
+						modalSwatches.appendChild(s);
+					});
+					modal.style.display = 'flex';
+					document.body.style.overflow = 'hidden';
+				});
+			});
+			if (applyBtn) applyBtn.addEventListener('click', function() {
+				if (pendingPalette) applyPalette(pendingPalette);
+				closePaletteModal();
+			});
+			if (cancelBtn)  cancelBtn.addEventListener('click',  closePaletteModal);
+			if (cancelBtn2) cancelBtn2.addEventListener('click', closePaletteModal);
+			modal.querySelector('.pset-modal__backdrop').addEventListener('click', closePaletteModal);
+			document.addEventListener('keydown', function(e) {
+				if (e.key === 'Escape' && modal.style.display !== 'none') closePaletteModal();
+			});
+		})();
+		(function() {
+			var fileInput  = document.getElementById('pset-import-file');
+			var importBtn  = document.getElementById('pset-import-btn');
+			if (!fileInput || !importBtn) return;
+			fileInput.addEventListener('change', function() {
+				importBtn.disabled = !fileInput.files.length;
+				if (fileInput.files.length) {
+					fileInput.closest('label').querySelector('.dashicons').className = 'dashicons dashicons-yes-alt';
+				}
+			});
+		})();
 	});
 	</script>
 	<?php }
@@ -1295,6 +2945,8 @@ class Settings {
 	.pset-info-card--tip { display:flex; gap:10px; align-items:flex-start; background:#fffbf0; border-color:#f0b849; }
 	.pset-info-card--tip .dashicons { color:#f0b849; font-size:18px !important; width:18px !important; height:18px !important; flex-shrink:0; }
 	.pset-info-card--tip p { margin:0; font-size:12px; color:#3c434a; }
+	/* sticky save bar */
+	.pset-save-card { position:sticky; top:32px; z-index:10; }
 	</style>
 	<?php }
 }

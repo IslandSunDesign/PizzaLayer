@@ -464,7 +464,9 @@
             addTopping: function (zindex, slug, layerImg, title, cssId, menuId, triggerEl) {
                 var currentCount = Object.keys(state.toppings).length;
                 if (currentCount >= maxTopping) {
-                    instance._showToast('Maximum ' + maxTopping + ' toppings reached!');
+                    var settings = window.pizzalayerSettings || {};
+                    var maxMsg = settings.textMaxToppings || ('Maximum ' + maxTopping + ' toppings reached!');
+                    instance._showToast(maxMsg);
                     return;
                 }
 
@@ -638,10 +640,13 @@
             },
 
             _showToast: function (msg) {
+                var settings = window.pizzalayerSettings || {};
+                if ( (settings.toastStyle || '') === 'none' ) { return; }
+                var dur = parseInt(settings.toastDuration, 10) || 3000;
                 var $toast = $('<div class="np-toast"></div>').text(msg);
                 $root.append($toast);
                 setTimeout(function () { $toast.addClass('np-toast--visible'); }, 10);
-                setTimeout(function () { $toast.removeClass('np-toast--visible'); setTimeout(function () { $toast.remove(); }, 400); }, 3000);
+                setTimeout(function () { $toast.removeClass('np-toast--visible'); setTimeout(function () { $toast.remove(); }, 400); }, dur);
             },
 
             _updateSummaryRow: function () {

@@ -1110,3 +1110,189 @@
     .cb-layout { padding: 12px; }
     .cb-main .cb-panels { padding: 12px; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   SETTINGS-DRIVEN ADDITIONS
+   Applied by FrontendSettings.php CSS vars + JS behaviour flags
+   ══════════════════════════════════════════════════════════════ */
+
+/* ── Step-by-step mode: hide unrevealed tabs ──────────────── */
+.cb-tab--hidden-step {
+    display: none !important;
+}
+
+/* ── Toast position variants ──────────────────────────────── */
+.cb-toast--style-bottom-right {
+    bottom:    24px;
+    right:     24px;
+    left:      auto;
+    transform: translateY(20px);
+}
+.cb-toast--style-bottom-right.cb-toast--visible {
+    transform: translateY(0);
+}
+.cb-toast--style-top-center {
+    top:       20px;
+    bottom:    auto;
+    left:      50%;
+    transform: translateX(-50%) translateY(-20px);
+}
+.cb-toast--style-top-center.cb-toast--visible {
+    transform: translateX(-50%) translateY(0);
+}
+.cb-toast--style-inline {
+    position:  relative;
+    bottom:    auto;
+    left:      auto;
+    transform: none;
+    margin:    8px 0;
+    display:   none;
+    border-radius: 8px;
+}
+.cb-toast--style-inline.cb-toast--visible {
+    display: block;
+    opacity: 1;
+    transform: none;
+}
+
+/* ── Special instructions textarea (Customer Experience) ──── */
+.cb-special-instructions {
+    width:          100%;
+    margin-top:     12px;
+    padding:        10px 14px;
+    border:         1px solid var(--cb-border);
+    border-radius:  var(--cb-radius-sm);
+    background:     var(--cb-surface);
+    color:          var(--cb-text);
+    font-size:      13px;
+    font-family:    inherit;
+    resize:         vertical;
+    min-height:     72px;
+    transition:     border-color 0.15s;
+}
+.cb-special-instructions:focus {
+    outline:        none;
+    border-color:   var(--cb-accent);
+}
+.cb-special-instructions-wrap {
+    padding:        0 18px 14px;
+}
+.cb-special-instructions-label {
+    font-size:      11.5px;
+    font-weight:    600;
+    color:          var(--cb-text-muted);
+    margin-bottom:  4px;
+    display:        block;
+}
+
+/* ── Topping count badge ──────────────────────────────────── */
+.cb-card__badge {
+    position:       absolute;
+    top:            4px;
+    right:          4px;
+    background:     var(--cb-accent);
+    color:          #fff;
+    font-size:      10px;
+    font-weight:    700;
+    min-width:      18px;
+    height:         18px;
+    border-radius:  9px;
+    display:        flex;
+    align-items:    center;
+    justify-content:center;
+    padding:        0 5px;
+    pointer-events: none;
+    opacity:        0;
+    transform:      scale(0.6);
+    transition:     opacity 0.15s, transform 0.15s;
+}
+.cb-card__badge--visible {
+    opacity:   1;
+    transform: scale(1);
+}
+
+/* ── CSS-var typography overrides (set by FrontendSettings) ── */
+.cb-root {
+    font-family:    var(--pzl-font,      var(--cb-font, inherit));
+    font-size:      var(--pzl-font-size, 15px);
+    color:          var(--pzl-body-text, var(--cb-text));
+}
+.cb-builder__title,
+.cb-card__name,
+.cb-panel-title {
+    font-weight:    var(--pzl-heading-fw, 700);
+    letter-spacing: var(--pzl-letter-sp,  0);
+    text-transform: var(--pzl-text-tx,    none);
+}
+.cb-card__name {
+    font-size:      var(--pzl-label-size, inherit);
+}
+.cb-card__price {
+    font-size:      var(--pzl-price-size, inherit);
+}
+.cb-btn {
+    font-weight:    var(--pzl-btn-fw, 600);
+}
+
+/* ── CSS-var color overrides (set by FrontendSettings) ───── */
+.cb-root {
+    background:     var(--pzl-bg, var(--cb-bg));
+}
+.cb-tabs-col,
+.cb-builder {
+    background:     var(--pzl-menu-bg, var(--cb-surface));
+}
+.cb-card {
+    background:     var(--pzl-card-bg, var(--cb-surface-2));
+    border-color:   var(--pzl-card-border, var(--cb-border));
+    border-radius:  var(--pzl-card-radius, var(--cb-radius-sm));
+    padding:        var(--pzl-card-pad, 10px);
+    box-shadow:     var(--pzl-card-shadow, none);
+}
+.cb-card--selected {
+    border-color:   var(--pzl-selected, var(--cb-accent)) !important;
+}
+.cb-tabnav {
+    background:     var(--pzl-tab-bg, transparent);
+    height:         var(--pzl-tab-height, auto);
+}
+.cb-tab {
+    color:          var(--pzl-tab-text, var(--cb-text-muted));
+}
+.cb-tab.active {
+    color:          var(--pzl-tab-active, var(--cb-accent));
+    border-bottom-color: var(--pzl-tab-active, var(--cb-accent));
+}
+.cb-btn--primary {
+    background:     var(--pzl-btn-bg, var(--cb-accent));
+    color:          var(--pzl-btn-text, #fff);
+    border-radius:  var(--pzl-btn-radius, var(--cb-radius-sm));
+}
+.cb-btn--ghost {
+    background:     var(--pzl-btn2-bg, transparent);
+}
+.cb-text-muted,
+.cb-card__desc {
+    color:          var(--pzl-muted-text, var(--cb-text-muted));
+}
+.cb-card-grid {
+    gap:            var(--pzl-grid-gap, 12px);
+}
+
+/* ── Layout mode variants (driven by data-layout-mode on .cb-root) ── */
+.cb-root[data-layout-mode="split-rtl"] .cb-layout__row {
+    flex-direction: row-reverse;
+}
+.cb-root[data-layout-mode="stacked"] .cb-layout__row {
+    flex-direction: column;
+}
+.cb-root[data-layout-mode="menu-only"] .cb-pizza-col {
+    display: none;
+}
+
+/* ── Sticky header mode ──────────────────────────────────── */
+.cb-root[data-sticky-header="yes"] .cb-pizza-sticky {
+    position: sticky;
+    top:      20px;
+}
+

@@ -32,7 +32,7 @@ class LayerImageShortcode {
 
 		$post = get_page_by_path( $slug, OBJECT, 'pizzalayer_' . $type . 's' );
 		if ( ! $post ) {
-			// Try without the plural 's' (e.g. 'cut' → 'pizzalayer_cuts' above, but also 'pizzalayer_pizzas')
+			// Try without the plural 's' (e.g. 'cut' → 'pizzalayer_cuts' above, singular fallback)
 			$post = get_page_by_path( $slug, OBJECT, 'pizzalayer_' . $type );
 		}
 		if ( ! $post ) { return '<!-- [pizza_layer] not found -->' ; }

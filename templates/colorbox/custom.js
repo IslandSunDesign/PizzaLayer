@@ -287,12 +287,25 @@
 
             /* ── Initialise ── */
             init: function () {
+                var settings = window.pizzalayerSettings || {};
+
+                // Debug mode
+                if ( settings.debugMode === 'yes' ) {
+                    window.console && console.info('[PizzaLayer] Builder init:', instanceId, settings);
+                }
+
                 this._initStage();
                 this._bindTabs();
                 this._bindMobileToggle();
+                this._applyStartOverLabel();
                 this.goTab('crust');
                 this._updateCounter();
                 this._initDefaultLayers();
+
+                // Step-by-step mode: hide all tabs except the first
+                if ( settings.stepByStep === 'yes' ) {
+                    this._initStepMode();
+                }
             },
 
             /* ── Create / locate the pizza stage ── */
@@ -462,9 +475,11 @@
 
             /* ── Add topping ── */
             addTopping: function (zindex, slug, layerImg, title, cssId, menuId, triggerEl) {
+                var settings = window.pizzalayerSettings || {};
                 var currentCount = Object.keys(state.toppings).length;
                 if (currentCount >= maxTopping) {
-                    instance._showToast('Maximum ' + maxTopping + ' toppings reached!');
+                    var maxMsg = settings.textMaxToppings || ('Maximum ' + maxTopping + ' toppings reached!');
+                    instance._showToast(maxMsg);
                     return;
                 }
 
@@ -488,6 +503,17 @@
                 instance._flyTo($card.find('.cb-card__thumb'));
                 instance._updateCounter();
                 instance._updateSummaryRow('toppings');
+
+                // Toast: "added" message
+                var settings = window.pizzalayerSettings || {};
+                var addedMsg = settings.textAdded || '';
+                if ( addedMsg ) { instance._showToast(addedMsg.replace('{item}', title)); }
+
+                // Count badge
+                if ( settings.toppingShowBadge === 'yes' ) { instance._updateBadge($card, 1); }
+
+                // Debug
+                if ( settings.debugMode === 'yes' ) { window.console && console.log('[PizzaLayer] addTopping:', slug, state.toppings); }
             },
 
             /* ── Remove topping ── */
@@ -506,6 +532,17 @@
 
                 instance._updateCounter();
                 instance._updateSummaryRow('toppings');
+
+                // Toast: "removed" message
+                var settings = window.pizzalayerSettings || {};
+                var removedMsg = settings.textRemoved || '';
+                if ( removedMsg ) { instance._showToast(removedMsg); }
+
+                // Clear badge
+                if ( settings.toppingShowBadge === 'yes' ) { instance._updateBadge($card, 0); }
+
+                // Debug
+                if ( settings.debugMode === 'yes' ) { window.console && console.log('[PizzaLayer] removeTopping:', slug); }
             },
 
             /* ── Set coverage (clip-path on topping layer) ── */
@@ -638,10 +675,14 @@
             },
 
             _showToast: function (msg) {
-                var $toast = $('<div class="cb-toast"></div>').text(msg);
+                var settings = window.pizzalayerSettings || {};
+                var style    = settings.toastStyle || 'bottom-right';
+                if ( style === 'none' ) { return; }
+                var dur = parseInt( settings.toastDuration, 10 ) || 3000;
+                var $toast = $('<div class="cb-toast cb-toast--style-' + style + '"></div>').text(msg);
                 $root.append($toast);
                 setTimeout(function () { $toast.addClass('cb-toast--visible'); }, 10);
-                setTimeout(function () { $toast.removeClass('cb-toast--visible'); setTimeout(function () { $toast.remove(); }, 400); }, 3000);
+                setTimeout(function () { $toast.removeClass('cb-toast--visible'); setTimeout(function () { $toast.remove(); }, 400); }, dur);
             },
 
             _updateSummaryRow: function () {
@@ -695,6 +736,62 @@
 
             _esc: function (str) {
                 return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+            },
+
+            /* ── Topping count badge ── */
+            _updateBadge: function ($card, count) {
+                var $badge = $card.find('.cb-card__badge');
+                if ( !$badge.length ) {
+                    $badge = $('<span class="cb-card__badge"></span>');
+                    $card.css('position', 'relative').append($badge);
+                }
+                if ( count > 0 ) {
+                    $badge.text(count).addClass('cb-card__badge--visible');
+                } else {
+                    $badge.removeClass('cb-card__badge--visible').text('');
+                }
+            },
+
+            /* ── Apply start-over button label from settings ── */
+            _applyStartOverLabel: function () {
+                var settings = window.pizzalayerSettings || {};
+                var label = settings.startOverLabel || '';
+                if ( !label ) { return; }
+                $find('.cb-btn--ghost').each(function () {
+                    var $btn = $(this);
+                    if ( $btn.text().indexOf('Reset') !== -1 || $btn.attr('onclick') && $btn.attr('onclick').indexOf('resetAll') !== -1 ) {
+                        $btn.find('.fa').next().length
+                            ? $btn.find('.fa').next().text(' ' + label)
+                            : $btn.html($btn.html().replace(/Reset|Start Over/, label));
+                    }
+                });
+            },
+
+            /* ── Step-by-step mode: reveal one tab at a time ── */
+            _initStepMode: function () {
+                var settings  = window.pizzalayerSettings || {};
+                var autoAdv   = settings.autoAdvance === 'yes';
+                var $tabs     = $find('.cb-tab');
+                var tabCount  = $tabs.length;
+                if ( tabCount < 2 ) { return; }
+
+                // Hide all tabs after the first
+                $tabs.each(function (i) {
+                    if ( i > 0 ) { $(this).addClass('cb-tab--hidden-step'); }
+                });
+
+                // Listen for selections and reveal next tab
+                $root.on('click.stepmode', '.cb-btn--add', function () {
+                    var $activeTabs = $find('.cb-tab:not(.cb-tab--hidden-step)');
+                    var lastVisible = $activeTabs.last();
+                    var $next = lastVisible.next('.cb-tab.cb-tab--hidden-step');
+                    if ( $next.length ) {
+                        $next.removeClass('cb-tab--hidden-step');
+                        if ( autoAdv ) {
+                            setTimeout(function () { instance.goTab($next.data('tab')); }, 120);
+                        }
+                    }
+                });
             }
         };
 

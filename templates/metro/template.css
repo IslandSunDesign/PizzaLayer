@@ -1552,3 +1552,27 @@
 		flex-direction: column;
 	}
 }
+
+/* ── PizzaLayer Settings — CSS var overrides ──────────────── */
+.mt-root, .np-root {
+    font-family:    var(--pzl-font,      inherit);
+    font-size:      var(--pzl-font-size, inherit);
+    background:     var(--pzl-bg,        inherit);
+}
+.mt-card, .np-card, .np-item {
+    background:     var(--pzl-card-bg,     inherit);
+    border-color:   var(--pzl-card-border, inherit);
+    border-radius:  var(--pzl-card-radius, inherit);
+    padding:        var(--pzl-card-pad,    inherit);
+    box-shadow:     var(--pzl-card-shadow, none);
+}
+.mt-card--selected, .np-card--selected, .np-item--selected {
+    border-color:   var(--pzl-selected, inherit) !important;
+}
+.mt-btn--primary, .np-btn--primary {
+    background:     var(--pzl-btn-bg,   inherit);
+    color:          var(--pzl-btn-text, inherit);
+    border-radius:  var(--pzl-btn-radius, inherit);
+    font-weight:    var(--pzl-btn-fw,   inherit);
+}
+.cb-tab--hidden-step { display: none !important; }

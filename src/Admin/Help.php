@@ -134,7 +134,7 @@ class Help {
 				<div class="plhelp-step__num">3</div>
 				<div class="plhelp-step__body">
 					<h3>Choose your template</h3>
-					<p>Templates control the entire visual design of the builder. The built-in <strong>NightPie</strong> template is a dark-themed, mobile-first design. You can switch templates or create a custom one in your theme (see Template System).</p>
+					<p>Templates control the entire visual design of the builder. PizzaLayer ships with five built-in templates: <strong>NightPie</strong> (dark, modern), <strong>Metro</strong> (clean, card-based), <strong>Colorbox</strong>, <strong>Rustic</strong>, <strong>PocketPie</strong>, and <strong>Scaffold</strong> (bare-bones starting point). You can also create a custom template in your theme (see Template System).</p>
 					<a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-template') ); ?>" class="button">Template Settings →</a>
 				</div>
 			</div>
@@ -221,17 +221,6 @@ class Help {
 			<li><strong>Sort</strong> — click column headers (Title, Date, Author) to re-sort the list.</li>
 			<li><strong>Pagination</strong> — navigate pages if you have more than 20 items.</li>
 		</ul>
-
-		<h3>Working with Presets</h3>
-		<p>Presets are pre-built pizza combinations. Each preset stores layer slugs as custom fields:</p>
-		<pre class="plhelp-code">preset_crust    = thin-crust
-preset_sauce    = classic-tomato
-preset_cheese   = mozzarella
-preset_toppings = pepperoni,mushrooms,basil
-preset_drizzle  = balsamic
-preset_cut      = triangle-cut</pre>
-		<p>Use a preset in a shortcode: <code>[pizza_static preset="margherita"]</code></p>
-		<p>Or in a Gutenberg block: insert the Pizza Static block and type the preset slug in the inspector sidebar.</p>
 
 		<h3>Sizes and pricing data</h3>
 		<p>Sizes are not visual layers — they carry dimension metadata for PizzaLayerPro pricing calculations. For each Size post, add these custom fields:</p>
@@ -357,27 +346,9 @@ preset_cut      = triangle-cut</pre>
 				],
 				'tips'   => 'Calculate area accurately: area = π × (diameter/2)². For a 12″ pizza: π × 36 ≈ 113.1 sq in.',
 			],
-			[
-				'name'   => 'Pizza Preset',
-				'icon'   => '🍕',
-				'color'  => '#ff6b35',
-				'cpt'    => 'pizzas',
-				'z'      => '—',
-				'desc'   => 'Pre-configured pizza combinations used with [pizza_static] to display a finished pizza anywhere.',
-				'fields' => [
-					'Title'           => 'Public name (e.g. "Margherita", "BBQ Chicken", "Veggie Supreme").',
-					'preset_crust'    => 'Custom field: crust slug (e.g. "thin-crust").',
-					'preset_sauce'    => 'Custom field: sauce slug.',
-					'preset_cheese'   => 'Custom field: cheese slug.',
-					'preset_toppings' => 'Custom field: comma-separated topping slugs.',
-					'preset_drizzle'  => 'Custom field: drizzle slug (optional).',
-					'preset_cut'      => 'Custom field: cut slug (optional).',
-				],
-				'tips'   => 'Use presets on a static menu page to showcase signature pizzas, then link a builder nearby so customers can customise from the preset as a starting point.',
-			],
 		];
 		?>
-		<p class="plhelp-lead">PizzaLayer's visual stack is built from eight layer types. Each is a WordPress Custom Post Type. Here's the full reference for each type — fields, z-index order, image guidelines, and pro tips.</p>
+		<p class="plhelp-lead">PizzaLayer's visual stack is built from seven layer types. Each is a WordPress Custom Post Type. Here's the full reference for each type — fields, z-index order, image guidelines, and pro tips.</p>
 
 		<div class="plhelp-stack-diagram">
 			<div class="plhelp-stack-diagram__label">Visual Stack (bottom → top)</div>
@@ -485,8 +456,7 @@ preset_cut      = triangle-cut</pre>
 			<table class="plhelp-attr-table">
 				<thead><tr><th>Attribute</th><th>Values</th><th>Description</th></tr></thead>
 				<tbody>
-					<tr><td><code>preset</code></td><td>preset slug</td><td>Load a pre-configured Pizza Preset. Overrides all individual layer attrs when set.</td></tr>
-					<tr><td><code>crust</code></td><td>slug</td><td>Crust slug to render (if no preset).</td></tr>
+					<tr><td><code>crust</code></td><td>slug</td><td>Crust slug to render.</td></tr>
 					<tr><td><code>sauce</code></td><td>slug</td><td>Sauce slug to render.</td></tr>
 					<tr><td><code>cheese</code></td><td>slug</td><td>Cheese slug to render.</td></tr>
 					<tr><td><code>toppings</code></td><td>comma list</td><td>Topping slugs to stack (e.g. <code>pepperoni,mushrooms</code>).</td></tr>
@@ -497,13 +467,11 @@ preset_cut      = triangle-cut</pre>
 
 			<h4>Copy-paste examples</h4>
 			<pre class="plhelp-code"><?php echo esc_html(
-'[pizza_static preset="margherita"]
+'[pizza_static crust="thin-crust" sauce="classic-tomato" cheese="mozzarella" toppings="pepperoni,basil"]
 
-[pizza_static crust="thin-crust" sauce="classic-tomato" cheese="mozzarella" toppings="pepperoni,basil"]
+[pizza_static crust="thick-crust" sauce="garlic-white" cheese="cheddar" toppings="chicken,bacon" drizzle="ranch"]
 
-[pizza_static preset="bbq-chicken" cut="square-cut"]
-
-[pizza_static crust="thick-crust" sauce="garlic-white" cheese="cheddar" toppings="chicken,bacon" drizzle="ranch"]'
+[pizza_static crust="thin-crust" sauce="bbq" cheese="mozzarella" toppings="chicken,red-onion" cut="square-cut"]'
 ); ?></pre>
 		</div>
 
@@ -603,7 +571,7 @@ preset_cut      = triangle-cut</pre>
 	// 6. TEMPLATE SYSTEM
 	// ═══════════════════════════════════════════════════════════════════
 	private function section_templates(): void { ?>
-		<p class="plhelp-lead">Templates control the complete visual presentation of the pizza builder — layout, colours, fonts, card styles, and responsive behaviour. PizzaLayer ships with <strong>NightPie</strong> and a framework for creating custom templates in your theme.</p>
+		<p class="plhelp-lead">Templates control the complete visual presentation of the pizza builder — layout, colours, fonts, card styles, and responsive behaviour. PizzaLayer ships with five production-ready templates (<strong>NightPie</strong>, <strong>Metro</strong>, <strong>Colorbox</strong>, <strong>Rustic</strong>, <strong>PocketPie</strong>) plus a bare <strong>Scaffold</strong> template for building your own from scratch.</p>
 
 		<h3>How templates work</h3>
 		<p>A template is a directory containing at minimum:</p>
@@ -671,7 +639,7 @@ preset_cut      = triangle-cut</pre>
 			[ 'q' => 'How do I add WooCommerce cart integration?',
 			  'a' => 'WooCommerce integration (add-to-cart, line item breakdown, per-topping pricing) is provided by <strong>PizzaLayerPro</strong>. The base plugin handles the visual builder; Pro handles the commerce layer.' ],
 			[ 'q' => 'Can I display a static pizza without the full builder?',
-			  'a' => 'Yes — <code>[pizza_static preset="your-slug"]</code> or specify layers directly: <code>[pizza_static crust="thin-crust" sauce="tomato" toppings="pepperoni"]</code>. No builder UI is rendered.' ],
+			  'a' => 'Yes — use <code>[pizza_static crust="thin-crust" sauce="tomato" cheese="mozzarella" toppings="pepperoni"]</code>. Specify each layer directly in the shortcode attributes. No builder UI is rendered.' ],
 			[ 'q' => 'How do I pre-load a state from JavaScript (e.g. from a WooCommerce cart)?',
 			  'a' => 'Use the public API: <code>window.PizzaLayerAPI.setState("instance-id", stateObject)</code>. See the Developer Reference section for the full state object schema.' ],
 			[ 'q' => 'Does PizzaLayer respect the "Reduce Motion" accessibility preference?',
@@ -894,7 +862,7 @@ PizzaLayer\Admin\Help             — this help page
 PizzaLayer\Admin\SetupGuide       — onboarding checklist
 PizzaLayer\Admin\ShortcodeGenerator — visual shortcode builder
 PizzaLayer\Admin\TemplateChoice   — template picker UI
-PizzaLayer\PostTypes\PostTypeRegistrar — all 8 CPT registrations
+PizzaLayer\PostTypes\PostTypeRegistrar — all 7 CPT registrations
 PizzaLayer\Shortcodes\BuilderShortcode — [pizza_builder]
 PizzaLayer\Shortcodes\StaticShortcode  — [pizza_static]
 PizzaLayer\Shortcodes\LayerImageShortcode — [pizza_layer]
@@ -910,12 +878,6 @@ PizzaLayer\Blocks\BlockRegistrar  — Gutenberg block registration'
 				<tr><td>All layer types</td><td><code>pzl_layer_image</code></td><td>Full-canvas layer image URL (used in the visual stack)</td></tr>
 				<tr><td>Sizes</td><td><code>size_diameter_in</code></td><td>Pizza diameter in inches</td></tr>
 				<tr><td>Sizes</td><td><code>size_area_sqin</code></td><td>Pizza area in square inches</td></tr>
-				<tr><td>Pizzas (presets)</td><td><code>preset_crust</code></td><td>Crust slug</td></tr>
-				<tr><td>Pizzas (presets)</td><td><code>preset_sauce</code></td><td>Sauce slug</td></tr>
-				<tr><td>Pizzas (presets)</td><td><code>preset_cheese</code></td><td>Cheese slug</td></tr>
-				<tr><td>Pizzas (presets)</td><td><code>preset_toppings</code></td><td>Comma-separated topping slugs</td></tr>
-				<tr><td>Pizzas (presets)</td><td><code>preset_drizzle</code></td><td>Drizzle slug</td></tr>
-				<tr><td>Pizzas (presets)</td><td><code>preset_cut</code></td><td>Cut slug</td></tr>
 			</tbody>
 		</table>
 

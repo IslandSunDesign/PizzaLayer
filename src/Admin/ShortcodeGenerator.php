@@ -21,7 +21,6 @@ class ShortcodeGenerator {
 		$drizzles = get_posts( array_merge( $q_args, [ 'post_type' => 'pizzalayer_drizzles' ] ) );
 		$cuts     = get_posts( array_merge( $q_args, [ 'post_type' => 'pizzalayer_cuts'     ] ) );
 		$sizes    = get_posts( array_merge( $q_args, [ 'post_type' => 'pizzalayer_sizes'    ] ) );
-		$presets  = get_posts( array_merge( $q_args, [ 'post_type' => 'pizzalayer_pizzas'   ] ) );
 
 		// Template list
 		$plugin_tpl_dir = PIZZALAYER_TEMPLATES_DIR;
@@ -63,7 +62,7 @@ class ShortcodeGenerator {
 			<button class="pscg-type-tab" data-type="static">
 				<span class="dashicons dashicons-format-image"></span>
 				<span class="pscg-type-tab__label">[pizza_static]</span>
-				<span class="pscg-type-tab__desc">Static preset display</span>
+				<span class="pscg-type-tab__desc">Static pizza display</span>
 			</button>
 			<button class="pscg-type-tab" data-type="layer">
 				<span class="dashicons dashicons-image-filter"></span>
@@ -182,17 +181,8 @@ class ShortcodeGenerator {
 			<div class="pscg-card">
 				<div class="pscg-card__head"><h2>Static Display — <code>[pizza_static]</code></h2></div>
 				<div class="pscg-card__body">
-					<p class="pscg-desc">Renders a non-interactive pizza image. Use a preset or specify layers individually.</p>
+					<p class="pscg-desc">Renders a non-interactive pizza image. Specify layers individually.</p>
 					<div class="pscg-grid">
-						<div class="pscg-field">
-							<label>Preset <span class="pscg-hint">Loads all layers from a saved pizza preset</span></label>
-							<select class="pscg-select" id="s-preset">
-								<option value="">— no preset (specify layers below) —</option>
-								<?php foreach ( $presets as $p ) : $sl = sanitize_title( $p->post_title ); ?>
-								<option value="<?php echo esc_attr( $sl ); ?>"><?php echo esc_html( $p->post_title ); ?></option>
-								<?php endforeach; ?>
-							</select>
-						</div>
 						<div class="pscg-field">
 							<label>Crust</label>
 							<select class="pscg-select" id="s-crust">

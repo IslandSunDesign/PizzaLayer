@@ -70,13 +70,7 @@ class ContentHub {
 			'color'    => '#8c5af8',
 			'desc'     => 'Dimension options (small / medium / large) with area and pricing metadata.',
 		],
-		'pizzas' => [
-			'label'    => 'Presets',
-			'singular' => 'Preset',
-			'icon'     => 'dashicons-pizza',
-			'color'    => '#ff6b35',
-			'desc'     => 'Pre-built pizza combinations. Use [pizza_static preset="slug"] to embed anywhere.',
-		],
+
 	];
 
 	/** Register AJAX handlers (called from Plugin.php or AdminMenu.php). */

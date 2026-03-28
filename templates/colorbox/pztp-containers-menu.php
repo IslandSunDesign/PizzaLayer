@@ -79,6 +79,7 @@ $cuts     = apply_filters( 'pizzalayer_query_args_cuts',     get_posts( array_me
  */
 if ( ! function_exists( 'pzt_colorbox_exclusive_card' ) ) :
 function pzt_colorbox_exclusive_card( $post, string $layer_type, string $cb_var, int $zindex = 200 ): string {
+	if ( ! ( $post instanceof \WP_Post ) ) { return ''; }
 	$id        = $post->ID;
 	$title     = get_the_title( $post );
 	$slug      = sanitize_title( $title );
@@ -133,6 +134,7 @@ endif;
  */
 if ( ! function_exists( 'pzt_colorbox_topping_card' ) ) :
 function pzt_colorbox_topping_card( $post, string $cb_var, int $zindex ): string {
+	if ( ! ( $post instanceof \WP_Post ) ) { return ''; }
 	$id        = $post->ID;
 	$title     = get_the_title( $post );
 	$slug      = sanitize_title( $title );
@@ -237,6 +239,13 @@ $initial_pizza = $builder->build_dynamic(
 	$atts['default_cheese'] ?? ''
 );
 
+// Resolve additional layout settings
+$layout_mode    = sanitize_key( (string) get_option( 'pizzalayer_setting_layout_mode', 'stacked' ) );
+$sticky_header  = ( get_option( 'pizzalayer_setting_layout_sticky_header', 'no' ) === 'yes' ) ? 'yes' : 'no';
+$show_spec_instr = ( get_option( 'pizzalayer_setting_cx_special_instructions', 'no' ) === 'yes' );
+$spec_placeholder = sanitize_text_field( (string) get_option( 'pizzalayer_setting_cx_special_instr_placeholder', 'Any special requests? (optional)' ) );
+$spec_max        = max( 1, (int) get_option( 'pizzalayer_setting_cx_special_instr_max', 300 ) );
+
 // Pass $cb_var, $instance_id to custom.js via data attribute on root
 ?>
 <!-- ═══════════════════════════════════════════════════
@@ -252,7 +261,9 @@ $initial_pizza = $builder->build_dynamic(
      data-pizza-aspect="<?php echo esc_attr( $pizza_aspect ); ?>"
      data-pizza-radius="<?php echo esc_attr( $pizza_radius ); ?>"
      data-layer-anim="<?php echo esc_attr( $layer_anim ); ?>"
-     data-layer-anim-speed="<?php echo esc_attr( (string) $layer_anim_speed ); ?>">
+     data-layer-anim-speed="<?php echo esc_attr( (string) $layer_anim_speed ); ?>"
+     data-layout-mode="<?php echo esc_attr( $layout_mode ); ?>"
+     data-sticky-header="<?php echo esc_attr( $sticky_header ); ?>">
 
 	<!-- Mobile mini-bar -->
 	<div class="cb-mobile-preview-bar">
@@ -482,8 +493,29 @@ $initial_pizza = $builder->build_dynamic(
 							</div>
 							<div class="cb-panel__nav">
 								<button class="cb-btn cb-btn--prev" onclick="<?php echo esc_js( $cb_var ); ?>.goTab('slicing')"><i class="fa fa-arrow-left"></i> <?php esc_html_e( 'Back', 'pizzalayer' ); ?></button>
-								<button class="cb-btn cb-btn--ghost" onclick="ClearPizza(); window['<?php echo esc_js( $cb_var ); ?>']&&window['<?php echo esc_js( $cb_var ); ?>'].resetAll();"><i class="fa fa-rotate-left"></i> <?php esc_html_e( 'Start Over', 'pizzalayer' ); ?></button>
+								<?php
+								$start_over_label = sanitize_text_field( (string) get_option( 'pizzalayer_setting_cx_start_over_label', 'Start Over' ) );
+								$show_start_over  = get_option( 'pizzalayer_setting_cx_show_start_over', 'yes' ) !== 'no';
+								if ( $show_start_over ) :
+								?>
+								<button class="cb-btn cb-btn--ghost" onclick="ClearPizza(); window['<?php echo esc_js( $cb_var ); ?>']&&window['<?php echo esc_js( $cb_var ); ?>'].resetAll();"><i class="fa fa-rotate-left"></i> <?php echo esc_html( $start_over_label ); ?></button>
+								<?php endif; ?>
 							</div>
+							<?php if ( $show_spec_instr ) : ?>
+							<div class="cb-special-instructions-wrap">
+								<label class="cb-special-instructions-label" for="<?php echo esc_attr( $instance_id ); ?>-special-instr">
+									<?php esc_html_e( 'Special Instructions', 'pizzalayer' ); ?>
+								</label>
+								<textarea
+									class="cb-special-instructions"
+									id="<?php echo esc_attr( $instance_id ); ?>-special-instr"
+									name="pizzalayer_special_instructions_<?php echo esc_attr( $instance_id ); ?>"
+									placeholder="<?php echo esc_attr( $spec_placeholder ); ?>"
+									maxlength="<?php echo esc_attr( (string) $spec_max ); ?>"
+									rows="3"
+								></textarea>
+							</div>
+							<?php endif; ?>
 						</section>
 						<?php do_action( 'pizzalayer_after_tab_yourpizza', $instance_id ); ?>
 						<?php endif; ?>

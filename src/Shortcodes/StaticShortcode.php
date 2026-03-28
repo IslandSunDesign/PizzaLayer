@@ -13,7 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  *   toppings Comma-separated topping slugs.
  *   drizzle  Layer slug.
  *   cut      Layer slug.
- *   preset   Pizza preset slug — loads all layers from the preset CPT entry.
  *   size     Size slug (adds a label; no visual layer).
  */
 class StaticShortcode {
@@ -26,7 +25,6 @@ class StaticShortcode {
 			'toppings' => '',
 			'drizzle'  => '',
 			'cut'      => '',
-			'preset'   => '',
 			'size'     => '',
 			// Legacy support for [pizzalayer-static slices="..."]
 			'slices'   => '',
@@ -48,7 +46,7 @@ class StaticShortcode {
 		               $atts['toppings'],
 		               $atts['drizzle'],
 		               $atts['cut'],
-		               $atts['preset']
+		               ''
 		           )
 		         . '</div>';
 

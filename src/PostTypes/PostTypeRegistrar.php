@@ -22,7 +22,7 @@ class PostTypeRegistrar {
 		'drizzles'      => [ 'Drizzle',       'Drizzles',      'Optional finishing drizzle layers.',                        'dashicons-admin-generic' ],
 		'cuts'          => [ 'Cut',           'Cuts',          'Pizza slicing / cut style overlays.',                       'dashicons-admin-generic' ],
 		'sizes'         => [ 'Size',          'Sizes',         'Pizza size options with dimension and pricing data.',        'dashicons-image-rotate' ],
-		'pizzas'        => [ 'Pizza Preset',  'Pizza Presets', 'Pre-configured pizza combinations (presets).',              'dashicons-pizza'       ],
+
 	];
 
 	public function register(): void {

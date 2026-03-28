@@ -95,7 +95,7 @@ class AssetManager {
 			);
 
 			// Build CPT data array for the JS
-			$cpt_slugs = [ 'toppings', 'crusts', 'sauces', 'cheeses', 'drizzles', 'cuts', 'sizes', 'pizzas' ];
+			$cpt_slugs = [ 'toppings', 'crusts', 'sauces', 'cheeses', 'drizzles', 'cuts', 'sizes' ];
 			$cpt_meta  = [
 				'toppings' => [ 'label' => 'Toppings', 'singular' => 'Topping',  'icon' => 'dashicons-carrot',          'color' => '#f0b849', 'desc' => 'Layer images placed on top of cheese.' ],
 				'crusts'   => [ 'label' => 'Crusts',   'singular' => 'Crust',    'icon' => 'dashicons-admin-generic',    'color' => '#c8956c', 'desc' => 'The base canvas for the pizza stack.' ],
@@ -104,7 +104,6 @@ class AssetManager {
 				'drizzles' => [ 'label' => 'Drizzles', 'singular' => 'Drizzle',  'icon' => 'dashicons-admin-customizer', 'color' => '#00a32a', 'desc' => 'Finishing touches above toppings.' ],
 				'cuts'     => [ 'label' => 'Cuts',     'singular' => 'Cut',      'icon' => 'dashicons-editor-table',     'color' => '#2271b1', 'desc' => 'Slicing overlays.' ],
 				'sizes'    => [ 'label' => 'Sizes',    'singular' => 'Size',     'icon' => 'dashicons-image-rotate',     'color' => '#8c5af8', 'desc' => 'Dimension options with pricing metadata.' ],
-				'pizzas'   => [ 'label' => 'Presets',  'singular' => 'Preset',   'icon' => 'dashicons-pizza',            'color' => '#ff6b35', 'desc' => 'Pre-built pizza combinations.' ],
 			];
 
 			$js_cpt_data = [];

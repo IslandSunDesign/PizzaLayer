@@ -17,7 +17,6 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  *   ├─ Drizzles               → ContentHub?pl_cpt=drizzles
  *   ├─ Cuts                   → ContentHub?pl_cpt=cuts
  *   ├─ Sizes                  → ContentHub?pl_cpt=sizes
- *   ├─ Presets                → ContentHub?pl_cpt=pizzas
  *   ├─ ── TOOLS ──            (non-clickable group header)
  *   ├─ Setup Guide
  *   ├─ Shortcode Generator
@@ -44,7 +43,7 @@ class AdminMenu {
 		'drizzles' => [ 'label' => 'Drizzles', 'singular' => 'Drizzle',  'icon' => '💧' ],
 		'cuts'     => [ 'label' => 'Cuts',     'singular' => 'Cut',      'icon' => '✂'  ],
 		'sizes'    => [ 'label' => 'Sizes',    'singular' => 'Size',     'icon' => '📏' ],
-		'pizzas'   => [ 'label' => 'Presets',  'singular' => 'Preset',   'icon' => '🍕' ],
+
 	];
 
 	private function get_icon(): string {

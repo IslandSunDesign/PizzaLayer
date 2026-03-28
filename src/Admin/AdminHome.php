@@ -41,7 +41,6 @@ class AdminHome {
 			'drizzles' => (int) ( wp_count_posts( 'pizzalayer_drizzles' )->publish ?? 0 ),
 			'cuts'     => (int) ( wp_count_posts( 'pizzalayer_cuts'     )->publish ?? 0 ),
 			'sizes'    => (int) ( wp_count_posts( 'pizzalayer_sizes'    )->publish ?? 0 ),
-			'pizzas'   => (int) ( wp_count_posts( 'pizzalayer_pizzas'   )->publish ?? 0 ),
 		];
 		$total = array_sum( array_values( $stats ) );
 		$active_template = (string) get_option( 'pizzalayer_setting_global_template', 'nightpie' );
@@ -107,14 +106,6 @@ class AdminHome {
 				'tip'   => '💡 Set size_area_sqin for accurate topping price-per-area calculations in PizzaLayerPro.',
 				'cpt'   => 'sizes',
 				'count' => $stats['sizes'],
-			],
-			'pizzas' => [
-				'label' => 'Presets',
-				'icon'  => 'dashicons-pizza',
-				'desc'  => 'Pizza presets are pre-configured combinations — a "Margherita" or "BBQ Chicken" ready to drop onto any page via <code>[pizza_static preset="margherita"]</code>. Great for showcasing your signature pies.',
-				'tip'   => '💡 Use presets on your menu page alongside the interactive builder for a complete ordering experience.',
-				'cpt'   => 'pizzas',
-				'count' => $stats['pizzas'],
 			],
 		];
 
@@ -363,7 +354,7 @@ class AdminHome {
 					<div class="plh-card__content">
 						<p><code>[pizza_builder]</code><br><span class="plh-sc-desc">Interactive builder on any page.</span></p>
 						<p><code>[pizza_builder id="pizza-1" max_toppings="5"]</code><br><span class="plh-sc-desc">Multiple builders, different settings.</span></p>
-						<p><code>[pizza_static preset="hawaiian"]</code><br><span class="plh-sc-desc">Static preset display.</span></p>
+						<p><code>[pizza_static crust="thin-crust" sauce="tomato" toppings="pepperoni"]</code><br><span class="plh-sc-desc">Static pizza display anywhere.</span></p>
 						<p><code>[pizza_layer type="topping" slug="pepperoni"]</code><br><span class="plh-sc-desc">Single layer image anywhere.</span></p>
 						<p style="margin-top:12px;">
 							<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-shortcodes' ) ); ?>" class="button button-secondary">

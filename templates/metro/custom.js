@@ -233,10 +233,13 @@
         }
 
         function _showToast(msg) {
+            var settings = window.pizzalayerSettings || {};
+            if ( (settings.toastStyle || '') === 'none' ) { return; }
+            var dur = parseInt(settings.toastDuration, 10) || 2800;
             var $t = $('<div class="mt-toast"></div>').text(msg);
             $root.append($t);
             setTimeout(function () { $t.addClass('is-visible'); }, 10);
-            setTimeout(function () { $t.removeClass('is-visible'); setTimeout(function () { $t.remove(); }, 300); }, 2800);
+            setTimeout(function () { $t.removeClass('is-visible'); setTimeout(function () { $t.remove(); }, 300); }, dur);
         }
 
         /* ── Card state helpers ──────────────────────────── */
@@ -479,7 +482,9 @@
             addTopping: function (zindex, slug, layerImg, title, layerId, cssId, triggerEl) {
                 var maxT = parseInt($root.data('max-toppings')) || 99;
                 if (_toppingCount() >= maxT) {
-                    _showToast('Max ' + maxT + ' toppings reached.');
+                    var settings = window.pizzalayerSettings || {};
+                    var maxMsg = settings.textMaxToppings || ('Max ' + maxT + ' toppings reached.');
+                    _showToast(maxMsg);
                     return;
                 }
                 var $card  = $(triggerEl).closest('.mt-card');

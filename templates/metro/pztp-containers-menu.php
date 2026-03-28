@@ -126,6 +126,7 @@ $cuts     = apply_filters( 'pizzalayer_query_args_cuts',     get_posts( array_me
  */
 if ( ! function_exists( 'pzt_metro_exclusive_card' ) ) :
 function pzt_metro_exclusive_card( $post, string $layer_type, string $mt_var, int $zindex = 200 ): string {
+	if ( ! ( $post instanceof \WP_Post ) ) { return ''; }
 	$id        = $post->ID;
 	$title     = get_the_title( $post );
 	$slug      = sanitize_title( $title );
@@ -187,6 +188,7 @@ endif;
  */
 if ( ! function_exists( 'pzt_metro_topping_card' ) ) :
 function pzt_metro_topping_card( $post, string $mt_var, int $zindex ): string {
+	if ( ! ( $post instanceof \WP_Post ) ) { return ''; }
 	$id        = $post->ID;
 	$title     = get_the_title( $post );
 	$slug      = sanitize_title( $title );
