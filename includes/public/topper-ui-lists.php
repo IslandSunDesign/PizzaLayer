@@ -155,7 +155,6 @@ $pizzalayer_drizzles_list_array_drizzles .= '
 
 </li></a>';
 };
-};
 
 
 // cuts (aka slices/slicing) ============================
@@ -167,7 +166,6 @@ $pizzalayer_cuts_list_array_cuts .= '
 <div class="col-sm-3 pizzalayer-topping-image-row"><img src="' . esc_url( $pizzalayer_cuts_list_item_image ) . '"/></div>
 <div class="col-sm-9 pizzalayer-topping-title">' . esc_html( get_the_title() ) . '</div><div style="clear:both;"></div></div>
 </li></a>';
-};
 };
 
 

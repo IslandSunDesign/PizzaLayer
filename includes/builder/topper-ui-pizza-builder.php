@@ -83,12 +83,12 @@ $ptpizza_toppings_output_html .= pizzalayer_layer( $ptpizza_layer_index, $ptpizz
 do_action( 'func_pizzalayer_pizza_dynamic_nested_before_cooking' );
 
 //BAKE THE PIZZA HTML AND CLOSE NESTED CONTAINERS
-$pt_pizza_cooked = pizzalayer_ui_wrapper_pizza_dyn_1_start() . $ptpizza_layer_crust . $ptpizza_layer_sauce . $ptpizza_layer_cheese . $ptpizza_toppings_output_html . $ptpizza_layer_drizzle . '
+$pt_pizza_cooked = $ptpizza_layer_crust . $ptpizza_layer_sauce . $ptpizza_layer_cheese . $ptpizza_toppings_output_html . $ptpizza_layer_drizzle . '
 </div><!-- // close pizza toppings wrapper -->' . $ptpizza_layer_cut . '
 </div><!-- // close pizza cheese -->
 </div><!-- // close pizza sauce -->
 </div><!-- // close pizza crust -->
-' . pizzalayer_ui_wrapper_pizza_dyn_1_end();
+';
 //RETURN RESULTS
 return $pt_pizza_cooked . pizzalayer_swapper_js_output();
 do_action( 'func_pizzalayer_pizza_dynamic_nested_end' );
@@ -161,12 +161,12 @@ $ptpizza_toppings_output_html .= pizzalayer_layer($ptpizza_layer_index, $ptpizza
 do_action( 'func_pizzalayer_pizza_static_nested_before_cooking' );
 
 //BAKE THE PIZZA HTML USING COMPILED STRING
-$pt_pizza_cooked = pizzalayer_ui_wrapper_pizza_dyn_1_start() . $ptpizza_layer_crust . $ptpizza_layer_sauce . $ptpizza_layer_cheese . $ptpizza_toppings_output_html . '
+$pt_pizza_cooked = $ptpizza_layer_crust . $ptpizza_layer_sauce . $ptpizza_layer_cheese . $ptpizza_toppings_output_html . '
 </div><!-- // close pizza toppings wrapper -->' . $ptpizza_layer_cut . $ptpizza_layer_drizzle . '
 </div><!-- // close pizza cheese -->
 </div><!-- // close pizza sauce -->
 </div><!-- // close pizza crust -->
-' . pizzalayer_ui_wrapper_pizza_dyn_1_end();
+';
 //RETURN RESULTS
 return $pt_pizza_cooked . pizzalayer_swapper_js_output(); 
 do_action( 'func_pizzalayer_pizza_static_nested_end' );

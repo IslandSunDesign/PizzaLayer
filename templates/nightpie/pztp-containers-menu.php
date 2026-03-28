@@ -219,12 +219,12 @@ function pizzalayer_toppings_menu_func() {
     ?>
 
 <!-- ═══════════════════════════════════════════════════
-     NIGHTPIE TEMPLATE
+     NIGHTPIE TEMPLATE — v2
 ═══════════════════════════════════════════════════ -->
 <div id="np-root" class="np-root" data-max-toppings="<?php echo esc_attr( $max_toppings ); ?>">
 
     <!-- ── Mobile mini-bar pizza (collapsed strip, always visible) ── -->
-    <div class="np-mobile-preview-bar d-lg-none">
+    <div class="np-mobile-preview-bar">
         <div class="np-mobile-preview-bar__inner">
             <span class="np-mobile-preview-bar__label"><i class="fa fa-pizza-slice"></i> Live Preview</span>
             <div class="np-mobile-preview-bar__pizza" id="np-pizza-mobile-slot">
@@ -240,11 +240,11 @@ function pizzalayer_toppings_menu_func() {
     </div>
 
     <!-- ── Main layout: pizza col + tabs col ── -->
-    <div class="np-layout container-fluid">
-        <div class="row np-layout__row">
+    <div class="np-layout">
+        <div class="np-layout__row">
 
             <!-- ── LEFT: Sticky pizza visualizer ── -->
-            <div class="col-lg-5 col-xl-4 np-pizza-col d-none d-lg-flex" id="np-pizza-col">
+            <div class="np-pizza-col" id="np-pizza-col">
                 <div class="np-pizza-sticky" id="np-pizza-sticky">
                     <div class="np-pizza-sticky__header">
                         <i class="fa fa-pizza-slice"></i>
@@ -266,7 +266,7 @@ function pizzalayer_toppings_menu_func() {
             </div>
 
             <!-- ── RIGHT: Tabbed builder ── -->
-            <div class="col-lg-7 col-xl-8 np-tabs-col">
+            <div class="np-tabs-col">
                 <div class="np-builder">
 
                     <!-- Tab nav -->

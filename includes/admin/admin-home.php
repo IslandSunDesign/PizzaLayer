@@ -1,28 +1,24 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 /* +======================================================+
- |  PizzaLayer Admin Home (Enhanced Sliders + New Intro) |
+ |  PizzaLayer Admin Home                               |
  +======================================================+ */
 
-/* +===  Render PizzaLayer Dashboard Tab Panel  ===+ */
+/* +===  Render Dashboard Tab Panel  ===+ */
 function pizzalayer_dashboard_home_tab_panel( $pz_panel_slug, $pz_panel_title, $pz_panel_content, $pz_panel_is_active ) {
-	if ( $pz_panel_is_active === 'yes' ) {
-		$pz_panel_active_status_css = ' active';
-	} else {
-		$pz_panel_active_status_css = '';
-	}
-	return '<!-- +===  Tab Content Area : ' . esc_html( $pz_panel_title ) . '  ===+ -->
-		<div id="pizzalayer-tab-' . esc_attr( $pz_panel_slug ) . '" class="pizzalayer-tab-content' . esc_attr( $pz_panel_active_status_css ) . '">
-			<h2>' . esc_html( $pz_panel_title ) . '</h2>
+	$active_class = ( $pz_panel_is_active === 'yes' ) ? ' active' : '';
+	return '<!-- Tab: ' . esc_html( $pz_panel_title ) . ' -->
+		<div id="pizzalayer-tab-' . esc_attr( $pz_panel_slug ) . '" class="pizzalayer-tab-content' . esc_attr( $active_class ) . '">
 			<div class="pizzalayer-tab-inner">' . wp_kses_post( $pz_panel_content ) . '</div>
 		</div>';
 }
 
-/* +===  Box Section (no forced <p>, allows sliders/HTML)  ===+ */
+/* +===  Feature Box  ===+ */
 function pizzalayer_dashboard_home_box_section( $pz_home_box_title, $pz_home_box_content, $pz_home_box_icon ) {
-	return '<div class="pizzalayer-section">
-				<h3><span class="dashicons ' . esc_attr( $pz_home_box_icon ) . '"></span> ' . esc_html( $pz_home_box_title ) . '</h3>
-				<div class="pizzalayer-section-content">' . wp_kses_post( $pz_home_box_content ) . '</div>
+	return '<div class="plh-feature-box">
+				<div class="plh-feature-box__icon"><span class="dashicons ' . esc_attr( $pz_home_box_icon ) . '"></span></div>
+				<h3 class="plh-feature-box__title">' . esc_html( $pz_home_box_title ) . '</h3>
+				<div class="plh-feature-box__content">' . wp_kses_post( $pz_home_box_content ) . '</div>
 			</div>';
 }
 
@@ -30,318 +26,445 @@ function pizzalayer_dashboard_home_box_section( $pz_home_box_title, $pz_home_box
 function pizzalayer_render_dashboard_home_page() {
 	if ( ! current_user_can( 'manage_options' ) ) { return; }
 
-	/* +=== Tab content copy ===+ */
-	$pz_panel_crusts_content_description   = '<p>The foundation of every great pizza starts with the perfect crust. From thin and crispy to thick and fluffy, build your base your way.</p>';
-	$pz_panel_sauces_content_description   = '<p>Splash on the flavor with savory sauces that set the tone. Classic tomato, creamy white, or spicy surprises—your pizza’s story starts here.</p>';
-	$pz_panel_cheeses_content_description  = '<p>Get gooey with it! Whether you melt, stretch, or crumble, cheese brings the magic to every bite.</p>';
-	$pz_panel_toppings_content_description = '<p>This is where the fun begins—load up your pie with everything from pepperoni to pineapple. Every topping is a personality!</p>';
-	$pz_panel_drizzles_content_description = '<p>Finish strong with a final flourish! Sweet, spicy, or zesty, a drizzle adds that chef’s-kiss moment.</p>';
-	$pz_panel_cuts_content_description     = '<p>Shape your masterpiece with precision. Whether squares or slices, how you cut is how you conquer.</p>';
+	/* +=== Live stats ===+ */
+	$stat_crusts   = wp_count_posts( 'pizzalayer_crusts' )->publish   ?? 0;
+	$stat_sauces   = wp_count_posts( 'pizzalayer_sauces' )->publish   ?? 0;
+	$stat_cheeses  = wp_count_posts( 'pizzalayer_cheeses' )->publish  ?? 0;
+	$stat_toppings = wp_count_posts( 'pizzalayer_toppings' )->publish ?? 0;
+	$stat_drizzles = wp_count_posts( 'pizzalayer_drizzles' )->publish ?? 0;
+	$stat_cuts     = wp_count_posts( 'pizzalayer_cuts' )->publish     ?? 0;
+	$total_layers  = $stat_crusts + $stat_sauces + $stat_cheeses + $stat_toppings + $stat_drizzles + $stat_cuts;
 
-	/* +=== Getting Started slider (7s) ===+ */
-	$getting_started_slides = array(
-		'Install & activate WooCommerce, then create your first Pizza product.',
-		'Add your layers: Crusts, Sauces, Cheeses, Toppings, Drizzles, and Cuts (as CPT items).',
-		'Open <strong>My Template</strong> to pick a visual template that matches your brand.',
-		'Configure dynamic pricing in the Pizza product type (size, halves, and fractions).',
-		'Use the shortcode or block to embed the builder on any page.',
-		'Preview your pizza builder, place a test order, and verify the order meta.',
+	/* +=== Layer tab descriptions with action links ===+ */
+	$layer_tabs = array(
+		'crusts'   => array(
+			'label'   => 'Crusts',
+			'icon'    => 'dashicons-tag',
+			'desc'    => 'Your crust is the canvas. Define every base your pizza can be built on — from thin & crispy to thick & pillowy. Each crust item gets its own layer image that stacks in the live visualizer.',
+			'tip'     => '💡 Tip: Use a transparent PNG against a consistent circle canvas for the crispest stacking results.',
+			'count'   => $stat_crusts,
+			'cpt'     => 'crusts',
+		),
+		'sauces'   => array(
+			'label'   => 'Sauces',
+			'icon'    => 'dashicons-admin-generic',
+			'desc'    => 'The sauce defines the flavor direction. Whether it\'s a bold marinara, a smoky BBQ, or a creamy garlic white — each sauce is a distinct layer image that sits on top of the crust in the visualizer.',
+			'tip'     => '💡 Tip: Keep sauce layer images semi-transparent around the edges for a natural blending effect on the pizza.',
+			'count'   => $stat_sauces,
+			'cpt'     => 'sauces',
+		),
+		'cheeses'  => array(
+			'label'   => 'Cheeses',
+			'icon'    => 'dashicons-category',
+			'desc'    => 'Cheese sits between the sauce and toppings in your stack. By keeping it a separate category, you can offer mozzarella, provolone, dairy-free alternatives, and more — each with its own visual layer.',
+			'tip'     => '💡 Tip: A subtle melt texture with a slight golden edge makes cheese layers look mouth-wateringly real.',
+			'count'   => $stat_cheeses,
+			'cpt'     => 'cheeses',
+		),
+		'toppings' => array(
+			'label'   => 'Toppings',
+			'icon'    => 'dashicons-star-filled',
+			'desc'    => 'Toppings are where the action is. Every topping has its own layer image, price data, and coverage options (whole, half, quarters). The visualizer renders each selected topping in real time as your customer builds.',
+			'tip'     => '💡 Tip: Use consistent image dimensions for all topping PNGs — 500×500px transparent circles work great across templates.',
+			'count'   => $stat_toppings,
+			'cpt'     => 'toppings',
+		),
+		'drizzles' => array(
+			'label'   => 'Drizzles',
+			'icon'    => 'dashicons-admin-customizer',
+			'desc'    => 'Drizzles are the finishing touch — balsamic glaze, hot honey, ranch swirl. They layer above toppings in the visualizer and give your menu a premium feel with minimal setup.',
+			'tip'     => '💡 Tip: Drizzle images look best with a flowing, asymmetric pattern that feels handcrafted, not perfectly symmetrical.',
+			'count'   => $stat_drizzles,
+			'cpt'     => 'drizzles',
+		),
+		'cuts'     => array(
+			'label'   => 'Cuts',
+			'icon'    => 'dashicons-editor-table',
+			'desc'    => 'Define how a finished pizza gets sliced. Square cuts, classic triangles, party-style, or left whole — each cut style gets its own overlay layer image that drops on top of the finished pizza.',
+			'tip'     => '💡 Tip: Cut overlay PNGs should use a very thin line weight with a slight transparency so the toppings below still show through.',
+			'count'   => $stat_cuts,
+			'cpt'     => 'cuts',
+		),
 	);
 
-	$getting_started_html  = '<div class="pizzalayer-rotator" data-interval="7000">';
-	foreach ( $getting_started_slides as $i => $text ) {
-		$active              = $i === 0 ? ' is-active' : '';
-		$getting_started_html .= '<div class="pz-rotator-slide' . esc_attr( $active ) . '">' . wp_kses_post( $text ) . '</div>';
-	}
-	$getting_started_html .= '</div>';
-
-	/* +=== Tips & Tricks slider (6s) ===+ */
+	/* +=== Rotator: Tips & Tricks ===+ */
 	$tips_slides = array(
-		'Keep layer images lean: use WebP/PNG and consistent canvas sizes for crisp stacking.',
-		'Name CPT slugs cleanly (e.g., "pepperoni")—they flow into CSS classes and data keys.',
-		'Offer halves/quarters for toppings to boost AOV without decision overload.',
-		'Use a child theme template for complete control while staying update-safe.',
-		'Cache thumbnails and preload the first visible set for snappier first paint.',
-		'Document your price rules in the product notes so future you says thanks.',
+		'Keep layer images lean — use WebP or transparent PNG at a consistent canvas size for crisp, predictable stacking.',
+		'Name CPT slugs cleanly (e.g. <code>pepperoni</code>, <code>thin-crust</code>) — they feed directly into CSS classes and JS data keys.',
+		'Offer half and quarter topping coverage to boost average order value without overwhelming the decision.',
+		'Use a child theme template for full visual control while staying safely update-proof.',
+		'Cache thumbnails and preload your first visible layer set for a snappier first paint on slower connections.',
+		'Document your price grid rules in the product notes field — your future self will thank you.',
 	);
-
-	$tips_html  = '<div class="pizzalayer-rotator" data-interval="6000">';
+	$tips_html = '<div class="pizzalayer-rotator" data-interval="6000">';
 	foreach ( $tips_slides as $i => $text ) {
 		$active     = $i === 0 ? ' is-active' : '';
 		$tips_html .= '<div class="pz-rotator-slide' . esc_attr( $active ) . '">' . wp_kses_post( $text ) . '</div>';
 	}
 	$tips_html .= '</div>';
 
-	/* +=== Extend PizzaLayer (3-sentence starter + button) ===+ */
-	$extend_html  = '<p>Want full visual control? Create a <strong>child theme</strong> and add a directory at <code>/pzttemplates/your-template-slug/</code>. '
-	              . 'Copy a base template from the plugin’s <code>/templates/</code> folder, then tweak layout, partials, and CSS without touching the plugin. '
-	              . 'Switch templates anytime from <em>PizzaLayer → My Template</em> and keep your customizations update-safe.</p>';
-	$extend_html .= '<p><a href="#" class="button button-secondary">Template Developer Guide (coming soon)</a></p>';
+	/* +=== Extend PizzaLayer ===+ */
+	$extend_html  = '<p>Want total visual control? Create a <strong>child theme</strong> and add a directory at <code>/pzttemplates/your-template-slug/</code>. Copy a base template from the plugin\'s <code>/templates/</code> folder, then freely edit the layout, partials, and CSS — your changes stay safe through plugin updates.</p>';
+	$extend_html .= '<p>Switch between templates at any time from <em>PizzaLayer → My Template</em>.</p>';
+	$extend_html .= '<p><a href="#" class="button button-secondary">Template Developer Guide <span style="font-size:11px;">(coming soon)</span></a></p>';
 
-	/* +=== Info boxes (editable) ===+ */
-	$boxes = array(
-		'active_template' => array(
-			'title'   => 'Active Template',
-			'content' => 'You are currently using the default Glassy template. Switch templates using the My Template menu.',
-		),
-		'basic_stats' => array(
-			'title'   => 'Basic Stats',
-			'content' => 'PizzaLayer is active on 3 products and 18 custom layers.',
-		),
-		'setup_checklist' => array(
-			'title'   => 'Setup Checklist',
-			'content' => 'Complete the setup guide to enable all pizza customization features.',
-		),
-	);
+	/* +=== Active template ===+ */
+	$active_template_slug = get_option( 'pizzalayer_active_template', 'default' );
 
 	?>
-	<div class="wrap pizzalayer-admin-wrap">
+	<div class="wrap plh-wrap">
 
-		<!-- +=== Hero / Intro ===+ -->
-		<div class="pizzalayer-hero">
-			<div class="pizzalayer-hero-left">
-				<h1 class="pizzalayer-hero-title">
-					<span class="dashicons dashicons-pizza" aria-hidden="true"></span>
-					Welcome to PizzaLayer
-				</h1>
-				<p class="pizzalayer-hero-desc">
-					Your all-in-one toolkit for building beautiful, customizable pizza experiences with WordPress + WooCommerce.
-					Start by adding layers, pick a template, and drop the builder into any page—easy as pie.
-				</p>
-				<div class="pizzalayer-hero-cta">
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer_my_template' ) ); ?>" class="button button-primary">Choose a Template</a>
-					<a href="#" class="button">Setup Guide</a>
-					<a href="#" class="button">Docs (soon)</a>
+		<!-- +=== Header bar ===+ -->
+		<div class="plh-header">
+			<div class="plh-header__brand">
+				<span class="dashicons dashicons-pizza plh-header__icon" aria-hidden="true"></span>
+				<div>
+					<h1 class="plh-header__title">PizzaLayer</h1>
+					<p class="plh-header__tagline">The WordPress pizza builder — powered by WooCommerce.</p>
 				</div>
 			</div>
-			<div class="pizzalayer-hero-right">
-				<div class="pizzalayer-hero-card">
-					<h3><span class="dashicons dashicons-admin-generic"></span> Quick Links</h3>
-					<ul class="pizzalayer-quick-links">
-						<li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pizzalayer_crusts' ) ); ?>">Manage Crusts</a></li>
-						<li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pizzalayer_sauces' ) ); ?>">Manage Sauces</a></li>
-						<li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pizzalayer_cheeses' ) ); ?>">Manage Cheeses</a></li>
-						<li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pizzalayer_toppings' ) ); ?>">Manage Toppings</a></li>
-						<li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pizzalayer_drizzles' ) ); ?>">Manage Drizzles</a></li>
-						<li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pizzalayer_cuts' ) ); ?>">Manage Cuts</a></li>
-					</ul>
+			<div class="plh-header__actions">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer_my_template' ) ); ?>" class="button button-primary">
+					<span class="dashicons dashicons-admin-appearance"></span> Choose Template
+				</a>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer_setup_guide' ) ); ?>" class="button">
+					<span class="dashicons dashicons-welcome-learn-more"></span> Setup Guide
+				</a>
+				<a href="<?php echo esc_url( admin_url( 'customize.php' ) ); ?>" class="button" target="_blank" rel="noopener">
+					<span class="dashicons dashicons-admin-generic"></span> Customizer
+				</a>
+			</div>
+		</div>
+
+		<!-- +=== Stats row ===+ -->
+		<div class="plh-stats-row">
+			<div class="plh-stat">
+				<span class="plh-stat__number"><?php echo esc_html( $total_layers ); ?></span>
+				<span class="plh-stat__label">Total Layers</span>
+			</div>
+			<div class="plh-stat">
+				<span class="plh-stat__number"><?php echo esc_html( $stat_toppings ); ?></span>
+				<span class="plh-stat__label">Toppings</span>
+			</div>
+			<div class="plh-stat">
+				<span class="plh-stat__number"><?php echo esc_html( $stat_crusts ); ?></span>
+				<span class="plh-stat__label">Crusts</span>
+			</div>
+			<div class="plh-stat">
+				<span class="plh-stat__number"><?php echo esc_html( $stat_sauces ); ?></span>
+				<span class="plh-stat__label">Sauces</span>
+			</div>
+			<div class="plh-stat">
+				<span class="plh-stat__number"><?php echo esc_html( $stat_cheeses + $stat_drizzles + $stat_cuts ); ?></span>
+				<span class="plh-stat__label">Cheese / Drizzle / Cuts</span>
+			</div>
+			<div class="plh-stat plh-stat--template">
+				<span class="plh-stat__number plh-stat__number--sm"><?php echo esc_html( ucwords( str_replace( '-', ' ', $active_template_slug ) ) ); ?></span>
+				<span class="plh-stat__label">Active Template</span>
+			</div>
+		</div>
+
+		<!-- +=== Layer Manager Tabs ===+ -->
+		<div class="plh-card plh-card--tabs">
+			<div class="plh-card__head">
+				<h2 class="plh-card__title"><span class="dashicons dashicons-category"></span> Layer Manager</h2>
+				<p class="plh-card__subtitle">Select a layer type below to learn about it and jump directly to its content.</p>
+			</div>
+
+			<nav class="plh-tabnav" id="plh-layer-tabs" role="tablist">
+				<?php
+				$first = true;
+				foreach ( $layer_tabs as $slug => $tab ) :
+					$active_class = $first ? ' plh-tab--active' : '';
+					?>
+					<button class="plh-tab<?php echo esc_attr( $active_class ); ?>"
+					        data-tab="<?php echo esc_attr( $slug ); ?>"
+					        role="tab"
+					        aria-selected="<?php echo $first ? 'true' : 'false'; ?>"
+					        aria-controls="plh-panel-<?php echo esc_attr( $slug ); ?>">
+						<span class="dashicons <?php echo esc_attr( $tab['icon'] ); ?>"></span>
+						<?php echo esc_html( $tab['label'] ); ?>
+						<span class="plh-tab__count"><?php echo esc_html( $tab['count'] ); ?></span>
+					</button>
+					<?php $first = false; endforeach; ?>
+			</nav>
+
+			<div class="plh-panels">
+				<?php
+				$first = true;
+				foreach ( $layer_tabs as $slug => $tab ) :
+					$active_class = $first ? ' plh-panel--active' : '';
+					?>
+					<div class="plh-panel<?php echo esc_attr( $active_class ); ?>"
+					     id="plh-panel-<?php echo esc_attr( $slug ); ?>"
+					     role="tabpanel">
+						<div class="plh-panel__body">
+							<div class="plh-panel__text">
+								<p><?php echo esc_html( $tab['desc'] ); ?></p>
+								<p class="plh-panel__tip"><?php echo wp_kses_post( $tab['tip'] ); ?></p>
+							</div>
+							<div class="plh-panel__actions">
+								<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pizzalayer_' . $tab['cpt'] ) ); ?>"
+								   class="button">
+									<span class="dashicons dashicons-list-view"></span>
+									View All <?php echo esc_html( $tab['label'] ); ?>
+									<?php if ( $tab['count'] > 0 ) : ?>
+										<span class="plh-count-badge"><?php echo esc_html( $tab['count'] ); ?></span>
+									<?php endif; ?>
+								</a>
+								<a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=pizzalayer_' . $tab['cpt'] ) ); ?>"
+								   class="button button-primary">
+									<span class="dashicons dashicons-plus-alt2"></span>
+									Add New <?php echo esc_html( rtrim( $tab['label'], 's' ) ); ?>
+								</a>
+							</div>
+						</div>
+					</div>
+					<?php $first = false; endforeach; ?>
+			</div>
+		</div>
+
+		<!-- +=== Three-column feature cards ===+ -->
+		<div class="plh-features-row">
+
+			<!-- Tips & Tricks -->
+			<div class="plh-card plh-card--feature">
+				<div class="plh-card__icon-header">
+					<span class="dashicons dashicons-admin-tools"></span>
+					<h3>Tips & Tricks</h3>
+				</div>
+				<div class="plh-card__content">
+					<div class="plh-rotator-wrap">
+						<?php echo $tips_html; ?>
+						<div class="plh-rotator-dots" id="plh-rotator-dots" aria-hidden="true">
+							<?php for ( $i = 0; $i < count( $tips_slides ); $i++ ) : ?>
+								<span class="plh-rotator-dot<?php echo $i === 0 ? ' is-active' : ''; ?>"></span>
+							<?php endfor; ?>
+						</div>
+					</div>
 				</div>
 			</div>
-		</div>
 
-		<!-- +===  Tab Menu  ===+ -->
-		<h2 class="nav-tab-wrapper pizzalayer-tabs">
-			<a href="#pizzalayer-tab-crusts" class="nav-tab nav-tab-active">Crusts</a>
-			<a href="#pizzalayer-tab-sauces" class="nav-tab">Sauces</a>
-			<a href="#pizzalayer-tab-cheeses" class="nav-tab">Cheeses</a>
-			<a href="#pizzalayer-tab-toppings" class="nav-tab">Toppings</a>
-			<a href="#pizzalayer-tab-drizzles" class="nav-tab">Drizzles</a>
-			<a href="#pizzalayer-tab-cuts" class="nav-tab">Cuts</a>
-			<a href="#pizzalayer-tab-settings" class="nav-tab pizzalayer-open-customizer">Settings <span class="dashicons dashicons-external"></span></a>
-		</h2>
-
-		<!-- +===  Tab Content Areas  ===+ -->
-		<?php
-		echo pizzalayer_dashboard_home_tab_panel( 'crusts', 'Crusts', $pz_panel_crusts_content_description, 'yes' );
-		echo pizzalayer_dashboard_home_tab_panel( 'sauces', 'Sauces', $pz_panel_sauces_content_description, 'no' );
-		echo pizzalayer_dashboard_home_tab_panel( 'cheeses', 'Cheeses', $pz_panel_cheeses_content_description, 'no' );
-		echo pizzalayer_dashboard_home_tab_panel( 'toppings', 'Toppings', $pz_panel_toppings_content_description, 'no' );
-		echo pizzalayer_dashboard_home_tab_panel( 'drizzles', 'Drizzles', $pz_panel_drizzles_content_description, 'no' );
-		echo pizzalayer_dashboard_home_tab_panel( 'cuts', 'Cuts', $pz_panel_cuts_content_description, 'no' );
-		?>
-
-		<!-- +===  Three Feature Sections  ===+ -->
-		<hr>
-		<div class="pizzalayer-layout-sections">
-			<?php
-			echo pizzalayer_dashboard_home_box_section( 'Getting Started', $getting_started_html, 'dashicons-info' );
-			echo pizzalayer_dashboard_home_box_section( 'Tips &amp; Tricks', $tips_html, 'dashicons-admin-tools' );
-			echo pizzalayer_dashboard_home_box_section( 'Extend PizzaLayer', $extend_html, 'dashicons-admin-plugins' );
-			?>
-		</div>
-
-		<!-- +=== Responsive Info Boxes Row (3 Columns on Desktop) ===+ -->
-		<div class="pizzalayer-info-boxes">
-			<?php foreach ( $boxes as $id => $data ) : ?>
-				<div class="pizzalayer-info-box">
-					<h2><?php echo esc_html( $data['title'] ); ?></h2>
-					<p><?php echo esc_html( $data['content'] ); ?></p>
+			<!-- Extend PizzaLayer -->
+			<div class="plh-card plh-card--feature">
+				<div class="plh-card__icon-header">
+					<span class="dashicons dashicons-admin-plugins"></span>
+					<h3>Extend PizzaLayer</h3>
 				</div>
-			<?php endforeach; ?>
-		</div>
-
-		<!-- +=== Two-Column Panel with Video ===+ -->
-		<div class="pizzalayer-two-col">
-			<div class="pizzalayer-panel">
-				<h2>Getting Started</h2>
-				<p>This video will walk you through the basics of using PizzaLayer to build dynamic pizza options.</p>
+				<div class="plh-card__content">
+					<?php echo wp_kses_post( $extend_html ); ?>
+				</div>
 			</div>
-			<div class="pizzalayer-video">
-				<iframe width="100%" height="380" src="https://www.youtube.com/embed/VIDEO_ID" frameborder="0" allowfullscreen></iframe>
+
+			<!-- Quick Access -->
+			<div class="plh-card plh-card--feature plh-card--quicklinks">
+				<div class="plh-card__icon-header">
+					<span class="dashicons dashicons-arrow-right-alt"></span>
+					<h3>Quick Access</h3>
+				</div>
+				<ul class="plh-quicklinks">
+					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer_setup_guide' ) ); ?>"><span class="dashicons dashicons-welcome-learn-more"></span> Setup Guide</a></li>
+					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer_my_template' ) ); ?>"><span class="dashicons dashicons-admin-appearance"></span> Choose a Template</a></li>
+					<li><a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer_shortcode_generator' ) ); ?>"><span class="dashicons dashicons-editor-code"></span> Shortcode Generator</a></li>
+					<li><a href="<?php echo esc_url( admin_url( 'customize.php' ) ); ?>" target="_blank" rel="noopener"><span class="dashicons dashicons-admin-generic"></span> WP Customizer</a></li>
+					<li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pizzalayer_toppings' ) ); ?>"><span class="dashicons dashicons-star-filled"></span> Manage Toppings</a></li>
+					<li><a href="<?php echo esc_url( admin_url( 'edit.php?post_type=product' ) ); ?>"><span class="dashicons dashicons-cart"></span> WooCommerce Products</a></li>
+				</ul>
 			</div>
+
 		</div>
 
-		<!-- +=== Full-Width Button Row ===+ -->
-		<div class="pizzalayer-btn-row">
-			<a href="#" class="button button-primary">Help</a>
-			<a href="#" class="button">Setup Guide</a>
-			<a href="#" class="button">Get Embed Code</a>
-			<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pizzalayer_toppings' ) ); ?>" class="button">Edit Pizza Layers</a>
+		<!-- +=== Credits ===+ -->
+		<div class="plh-credits">
+			<p>PizzaLayer is crafted by <strong>Ryan Bishop</strong> — WordPress plugin developer at <a href="https://islandsundesign.com" target="_blank" rel="noopener">IslandSunDesign.com</a>.</p>
 		</div>
 
-		<!-- +=== Credits Section ===+ -->
-		<div class="pizzalayer-credits">
-			<h2>Credits</h2>
-			<p>PizzaLayer is proudly developed by Ryan Bishop, a WordPress plugin author dedicated to building powerful tools for creative sites.</p>
-			<p>For custom plugin work, visit <a href="https://islandsundesign.com" target="_blank" rel="noopener">IslandSunDesign.com</a>.</p>
-		</div>
+	</div><!-- /.plh-wrap -->
 
-	</div><!-- /.wrap -->
-
-	<!-- +===  Tabbed Navigation Script  ===+ -->
+	<!-- +=== Tab Script ===+ -->
 	<script>
-	document.addEventListener("DOMContentLoaded", function () {
-		var tabs = document.querySelectorAll(".pizzalayer-tabs a");
-		var contents = document.querySelectorAll(".pizzalayer-tab-content");
+	document.addEventListener( 'DOMContentLoaded', function () {
 
-		tabs.forEach(function(tab){
-			tab.addEventListener("click", function (e) {
-				e.preventDefault();
+		// ── Layer tabs ──
+		var tabs     = document.querySelectorAll( '.plh-tab' );
+		var panels   = document.querySelectorAll( '.plh-panel' );
 
-				if (this.classList.contains("pizzalayer-open-customizer")) {
-					window.open("<?php echo esc_js( admin_url( 'customize.php' ) ); ?>", "_blank");
-					return;
-				}
+		tabs.forEach( function ( tab ) {
+			tab.addEventListener( 'click', function () {
+				tabs.forEach( function(t){ t.classList.remove('plh-tab--active'); t.setAttribute('aria-selected','false'); });
+				panels.forEach( function(p){ p.classList.remove('plh-panel--active'); });
+				tab.classList.add( 'plh-tab--active' );
+				tab.setAttribute( 'aria-selected', 'true' );
+				var panel = document.getElementById( 'plh-panel-' + tab.dataset.tab );
+				if ( panel ) { panel.classList.add( 'plh-panel--active' ); }
+			} );
+		} );
 
-				tabs.forEach(function(t){ t.classList.remove("nav-tab-active"); });
-				contents.forEach(function(c){ c.classList.remove("active"); });
+	} );
 
-				this.classList.add("nav-tab-active");
-				var target = document.querySelector(this.getAttribute("href"));
-				if (target) { target.classList.add("active"); }
-			});
-		});
-	});
-
-	/* +=== jQuery Rotators (fade every N ms) ===+ */
-	jQuery(document).ready(function(){
-		jQuery(".pizzalayer-rotator").each(function(){
-			var $rotator   = jQuery(this);
-			var intervalMs = parseInt($rotator.attr("data-interval"), 10) || 6000;
-			var $slides    = $rotator.find(".pz-rotator-slide");
+	// ── Tips rotator ──
+	jQuery( document ).ready( function () {
+		jQuery( '.pizzalayer-rotator' ).each( function () {
+			var $rotator   = jQuery( this );
+			var intervalMs = parseInt( $rotator.attr( 'data-interval' ), 10 ) || 6000;
+			var $slides    = $rotator.find( '.pz-rotator-slide' );
+			var $dots      = jQuery( '#plh-rotator-dots' ).find( '.plh-rotator-dot' );
 			var idx        = 0;
-			var isAnimating = false;
+			var isAnim     = false;
 
-			// Show only the active slide initially
-			$slides.removeClass("is-active").hide().attr("aria-hidden", "true");
-			$slides.first().addClass("is-active").show().attr("aria-hidden", "false");
+			$slides.hide().attr( 'aria-hidden', 'true' );
+			$slides.first().show().addClass( 'is-active' ).attr( 'aria-hidden', 'false' );
 
-			function advanceSlide(){
-				if (isAnimating) { return; }
-				isAnimating = true;
-
-				var $current = $slides.eq(idx);
-				var nextIdx  = (idx + 1) % $slides.length;
-				var $next    = $slides.eq(nextIdx);
-
-				$current.stop(true, true).fadeOut(400, function(){
-					$current.removeClass("is-active").attr("aria-hidden", "true");
-					$next.stop(true, true).fadeIn(400, function(){
-						$next.addClass("is-active").attr("aria-hidden", "false");
-						idx = nextIdx;
-						isAnimating = false;
-					});
-				});
+			function advance() {
+				if ( isAnim ) { return; }
+				isAnim = true;
+				var $cur  = $slides.eq( idx );
+				var next  = ( idx + 1 ) % $slides.length;
+				var $next = $slides.eq( next );
+				$dots.eq( idx ).removeClass( 'is-active' );
+				$cur.stop( true, true ).fadeOut( 350, function () {
+					$cur.removeClass( 'is-active' ).attr( 'aria-hidden', 'true' );
+					$next.stop( true, true ).fadeIn( 350, function () {
+						$next.addClass( 'is-active' ).attr( 'aria-hidden', 'false' );
+						$dots.eq( next ).addClass( 'is-active' );
+						idx = next;
+						isAnim = false;
+					} );
+				} );
 			}
-
-			setInterval(advanceSlide, intervalMs);
-		});
-	});
+			setInterval( advance, intervalMs );
+		} );
+	} );
 	</script>
 
-	<!-- +===  Basic Styling for Layout  ===+ -->
+	<!-- +=== Styles ===+ -->
 	<style>
-		/* Hero */
-		.pizzalayer-admin-wrap .pizzalayer-hero {
-			display: flex; gap: 20px; flex-wrap: wrap; align-items: stretch; margin-bottom: 20px;
+		/* ── Wrap ── */
+		.plh-wrap { max-width: 1200px; }
+
+		/* ── Header ── */
+		.plh-header {
+			display: flex; align-items: center; justify-content: space-between;
+			flex-wrap: wrap; gap: 16px;
+			background: #1d2023; color: #fff;
+			border-radius: 10px; padding: 22px 28px; margin-bottom: 20px;
 		}
-		.pizzalayer-hero-left { flex: 1 1 420px; background: #fff; border: 1px solid #ccd0d4; padding: 20px; }
-		.pizzalayer-hero-right { width: 360px; max-width: 100%; }
-		.pizzalayer-hero-title { margin: 0 0 10px; display: flex; align-items: center; gap: 8px; }
-		.pizzalayer-hero-title .dashicons { font-size: 26px; width: 26px; height: 26px; }
-		.pizzalayer-hero-desc { margin: 0 0 12px; }
-		.pizzalayer-hero-cta .button { margin-right: 8px; margin-bottom: 8px; }
+		.plh-header__brand { display: flex; align-items: center; gap: 16px; }
+		.plh-header__icon { font-size: 36px !important; width: 36px !important; height: 36px !important; color: #ff6b35; }
+		.plh-header__title { margin: 0; font-size: 24px; font-weight: 700; color: #fff; }
+		.plh-header__tagline { margin: 2px 0 0; color: #a0a8b0; font-size: 13px; }
+		.plh-header__actions { display: flex; gap: 8px; flex-wrap: wrap; }
+		.plh-header__actions .button { display: flex; align-items: center; gap: 5px; }
+		.plh-header__actions .dashicons { font-size: 16px !important; width: 16px !important; height: 16px !important; margin: 0; }
 
-		.pizzalayer-hero-card { background: #fff; border: 1px solid #ccd0d4; padding: 16px; }
-		.pizzalayer-quick-links { margin: 8px 0 0; padding-left: 18px; }
-
-		/* Tabs */
-		.pizzalayer-tab-content {
-			display: none;
-			background: #fff;
-			border: 1px solid #ccd0d4;
-			padding: 20px;
-			margin-top: -1px;
+		/* ── Stats row ── */
+		.plh-stats-row {
+			display: flex; gap: 12px; flex-wrap: wrap; margin-bottom: 20px;
 		}
-		.pizzalayer-tab-content.active { display: block; }
-		.pizzalayer-tab-inner p:last-child { margin-bottom: 0; }
+		.plh-stat {
+			flex: 1 1 100px; background: #fff; border: 1px solid #e0e3e7;
+			border-radius: 8px; padding: 14px 18px; text-align: center;
+		}
+		.plh-stat__number { display: block; font-size: 28px; font-weight: 700; color: #1d2023; line-height: 1.1; }
+		.plh-stat__number--sm { font-size: 15px; padding-top: 6px; }
+		.plh-stat__label { display: block; font-size: 11px; text-transform: uppercase; letter-spacing: 0.06em; color: #787c82; margin-top: 4px; }
+		.plh-stat--template { flex: 1 1 140px; }
 
-		/* Three feature sections */
-		.pizzalayer-layout-sections {
+		/* ── Generic card ── */
+		.plh-card {
+			background: #fff; border: 1px solid #e0e3e7; border-radius: 10px;
+			margin-bottom: 20px; overflow: hidden;
+		}
+		.plh-card__head { padding: 20px 24px 0; }
+		.plh-card__title { margin: 0 0 4px; font-size: 16px; display: flex; align-items: center; gap: 8px; }
+		.plh-card__title .dashicons { color: #646970; font-size: 18px !important; width: 18px !important; height: 18px !important; }
+		.plh-card__subtitle { margin: 0 0 16px; color: #646970; font-size: 13px; }
+
+		/* ── Tab nav ── */
+		.plh-tabnav {
+			display: flex; gap: 0; overflow-x: auto;
+			border-bottom: 2px solid #e0e3e7;
+			padding: 0 16px; background: #f8f9fa;
+		}
+		.plh-tab {
+			display: flex; align-items: center; gap: 6px;
+			padding: 10px 16px; border: none; border-bottom: 2px solid transparent;
+			background: transparent; cursor: pointer; font-size: 13px; font-weight: 500;
+			color: #646970; white-space: nowrap; margin-bottom: -2px;
+			transition: color .15s, border-color .15s;
+		}
+		.plh-tab:hover { color: #1d2023; }
+		.plh-tab--active { color: #2271b1; border-bottom-color: #2271b1; font-weight: 600; }
+		.plh-tab .dashicons { font-size: 14px !important; width: 14px !important; height: 14px !important; }
+		.plh-tab__count {
+			background: #e0e3e7; color: #646970; border-radius: 999px;
+			font-size: 10px; font-weight: 700; padding: 1px 6px; line-height: 1.4;
+		}
+		.plh-tab--active .plh-tab__count { background: #dce8f7; color: #2271b1; }
+
+		/* ── Panels ── */
+		.plh-panels { padding: 0; }
+		.plh-panel { display: none; }
+		.plh-panel--active { display: block; }
+		.plh-panel__body {
+			display: flex; align-items: flex-start; justify-content: space-between;
+			gap: 24px; flex-wrap: wrap;
+			padding: 20px 24px;
+		}
+		.plh-panel__text { flex: 1 1 300px; }
+		.plh-panel__text p { margin: 0 0 8px; }
+		.plh-panel__tip { background: #f6f7f7; border-left: 3px solid #f0b849; padding: 10px 14px; border-radius: 0 6px 6px 0; font-size: 13px; color: #3c434a; }
+		.plh-panel__actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
+		.plh-panel__actions .button { display: flex; align-items: center; gap: 6px; white-space: nowrap; }
+		.plh-panel__actions .dashicons { font-size: 14px !important; width: 14px !important; height: 14px !important; }
+		.plh-count-badge {
+			background: #fff; border: 1px solid #ccd0d4; border-radius: 999px;
+			font-size: 11px; font-weight: 600; padding: 0 7px; line-height: 1.6;
+		}
+
+		/* ── Feature cards row ── */
+		.plh-features-row {
 			display: grid;
-			grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
-			gap: 20px;
-			margin-top: 20px;
+			grid-template-columns: repeat( auto-fit, minmax( 280px, 1fr ) );
+			gap: 20px; margin-bottom: 20px;
 		}
-		.pizzalayer-section {
-			background: #f8f9fa;
-			border: 1px solid #e1e4e8;
-			padding: 20px;
-			border-radius: 6px;
+		.plh-card--feature { margin-bottom: 0; }
+		.plh-card__icon-header {
+			display: flex; align-items: center; gap: 10px;
+			padding: 18px 20px 10px; border-bottom: 1px solid #f0f0f0;
 		}
-		.pizzalayer-section h3 { margin-top: 0; }
+		.plh-card__icon-header .dashicons { font-size: 20px !important; width: 20px !important; height: 20px !important; color: #2271b1; }
+		.plh-card__icon-header h3 { margin: 0; font-size: 14px; font-weight: 600; }
+		.plh-card__content { padding: 16px 20px; font-size: 13px; color: #3c434a; }
+		.plh-card__content p { margin: 0 0 10px; }
+		.plh-card__content p:last-child { margin-bottom: 0; }
+		.plh-card__content code { background: #f0f0f1; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
 
-		/* Rotators */
-		.pizzalayer-rotator { position: relative; min-height: 64px; }
-		.pz-rotator-slide { display: none; }
+		/* Rotator */
+		.plh-rotator-wrap { position: relative; min-height: 80px; }
+		.pizzalayer-rotator { position: relative; }
+		.pz-rotator-slide { display: none; font-size: 13px; line-height: 1.6; }
 		.pz-rotator-slide.is-active { display: block; }
+		.pz-rotator-slide code { background: #f0f0f1; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
+		.plh-rotator-dots { display: flex; gap: 5px; margin-top: 14px; }
+		.plh-rotator-dot { width: 6px; height: 6px; border-radius: 50%; background: #dcdcdc; transition: background .2s; }
+		.plh-rotator-dot.is-active { background: #2271b1; }
 
-		/* Info boxes row */
-		.pizzalayer-info-boxes {
-			margin-top: 20px;
-			display: flex;
-			flex-wrap: wrap;
-			gap: 20px;
+		/* Quick links */
+		.plh-quicklinks { margin: 0; padding: 0; list-style: none; }
+		.plh-quicklinks li { border-bottom: 1px solid #f0f0f0; }
+		.plh-quicklinks li:last-child { border-bottom: none; }
+		.plh-quicklinks a {
+			display: flex; align-items: center; gap: 8px; padding: 8px 4px;
+			color: #2271b1; text-decoration: none; font-size: 13px;
+			transition: color .15s;
 		}
-		.pizzalayer-info-box {
-			flex: 1 1 calc(33.333% - 20px);
-			min-width: 280px;
-			background: #fff;
-			padding: 20px;
-			border: 1px solid #ccd0d4;
-			box-sizing: border-box;
-		}
-		.pizzalayer-info-box h2 { margin-top: 0; }
+		.plh-quicklinks a:hover { color: #135e96; }
+		.plh-quicklinks .dashicons { font-size: 15px !important; width: 15px !important; height: 15px !important; color: #646970; }
 
-		/* Two-column panel with video */
-		.pizzalayer-two-col { display: flex; gap: 20px; margin-top: 30px; flex-wrap: wrap; }
-		.pizzalayer-panel {
-			flex: 1 1 280px;
-			background: #fff; padding: 20px; border: 1px solid #ccd0d4;
-		}
-		.pizzalayer-video {
-			width: 550px; max-width: 100%;
-			background: #fff; padding: 10px; border: 1px solid #ccd0d4;
-		}
-
-		/* Button row */
-		.pizzalayer-btn-row {
-			margin-top: 30px; padding: 20px 0; border-top: 1px solid #ccd0d4;
-			display: flex; gap: 10px; flex-wrap: wrap;
-		}
-
-		/* Credits */
-		.pizzalayer-credits { margin-top: 40px; padding: 20px; background: transparent; }
+		/* ── Credits ── */
+		.plh-credits { padding: 12px 0 20px; font-size: 12px; color: #787c82; }
+		.plh-credits a { color: #787c82; }
 	</style>
 	<?php
 }
