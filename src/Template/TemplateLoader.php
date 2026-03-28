@@ -114,11 +114,18 @@ class TemplateLoader {
 
 	/**
 	 * Confirm path is inside the templates directory (traversal guard).
+	 * Returns false and logs a debug notice if the directory doesn't exist.
 	 */
 	private function is_safe_path( string $path ): bool {
 		$real_base = realpath( PIZZALAYER_TEMPLATES_DIR );
 		$real_dir  = realpath( dirname( $path ) );
-		if ( ! $real_base || ! $real_dir ) { return false; }
+		if ( ! $real_base || ! $real_dir ) {
+			if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
+				// phpcs:ignore WordPress.PHP.DevelopmentFunctions
+				error_log( '[PizzaLayer] TemplateLoader::is_safe_path() — path not found or outside templates dir: ' . $path );
+			}
+			return false;
+		}
 		return str_starts_with( $real_dir, $real_base );
 	}
 }

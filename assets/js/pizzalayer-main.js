@@ -1,156 +1,198 @@
-//declare vars
-var NewPizzaLayerImageUrl;var NewPizzaLayerName;var NewPizzaTargetLayer;var NewPizzaLayerContent;
-var MenuItemID;
-var NewPizzaLayerIndex;
-var NewPizzaLayerShort;
-var NewPizzaLayerImageUrlWrapped;
-var NewPizzaLayerAlt;
-var SwapPizzaLayerNewTitle;
-var ToppingCoverageArea;
-var NewToppingCoverageArea;
-var ToppingID;
-var TargetRadioButtonID;
-var ToppingCoverageShort;
-var CurrentToppingsCount;
-var MaxToppings;
-var ImageURLtoSet;
-let rotationIntervals = {};
+/**
+ * PizzaLayer Legacy Builder JS
+ *
+ * Contains the jQuery-based layer management functions used by older-style
+ * template PHP onclick= handlers and legacy integrations.
+ *
+ * All internal helpers are scoped inside an IIFE to avoid global pollution.
+ * Three functions are intentionally exposed on window because template PHP
+ * renders them directly into onclick= attributes:
+ *   window.ClearPizza()
+ *   window.RotatePizza( id, speed )
+ *   window.StopPizza( id )
+ */
+( function ( $ ) {
+	'use strict';
 
-function SwapPizzaLayer(NewPizzaTargetLayer,NewPizzaLayerName,NewPizzaLayerImageUrl){
-jQuery('#' + NewPizzaTargetLayer).fadeOut(100).attr("src",NewPizzaLayerImageUrl).fadeIn(600);
-}
+	// ── Private state ─────────────────────────────────────────────────
+	var rotationIntervals = {};
 
-function AddPizzaLayer(NewPizzaLayerIndex,NewPizzaLayerShort,NewPizzaLayerImageUrl,NewPizzaLayerAlt,NewPizzaLayerName,MenuItemID){
-if( jQuery('#' + NewPizzaLayerName).length ){ return false; }
-CurrentToppingsCount = parseInt(jQuery('#CurrentToppingsCount').val());
-MaxToppings = jQuery('#MaxToppings').val();
-if( !UnderMaxToppings(CurrentToppingsCount) ){ 
-jQuery('#pizzalayer-ui-menu-section-toppings').animate({background:red}, 100 ).wait().animate({background:transparent}, 200 );return false;
-} //if
-var NewPizzaLayerContent = '';
-NewPizzaLayerContent = '<div id="' + NewPizzaLayerName + '" class="pizzalayer-topping ' + NewPizzaLayerName + '" style="z-index:' + NewPizzaLayerIndex + ';"><img title="' + NewPizzaLayerAlt + '" alt="' + NewPizzaLayerAlt + '" src="' + NewPizzaLayerImageUrl + '" onload="jQuery(this).hide().fadeIn(1300);"></div>';
-var NewPizzaLayerCurrentToppingLI;
-NewPizzaLayerCurrentToppingLI = '<li id="current-topping-' + NewPizzaLayerName + '" class="pizza-topping-li-' + NewPizzaLayerIndex + '">' + NewPizzaLayerAlt + '<a href="javascript:RemovePizzaLayer(\'' + NewPizzaLayerName + '\',\'' + NewPizzaLayerIndex + '\',\'' + NewPizzaLayerShort + '\');" class="topping-list-remove-button"><i class="fa fa-solid fa-trash"></i></a></li>';
-jQuery('#pizzalayer-toppings-wrapper').delay(301).append(NewPizzaLayerContent);
-jQuery('#pizzalayer-current-toppings').delay(20).append(NewPizzaLayerCurrentToppingLI).delay(20).fadeIn(400);
-jQuery('#menu-pizzalayer-topping-' + NewPizzaLayerShort).addClass('ToppingSelected');
-jQuery('#' + NewPizzaLayerName).removeClass('tcg-half-left tcg-half-right tcg-whole tcg-quarter-topleft tcg-quarter-topright tcg-quarter-bottomleft tcg-quarter-bottomright');
-ToppingCoverageArea = jQuery("input[type='radio']:checked", '#pztp-topcoverage-control-' + NewPizzaLayerShort).val();
-jQuery('#' + NewPizzaLayerName).addClass('tcg-' + ToppingCoverageArea);
-jQuery('#CurrentToppingsCount').val(CurrentToppingsCount + 1);
-//window.alert('Current Toppings Count = ' + CurrentToppingsCount + '. Max Toppings = ' + MaxToppings);
-}
+	// ── Internal helpers ──────────────────────────────────────────────
 
-function RemovePizzaLayer(NewPizzaLayerName,NewPizzaLayerIndex,NewPizzaLayerShort){
-jQuery('.' + NewPizzaLayerName).fadeOut(1200).remove();
-jQuery('li#current-topping-' + NewPizzaLayerName).fadeOut(900).remove(); // remove pizza image layer
-jQuery('.pizza-topping-li-' + NewPizzaLayerShort).fadeOut(600).remove(); //remove item in current toppings list
-jQuery('#menu-pizzalayer-topping-' + NewPizzaLayerShort).removeClass('ToppingSelected'); //remove the dark background highlight in toppings list item
-CurrentToppingsCount = parseInt(jQuery('#CurrentToppingsCount').val());
-CurrentToppingsCount -= 1;
-jQuery('#CurrentToppingsCount').val(CurrentToppingsCount);
-if(CurrentToppingsCount < MaxToppings){ jQuery('#pizzalayer-alert').fadeOut(500);} else { jQuery('#pizzalayer-alert').fadeIn(500); }
-}
+	function convertToSlug( text ) {
+		return text.toLowerCase()
+			.replace( / /g, '-' )
+			.replace( /[^\w-]+/g, '' );
+	}
 
-function ClearPizza(){
-jQuery('#pizzalayer-pizza .pizzalayer-sauce,#pizzalayer-pizza .pizzalayer-cheese,#pizzalayer-pizza .pizzalayer-drizzle,#pizzalayer-pizza .pizzalayer-cut').css({"background":"none"}); //reset backgrounds for non-crust and non-topping pizza layers
-jQuery('#pizzalayer-pizza .pizzalayer-topping').fadeOut(900).remove();  //remove pizza image layers
-jQuery('#pizzalayer-current-toppings *').fadeOut(600).remove(); //remove items in current toppings list
-jQuery('.pizzalayer-toppings-list-linkboxes .pizza-topping,.pizzalayer-ui-menu-tab .pizzalayer-topping,.pizzalayer-inner-tile').removeClass('ToppingSelected'); //remove the dark background highlight in toppings list item
-//reset ingredient tiles
-jQuery('#pizzalayer-basics-tile-title-crust').html("No Crust Chosen");
-jQuery('#pizzalayer-basics-tile-title-sauce').html("No Sauce Chosen");
-jQuery('#pizzalayer-basics-tile-title-cheese').html("No Cheese Chosen");
-jQuery('#pizzalayer-basics-tile-title-drizzle').html("No Drizzle Chosen");
-jQuery('#CurrentToppingsCount').val(0);
-}
+	function UnderMaxToppings( currentCount ) {
+		var max = $( '#MaxToppings' ).val();
+		if ( ! max ) { max = 9999; }
+		if ( currentCount < max ) {
+			$( '#pizzalayer-alert' ).fadeOut( 500 );
+			return true;
+		} else {
+			$( '#pizzalayer-alert' ).fadeIn( 500 );
+			return false;
+		}
+	}
 
-function RemoveAllToppings(){
-jQuery('.pizzalayer-topping').fadeOut(600).remove();
-jQuery('#CurrentToppingsCount').val(0);
-}
+	// ── Layer management (called from legacy template PHP via window.*) ─
 
-function UnderMaxToppings(CurrentToppingsCount){
-MaxToppings = jQuery('#MaxToppings').val();
-if(!MaxToppings){ MaxToppings = 9999; }
-if(CurrentToppingsCount < MaxToppings){ jQuery('#pizzalayer-alert').fadeOut(500); return true;  } else { jQuery('#pizzalayer-alert').fadeIn(500); return false;  }
-} //function
+	function SwapPizzaLayer( targetLayer, name, imageUrl ) {
+		$( '#' + targetLayer ).fadeOut( 100 ).attr( 'src', imageUrl ).fadeIn( 600 );
+	}
 
-function convertToSlug(Text) {
-  return Text.toLowerCase()
-    .replace(/ /g, "-")
-    .replace(/[^\w-]+/g, "");
-}
+	function AddPizzaLayer( zIndex, shortSlug, imageUrl, alt, layerName, menuItemId ) {
+		if ( $( '#' + layerName ).length ) { return false; }
+		var currentCount = parseInt( $( '#CurrentToppingsCount' ).val(), 10 );
+		if ( ! UnderMaxToppings( currentCount ) ) {
+			$( '#pizzalayer-ui-menu-section-toppings' ).css( 'outline', '2px solid red' );
+			setTimeout( function () {
+				$( '#pizzalayer-ui-menu-section-toppings' ).css( 'outline', '' );
+			}, 600 );
+			return false;
+		}
+		var layerHtml = '<div id="' + layerName + '" class="pizzalayer-topping ' + layerName +
+			'" style="z-index:' + zIndex + ';"><img title="' + alt + '" alt="' + alt +
+			'" src="' + imageUrl + '" onload="jQuery(this).hide().fadeIn(1300);"></div>';
+		var liHtml = '<li id="current-topping-' + layerName + '" class="pizza-topping-li-' + zIndex + '">' +
+			alt + '<a href="javascript:window.RemovePizzaLayer(\'' + layerName + '\',\'' +
+			zIndex + '\',\'' + shortSlug + '\');" class="topping-list-remove-button">' +
+			'<i class="fa fa-solid fa-trash"></i></a></li>';
+		$( '#pizzalayer-toppings-wrapper' ).delay( 301 ).append( layerHtml );
+		$( '#pizzalayer-current-toppings' ).delay( 20 ).append( liHtml ).delay( 20 ).fadeIn( 400 );
+		$( '#menu-pizzalayer-topping-' + shortSlug ).addClass( 'ToppingSelected' );
+		$( '#' + layerName ).removeClass( 'tcg-half-left tcg-half-right tcg-whole tcg-quarter-topleft tcg-quarter-topright tcg-quarter-bottomleft tcg-quarter-bottomright' );
+		var coverage = $( "input[type='radio']:checked", '#pztp-topcoverage-control-' + shortSlug ).val();
+		$( '#' + layerName ).addClass( 'tcg-' + coverage );
+		$( '#CurrentToppingsCount' ).val( currentCount + 1 );
+	}
 
-function SwapBasePizzaLayer(PizzaTargetLayer,NewPizzaLayerName,NewPizzaLayerImageUrl){
-NewPizzaLayerImageUrlWrapped = 'url(' + NewPizzaLayerImageUrl + ')';
-SwapPizzaLayerNewTitle = PizzaTargetLayer.replace('pizzalayer-base-layer-','pizzalayer-basics-tile-title-'); 
-ThisLayerTypeSlug = PizzaTargetLayer.replace('pizzalayer-base-layer-',''); 
-jQuery('#' + PizzaTargetLayer).fadeOut(100).delay(20).css("backgroundImage",NewPizzaLayerImageUrlWrapped).delay(20).fadeIn(900);
-jQuery('#' + SwapPizzaLayerNewTitle).html(NewPizzaLayerName);
-NewPizzaLayerShort = 'menu-pizzalayer-topping-' + convertToSlug(NewPizzaLayerName);
-jQuery('.pizzalayer-' + ThisLayerTypeSlug + 's-list li').removeClass('ToppingSelected');
-jQuery('#' + NewPizzaLayerShort).addClass('ToppingSelected');
-}
+	function RemovePizzaLayer( layerName, zIndex, shortSlug ) {
+		$( '.' + layerName ).fadeOut( 1200 ).remove();
+		$( 'li#current-topping-' + layerName ).fadeOut( 900 ).remove();
+		$( '.pizza-topping-li-' + shortSlug ).fadeOut( 600 ).remove();
+		$( '#menu-pizzalayer-topping-' + shortSlug ).removeClass( 'ToppingSelected' );
+		var currentCount = parseInt( $( '#CurrentToppingsCount' ).val(), 10 ) - 1;
+		$( '#CurrentToppingsCount' ).val( currentCount );
+		var max = $( '#MaxToppings' ).val();
+		if ( currentCount < max ) {
+			$( '#pizzalayer-alert' ).fadeOut( 500 );
+		} else {
+			$( '#pizzalayer-alert' ).fadeIn( 500 );
+		}
+	}
 
-function ChangeSlicing(PizzaTargetLayer,NewPizzaLayerName,NewPizzaLayerImageUrl){
-NewPizzaLayerImageUrlWrapped = 'url(' + NewPizzaLayerImageUrl + ')';
-jQuery('#' + PizzaTargetLayer).fadeOut(100).css("backgroundImage",NewPizzaLayerImageUrlWrapped).fadeIn(400);
-jQuery('#' + PizzaTargetLayer).parent().append(jQuery('#' + PizzaTargetLayer));
-}
+	function RemoveAllToppings() {
+		$( '.pizzalayer-topping' ).fadeOut( 600 ).remove();
+		$( '#CurrentToppingsCount' ).val( 0 );
+	}
 
-function SetToppingCoverage(ToppingCoverageArea,ToppingID,ToppingShort){
-jQuery('#' + ToppingID).removeClass('tcg-half-left tcg-half-right tcg-whole tcg-quarter-top-left tcg-quarter-top-right tcg-quarter-bottom-left tcg-quarter-bottom-right');
-jQuery('#' + ToppingID).addClass('tcg-' + ToppingCoverageArea);
-ToppingCoverageShort =  ToppingID.replace('pizzalayer-topping-','');
-TargetRadioButtonID = 'halfcontrol-' + ToppingCoverageShort + '-' + ToppingCoverageArea;
-jQuery('#pizzalayer-halves-control-halfcontrol-' + ToppingCoverageShort + ' img.pizzalayer-halves-control').removeClass('pizzalayer-halves-control-highlighted');
-jQuery('#pizzalayer-halves-control-halfcontrol-' + ToppingCoverageShort + ' img.pizzalayer-halves-control-' + ToppingCoverageArea).addClass('pizzalayer-halves-control-highlighted');
-//1.create the new image string based on the topping short and area
-//topping-' . $pztp_tli_short_slug . '-halves-control-button-top-left
-NewToppingCoverageArea = ToppingCoverageArea.replace('quarter-','');
-ImageURLtoSet = jQuery('#topping-' + ToppingShort + '-halves-control-button-' + NewToppingCoverageArea).attr('src');
-//2. write new image string to the topping-fraction-thumb-shortslug image src
-jQuery('#topping-fraction-thumb-' + ToppingShort).attr('src',ImageURLtoSet);
-jQuery('#' + TargetRadioButtonID)[0].checked = true;
-}
+	function SwapBasePizzaLayer( targetLayer, name, imageUrl ) {
+		var wrapped   = 'url(' + imageUrl + ')';
+		var titleId   = targetLayer.replace( 'pizzalayer-base-layer-', 'pizzalayer-basics-tile-title-' );
+		var typeSlug  = targetLayer.replace( 'pizzalayer-base-layer-', '' );
+		$( '#' + targetLayer ).fadeOut( 100 ).delay( 20 ).css( 'backgroundImage', wrapped ).delay( 20 ).fadeIn( 900 );
+		$( '#' + titleId ).html( name );
+		var newShort = 'menu-pizzalayer-topping-' + convertToSlug( name );
+		$( '.pizzalayer-' + typeSlug + 's-list li' ).removeClass( 'ToppingSelected' );
+		$( '#' + newShort ).addClass( 'ToppingSelected' );
+	}
 
-function OpenToppingFractionBox(ToppingID){
-jQuery('#pizzalayer-halves-control-halfcontrol-' + ToppingID).fadeOut(999);
-jQuery('#pizzalayer-halves-control-fraction-' + ToppingID).fadeIn(1200);
-}
+	function ChangeSlicing( targetLayer, name, imageUrl ) {
+		var wrapped = 'url(' + imageUrl + ')';
+		$( '#' + targetLayer ).fadeOut( 100 ).css( 'backgroundImage', wrapped ).fadeIn( 400 );
+		$( '#' + targetLayer ).parent().append( $( '#' + targetLayer ) );
+	}
 
-function CloseToppingFractionBox(ToppingID){
-jQuery('#pizzalayer-halves-control-halfcontrol-' + ToppingID).fadeIn(999);
-jQuery('#pizzalayer-halves-control-fraction-' + ToppingID).fadeOut(1200);
-}
+	function SetToppingCoverage( area, toppingId, toppingShort ) {
+		$( '#' + toppingId ).removeClass( 'tcg-half-left tcg-half-right tcg-whole tcg-quarter-top-left tcg-quarter-top-right tcg-quarter-bottom-left tcg-quarter-bottom-right' );
+		$( '#' + toppingId ).addClass( 'tcg-' + area );
+		var toppingShortSlug = toppingId.replace( 'pizzalayer-topping-', '' );
+		var radioId          = 'halfcontrol-' + toppingShortSlug + '-' + area;
+		$( '#pizzalayer-halves-control-halfcontrol-' + toppingShortSlug + ' img.pizzalayer-halves-control' )
+			.removeClass( 'pizzalayer-halves-control-highlighted' );
+		$( '#pizzalayer-halves-control-halfcontrol-' + toppingShortSlug + ' img.pizzalayer-halves-control-' + area )
+			.addClass( 'pizzalayer-halves-control-highlighted' );
+		var areaNoQuarter = area.replace( 'quarter-', '' );
+		var imgSrc = $( '#topping-' + toppingShort + '-halves-control-button-' + areaNoQuarter ).attr( 'src' );
+		$( '#topping-fraction-thumb-' + toppingShort ).attr( 'src', imgSrc );
+		$( '#' + radioId )[ 0 ].checked = true;
+	}
 
-// Pizza Rotation - Credit ChatGPT
-/* USAGE:
-RotatePizza('myPizzaDiv', 2); // Faster rotation
-RotatePizza('myPizzaDiv', 0.5); // Slower rotation
-*/
+	function OpenToppingFractionBox( toppingId ) {
+		$( '#pizzalayer-halves-control-halfcontrol-' + toppingId ).fadeOut( 999 );
+		$( '#pizzalayer-halves-control-fraction-' + toppingId ).fadeIn( 1200 );
+	}
 
-function RotatePizza($PizzaToRotate, speed = 1) {
-    let pizzaElement = document.getElementById($PizzaToRotate);
-    if (!pizzaElement) {
-        console.error('Element not found:', $PizzaToRotate);
-        return;
-    }
-    
-    let angle = 0;
-    function rotate() {
-        angle = (angle + speed) % 360; // Increment angle based on speed
-        pizzaElement.style.transform = `rotate(${angle}deg)`;
-        rotationIntervals[$PizzaToRotate] = requestAnimationFrame(rotate);
-    }
-    
-    rotate();
-}
+	function CloseToppingFractionBox( toppingId ) {
+		$( '#pizzalayer-halves-control-halfcontrol-' + toppingId ).fadeIn( 999 );
+		$( '#pizzalayer-halves-control-fraction-' + toppingId ).fadeOut( 1200 );
+	}
 
-function StopPizza($PizzaToRotate) {
-    if (rotationIntervals[$PizzaToRotate]) {
-        cancelAnimationFrame(rotationIntervals[$PizzaToRotate]);
-        delete rotationIntervals[$PizzaToRotate];
-    }
-}
+	// ── Pizza Rotation ────────────────────────────────────────────────
+	/*
+	 * Usage:
+	 *   window.RotatePizza( 'myPizzaDiv', 2 );  // faster
+	 *   window.RotatePizza( 'myPizzaDiv', 0.5 ); // slower
+	 *   window.StopPizza( 'myPizzaDiv' );
+	 */
+	function RotatePizza( divId, speed ) {
+		if ( speed === undefined ) { speed = 1; }
+		var el = document.getElementById( divId );
+		if ( ! el ) {
+			window.console && window.console.error( 'PizzaLayer: RotatePizza — element not found:', divId );
+			return;
+		}
+		var angle = 0;
+		function rotate() {
+			angle = ( angle + speed ) % 360;
+			el.style.transform = 'rotate(' + angle + 'deg)';
+			rotationIntervals[ divId ] = requestAnimationFrame( rotate );
+		}
+		rotate();
+	}
+
+	function StopPizza( divId ) {
+		if ( rotationIntervals[ divId ] ) {
+			cancelAnimationFrame( rotationIntervals[ divId ] );
+			delete rotationIntervals[ divId ];
+		}
+	}
+
+	// ── Global exports ────────────────────────────────────────────────
+	// Only these three are exposed because template PHP renders them in onclick= attributes.
+	// All other functions remain private to this IIFE.
+	window.ClearPizza = function () {
+		$( '#pizzalayer-pizza .pizzalayer-sauce,' +
+			'#pizzalayer-pizza .pizzalayer-cheese,' +
+			'#pizzalayer-pizza .pizzalayer-drizzle,' +
+			'#pizzalayer-pizza .pizzalayer-cut' ).css( { background: 'none' } );
+		$( '#pizzalayer-pizza .pizzalayer-topping' ).fadeOut( 900 ).remove();
+		$( '#pizzalayer-current-toppings *' ).fadeOut( 600 ).remove();
+		$( '.pizzalayer-toppings-list-linkboxes .pizza-topping,' +
+			'.pizzalayer-ui-menu-tab .pizzalayer-topping,' +
+			'.pizzalayer-inner-tile' ).removeClass( 'ToppingSelected' );
+		$( '#pizzalayer-basics-tile-title-crust' ).html( 'No Crust Chosen' );
+		$( '#pizzalayer-basics-tile-title-sauce' ).html( 'No Sauce Chosen' );
+		$( '#pizzalayer-basics-tile-title-cheese' ).html( 'No Cheese Chosen' );
+		$( '#pizzalayer-basics-tile-title-drizzle' ).html( 'No Drizzle Chosen' );
+		$( '#CurrentToppingsCount' ).val( 0 );
+	};
+	window.RotatePizza = RotatePizza;
+	window.StopPizza   = StopPizza;
+	// Legacy compatibility: also expose via window for any external code calling these directly.
+	// These should not be relied on in new integrations.
+	window.RemovePizzaLayer       = RemovePizzaLayer;
+	window.AddPizzaLayer          = AddPizzaLayer;
+	window.SwapPizzaLayer         = SwapPizzaLayer;
+	window.SwapBasePizzaLayer     = SwapBasePizzaLayer;
+	window.ChangeSlicing          = ChangeSlicing;
+	window.SetToppingCoverage     = SetToppingCoverage;
+	window.OpenToppingFractionBox = OpenToppingFractionBox;
+	window.CloseToppingFractionBox= CloseToppingFractionBox;
+	window.RemoveAllToppings      = RemoveAllToppings;
+
+} )( jQuery );
+

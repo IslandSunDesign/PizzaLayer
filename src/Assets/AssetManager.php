@@ -161,10 +161,23 @@ class AssetManager {
 		// Settings
 		if ( false !== strpos( $hook, 'pizzalayer-settings' ) ) {
 			wp_enqueue_media(); // Required for the logo image picker
+			wp_enqueue_style(
+				'pizzalayer-settings-page',
+				PIZZALAYER_ASSETS_URL . 'css/settings-page.css',
+				[ 'pizzalayer-admin-tabs' ],
+				$v
+			);
 			wp_enqueue_script(
 				'pizzalayer-settings',
 				$base . 'settings.js',
 				[],
+				$v,
+				true
+			);
+			wp_enqueue_script(
+				'pizzalayer-settings-page',
+				PIZZALAYER_ASSETS_URL . 'js/admin/settings-page.js',
+				[ 'jquery', 'pizzalayer-settings' ],
 				$v,
 				true
 			);

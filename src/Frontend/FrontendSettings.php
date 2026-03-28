@@ -250,8 +250,9 @@ class FrontendSettings {
 		if ( $menu_bg )      { $cb_overrides['--cb-surface']        = $menu_bg;    }
 		if ( $card_bg )      { $cb_overrides['--cb-surface-2']      = $card_bg;    }
 		if ( $card_border )  { $cb_overrides['--cb-border']         = $card_border;}
+		// tab_active takes priority over selected for the accent; fall back to selected if only one is set
 		if ( $selected )     { $cb_overrides['--cb-accent']         = $selected;   }
-		if ( $tab_active )   { $cb_overrides['--cb-accent']         = $tab_active; }
+		if ( $tab_active )   { $cb_overrides['--cb-accent']         = $tab_active; } // intentional overwrite: tab colour wins
 		if ( $body_text )    { $cb_overrides['--cb-text']           = $body_text;  }
 		if ( $muted_text )   { $cb_overrides['--cb-text-muted']     = $muted_text; }
 		if ( $card_radius )  { $cb_overrides['--cb-radius']         = $card_radius;}
@@ -269,18 +270,99 @@ class FrontendSettings {
 
 		// Metro template uses --metro-* vars
 		$metro_overrides = [];
-		if ( $bg )         { $metro_overrides['--metro-bg']     = $bg;      }
-		if ( $card_bg )    { $metro_overrides['--metro-card-bg']= $card_bg; }
-		if ( $selected )   { $metro_overrides['--metro-accent'] = $selected;}
-		if ( $body_text )  { $metro_overrides['--metro-text']   = $body_text;}
+		if ( $bg )         { $metro_overrides['--metro-bg']      = $bg;       }
+		if ( $card_bg )    { $metro_overrides['--metro-card-bg'] = $card_bg;  }
+		if ( $selected )   { $metro_overrides['--metro-accent']  = $selected; }
+		if ( $tab_active ) { $metro_overrides['--metro-accent']  = $tab_active; } // tab colour wins
+		if ( $body_text )  { $metro_overrides['--metro-text']    = $body_text; }
 
 		if ( ! empty( $metro_overrides ) ) {
-			$m_rule = '.metro-root,.np-root{';
+			$m_rule = '.metro-root{';
 			foreach ( $metro_overrides as $prop => $val ) {
 				$m_rule .= esc_attr( $prop ) . ':' . esc_attr( $val ) . ';';
 			}
 			$m_rule .= '}';
 			$rules[] = $m_rule;
+		}
+
+		// NightPie template uses --np-* vars (separate from Metro)
+		$np_overrides = [];
+		if ( $bg )          { $np_overrides['--np-bg']         = $bg;          }
+		if ( $menu_bg )     { $np_overrides['--np-surface']    = $menu_bg;     }
+		if ( $card_bg )     { $np_overrides['--np-surface-2']  = $card_bg;     }
+		if ( $card_border ) { $np_overrides['--np-border']      = $card_border; }
+		if ( $selected )    { $np_overrides['--np-accent']      = $selected;    }
+		if ( $tab_active )  { $np_overrides['--np-accent']      = $tab_active;  } // tab colour wins
+		if ( $body_text )   { $np_overrides['--np-text']        = $body_text;   }
+		if ( $muted_text )  { $np_overrides['--np-text-muted']  = $muted_text;  }
+		if ( $shadow )      { $np_overrides['--np-shadow']      = $shadow;      }
+		if ( $font !== 'inherit' && $font ) {
+			$np_overrides['--np-font'] = '"' . addslashes( $font ) . '", system-ui, sans-serif';
+		}
+
+		if ( ! empty( $np_overrides ) ) {
+			$np_rule = '.np-root{';
+			foreach ( $np_overrides as $prop => $val ) {
+				$np_rule .= esc_attr( $prop ) . ':' . esc_attr( $val ) . ';';
+			}
+			$np_rule .= '}';
+			$rules[] = $np_rule;
+		}
+
+		// PocketPie template uses --pp-* vars
+		$pp_overrides = [];
+		if ( $bg )          { $pp_overrides['--pp-bg']       = $bg;       }
+		if ( $card_bg )     { $pp_overrides['--pp-bg-2']     = $card_bg;  }
+		if ( $card_border ) { $pp_overrides['--pp-border']   = $card_border; }
+		if ( $selected )    { $pp_overrides['--pp-accent']   = $selected; }
+		if ( $tab_active )  { $pp_overrides['--pp-accent']   = $tab_active; }
+		if ( $body_text )   { $pp_overrides['--pp-text']     = $body_text; }
+		if ( $muted_text )  { $pp_overrides['--pp-muted']    = $muted_text; }
+
+		if ( ! empty( $pp_overrides ) ) {
+			$pp_rule = '.pp-root{';
+			foreach ( $pp_overrides as $prop => $val ) {
+				$pp_rule .= esc_attr( $prop ) . ':' . esc_attr( $val ) . ';';
+			}
+			$pp_rule .= '}';
+			$rules[] = $pp_rule;
+		}
+
+		// Scaffold template uses --sc-* vars
+		$sc_overrides = [];
+		if ( $bg )         { $sc_overrides['--sc-bg']      = $bg;       }
+		if ( $selected )   { $sc_overrides['--sc-accent']  = $selected; }
+		if ( $tab_active ) { $sc_overrides['--sc-accent']  = $tab_active; }
+		if ( $body_text )  { $sc_overrides['--sc-text']    = $body_text; }
+		if ( $card_border ){ $sc_overrides['--sc-border']  = $card_border; }
+
+		if ( ! empty( $sc_overrides ) ) {
+			$sc_rule = '.sc-root{';
+			foreach ( $sc_overrides as $prop => $val ) {
+				$sc_rule .= esc_attr( $prop ) . ':' . esc_attr( $val ) . ';';
+			}
+			$sc_rule .= '}';
+			$rules[] = $sc_rule;
+		}
+
+		// Plainlist template uses --pl-* vars
+		$pl_overrides = [];
+		if ( $bg )         { $pl_overrides['--pl-bg']           = $bg;       }
+		if ( $selected )   { $pl_overrides['--pl-accent']       = $selected; }
+		if ( $tab_active ) { $pl_overrides['--pl-accent']       = $tab_active; }
+		if ( $body_text )  { $pl_overrides['--pl-item-color']   = $body_text; }
+		if ( $card_border ){ $pl_overrides['--pl-divider']      = $card_border; }
+		if ( $font !== 'inherit' && $font ) {
+			$pl_overrides['--pl-font'] = '"' . addslashes( $font ) . '", system-ui, sans-serif';
+		}
+
+		if ( ! empty( $pl_overrides ) ) {
+			$pl_rule = '.pl-root{';
+			foreach ( $pl_overrides as $prop => $val ) {
+				$pl_rule .= esc_attr( $prop ) . ':' . esc_attr( $val ) . ';';
+			}
+			$pl_rule .= '}';
+			$rules[] = $pl_rule;
 		}
 
 		// Fornaia / Rustic template (.rp-root) — maps global palette vars to --rp-* tokens
@@ -290,7 +372,7 @@ class FrontendSettings {
 		if ( $card_bg )     { $rp_overrides['--rp-surface-2']    = $card_bg;    }
 		if ( $card_border ) { $rp_overrides['--rp-border']       = $card_border;}
 		if ( $selected )    { $rp_overrides['--rp-accent']       = $selected;   }
-		if ( $tab_active )  { $rp_overrides['--rp-accent']       = $tab_active; }
+		if ( $tab_active )  { $rp_overrides['--rp-accent']       = $tab_active; } // tab colour wins
 		if ( $body_text )   { $rp_overrides['--rp-text']         = $body_text;  }
 		if ( $muted_text )  { $rp_overrides['--rp-text-muted']   = $muted_text; }
 		if ( $card_radius ) { $rp_overrides['--rp-radius']       = $card_radius;}
@@ -468,8 +550,17 @@ class FrontendSettings {
 
 		wp_localize_script( 'pizzalayer-js', 'pizzalayerSettings', $data );
 
-		// Also try to attach to template scripts so they pick it up
-		foreach ( [ 'pizzalayer-template-colorbox', 'pizzalayer-template-metro', 'pizzalayer-template-nightpie', 'pizzalayer-template-rustic' ] as $handle ) {
+		// Also attach to all template script handles so they pick up settings regardless of load order
+		$template_handles = [
+			'pizzalayer-template-colorbox',
+			'pizzalayer-template-metro',
+			'pizzalayer-template-nightpie',
+			'pizzalayer-template-rustic',
+			'pizzalayer-template-pocketpie',
+			'pizzalayer-template-scaffold',
+			'pizzalayer-template-plainlist',
+		];
+		foreach ( $template_handles as $handle ) {
 			if ( wp_script_is( $handle, 'enqueued' ) ) {
 				wp_localize_script( $handle, 'pizzalayerSettings', $data );
 			}

@@ -69,8 +69,11 @@ class PizzaBuilder {
 		$builder = new self();
 		$id      = $builder->get_id_by_slug( $slug, $type . 's' );
 		if ( ! $id ) { return ''; }
-		$field   = $type . '_layer_image';
-		return (string) ( get_field( $field, $id ) ?? '' );
+		$field = $type . '_layer_image';
+		$val   = get_field( $field, $id );
+		// ACF may return an array (when return format = 'array') — unwrap to URL
+		if ( is_array( $val ) ) { $val = $val['url'] ?? ''; }
+		return (string) ( $val ?? '' );
 	}
 
 	// ──────────────────────────────────────────────────────────────────────
@@ -100,7 +103,10 @@ class PizzaBuilder {
 	 */
 	private function get_img( string $field, int $id ): string {
 		if ( ! $id ) { return ''; }
-		return (string) ( get_field( $field, $id ) ?? '' );
+		$val = get_field( $field, $id );
+		// ACF may return an array (when return format = 'array') — unwrap to URL
+		if ( is_array( $val ) ) { $val = $val['url'] ?? ''; }
+		return (string) ( $val ?? '' );
 	}
 
 	// ──────────────────────────────────────────────────────────────────────
