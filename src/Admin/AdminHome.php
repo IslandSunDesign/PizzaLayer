@@ -41,6 +41,7 @@ class AdminHome {
 			'drizzles' => (int) ( wp_count_posts( 'pizzalayer_drizzles' )->publish ?? 0 ),
 			'cuts'     => (int) ( wp_count_posts( 'pizzalayer_cuts'     )->publish ?? 0 ),
 			'sizes'    => (int) ( wp_count_posts( 'pizzalayer_sizes'    )->publish ?? 0 ),
+			'presets'  => (int) ( wp_count_posts( 'pizzalayer_presets'  )->publish ?? 0 ),
 		];
 		$total = array_sum( array_values( $stats ) );
 		$active_template = (string) get_option( 'pizzalayer_setting_global_template', 'nightpie' );
@@ -107,6 +108,14 @@ class AdminHome {
 				'cpt'   => 'sizes',
 				'count' => $stats['sizes'],
 			],
+			'presets' => [
+				'label' => 'Presets',
+				'icon'  => 'dashicons-food',
+				'desc'  => 'Pre-configured pizza combinations that customers can start from. Each preset stores a full layer configuration (crust, sauce, cheese, toppings, drizzle, cut) managed via PizzaLayerPro\'s visual builder.',
+				'tip'   => '💡 Use presets to showcase your most popular pizzas — customers can customise further after selecting one.',
+				'cpt'   => 'presets',
+				'count' => $stats['presets'],
+			],
 		];
 
 		// ── Quick-access icon nav items ──────────────────────────────────
@@ -147,6 +156,12 @@ class AdminHome {
 				'href'  => admin_url( 'admin.php?page=pizzalayer-help' ),
 				'color' => '#646970',
 			],
+			[
+				'icon'  => 'dashicons-food',
+				'label' => 'Presets',
+				'href'  => admin_url( 'edit.php?post_type=pizzalayer_presets' ),
+				'color' => '#e8692a',
+			],
 		];
 
 		// ── Tips rotator ─────────────────────────────────────────────────
@@ -183,6 +198,31 @@ class AdminHome {
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-shortcodes' ) ); ?>" class="button">
 						<span class="dashicons dashicons-editor-code"></span> Shortcodes
 					</a>
+					<?php
+					// ── Dark mode detection toggle ─────────────────────────────
+					$dark_mode = (string) get_option( 'pizzalayer_setting_dark_mode', 'auto' );
+					if ( isset( $_POST['pizzalayer_dark_mode_save'], $_POST['_wpnonce_dark_mode'] )
+					     && wp_verify_nonce( sanitize_key( $_POST['_wpnonce_dark_mode'] ), 'pizzalayer_dark_mode_save' ) ) {
+						$dark_mode = sanitize_key( wp_unslash( $_POST['pizzalayer_dark_mode'] ?? 'auto' ) );
+						if ( ! in_array( $dark_mode, [ 'auto', 'light', 'dark' ], true ) ) { $dark_mode = 'auto'; }
+						update_option( 'pizzalayer_setting_dark_mode', $dark_mode );
+					}
+					$dm_icons  = [ 'auto' => 'dashicons-smartphone', 'light' => 'dashicons-sun', 'dark' => 'dashicons-moon' ];
+					$dm_labels = [ 'auto' => 'Auto', 'light' => 'Light', 'dark' => 'Dark' ];
+					?>
+					<div class="plh-dm-toggle" title="Dark mode detection for the pizza builder">
+						<?php foreach ( $dm_icons as $val => $icon ) : ?>
+						<form method="post" style="display:inline;">
+							<?php wp_nonce_field( 'pizzalayer_dark_mode_save', '_wpnonce_dark_mode' ); ?>
+							<input type="hidden" name="pizzalayer_dark_mode_save" value="1">
+							<input type="hidden" name="pizzalayer_dark_mode" value="<?php echo esc_attr( $val ); ?>">
+							<button type="submit" class="plh-dm-btn<?php echo $dark_mode === $val ? ' plh-dm-btn--active' : ''; ?>" title="<?php echo esc_attr( ucfirst( $val ) ); ?> mode">
+								<span class="dashicons <?php echo esc_attr( $icon ); ?>"></span>
+								<span class="plh-dm-label"><?php echo esc_html( $dm_labels[ $val ] ); ?></span>
+							</button>
+						</form>
+						<?php endforeach; ?>
+					</div>
 				</div>
 			</div>
 
@@ -483,31 +523,53 @@ class AdminHome {
 		.plh-header__actions .button { display: inline-flex; align-items: center; gap: 5px; }
 		.plh-header__actions .dashicons { font-size: 15px !important; width: 15px !important; height: 15px !important; margin: 0; }
 
+		/* ── Dark mode toggle ─────────────────────────────────────────── */
+		.plh-dm-toggle {
+			display: flex; align-items: center; gap: 2px;
+			background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
+			border-radius: 7px; padding: 3px; margin-left: 4px;
+		}
+		.plh-dm-btn {
+			display: inline-flex; align-items: center; gap: 4px;
+			background: transparent; border: none; border-radius: 5px;
+			color: #a0aec0; cursor: pointer; padding: 5px 9px;
+			font-size: 12px; font-weight: 500; transition: background .15s, color .15s;
+		}
+		.plh-dm-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
+		.plh-dm-btn--active { background: rgba(255,255,255,.18) !important; color: #fff !important; font-weight: 600; }
+		.plh-dm-btn .dashicons { font-size: 13px !important; width: 13px !important; height: 13px !important; margin: 0; }
+		.plh-dm-label { font-size: 11px; }
+		@media (max-width: 900px) { .plh-dm-label { display: none; } }
+
 		/* ── Pro CTA ──────────────────────────────────────────────────── */
 		.plh-pro-cta {
 			display: flex; align-items: center; gap: 12px;
-			background: #fff8e6; border: 1px solid #f0b849; border-radius: 8px;
-			padding: 12px 16px; margin-bottom: 16px; font-size: 13px;
+			background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 8px;
+			padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: #e2e8f0;
 		}
 		.plh-pro-cta__icon { font-size: 18px; }
 		.plh-pro-cta__text { flex: 1; }
-		.plh-pro-cta__text a { font-weight: 600; }
+		.plh-pro-cta__text strong { color: #fff; }
+		.plh-pro-cta__text a { font-weight: 600; color: #ff8c42; }
+		.plh-pro-cta__text a:hover { color: #ffad73; }
 		.plh-pro-cta__dismiss {
-			color: #787c82; text-decoration: none; font-size: 14px;
+			color: #718096; text-decoration: none; font-size: 14px;
 			padding: 2px 6px; border-radius: 3px; transition: background .15s;
 		}
-		.plh-pro-cta__dismiss:hover { background: #f0e8cc; }
+		.plh-pro-cta__dismiss:hover { background: rgba(255,255,255,.1); color: #fff; }
 
 		/* ── Setup nag ────────────────────────────────────────────────── */
 		.plh-nag {
 			display: flex; align-items: flex-start; gap: 10px;
-			background: #f0f6ff; border-left: 4px solid #2271b1; border-radius: 0 8px 8px 0;
-			padding: 14px 18px; margin-bottom: 16px; font-size: 13px;
+			background: rgba(34,113,177,.18); border-left: 4px solid #4a9fd4; border-radius: 0 8px 8px 0;
+			padding: 14px 18px; margin-bottom: 16px; font-size: 13px; color: #e2e8f0;
 		}
-		.plh-nag .dashicons { color: #2271b1; margin-top: 2px; flex-shrink: 0; }
-		.plh-nag strong { display: block; margin-bottom: 6px; }
+		.plh-nag .dashicons { color: #4a9fd4; margin-top: 2px; flex-shrink: 0; }
+		.plh-nag strong { display: block; margin-bottom: 6px; color: #fff; }
 		.plh-nag__list { margin: 0; padding: 0 0 0 16px; }
 		.plh-nag__list li { margin-bottom: 3px; }
+		.plh-nag__list a { color: #7ec8e3; }
+		.plh-nag__list a:hover { color: #fff; }
 
 		/* ── Stats strip ──────────────────────────────────────────────── */
 		.plh-stats-row {

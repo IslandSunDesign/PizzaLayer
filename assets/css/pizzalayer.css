@@ -27,6 +27,47 @@ body .pizzalayer-toppings-wrapper.pizzalayer-toppings-wrapper-static{margin:auto
 .pizzalayer-visualizer .pizzalayer-toppings-wrapper div:first-child{margin-top:100%;}
 .pizzalayer-toppings-wrapper div:not(:first-child){margin-top:-100%;}
 
+/* ── Pizza Layer Stack System ───────────────────────────────────────────────
+   Base rules for .np-pizza-stage-wrap / .np-pizza-stage / .np-layer-div.
+   Required by the static shortcode ([pizza_static]) and the dynamic builder
+   scaffold (build_dynamic). Templates can extend or override these rules.
+   ─────────────────────────────────────────────────────────────────────────── */
+
+.pizzalayer-static-wrap {
+    display:   block;
+    max-width: 500px;
+    margin:    0 auto;
+}
+
+.np-pizza-stage-wrap {
+    position:     relative;
+    width:        100%;
+    aspect-ratio: 1;
+    overflow:     hidden;
+}
+
+.np-pizza-stage {
+    position: absolute;
+    inset:    0;
+    width:    100%;
+    height:   100%;
+}
+
+.np-layer-div {
+    position:       absolute;
+    inset:          0;
+    pointer-events: none;
+}
+
+.np-layer-div img {
+    position:   absolute;
+    inset:      0;
+    width:      100%;
+    height:     100%;
+    object-fit: contain;
+    display:    block;
+}
+
 /* basic UI framework - some templates may override these elements */
 
 .pizzalayer-ui{border:solid 1px #e6e6e6;margin:15px;padding:20px;}

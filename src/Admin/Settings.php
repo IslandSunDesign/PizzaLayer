@@ -1717,194 +1717,27 @@ class Settings {
 			</div>
 		</div>
 
-				<!-- ══ Section: Template Settings ══════════════════════════ -->
+				<!-- ══ Section: Template Settings (moved to Template page) ══ -->
 		<?php if ( $active_template ) : ?>
-		<div class="pset-card pset-card--template">
-			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="template-settings">
+		<div class="pset-card">
+			<div class="pset-card__head">
 				<div>
 					<h2>
 						<span class="dashicons dashicons-admin-appearance"></span>
 						<?php echo esc_html( ucwords( str_replace( '-', ' ', $active_template ) ) ); ?> Template Settings
-						<span class="pset-card__badge">Active Template</span>
 					</h2>
+					<p class="pset-desc">Template-specific settings have moved to the <strong>Template</strong> page, below the template selector.</p>
 				</div>
-				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-template-settings">
-					<span class="dashicons dashicons-arrow-up-alt2"></span>
-				</button>
 			</div>
-			<div class="pset-card__body" id="pset-body-template-settings">
-				<?php if ( ! empty( $template_settings ) && is_array( $template_settings ) ) : ?>
-					<p class="pset-desc" style="margin-bottom:16px;">These settings apply only to the <strong><?php echo esc_html( ucwords( str_replace( '-', ' ', $active_template ) ) ); ?></strong> template. Switching templates will show that template's settings instead.</p>
-					<?php if ( $active_template === 'metro' ) : ?>
-					<div class="pset-scheme-row">
-						<span class="pset-scheme-label">Color Schemes:</span>
-						<div class="pset-scheme-chips" id="pset-scheme-chips">
-							<?php foreach ( $this->get_metro_color_schemes() as $scheme ) :
-								$safe = esc_attr( wp_json_encode( $scheme['colors'] ) );
-							?>
-							<button type="button" class="pset-scheme-chip"
-							        data-scheme="<?php echo $safe; ?>"
-							        title="<?php echo esc_attr( $scheme['name'] ); ?>">
-								<span class="pset-scheme-chip__swatches">
-									<?php foreach ( $scheme['colors'] as $c ) : ?>
-									<span class="pset-scheme-chip__dot" style="background:<?php echo esc_attr( $c ); ?>;"></span>
-									<?php endforeach; ?>
-								</span>
-								<span class="pset-scheme-chip__name"><?php echo esc_html( $scheme['name'] ); ?></span>
-							</button>
-							<?php endforeach; ?>
-						</div>
-					</div>
-					<?php endif; ?>
-					<?php if ( $active_template === 'plainlist' ) : ?>
-					<div class="pset-scheme-row">
-						<span class="pset-scheme-label">Style Presets:</span>
-						<div class="pset-scheme-chips" id="pset-scheme-chips">
-							<?php foreach ( $this->get_plainlist_presets() as $preset ) :
-								$safe = esc_attr( wp_json_encode( $preset['keys'] ) );
-							?>
-							<button type="button" class="pset-scheme-chip"
-							        data-scheme="<?php echo $safe; ?>"
-							        title="<?php echo esc_attr( $preset['name'] ); ?>">
-								<span class="pset-scheme-chip__swatches">
-									<?php foreach ( $preset['colors'] as $c ) : ?>
-									<span class="pset-scheme-chip__dot" style="background:<?php echo esc_attr( $c ); ?>;"></span>
-									<?php endforeach; ?>
-								</span>
-								<span class="pset-scheme-chip__name"><?php echo esc_html( $preset['name'] ); ?></span>
-							</button>
-							<?php endforeach; ?>
-						</div>
-					</div>
-					<?php endif; ?>
-					<div class="pset-grid pset-grid--wide">
-					<?php foreach ( $template_settings as $field ) :
-						if ( empty( $field['key'] ) || empty( $field['type'] ) ) { continue; }
-						$fkey = esc_attr( $field['key'] );
-						$fval = (string) get_option( $field['key'], $field['default'] ?? '' );
-						$flabel = $field['label'] ?? $field['key'];
-						$fdesc  = $field['desc']  ?? '';
-					?>
-					<div class="pset-field<?php echo ( $field['type'] === 'textarea' || $field['type'] === 'text_wide' ) ? ' pset-field--full' : ''; ?>">
-						<label><?php echo esc_html( $flabel ); ?></label>
-						<?php if ( $fdesc ) : ?>
-						<p class="pset-desc"><?php echo esc_html( $fdesc ); ?></p>
-						<?php endif; ?>
-						<?php if ( $field['type'] === 'text' || $field['type'] === 'text_wide' ) : ?>
-							<input type="text" name="<?php echo $fkey; ?>" value="<?php echo esc_attr( $fval ); ?>" class="pset-input<?php echo $field['type'] === 'text_wide' ? ' pset-input--wide' : ''; ?>" placeholder="<?php echo esc_attr( $field['placeholder'] ?? '' ); ?>">
-						<?php elseif ( $field['type'] === 'number' ) : ?>
-							<input type="number" name="<?php echo $fkey; ?>" value="<?php echo esc_attr( $fval ); ?>" class="pset-input" min="<?php echo esc_attr( (string)( $field['min'] ?? '' ) ); ?>" max="<?php echo esc_attr( (string)( $field['max'] ?? '' ) ); ?>" step="<?php echo esc_attr( (string)( $field['step'] ?? '1' ) ); ?>">
-						<?php elseif ( $field['type'] === 'color' ) : ?>
-							<div class="pset-color-wrap">
-								<input type="color" name="<?php echo $fkey; ?>" id="pset-color-<?php echo $fkey; ?>"
-								       value="<?php echo esc_attr( $fval ?: ( $field['default'] ?? '#000000' ) ); ?>" class="pset-color">
-								<?php if ( ! empty( $field['default'] ) ) : ?>
-								<button type="button" class="pset-color-revert"
-								        data-default="<?php echo esc_attr( $field['default'] ); ?>"
-								        data-target="pset-color-<?php echo $fkey; ?>"
-								        title="Revert to default (<?php echo esc_attr( $field['default'] ); ?>)">
-									<span class="dashicons dashicons-image-rotate"></span>
-								</button>
-								<span class="pset-color-default-swatch"
-								      style="background:<?php echo esc_attr( $field['default'] ); ?>;"
-								      title="Default: <?php echo esc_attr( $field['default'] ); ?>"></span>
-								<?php endif; ?>
-							</div>
-						<?php elseif ( $field['type'] === 'select' ) : ?>
-							<select name="<?php echo $fkey; ?>" class="pset-select">
-								<?php foreach ( $field['options'] ?? [] as $ov => $ol ) : ?>
-								<option value="<?php echo esc_attr( $ov ); ?>"<?php selected( $fval, $ov ); ?>><?php echo esc_html( $ol ); ?></option>
-								<?php endforeach; ?>
-							</select>
-						<?php elseif ( $field['type'] === 'toggle' ) : ?>
-							<label class="pset-toggle">
-								<input type="hidden" name="<?php echo $fkey; ?>" value="no">
-								<input type="checkbox" name="<?php echo $fkey; ?>" value="yes"<?php checked( $fval, 'yes' ); ?>>
-								<span class="pset-toggle__track"><span class="pset-toggle__thumb"></span></span>
-								<span class="pset-toggle__label"><?php echo esc_html( $field['toggle_label'] ?? 'Enabled' ); ?></span>
-							</label>
-						<?php elseif ( $field['type'] === 'textarea' ) : ?>
-							<textarea name="<?php echo $fkey; ?>" class="pset-textarea" rows="<?php echo esc_attr( (string)( $field['rows'] ?? 3 ) ); ?>"><?php echo esc_textarea( $fval ); ?></textarea>
-						<?php elseif ( $field['type'] === 'radio' ) : ?>
-							<div class="pset-radio-group">
-								<?php foreach ( $field['options'] ?? [] as $ov => $ol ) : ?>
-								<label class="pset-radio-label">
-									<input type="radio" name="<?php echo $fkey; ?>" value="<?php echo esc_attr( $ov ); ?>"<?php checked( $fval, $ov ); ?>>
-									<?php echo esc_html( $ol ); ?>
-								</label>
-								<?php endforeach; ?>
-							</div>
-						<?php elseif ( $field['type'] === 'range' ) : ?>
-							<div class="pset-range-wrap">
-								<input type="range" name="<?php echo $fkey; ?>" value="<?php echo esc_attr( $fval ); ?>" min="<?php echo esc_attr( (string)( $field['min'] ?? 0 ) ); ?>" max="<?php echo esc_attr( (string)( $field['max'] ?? 100 ) ); ?>" step="<?php echo esc_attr( (string)( $field['step'] ?? 1 ) ); ?>" class="pset-range" oninput="this.nextElementSibling.textContent=this.value">
-								<span class="pset-range__val"><?php echo esc_html( $fval ); ?></span>
-							</div>
-						<?php endif; ?>
-					</div>
-					<?php endforeach; ?>
-					</div>
-				<?php else : ?>
-					<div class="pset-tpl-empty">
-						<span class="dashicons dashicons-admin-appearance"></span>
-						<p>The <strong><?php echo esc_html( ucwords( str_replace( '-', ' ', $active_template ) ) ); ?></strong> template has no customizable settings defined yet.</p>
-						<p class="pset-desc">Template authors can add settings by returning an array from <code>pztp-template-options.php</code>.</p>
-					</div>
-				<?php endif; ?>
-			</div>
-		</div>
-		<?php else : ?>
-		<div class="pset-card">
-			<div class="pset-card__head"><h2><span class="dashicons dashicons-admin-appearance"></span> Template Settings</h2></div>
-			<div class="pset-card__body">
-				<p class="pset-desc">No template selected. <a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-template') ); ?>">Choose a template</a> to see its settings here.</p>
+			<div class="pset-card__body" style="padding:18px 24px;">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-template#template-settings' ) ); ?>" class="button button-primary">
+					<span class="dashicons dashicons-admin-appearance" style="margin-top:3px;"></span>
+					Open <?php echo esc_html( ucwords( str_replace( '-', ' ', $active_template ) ) ); ?> Template Settings
+				</a>
+				<p style="margin-top:12px;font-size:13px;color:#646970;">Settings for the active template are now configured directly alongside the template selector.</p>
 			</div>
 		</div>
 		<?php endif; ?>
-
-		</div><!-- /.pset-main -->
-
-		<!-- ══ Sidebar ═══════════════════════════════════════════════ -->
-		<div class="pset-sidebar">
-			<div class="pset-save-card">
-				<button type="submit" class="button button-primary pset-save-btn">
-					<span class="dashicons dashicons-saved"></span> Save Settings
-				</button>
-			</div>
-			<div class="pset-info-card">
-				<h3>Quick Links</h3>
-				<ul>
-					<li><a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-template') ); ?>"><span class="dashicons dashicons-admin-appearance"></span> Template</a></li>
-					<li><a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-shortcodes') ); ?>"><span class="dashicons dashicons-editor-code"></span> Shortcode Generator</a></li>
-					<li><a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-setup') ); ?>"><span class="dashicons dashicons-welcome-learn-more"></span> Setup Guide</a></li>
-				</ul>
-			</div>
-			<div class="pset-info-card pset-info-card--tip">
-				<span class="dashicons dashicons-lightbulb"></span>
-				<p>Setting a default crust and sauce ensures the builder shows something immediately when it loads, even before the customer makes selections.</p>
-			</div>
-
-			<!-- Import / Export card -->
-			<div class="pset-info-card pset-io-card">
-				<h3><span class="dashicons dashicons-database-import"></span> Import / Export</h3>
-				<p class="pset-desc">Back up all settings to a JSON file, or restore from one.</p>
-				<!-- Export — button triggers a detached form appended to <body> to avoid nested-form issue -->
-				<button type="button" id="pset-export-btn" class="button pset-io-btn pset-io-btn--export"
-				        data-action-url="<?php echo esc_url( admin_url('admin-post.php') ); ?>"
-				        data-nonce="<?php echo esc_attr( wp_create_nonce('pizzalayer_export_settings') ); ?>">
-					<span class="dashicons dashicons-download"></span> Export Settings
-				</button>
-				<!-- Import -->
-				<div class="pset-io-import-wrap" style="margin-top:10px;">
-					<label class="pset-io-file-label" for="pset-import-file">
-						<span class="dashicons dashicons-upload"></span> Choose JSON file&hellip;
-						<input type="file" id="pset-import-file" name="pizzalayer_import_file" accept=".json,application/json" class="pset-io-file-input">
-					</label>
-					<button type="submit" name="pizzalayer_import_settings" value="1" class="button pset-io-btn pset-io-btn--import" id="pset-import-btn" disabled>
-						<span class="dashicons dashicons-yes-alt"></span> Import
-					</button>
-				</div>
-			</div>
-		</div>
 
 		</div><!-- /.pset-layout -->
 		</form>

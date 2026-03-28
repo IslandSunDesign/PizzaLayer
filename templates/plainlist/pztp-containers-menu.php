@@ -400,24 +400,16 @@ $total_steps = count( $visible_tabs );
 </div><!-- /#<?php echo esc_html( $instance_id ); ?> .pl-root -->
 
 <?php
-$pl_json_instance   = wp_json_encode( $instance_id );
-$pl_json_var        = wp_json_encode( $pl_var );
-$pl_json_tabs       = wp_json_encode( array_values( $visible_tabs ) );
-$pl_json_max        = (int) $max_toppings;
-$pl_json_step       = $is_step ? 'true' : 'false';
-$pl_json_require    = $pl_step_require ? 'true' : 'false';
-$pl_json_summary    = $pl_show_summary ? 'true' : 'false';
-
-echo "<script>
-(function(){
-  if (typeof PL !== 'undefined' && typeof PL.createInstance === 'function') {
-    window[" . $pl_json_var . "] = PL.createInstance(" . $pl_json_instance . ", {
-      tabs:          " . $pl_json_tabs  . ",
-      maxToppings:   " . $pl_json_max   . ",
-      stepMode:      " . $pl_json_step  . ",
-      requireSelect: " . $pl_json_require . ",
-      showSummary:   " . $pl_json_summary . "
-    });
-  }
-})();
-</script>\n"; // phpcs:ignore WordPress.Security.EscapeOutput — json_encoded values
+// Initialize this instance via wp_add_inline_script (WP.org compliant — no inline <script>).
+$pl_init_js = "(function(){"
+	. "if(typeof PL!=='undefined'&&typeof PL.createInstance==='function'){"
+	. "window[" . wp_json_encode( $pl_var ) . "]=PL.createInstance(" . wp_json_encode( $instance_id ) . ","
+	. wp_json_encode( [
+		'tabs'          => array_values( $visible_tabs ),
+		'maxToppings'   => (int) $max_toppings,
+		'stepMode'      => (bool) $is_step,
+		'requireSelect' => (bool) $pl_step_require,
+		'showSummary'   => (bool) $pl_show_summary,
+	] )
+	. ");}})();";
+wp_add_inline_script( 'pizzalayer-template-plainlist', $pl_init_js );

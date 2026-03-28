@@ -489,10 +489,8 @@ $initial_pizza = $builder->build_dynamic(
 </div><!-- /#<?php echo esc_html( $instance_id ); ?> .np-root -->
 
 <?php
-// Initialize this instance's NP namespace via inline script
-$np_json_instance = wp_json_encode( $instance_id );
-echo "<script>
-if (typeof NP !== 'undefined' && typeof NP.createInstance === 'function') {
-    var " . esc_js( $np_var ) . " = NP.createInstance(" . $np_json_instance . ");
-}
-</script>\n";
+// Initialize this instance via wp_add_inline_script (WP.org compliant — no inline <script>).
+$np_init_js = "if(typeof NP!=='undefined'&&typeof NP.createInstance==='function'){"
+	. "var " . esc_js( $np_var ) . "=NP.createInstance(" . wp_json_encode( $instance_id ) . ");"
+	. "}";
+wp_add_inline_script( 'pizzalayer-template-nightpie', $np_init_js );

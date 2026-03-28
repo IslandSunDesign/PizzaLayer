@@ -4,9 +4,8 @@ namespace PizzaLayer\PostTypes;
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 /**
- * Registers all 8 PizzaLayer custom post types.
- * Replaces 8 separate cpt-*.php files (~400 lines) with one class.
- * Text domain bug fixed: was 'text_domain', now 'pizzalayer'.
+ * Registers all 8 PizzaLayer custom post types plus the
+ * pizzalayer_ingredient_group hierarchical taxonomy.
  */
 class PostTypeRegistrar {
 
@@ -22,14 +21,65 @@ class PostTypeRegistrar {
 		'drizzles'      => [ 'Drizzle',       'Drizzles',      'Optional finishing drizzle layers.',                        'dashicons-admin-generic' ],
 		'cuts'          => [ 'Cut',           'Cuts',          'Pizza slicing / cut style overlays.',                       'dashicons-admin-generic' ],
 		'sizes'         => [ 'Size',          'Sizes',         'Pizza size options with dimension and pricing data.',        'dashicons-image-rotate' ],
+		'presets'       => [ 'Preset',        'Presets',       'Pre-configured pizza combinations ready to select.',        'dashicons-food'        ],
+	];
 
+	/**
+	 * CPT slugs that participate in ingredient grouping taxonomy.
+	 * Cuts and sizes are excluded — they are structural, not ingredients.
+	 */
+	private const GROUPABLE_TYPES = [
+		'pizzalayer_toppings',
+		'pizzalayer_crusts',
+		'pizzalayer_sauces',
+		'pizzalayer_cheeses',
+		'pizzalayer_drizzles',
 	];
 
 	public function register(): void {
 		foreach ( self::TYPES as $slug => [ $singular, $plural, $description, $icon ] ) {
 			$this->register_type( $slug, $singular, $plural, $description, $icon );
 		}
+		$this->register_ingredient_group_taxonomy();
 		do_action( 'pizzalayer_cpt_registered' );
+	}
+
+	/**
+	 * Register the pizzalayer_ingredient_group hierarchical taxonomy.
+	 *
+	 * Hierarchical (like categories) so admins can create parent groups
+	 * (e.g. "Meat", "Vegetable") and optional sub-groups.
+	 * Applied to all five ingredient CPTs so one taxonomy covers everything.
+	 */
+	private function register_ingredient_group_taxonomy(): void {
+		$labels = [
+			'name'              => _x( 'Ingredient Groups', 'Taxonomy General Name', 'pizzalayer' ),
+			'singular_name'     => _x( 'Ingredient Group',  'Taxonomy Singular Name', 'pizzalayer' ),
+			'menu_name'         => __( 'Ingredient Groups', 'pizzalayer' ),
+			'all_items'         => __( 'All Groups',        'pizzalayer' ),
+			'parent_item'       => __( 'Parent Group',      'pizzalayer' ),
+			'parent_item_colon' => __( 'Parent Group:',     'pizzalayer' ),
+			'new_item_name'     => __( 'New Group Name',    'pizzalayer' ),
+			'add_new_item'      => __( 'Add New Group',     'pizzalayer' ),
+			'edit_item'         => __( 'Edit Group',        'pizzalayer' ),
+			'update_item'       => __( 'Update Group',      'pizzalayer' ),
+			'view_item'         => __( 'View Group',        'pizzalayer' ),
+			'search_items'      => __( 'Search Groups',     'pizzalayer' ),
+			'not_found'         => __( 'Not Found',         'pizzalayer' ),
+		];
+
+		$args = [
+			'labels'            => $labels,
+			'hierarchical'      => true,   // Like categories, not tags.
+			'public'            => false,   // Not publicly queryable on front-end.
+			'show_ui'           => true,
+			'show_in_menu'      => false,   // Accessed via each CPT's edit screen.
+			'show_in_rest'      => true,    // Available via REST for block editor.
+			'show_admin_column' => true,    // Show group column in CPT list tables.
+			'rewrite'           => false,
+		];
+
+		register_taxonomy( 'pizzalayer_ingredient_group', self::GROUPABLE_TYPES, $args );
 	}
 
 	private function register_type( string $slug, string $singular, string $plural, string $description, string $icon ): void {
@@ -64,8 +114,6 @@ class PostTypeRegistrar {
 			'hierarchical'        => false,
 			'public'              => true,
 			'show_ui'             => true,
-			// Hidden from sidebar — all CPTs accessible via the Content hub page.
-			// show_ui stays true so edit/list screens still work at their native URLs.
 			'show_in_menu'        => false,
 			'menu_icon'           => $icon,
 			'menu_position'       => 35,

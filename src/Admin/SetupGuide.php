@@ -59,6 +59,14 @@ class SetupGuide {
 				'link_label' => null,
 			],
 			[
+				'key'        => 'images',
+				'label'      => 'Prepare your layer images',
+				'desc'       => 'Each ingredient needs a transparent PNG layer image (800×800 px). Use PizzaLayer → Layer Image Maker to crop, adjust, and export your images — or create them when adding each item.',
+				'auto_done'  => isset( $done['images'] ),
+				'link'       => admin_url( 'admin.php?page=pizzalayer-layer-maker' ),
+				'link_label' => 'Layer Image Maker',
+			],
+			[
 				'key'        => 'crusts',
 				'label'      => 'Add at least one Crust',
 				'desc'       => 'Go to PizzaLayer → Crusts and publish a crust with a layer image.',
@@ -154,6 +162,24 @@ class SetupGuide {
 
 		// ── Layer guide tabs ─────────────────────────────────────────────
 		$layer_tabs = [
+			'layermaker' => [
+				'label' => 'Layer Image Maker',
+				'icon'  => 'dashicons-format-image',
+				'intro' => 'Layer Image Maker is a built-in browser tool that lets you prepare any image as a pizza layer PNG — crop, adjust, and export without leaving WordPress. You can also send images directly to your Media Library and attach them to ingredients in one step.',
+				'steps' => [
+					'Go to <strong>PizzaLayer → Layer Image Maker</strong> in the admin sidebar.',
+					'Upload a source image by dropping it onto the upload zone, clicking to browse, or choosing from your <strong>Media Library</strong>.',
+					'Select an <strong>Aspect Ratio</strong> — use <em>1:1 Square</em> for standard pizza layers (800×800 px), or match your pizza shape setting.',
+					'Toggle <strong>Show pizza outline guide</strong> to see the circular pizza mask overlay. Your pizza art should fill roughly 90–95% of the circle. Toppings should spread across the <em>entire</em> canvas.',
+					'Use the <strong>Adjustments</strong> panel: Brightness, Contrast, Saturation, Hue Shift, Blur, Sharpen, and Opacity. For cut overlays, drop Opacity to 20–40%. For sauces, a small softening helps blend edges.',
+					'Use <strong>Remove background (threshold)</strong> if your image has a plain solid background — drag the threshold slider to erase it and create transparency.',
+					'Click <strong>Download PNG</strong> to save the result locally, then upload it to the ingredient post field. Or click <strong>Send to Media Library</strong> to save it directly to WordPress — then attach it without leaving the ingredient editor.',
+					'Repeat for each ingredient layer type (crust, sauce, cheese, topping, drizzle, cut). Each should be a separate PNG on a consistent canvas size.',
+				],
+				'tip'   => 'Workflow tip: open the Layer Image Maker in one browser tab and the ingredient editor (e.g. Add New Topping) in another. Process and send each image to the Media Library, then attach it in the editor without going back and forth.',
+				'cpt'   => null,
+				'page_link' => 'pizzalayer-layer-maker',
+			],
 			'crusts' => [
 				'label' => 'Crusts',
 				'icon'  => 'dashicons-tag',
@@ -161,8 +187,8 @@ class SetupGuide {
 				'steps' => [
 					'Go to <strong>PizzaLayer → Crusts</strong> and click <strong>Add New</strong>.',
 					'Enter a clear title — e.g. <code>Thin Crust</code>, <code>Stuffed Crust</code>, <code>Gluten Free</code>.',
-					'Prepare your layer image: a <strong>transparent PNG on a square canvas (800×800 px recommended)</strong>. The crust should fill the circle area leaving transparent space outside the crust edge.',
-					'Upload the <strong>Crust Layer Image</strong> (<code>crust_layer_image</code>) — this is the visual stack PNG shown in the visualizer.',
+					'<strong>Prepare your layer image</strong> — use <strong>PizzaLayer → Layer Image Maker</strong> to upload, crop, adjust brightness/contrast/opacity, and export a transparent PNG ready for upload. Aim for an 800×800 px square canvas with the pizza crust filling roughly 90–95% of the circle area.',
+					'Upload the <strong>Crust Layer Image</strong> (<code>crust_layer_image</code>) — the transparent PNG that stacks on the visualizer. Use <strong>PizzaLayer → Layer Image Maker</strong> to crop and export your image before uploading.',
 					'Optionally upload a <strong>Crust Image</strong> (<code>crust_image</code>) for the selection card thumbnail.',
 					'Fill in the <strong>Price Grid</strong> with size and pricing rows if you need per-crust pricing.',
 					'Click <strong>Publish</strong>. Repeat for each crust option.',
@@ -177,7 +203,7 @@ class SetupGuide {
 				'steps' => [
 					'Go to <strong>PizzaLayer → Sauces</strong> and click <strong>Add New</strong>.',
 					'Enter a title — e.g. <code>Classic Tomato</code>, <code>Garlic White</code>, <code>BBQ</code>.',
-					'Upload a <strong>Sauce Layer Image</strong> (<code>sauce_layer_image</code>) — the visual overlay on the pizza circle.',
+					'Prepare your layer image using <strong>PizzaLayer → Layer Image Maker</strong>: upload your sauce photo, adjust opacity and saturation for a natural look, and export a transparent PNG. Upload this as <strong>Sauce Layer Image</strong> (<code>sauce_layer_image</code>).',
 					'Optionally add a <strong>Sauce Image</strong> (<code>sauce_image</code>) for the selection card thumbnail.',
 					'Set pricing in the <strong>Price Grid</strong> if sauces have an upcharge.',
 					'Click <strong>Publish</strong>.',
@@ -192,7 +218,7 @@ class SetupGuide {
 				'steps' => [
 					'Go to <strong>PizzaLayer → Cheeses</strong> and click <strong>Add New</strong>.',
 					'Give it a clear name — e.g. <code>Mozzarella</code>, <code>Provolone</code>, <code>Dairy Free</code>.',
-					'Upload a <strong>Cheese Layer Image</strong> (<code>cheese_layer_image</code>) — the visual overlay.',
+					'Prepare your image in <strong>Layer Image Maker</strong>: crop to 800×800 px, adjust brightness and contrast, then export. Upload as <strong>Cheese Layer Image</strong> (<code>cheese_layer_image</code>).',
 					'Optionally add a card thumbnail (<code>cheese_image</code>) and price grid rows.',
 					'Click <strong>Publish</strong>.',
 				],
@@ -206,8 +232,8 @@ class SetupGuide {
 				'steps' => [
 					'Go to <strong>PizzaLayer → Toppings</strong> and click <strong>Add New</strong>.',
 					'Enter a name — e.g. <code>Pepperoni</code>, <code>Mushrooms</code>, <code>Jalapeños</code>.',
-					'Prepare your layer image: <strong>transparent PNG, 800×800 px square canvas</strong>. The topping art should be distributed naturally across the full canvas — PizzaLayer uses CSS clip-path to show only the selected portion (whole, half, quarter), so the image must cover the entire pizza area.',
-					'Upload the <strong>Topping Layer Image</strong> (<code>topping_layer_image</code>) — this stacks on the pizza in real time when selected.',
+					'Prepare your layer image using <strong>PizzaLayer → Layer Image Maker</strong>: upload your topping art, use the rule-of-thirds guide to check coverage across the full 800×800 px canvas, adjust colors, and export a transparent PNG. Important: topping art must cover the <em>entire</em> canvas — PizzaLayer clips it per coverage selection (whole, half, quarter).',
+					'Upload the exported PNG as <strong>Topping Layer Image</strong> (<code>topping_layer_image</code>). You can do this directly from Layer Image Maker using the <em>Send to Media Library</em> button, then attach it here.',
 					'Optionally add a <strong>Topping Image</strong> (<code>topping_image</code>) for the card thumbnail.',
 					'Set the <strong>Price Grid</strong> pricing per size and fraction.',
 					'Set a <strong>Max Toppings</strong> limit in <em>PizzaLayer → Settings</em> if desired.',
@@ -223,7 +249,7 @@ class SetupGuide {
 				'steps' => [
 					'Go to <strong>PizzaLayer → Drizzles</strong> and click <strong>Add New</strong>.',
 					'Enter a name — e.g. <code>Hot Honey</code>, <code>Balsamic</code>.',
-					'Upload a <strong>Drizzle Layer Image</strong> (<code>drizzle_layer_image</code>).',
+					'Prepare your layer image in <strong>Layer Image Maker</strong>: use the opacity slider to create a semi-transparent drizzle look, then export. Upload as <strong>Drizzle Layer Image</strong> (<code>drizzle_layer_image</code>).',
 					'Add a card thumbnail (<code>drizzle_image</code>) and optional price grid rows.',
 					'Click <strong>Publish</strong>.',
 				],
@@ -237,7 +263,7 @@ class SetupGuide {
 				'steps' => [
 					'Go to <strong>PizzaLayer → Cuts</strong> and click <strong>Add New</strong>.',
 					'Enter a name — e.g. <code>8 Slices</code>, <code>Square Cut</code>, <code>Party Style</code>.',
-					'Upload a <strong>Cut Layer Image</strong> (<code>cut_layer_image</code>) — typically a thin line graphic on a transparent background.',
+					'Prepare your cut overlay in <strong>Layer Image Maker</strong>: use the opacity slider (typically 20–40%) to keep the cut lines subtle, then export. Upload as <strong>Cut Layer Image</strong> (<code>cut_layer_image</code>).',
 					'Click <strong>Publish</strong>.',
 				],
 				'tip'   => 'Keep cut line images subtle — a low-opacity thin line lets the toppings beneath remain the star.',
@@ -246,8 +272,9 @@ class SetupGuide {
 			'imageprep' => [
 				'label' => 'Image Prep',
 				'icon'  => 'dashicons-format-image',
-				'intro' => 'Getting your layer images right is the single most important step for a polished result. Follow these rules for every image you upload.',
+				'intro' => 'Getting your layer images right is the single most important step for a polished result. Use <strong>PizzaLayer → Layer Image Maker</strong> to upload, crop, adjust, and export each image in one step — no external editor required.',
 				'steps' => [
+					'<strong>Use Layer Image Maker:</strong> Go to <strong>PizzaLayer → Layer Image Maker</strong>. Upload or choose from your Media Library. Use the pizza outline guide to check placement, adjust brightness / contrast / saturation / opacity with the sliders, then click <strong>Download PNG</strong> — or <em>Send to Media Library</em> to save it directly to WordPress and attach it to your ingredient post.',
 					'<strong>Format:</strong> Always use <strong>PNG with transparency</strong> (PNG-24 or PNG-32). JPEG has no transparency support — never use it for layer images.',
 					'<strong>Canvas size:</strong> Use a <strong>square canvas — 800×800 px recommended</strong> for all layer types (crusts, sauces, cheeses, toppings, drizzles, cuts). Consistent canvas sizes ensure all layers stack with pixel-perfect alignment.',
 					'<strong>Pizza circle placement:</strong> Centre your pizza art so the pizza circle fills roughly <strong>90–95% of the canvas width</strong>, with a small transparent gutter around the edge. This prevents clipping at different display sizes.',
@@ -257,7 +284,7 @@ class SetupGuide {
 					'<strong>Cut overlays — keep them subtle:</strong> Cut line images should use low opacity (20–40%) thin lines. The toppings beneath should remain the visual star.',
 					'<strong>File naming:</strong> Use descriptive, lowercase, hyphenated filenames — e.g. <code>crust-thin.png</code>, <code>topping-pepperoni.png</code>. Avoid spaces and special characters.',
 					'<strong>File size:</strong> Compress PNGs before uploading. Target under 200 KB per image. Use tools like <a href="https://tinypng.com" target="_blank" rel="noopener">TinyPNG</a> or <a href="https://squoosh.app" target="_blank" rel="noopener">Squoosh</a> without visibly reducing quality.',
-					'<strong>Thumbnail images</strong> (for selection cards) can be JPEG or PNG — square crops at <strong>200×200 px</strong> work well. These are separate from the layer stack PNGs.',
+					'<strong>Two image types per ingredient:</strong> (1) <strong>Layer Image</strong> (<code>*_layer_image</code>) — the transparent PNG that stacks on the visualizer pizza. Must be square, transparent background, consistent canvas size. (2) <strong>Card Image</strong> (<code>*_image</code>) — the thumbnail shown on the selection card in the builder UI. Can be JPEG or PNG, ideally a square crop at 200×200 px. You can use the same file for both, but having a tighter-cropped card image gives a cleaner UI.',
 				],
 				'tip'   => 'Do a quick "stack test" after adding each new layer: open your builder page and confirm the new layer aligns correctly with existing ones before publishing. Catching canvas size mismatches early saves time.',
 				'cpt'   => null,
@@ -420,7 +447,13 @@ class SetupGuide {
 							<span class="dashicons dashicons-plus-alt2"></span> Add New <?php echo esc_html( rtrim( $tab['label'], 's' ) ); ?>
 						</a>
 					</div>
-					<?php elseif ( $slug === 'settings' ) : ?>
+					<?php elseif ( ! empty( $tab['page_link'] ) ) : ?>
+				<div class="psg-panel__actions">
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . esc_attr( $tab['page_link'] ) ) ); ?>" class="button button-primary">
+						<span class="dashicons dashicons-format-image"></span> Open Layer Image Maker
+					</a>
+				</div>
+				<?php elseif ( $slug === 'settings' ) : ?>
 					<div class="psg-panel__actions">
 						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-settings' ) ); ?>" class="button button-primary">
 							<span class="dashicons dashicons-admin-settings"></span> Open Settings

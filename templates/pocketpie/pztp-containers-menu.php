@@ -639,10 +639,8 @@ $summary_rows = [
 </div><!-- /.pp-root -->
 
 <?php
-// Initialise this instance
-$pp_json_instance = wp_json_encode( $instance_id );
-echo "<script>
-if (typeof PP !== 'undefined' && typeof PP.createInstance === 'function') {
-    var " . esc_js( $pp_var ) . " = PP.createInstance(" . $pp_json_instance . ");
-}
-</script>\n";
+// Initialize this instance via wp_add_inline_script (WP.org compliant — no inline <script>).
+$pp_init_js = "if(typeof PP!=='undefined'&&typeof PP.createInstance==='function'){"
+	. "var " . esc_js( $pp_var ) . "=PP.createInstance(" . wp_json_encode( $instance_id ) . ");"
+	. "}";
+wp_add_inline_script( 'pizzalayer-template-pocketpie', $pp_init_js );

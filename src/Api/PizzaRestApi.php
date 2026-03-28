@@ -46,6 +46,12 @@ class PizzaRestApi {
 				'slug' => [ 'type' => 'string', 'required' => true, 'sanitize_callback' => 'sanitize_text_field' ],
 			],
 		] );
+
+		register_rest_route( 'pizzalayer/v1', '/presets', [
+			'methods'             => \WP_REST_Server::READABLE,
+			'callback'            => [ $this, 'get_presets' ],
+			'permission_callback' => '__return_true',
+		] );
 	}
 
 	public function render_pizza( \WP_REST_Request $request ): \WP_REST_Response {
@@ -71,5 +77,39 @@ class PizzaRestApi {
 			(string) $request->get_param( 'slug' )
 		);
 		return new \WP_REST_Response( [ 'url' => $url ], 200 );
+	}
+
+	/**
+	 * GET /wp-json/pizzalayer/v1/presets
+	 *
+	 * Returns all published pizza presets with their layer configuration
+	 * and thumbnail URLs so templates can offer a "Start from preset" feature.
+	 */
+	public function get_presets( \WP_REST_Request $request ): \WP_REST_Response {
+		$posts = get_posts( [
+			'post_type'   => 'pizzalayer_presets',
+			'post_status' => 'publish',
+			'numberposts' => -1,
+			'orderby'     => 'title',
+			'order'       => 'ASC',
+		] );
+
+		$presets = [];
+		foreach ( $posts as $post ) {
+			$layers = get_post_meta( $post->ID, '_pztpro_preset_layers', true );
+			if ( ! is_array( $layers ) ) {
+				$layers = [];
+			}
+			$thumb = get_the_post_thumbnail_url( $post->ID, 'medium' );
+			$presets[] = [
+				'id'     => $post->ID,
+				'slug'   => $post->post_name,
+				'title'  => $post->post_title,
+				'thumb'  => $thumb ?: '',
+				'layers' => $layers,
+			];
+		}
+
+		return new \WP_REST_Response( $presets, 200 );
 	}
 }

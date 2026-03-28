@@ -149,9 +149,26 @@ class AdminMenu {
 			box-shadow: none !important;
 		}
 
-		/* Make WP's submenu <a> a flex row — scoped to submenu only, not top-level */
-		#adminmenu #toplevel_page_pizzalayer > a { display: block !important; text-align: left !important; }
-		#adminmenu #toplevel_page_pizzalayer .wp-menu-name { text-align: left !important; display: inline !important; }
+		/* Top-level PizzaLayer menu item — flex row so icon + label sit left-aligned */
+		#adminmenu #toplevel_page_pizzalayer > a.menu-top {
+			display: flex !important;
+			align-items: center !important;
+			text-align: left !important;
+		}
+		#adminmenu #toplevel_page_pizzalayer > a .wp-menu-image {
+			flex-shrink: 0;
+			width: 36px !important;
+			display: flex !important;
+			align-items: center !important;
+			justify-content: center !important;
+			float: none !important;
+		}
+		#adminmenu #toplevel_page_pizzalayer > a .wp-menu-name {
+			flex: 1 1 auto;
+			text-align: left !important;
+			display: block !important;
+			padding-left: 0 !important;
+		}
 		#adminmenu li:has(.pzl-cpt-item) > a {
 			display: flex !important;
 			align-items: center !important;

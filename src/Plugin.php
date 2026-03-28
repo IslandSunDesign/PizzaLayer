@@ -76,13 +76,15 @@ final class Plugin {
 		// swaps the active template for that page-load only (no DB write).
 		$this->loader->add_action( 'init', $this, 'handle_preview_override', 1 );
 
+		// Admin bar — registered outside is_admin() so it appears on the front end too.
+		// WordPress only calls admin_bar_menu when the bar is showing, so this is safe.
+		$admin_bar = new Admin\AdminBar();
+		$this->loader->add_action( 'admin_bar_menu', $admin_bar, 'register', 100 );
+
 		// Admin
 		if ( is_admin() ) {
 			$admin_menu = new Admin\AdminMenu();
 			$this->loader->add_action( 'admin_menu', $admin_menu, 'register' );
-
-			$admin_bar = new Admin\AdminBar();
-			$this->loader->add_action( 'admin_bar_menu', $admin_bar, 'register', 100 );
 
 			// Settings export — must run before any HTML output
 			$settings = new Admin\Settings();

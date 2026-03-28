@@ -71,6 +71,14 @@ class ContentHub {
 			'desc'     => 'Dimension options (small / medium / large) with area and pricing metadata.',
 		],
 
+		'presets' => [
+			'label'    => 'Presets',
+			'singular' => 'Preset',
+			'icon'     => 'dashicons-food',
+			'color'    => '#e8692a',
+			'desc'     => 'Pre-configured pizza combinations (crust + sauce + cheese + toppings) customers can start from.',
+		],
+
 	];
 
 	/** Register AJAX handlers (called from Plugin.php or AdminMenu.php). */
@@ -252,8 +260,8 @@ class ContentHub {
 		// ── Register thumbnail column hooks for this CPT ─────────────
 		// field names: {type}_image (thumb), {type}_layer_image (stack PNG)
 		$type = rtrim( $active_slug, 's' ); // toppings→topping, crusts→crust, etc.
-		// sizes CPT has no image field — skip
-		$has_images = $active_slug !== 'sizes';
+		// sizes and presets CPTs have no layer image field — skip
+		$has_images = ! in_array( $active_slug, [ 'sizes', 'presets' ], true );
 
 		if ( $has_images ) {
 			$col_filter = 'manage_' . $active_cpt . '_posts_columns';

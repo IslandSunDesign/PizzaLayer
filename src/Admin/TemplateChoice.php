@@ -25,6 +25,15 @@ class TemplateChoice {
 
 		$active = (string) get_option( 'pizzalayer_setting_global_template', 'nightpie' );
 
+		// ── Handle template settings save ──────────────────────────
+		if ( isset( $_POST['pizzalayer_template_settings_save'], $_POST['_wpnonce'] )
+		     && wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'pizzalayer_template_settings_save' ) ) {
+			$this->save_template_settings();
+			echo '<div class="notice notice-success is-dismissible"><p><strong>Template settings saved.</strong></p></div>';
+			// Re-read active after save
+			$active = (string) get_option( 'pizzalayer_setting_global_template', 'nightpie' );
+		}
+
 		// ── Scan template directories ───────────────────────────────
 		$plugin_dir = PIZZALAYER_TEMPLATES_DIR;
 		$plugin_url = PIZZALAYER_TEMPLATES_URL;
@@ -56,6 +65,22 @@ class TemplateChoice {
 					'info'        => $info,
 					'preview_url' => $preview_url,
 				];
+			}
+		}
+
+		// ── Load active template settings fields ─────────────────────
+		$template_settings = [];
+		if ( $active ) {
+			$options_paths = [
+				get_stylesheet_directory() . '/pzttemplates/' . $active . '/pztp-template-options.php',
+				PIZZALAYER_TEMPLATES_DIR . $active . '/pztp-template-options.php',
+			];
+			foreach ( $options_paths as $options_file ) {
+				if ( file_exists( $options_file ) ) {
+					$template_settings = include $options_file;
+					if ( ! is_array( $template_settings ) ) { $template_settings = []; }
+					break;
+				}
 			}
 		}
 
@@ -104,10 +129,13 @@ class TemplateChoice {
 		<div class="ptc-header">
 			<span class="dashicons dashicons-admin-appearance ptc-header__icon"></span>
 			<div>
-				<h1 class="ptc-header__title">Template</h1>
-				<p class="ptc-header__sub">Hover any template to preview it live. Click <strong>Activate</strong> to apply it to your site.</p>
+				<h1 class="ptc-header__title">Choose a Template</h1>
+				<p class="ptc-header__sub">Select the visual style for your pizza builder. Preview any template live, then activate it — your content and settings stay intact.</p>
 			</div>
 			<div class="ptc-header__actions">
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-settings' ) ); ?>" class="button">
+					<span class="dashicons dashicons-admin-generic"></span> Settings
+				</a>
 				<button type="button" class="button ptc-edit-preview-url" id="ptc-edit-preview-url">
 					<span class="dashicons dashicons-admin-links"></span> Preview URL
 				</button>
@@ -164,6 +192,42 @@ class TemplateChoice {
 			<p>No templates found. Make sure at least the <code>nightpie</code> folder exists in the plugin's <code>/templates/</code> directory.</p>
 		</div>
 		<?php else : ?>
+
+		<!-- ══ Hero section ══════════════════════════════════════════ -->
+		<div class="ptc-hero">
+			<div class="ptc-hero__left">
+				<div class="ptc-hero__badge">
+					<span class="dashicons dashicons-admin-appearance"></span>
+					<?php echo esc_html( count( $templates ) ); ?> template<?php echo count( $templates ) !== 1 ? 's' : ''; ?> available
+				</div>
+				<h2 class="ptc-hero__heading">Pick your style, then make it yours.</h2>
+				<p class="ptc-hero__body">Each template is a complete, self-contained builder experience — different layout, different feel, same content. Hover a card to preview it live in the pane on the right. When you find the one, hit <strong>Activate</strong>.</p>
+				<p class="ptc-hero__body">Once activated, the <strong>Template Settings</strong> panel below lets you fine-tune colors, fonts, and layout options specific to that template.</p>
+			</div>
+			<div class="ptc-hero__right">
+				<div class="ptc-hero__pill">
+					<span class="dashicons dashicons-yes-alt ptc-hero__pill-icon ptc-hero__pill-icon--green"></span>
+					<div>
+						<span class="ptc-hero__pill-label">Currently Active</span>
+						<span class="ptc-hero__pill-val"><?php echo esc_html( $active_name ); ?></span>
+					</div>
+				</div>
+				<div class="ptc-hero__pill">
+					<span class="dashicons dashicons-welcome-learn-more ptc-hero__pill-icon"></span>
+					<div>
+						<span class="ptc-hero__pill-label">How it works</span>
+						<span class="ptc-hero__pill-val ptc-hero__pill-val--sm">Hover → Preview → Activate → Customise</span>
+					</div>
+				</div>
+				<div class="ptc-hero__pill">
+					<span class="dashicons dashicons-shield ptc-hero__pill-icon"></span>
+					<div>
+						<span class="ptc-hero__pill-label">Safe to switch</span>
+						<span class="ptc-hero__pill-val ptc-hero__pill-val--sm">Content &amp; settings are never affected</span>
+					</div>
+				</div>
+			</div>
+		</div>
 
 		<!-- ══ Main split layout ══════════════════════════════════════ -->
 		<div class="ptc-split">
@@ -314,8 +378,220 @@ class TemplateChoice {
 			<div class="ptc-modal__overlay" id="ptc-modal-overlay"></div>
 		</div>
 
+		<!-- ══ Template Settings panel ═════════════════════════════ -->
+		<?php if ( $active && ! empty( $template_settings ) ) : ?>
+		<div class="ptc-settings-card" id="template-settings">
+			<div class="ptc-settings-card__head">
+				<div>
+					<h2>
+						<span class="dashicons dashicons-admin-appearance"></span>
+						<?php echo esc_html( ucwords( str_replace( '-', ' ', $active ) ) ); ?> Template Settings
+						<span class="ptc-settings-card__badge">Active Template</span>
+					</h2>
+					<p>These settings apply only to the <strong><?php echo esc_html( ucwords( str_replace( '-', ' ', $active ) ) ); ?></strong> template. Switching templates shows that template\'s settings instead.</p>
+				</div>
+			</div>
+			<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-template' ) ); ?>#template-settings" class="ptc-settings-form">
+				<?php wp_nonce_field( 'pizzalayer_template_settings_save' ); ?>
+				<input type="hidden" name="pizzalayer_template_settings_save" value="1">
+
+				<?php
+				// ── Color-scheme/preset chips ──────────────────────────────
+				$has_metro_schemes    = ( $active === 'metro' );
+				$has_plainlist_presets = ( $active === 'plainlist' );
+				$schemes = [];
+				if ( $has_metro_schemes ) {
+					$schemes = $this->get_metro_color_schemes();
+				} elseif ( $has_plainlist_presets ) {
+					$schemes = $this->get_plainlist_presets();
+				}
+				if ( ! empty( $schemes ) ) :
+				?>
+				<div class="ptc-scheme-row">
+					<span class="ptc-scheme-label">Quick Presets:</span>
+					<div class="ptc-scheme-chips" id="ptc-scheme-chips">
+						<?php foreach ( $schemes as $scheme ) :
+							$colors_for_chips = isset( $scheme['colors'] ) ? $scheme['colors'] : array_values( $scheme['keys'] ?? [] );
+							$data_key = isset( $scheme['keys'] ) ? 'keys' : 'colors';
+							$safe = esc_attr( wp_json_encode( $has_metro_schemes ? $scheme['colors'] : $scheme['keys'] ) );
+						?>
+						<button type="button" class="ptc-scheme-chip"
+						        data-scheme="<?php echo $safe; ?>"
+						        title="<?php echo esc_attr( $scheme['name'] ); ?>">
+							<span class="ptc-scheme-chip__swatches">
+								<?php foreach ( array_slice( $colors_for_chips, 0, 3 ) as $c ) : ?>
+								<span class="ptc-scheme-chip__dot" style="background:<?php echo esc_attr( (string) $c ); ?>;"></span>
+								<?php endforeach; ?>
+							</span>
+							<span class="ptc-scheme-chip__name"><?php echo esc_html( $scheme['name'] ); ?></span>
+						</button>
+						<?php endforeach; ?>
+					</div>
+				</div>
+				<?php endif; ?>
+
+				<!-- Settings grid -->
+				<div class="ptc-settings-grid">
+				<?php foreach ( $template_settings as $field ) :
+					if ( empty( $field['key'] ) || empty( $field['type'] ) ) { continue; }
+					$fkey   = esc_attr( $field['key'] );
+					$fval   = (string) get_option( $field['key'], $field['default'] ?? '' );
+					$flabel = $field['label'] ?? $field['key'];
+					$fdesc  = $field['desc']  ?? '';
+				?>
+				<div class="ptc-field<?php echo ( $field['type'] === 'textarea' || $field['type'] === 'text_wide' ) ? ' ptc-field--full' : ''; ?><?php echo ( $field['type'] === 'radio' ) ? ' ptc-field--full' : ''; ?>">
+					<label class="ptc-field__label"><?php echo esc_html( $flabel ); ?></label>
+					<?php if ( $fdesc ) : ?>
+					<p class="ptc-field__desc"><?php echo esc_html( $fdesc ); ?></p>
+					<?php endif; ?>
+					<?php if ( $field['type'] === 'text' || $field['type'] === 'text_wide' ) : ?>
+						<input type="text" name="<?php echo $fkey; ?>" value="<?php echo esc_attr( $fval ); ?>" class="ptc-field__input<?php echo $field['type'] === 'text_wide' ? ' ptc-field__input--wide' : ''; ?>" placeholder="<?php echo esc_attr( $field['placeholder'] ?? '' ); ?>">
+					<?php elseif ( $field['type'] === 'number' ) : ?>
+						<input type="number" name="<?php echo $fkey; ?>" value="<?php echo esc_attr( $fval ); ?>" class="ptc-field__input" min="<?php echo esc_attr( (string)( $field['min'] ?? '' ) ); ?>" max="<?php echo esc_attr( (string)( $field['max'] ?? '' ) ); ?>" step="<?php echo esc_attr( (string)( $field['step'] ?? '1' ) ); ?>">
+					<?php elseif ( $field['type'] === 'color' ) : ?>
+						<div class="ptc-color-wrap">
+							<input type="color" name="<?php echo $fkey; ?>" id="ptc-color-<?php echo $fkey; ?>"
+							       value="<?php echo esc_attr( $fval ?: ( $field['default'] ?? '#000000' ) ); ?>" class="ptc-color">
+							<?php if ( ! empty( $field['default'] ) ) : ?>
+							<button type="button" class="ptc-color-revert"
+							        data-default="<?php echo esc_attr( $field['default'] ); ?>"
+							        data-target="ptc-color-<?php echo $fkey; ?>"
+							        title="Revert to default (<?php echo esc_attr( $field['default'] ); ?>)">
+								<span class="dashicons dashicons-image-rotate"></span>
+							</button>
+							<span class="ptc-color-swatch" style="background:<?php echo esc_attr( $field['default'] ); ?>;" title="Default: <?php echo esc_attr( $field['default'] ); ?>"></span>
+							<?php endif; ?>
+						</div>
+					<?php elseif ( $field['type'] === 'select' ) : ?>
+						<select name="<?php echo $fkey; ?>" class="ptc-field__select">
+							<?php foreach ( $field['options'] ?? [] as $ov => $ol ) : ?>
+							<option value="<?php echo esc_attr( $ov ); ?>"<?php selected( $fval, $ov ); ?>><?php echo esc_html( $ol ); ?></option>
+							<?php endforeach; ?>
+						</select>
+					<?php elseif ( $field['type'] === 'toggle' ) : ?>
+						<label class="ptc-toggle">
+							<input type="hidden" name="<?php echo $fkey; ?>" value="no">
+							<input type="checkbox" name="<?php echo $fkey; ?>" value="yes"<?php checked( $fval, 'yes' ); ?>>
+							<span class="ptc-toggle__track"><span class="ptc-toggle__thumb"></span></span>
+							<span class="ptc-toggle__label"><?php echo esc_html( $field['toggle_label'] ?? 'Enabled' ); ?></span>
+						</label>
+					<?php elseif ( $field['type'] === 'textarea' ) : ?>
+						<textarea name="<?php echo $fkey; ?>" class="ptc-field__textarea" rows="<?php echo esc_attr( (string)( $field['rows'] ?? 3 ) ); ?>"><?php echo esc_textarea( $fval ); ?></textarea>
+					<?php elseif ( $field['type'] === 'radio' ) : ?>
+						<div class="ptc-radio-group">
+							<?php foreach ( $field['options'] ?? [] as $ov => $ol ) : ?>
+							<label class="ptc-radio-label">
+								<input type="radio" name="<?php echo $fkey; ?>" value="<?php echo esc_attr( $ov ); ?>"<?php checked( $fval, $ov ); ?>>
+								<?php echo esc_html( $ol ); ?>
+							</label>
+							<?php endforeach; ?>
+						</div>
+					<?php elseif ( $field['type'] === 'range' ) : ?>
+						<div class="ptc-range-wrap">
+							<input type="range" name="<?php echo $fkey; ?>" id="ptc-range-<?php echo $fkey; ?>"
+							       value="<?php echo esc_attr( $fval ?: ( $field['default'] ?? '0' ) ); ?>"
+							       min="<?php echo esc_attr( (string)( $field['min'] ?? 0 ) ); ?>"
+							       max="<?php echo esc_attr( (string)( $field['max'] ?? 100 ) ); ?>"
+							       step="<?php echo esc_attr( (string)( $field['step'] ?? 1 ) ); ?>"
+							       class="ptc-range"
+							       oninput="document.getElementById('ptc-range-val-<?php echo $fkey; ?>').textContent=this.value+'<?php echo esc_js( $field['unit'] ?? '' ); ?>'">
+							<span class="ptc-range__val" id="ptc-range-val-<?php echo $fkey; ?>"><?php echo esc_html( $fval ?: ( $field['default'] ?? '0' ) ); ?><?php echo esc_html( $field['unit'] ?? '' ); ?></span>
+						</div>
+					<?php endif; ?>
+				</div>
+				<?php endforeach; ?>
+				</div><!-- /.ptc-settings-grid -->
+
+				<div class="ptc-settings-save-row">
+					<button type="submit" class="button button-primary ptc-settings-save-btn">
+						<span class="dashicons dashicons-saved"></span> Save Template Settings
+					</button>
+				</div>
+			</form>
+		</div>
+		<?php elseif ( $active ) : ?>
+		<div class="ptc-settings-card ptc-settings-card--empty">
+			<div class="ptc-settings-card__head">
+				<h2><span class="dashicons dashicons-admin-appearance"></span> <?php echo esc_html( ucwords( str_replace( '-', ' ', $active ) ) ); ?> Template Settings</h2>
+				<p>This template has no customizable settings.</p>
+			</div>
+		</div>
+		<?php endif; ?>
+
 		</div><!-- /.wrap -->
 		<?php
+	}
+
+	private function save_template_settings(): void {
+		$active = (string) get_option( 'pizzalayer_setting_global_template', '' );
+		if ( ! $active ) { return; }
+		// Load the option keys for this template
+		$options_paths = [
+			get_stylesheet_directory() . '/pzttemplates/' . $active . '/pztp-template-options.php',
+			PIZZALAYER_TEMPLATES_DIR . $active . '/pztp-template-options.php',
+		];
+		$fields = [];
+		foreach ( $options_paths as $path ) {
+			if ( file_exists( $path ) ) {
+				$fields = include $path;
+				if ( ! is_array( $fields ) ) { $fields = []; }
+				break;
+			}
+		}
+		foreach ( $fields as $field ) {
+			if ( empty( $field['key'] ) || empty( $field['type'] ) ) { continue; }
+			$key = $field['key'];
+			$raw = $_POST[ $key ] ?? null;
+			if ( $field['type'] === 'toggle' ) {
+				// Hidden input sends 'no', checkbox overwrites with 'yes' if checked
+				// We need to find the last value in the POST array for this key
+				// PHP $_POST will have the checkbox value if checked, or the hidden 'no'
+				$val = isset( $_POST[ $key ] ) ? sanitize_key( (string) $_POST[ $key ] ) : 'no';
+				update_option( $key, $val === 'yes' ? 'yes' : 'no' );
+			} elseif ( $field['type'] === 'color' ) {
+				if ( $raw !== null ) { update_option( $key, sanitize_hex_color( (string) $raw ) ?: '' ); }
+			} elseif ( $field['type'] === 'textarea' ) {
+				if ( $raw !== null ) { update_option( $key, wp_kses_post( wp_unslash( (string) $raw ) ) ); }
+			} elseif ( $field['type'] === 'number' || $field['type'] === 'range' ) {
+				if ( $raw !== null ) {
+					$int = (int) $raw;
+					if ( isset( $field['min'] ) ) { $int = max( (int) $field['min'], $int ); }
+					if ( isset( $field['max'] ) ) { $int = min( (int) $field['max'], $int ); }
+					update_option( $key, (string) $int );
+				}
+			} else {
+				// text, text_wide, select, radio
+				if ( $raw !== null ) { update_option( $key, sanitize_text_field( wp_unslash( (string) $raw ) ) ); }
+			}
+		}
+	}
+
+	private function get_metro_color_schemes(): array {
+		return [
+			[ 'name' => 'Tomato',      'colors' => ['#e63946','#f7f7f5','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#e63946','metro_setting_background_color'=>'#f7f7f5','metro_setting_card_bg_color'=>'#ffffff'] ],
+			[ 'name' => 'Night Blue',  'colors' => ['#2563eb','#0f1729','#1e2d4a'], 'keys' => ['metro_setting_accent_color'=>'#2563eb','metro_setting_background_color'=>'#0f1729','metro_setting_card_bg_color'=>'#1e2d4a'] ],
+			[ 'name' => 'Garden',      'colors' => ['#2d6a4f','#f4f1e8','#fffef9'], 'keys' => ['metro_setting_accent_color'=>'#2d6a4f','metro_setting_background_color'=>'#f4f1e8','metro_setting_card_bg_color'=>'#fffef9'] ],
+			[ 'name' => 'Ember',       'colors' => ['#c2410c','#fdf4ec','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#c2410c','metro_setting_background_color'=>'#fdf4ec','metro_setting_card_bg_color'=>'#ffffff'] ],
+			[ 'name' => 'Slate Dark',  'colors' => ['#475569','#1e293b','#293548'], 'keys' => ['metro_setting_accent_color'=>'#475569','metro_setting_background_color'=>'#1e293b','metro_setting_card_bg_color'=>'#293548'] ],
+			[ 'name' => 'Rose',        'colors' => ['#be185d','#fff0f6','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#be185d','metro_setting_background_color'=>'#fff0f6','metro_setting_card_bg_color'=>'#ffffff'] ],
+			[ 'name' => 'Golden Hour', 'colors' => ['#b45309','#fffbeb','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#b45309','metro_setting_background_color'=>'#fffbeb','metro_setting_card_bg_color'=>'#ffffff'] ],
+			[ 'name' => 'Violet Night','colors' => ['#7c3aed','#1a0533','#2a1045'], 'keys' => ['metro_setting_accent_color'=>'#7c3aed','metro_setting_background_color'=>'#1a0533','metro_setting_card_bg_color'=>'#2a1045'] ],
+			[ 'name' => 'Sea Breeze',  'colors' => ['#0891b2','#f0f9ff','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#0891b2','metro_setting_background_color'=>'#f0f9ff','metro_setting_card_bg_color'=>'#ffffff'] ],
+			[ 'name' => 'Monochrome',  'colors' => ['#18181b','#f4f4f5','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#18181b','metro_setting_background_color'=>'#f4f4f5','metro_setting_card_bg_color'=>'#ffffff'] ],
+		];
+	}
+
+	private function get_plainlist_presets(): array {
+		return [
+			[ 'name' => 'Classic Black', 'colors' => ['#1a1a1a','#ffffff','#111111'], 'keys' => ['plainlist_setting_accent_color'=>'#1a1a1a','plainlist_setting_bg_color'=>'#ffffff','plainlist_setting_section_header_color'=>'#111111'] ],
+			[ 'name' => 'Warm Paper',    'colors' => ['#7c3a00','#fdf6ec','#3d2000'], 'keys' => ['plainlist_setting_accent_color'=>'#7c3a00','plainlist_setting_bg_color'=>'#fdf6ec','plainlist_setting_section_header_color'=>'#3d2000'] ],
+			[ 'name' => 'Dark Mode',     'colors' => ['#f97316','#18181b','#ffffff'], 'keys' => ['plainlist_setting_accent_color'=>'#f97316','plainlist_setting_bg_color'=>'#18181b','plainlist_setting_section_header_color'=>'#ffffff'] ],
+			[ 'name' => 'Forest',        'colors' => ['#2d6a4f','#f4f9f6','#1b3d2d'], 'keys' => ['plainlist_setting_accent_color'=>'#2d6a4f','plainlist_setting_bg_color'=>'#f4f9f6','plainlist_setting_section_header_color'=>'#1b3d2d'] ],
+			[ 'name' => 'Navy Clean',    'colors' => ['#1e3a8a','#f8faff','#0f2060'], 'keys' => ['plainlist_setting_accent_color'=>'#1e3a8a','plainlist_setting_bg_color'=>'#f8faff','plainlist_setting_section_header_color'=>'#0f2060'] ],
+			[ 'name' => 'Rose',          'colors' => ['#be185d','#fff0f6','#7c103d'], 'keys' => ['plainlist_setting_accent_color'=>'#be185d','plainlist_setting_bg_color'=>'#fff0f6','plainlist_setting_section_header_color'=>'#7c103d'] ],
+			[ 'name' => 'Slate',         'colors' => ['#475569','#f1f5f9','#1e293b'], 'keys' => ['plainlist_setting_accent_color'=>'#475569','plainlist_setting_bg_color'=>'#f1f5f9','plainlist_setting_section_header_color'=>'#1e293b'] ],
+			[ 'name' => 'Newspaper',     'colors' => ['#222222','#f7f4ee','#000000'], 'keys' => ['plainlist_setting_accent_color'=>'#222222','plainlist_setting_bg_color'=>'#f7f4ee','plainlist_setting_section_header_color'=>'#000000','plainlist_setting_font_family'=>'georgia','plainlist_setting_check_style'=>'bullet'] ],
+		];
 	}
 
 	private function render_styles(): void { ?>
@@ -346,9 +622,41 @@ class TemplateChoice {
 	.ptc-header__title { margin:0; font-size:20px; font-weight:700; color:#fff; }
 	.ptc-header__sub { margin:2px 0 0; color:#8d97a5; font-size:13px; }
 	.ptc-header__sub strong { color:#fff; font-weight:600; }
-	.ptc-header__actions { margin-left:auto; }
+	.ptc-header__actions { margin-left:auto; display:flex; gap:8px; align-items:center; flex-wrap:wrap; }
 	.ptc-header__actions .button { display:inline-flex; align-items:center; gap:5px; }
 	.ptc-header__actions .dashicons { font-size:14px !important; width:14px !important; height:14px !important; }
+
+	/* ══ Hero section ════════════════════════════════════════════ */
+	.ptc-hero {
+		display: flex; align-items: flex-start; gap: 24px; flex-wrap: wrap;
+		background: linear-gradient(135deg,#1a1e23 0%,#2d3748 60%,#1e3a5f 100%);
+		border-radius: 10px; padding: 28px 28px 24px; margin-bottom: 16px;
+	}
+	.ptc-hero__left { flex: 1; min-width: 260px; }
+	.ptc-hero__badge {
+		display: inline-flex; align-items: center; gap: 6px;
+		background: rgba(255,255,255,.1); border: 1px solid rgba(255,255,255,.15);
+		border-radius: 99px; padding: 4px 12px 4px 8px;
+		font-size: 11px; font-weight: 600; color: #a0aec0; letter-spacing: .04em;
+		text-transform: uppercase; margin-bottom: 12px;
+	}
+	.ptc-hero__badge .dashicons { font-size:13px !important; width:13px !important; height:13px !important; color:#ff6b35; }
+	.ptc-hero__heading { margin: 0 0 10px; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.3; }
+	.ptc-hero__body { margin: 0 0 10px; font-size: 13px; color: #a0aec0; line-height: 1.65; }
+	.ptc-hero__body strong { color: #fff; }
+	.ptc-hero__right {
+		display: flex; flex-direction: column; gap: 10px;
+		min-width: 220px; padding-top: 4px;
+	}
+	.ptc-hero__pill {
+		display: flex; align-items: center; gap: 12px;
+		background: rgba(255,255,255,.07); border-radius: 8px; padding: 12px 16px;
+	}
+	.ptc-hero__pill-icon { font-size:20px !important; width:20px !important; height:20px !important; color: #718096; flex-shrink:0; }
+	.ptc-hero__pill-icon--green { color: #48bb78; }
+	.ptc-hero__pill-label { display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #718096; margin-bottom: 2px; }
+	.ptc-hero__pill-val { display: block; font-size: 15px; font-weight: 700; color: #fff; }
+	.ptc-hero__pill-val--sm { font-size: 12px; font-weight: 500; color: #a0aec0; line-height: 1.4; }
 
 	/* ══ Preview URL bar ══════════════════════════════════════════ */
 	.ptc-preview-url-bar {
@@ -597,6 +905,175 @@ class TemplateChoice {
 	.ptc-modal__footer { padding:12px 22px; border-top:1px solid #f0f0f0; display:flex; justify-content:flex-end; gap:8px; }
 	.ptc-modal__footer .button { display:inline-flex; align-items:center; gap:5px; }
 	.ptc-modal__footer .dashicons { font-size:14px !important; width:14px !important; height:14px !important; }
+
+	/* ══ Template Settings Panel ════════════════════════════════ */
+	.ptc-settings-card {
+		background: #fff;
+		border: 1px solid #e0e3e7;
+		border-radius: 10px;
+		margin-top: 20px;
+		overflow: hidden;
+	}
+	.ptc-settings-card--empty .ptc-settings-card__head { border-bottom: none; }
+	.ptc-settings-card__head {
+		padding: 18px 24px 14px;
+		border-bottom: 1px solid #f0f0f0;
+	}
+	.ptc-settings-card__head h2 {
+		margin: 0 0 4px;
+		font-size: 15px;
+		display: flex;
+		align-items: center;
+		gap: 8px;
+	}
+	.ptc-settings-card__head h2 .dashicons { color: #ff6b35; }
+	.ptc-settings-card__head p { margin: 0; color: #646970; font-size: 13px; }
+	.ptc-settings-card__badge {
+		font-size: 10px; font-weight: 700;
+		background: #d1f5dc; color: #00a32a;
+		border-radius: 3px; padding: 2px 6px;
+		flex-shrink: 0;
+	}
+	.ptc-settings-form { padding: 20px 24px 24px; }
+
+	/* Quick presets chips */
+	.ptc-scheme-row {
+		display: flex;
+		align-items: center;
+		gap: 10px;
+		margin-bottom: 20px;
+		padding-bottom: 16px;
+		border-bottom: 1px solid #f0f0f0;
+		flex-wrap: wrap;
+	}
+	.ptc-scheme-label { font-size: 12px; font-weight: 600; color: #646970; white-space: nowrap; }
+	.ptc-scheme-chips { display: flex; flex-wrap: wrap; gap: 6px; flex: 1; }
+	.ptc-scheme-chip {
+		display: inline-flex; align-items: center; gap: 6px;
+		padding: 4px 10px 4px 6px;
+		border: 1px solid #e0e3e7;
+		border-radius: 20px;
+		background: #f8f9fa;
+		cursor: pointer;
+		font-size: 12px; font-weight: 500; color: #1d2023;
+		transition: border-color 0.15s, background 0.15s, transform 0.1s;
+		line-height: 1;
+	}
+	.ptc-scheme-chip:hover { border-color: #ff6b35; background: #fff5f0; transform: translateY(-1px); }
+	.ptc-scheme-chip--active { border-color: #ff6b35; background: #fff0e8; }
+	.ptc-scheme-chip__swatches { display: flex; gap: 2px; }
+	.ptc-scheme-chip__dot { width: 10px; height: 10px; border-radius: 50%; border: 1px solid rgba(0,0,0,.12); flex-shrink: 0; }
+	.ptc-scheme-chip__name { white-space: nowrap; }
+
+	/* Settings grid */
+	.ptc-settings-grid {
+		display: grid;
+		grid-template-columns: 1fr 1fr;
+		gap: 18px 28px;
+		margin-bottom: 22px;
+	}
+	@media (max-width: 900px) { .ptc-settings-grid { grid-template-columns: 1fr; } }
+	.ptc-field { display: flex; flex-direction: column; gap: 4px; }
+	.ptc-field--full { grid-column: 1 / -1; }
+	.ptc-field__label { font-size: 13px; font-weight: 600; color: #1d2023; }
+	.ptc-field__desc { font-size: 12px; color: #646970; margin: 0 0 4px; }
+	.ptc-field__input { padding: 7px 10px; border: 1px solid #8c8f94; border-radius: 4px; font-size: 13px; width: 100%; max-width: 400px; }
+	.ptc-field__input--wide { max-width: 100%; }
+	.ptc-field__select { padding: 6px 10px; border: 1px solid #8c8f94; border-radius: 4px; font-size: 13px; min-width: 160px; }
+	.ptc-field__textarea { width: 100%; padding: 8px 10px; border: 1px solid #8c8f94; border-radius: 4px; font-size: 13px; font-family: inherit; resize: vertical; }
+
+	/* Color picker */
+	.ptc-color-wrap { display: flex; align-items: center; gap: 8px; }
+	.ptc-color { width: 44px; height: 34px; padding: 2px; border: 1px solid #8c8f94; border-radius: 4px; cursor: pointer; }
+	.ptc-color-revert {
+		background: none; border: 1px solid #ddd; border-radius: 4px;
+		padding: 4px 6px; cursor: pointer; color: #646970;
+		display: flex; align-items: center;
+		transition: background 0.12s;
+	}
+	.ptc-color-revert:hover { background: #f0f0f0; }
+	.ptc-color-revert .dashicons { font-size: 14px !important; width: 14px !important; height: 14px !important; }
+	.ptc-color-swatch { width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(0,0,0,.15); flex-shrink: 0; }
+
+	/* Toggle */
+	.ptc-toggle { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }
+	.ptc-toggle input[type=checkbox] { position: absolute; opacity: 0; width: 0; height: 0; }
+	.ptc-toggle input[type=hidden] { display: none; }
+	.ptc-toggle__track {
+		width: 36px; height: 20px; background: #c3c4c7; border-radius: 10px;
+		position: relative; flex-shrink: 0; transition: background 0.2s;
+	}
+	.ptc-toggle input[type=checkbox]:checked ~ .ptc-toggle__track { background: #00a32a; }
+	.ptc-toggle__thumb {
+		position: absolute; top: 3px; left: 3px;
+		width: 14px; height: 14px; border-radius: 50%;
+		background: #fff; transition: left 0.2s; box-shadow: 0 1px 3px rgba(0,0,0,.3);
+	}
+	.ptc-toggle input[type=checkbox]:checked ~ .ptc-toggle__track .ptc-toggle__thumb { left: 19px; }
+	.ptc-toggle__label { font-size: 13px; color: #1d2023; }
+
+	/* Radio group */
+	.ptc-radio-group { display: flex; flex-direction: column; gap: 6px; }
+	.ptc-radio-label { display: flex; align-items: flex-start; gap: 8px; font-size: 13px; color: #1d2023; cursor: pointer; line-height: 1.4; }
+	.ptc-radio-label input { margin-top: 3px; flex-shrink: 0; accent-color: #2271b1; }
+
+	/* Range */
+	.ptc-range-wrap { display: flex; align-items: center; gap: 10px; }
+	.ptc-range { flex: 1; max-width: 200px; accent-color: #2271b1; }
+	.ptc-range__val { font-size: 13px; font-weight: 600; color: #2271b1; min-width: 40px; }
+
+	/* Save row */
+	.ptc-settings-save-row {
+		padding-top: 16px;
+		border-top: 1px solid #f0f0f0;
+		display: flex;
+		align-items: center;
+		gap: 10px;
+	}
+	.ptc-settings-save-btn { display: inline-flex !important; align-items: center; gap: 5px; }
+	.ptc-settings-save-btn .dashicons { font-size: 14px !important; width: 14px !important; height: 14px !important; }
 	</style>
+	<script>
+	document.addEventListener('DOMContentLoaded', function() {
+		// ── Chip preset click handler ──────────────────────────────
+		document.querySelectorAll('.ptc-scheme-chip').forEach(function(chip) {
+			chip.addEventListener('click', function() {
+				var data;
+				try { data = JSON.parse(chip.getAttribute('data-scheme')); } catch(e) { return; }
+				if (Array.isArray(data)) {
+					// Legacy metro positional array
+					var legacyKeys = ['metro_setting_accent_color','metro_setting_background_color','metro_setting_card_bg_color'];
+					data.forEach(function(hex, i) {
+						var inp = document.getElementById('ptc-color-' + legacyKeys[i]);
+						if (inp) { inp.value = hex; inp.dispatchEvent(new Event('change')); }
+					});
+				} else if (data && typeof data === 'object') {
+					Object.keys(data).forEach(function(optKey) {
+						var val = data[optKey];
+						var colorInp = document.getElementById('ptc-color-' + optKey);
+						if (colorInp) {
+							colorInp.value = val;
+							colorInp.dispatchEvent(new Event('change'));
+						} else {
+							var anyInp = document.querySelector('[name="' + optKey + '"]');
+							if (anyInp) { anyInp.value = val; anyInp.dispatchEvent(new Event('change')); }
+						}
+					});
+				}
+				document.querySelectorAll('.ptc-scheme-chip').forEach(function(c) { c.classList.remove('ptc-scheme-chip--active'); });
+				chip.classList.add('ptc-scheme-chip--active');
+			});
+		});
+		// ── Color revert buttons ───────────────────────────────────
+		document.querySelectorAll('.ptc-color-revert').forEach(function(btn) {
+			btn.addEventListener('click', function() {
+				var def = btn.getAttribute('data-default');
+				var tid = btn.getAttribute('data-target');
+				var inp = document.getElementById(tid);
+				if (inp && def) { inp.value = def; inp.dispatchEvent(new Event('change')); }
+			});
+		});
+	});
+	</script>
 	<?php }
 }

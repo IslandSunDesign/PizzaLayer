@@ -555,6 +555,8 @@ $initial_pizza = $builder->build_dynamic(
 </div><!-- /#<?php echo esc_html( $instance_id ); ?> .rp-root -->
 
 <?php
-// Initialize this instance's RP namespace via inline script
-$rp_json_instance = wp_json_encode( $instance_id );
-echo "<script>\nif (typeof RP !== 'undefined' && typeof RP.createInstance === 'function') {\n    var " . esc_js( $rp_var ) . " = RP.createInstance(" . $rp_json_instance . ");\n}\n</script>\n";
+// Initialize this instance via wp_add_inline_script (WP.org compliant — no inline <script>).
+$rp_init_js = "if(typeof RP!=='undefined'&&typeof RP.createInstance==='function'){"
+	. "var " . esc_js( $rp_var ) . "=RP.createInstance(" . wp_json_encode( $instance_id ) . ");"
+	. "}";
+wp_add_inline_script( 'pizzalayer-template-rustic', $rp_init_js );

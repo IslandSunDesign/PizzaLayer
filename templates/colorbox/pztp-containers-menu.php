@@ -539,10 +539,8 @@ $spec_max        = max( 1, (int) get_option( 'pizzalayer_setting_cx_special_inst
 </div><!-- /#<?php echo esc_html( $instance_id ); ?> .cb-root -->
 
 <?php
-// Initialize this instance's CB namespace via inline script
-$cb_json_instance = wp_json_encode( $instance_id );
-echo "<script>
-if (typeof CB !== 'undefined' && typeof CB.createInstance === 'function') {
-    var " . esc_js( $cb_var ) . " = CB.createInstance(" . $cb_json_instance . ");
-}
-</script>\n";
+// Initialize this instance via wp_add_inline_script (WP.org compliant — no inline <script>).
+$cb_init_js = "if(typeof CB!=='undefined'&&typeof CB.createInstance==='function'){"
+	. "var " . esc_js( $cb_var ) . "=CB.createInstance(" . wp_json_encode( $instance_id ) . ");"
+	. "}";
+wp_add_inline_script( 'pizzalayer-template-colorbox', $cb_init_js );
