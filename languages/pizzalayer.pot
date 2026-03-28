@@ -1,0 +1,449 @@
+# PizzaLayer — WordPress Pizza Builder
+# Copyright (C) 2025 Island Sun Design
+# This file is distributed under the same license as the PizzaLayer plugin.
+# Island Sun Design <hello@islandsundesign.com>, 2025.
+#
+#, fuzzy
+msgid ""
+msgstr ""
+"Project-Id-Version: PizzaLayer 1.0.0\n"
+"Report-Msgid-Bugs-To: https://pizzalayer.com/support\n"
+"POT-Creation-Date: 2026-03-13 22:50+0000\n"
+"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
+"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
+"Language-Team: LANGUAGE <LL@li.org>\n"
+"Language: \n"
+"MIME-Version: 1.0\n"
+"Content-Type: text/plain; charset=UTF-8\n"
+"Content-Transfer-Encoding: 8bit\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
+"X-Generator: PizzaLayer makepot.py 1.0\n"
+"X-Domain: pizzalayer\n"
+
+#. NOTE: This string uses a dynamic variable — see PostTypeRegistrar.php line 39
+#. The actual values are: Toppings, Crusts, Sauces, Cheeses, Drizzles, Cuts, Sizes, Pizza Presets
+#: src/PostTypes/PostTypeRegistrar.php:39
+msgctxt "Post Type General Name"
+msgid "Toppings"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:39
+msgctxt "Post Type General Name"
+msgid "Crusts"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:39
+msgctxt "Post Type General Name"
+msgid "Sauces"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:39
+msgctxt "Post Type General Name"
+msgid "Cheeses"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:39
+msgctxt "Post Type General Name"
+msgid "Drizzles"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:39
+msgctxt "Post Type General Name"
+msgid "Cuts"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:39
+msgctxt "Post Type General Name"
+msgid "Sizes"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:39
+msgctxt "Post Type General Name"
+msgid "Pizza Presets"
+msgstr ""
+
+#. NOTE: Singular CPT names — see PostTypeRegistrar.php line 40
+#: src/PostTypes/PostTypeRegistrar.php:40
+msgctxt "Post Type Singular Name"
+msgid "Topping"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:40
+msgctxt "Post Type Singular Name"
+msgid "Crust"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:40
+msgctxt "Post Type Singular Name"
+msgid "Sauce"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:40
+msgctxt "Post Type Singular Name"
+msgid "Cheese"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:40
+msgctxt "Post Type Singular Name"
+msgid "Drizzle"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:40
+msgctxt "Post Type Singular Name"
+msgid "Cut"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:40
+msgctxt "Post Type Singular Name"
+msgid "Size"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:40
+msgctxt "Post Type Singular Name"
+msgid "Pizza Preset"
+msgstr ""
+
+#: src/Admin/SetupGuide.php:286
+msgid "%d of %d steps complete"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:53
+msgid "%s Image"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:43
+msgid "%s List"
+msgstr ""
+
+#: src/Admin/AdminHome.php:217
+msgid "A few things still need content before your builder works:"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:114
+#: templates/colorbox/pztp-containers-menu.php:187
+#: templates/nightpie/pztp-containers-menu.php:114
+#: templates/nightpie/pztp-containers-menu.php:187
+msgid "Add"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:46
+msgid "Add New"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:45
+msgid "Add New %s"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:402
+#: templates/nightpie/pztp-containers-menu.php:389
+msgid "Add up to %s toppings."
+msgstr ""
+
+#: src/Admin/AdminHome.php:222
+msgid "Add your first %s →"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:44
+msgid "All %s"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:476
+#: templates/nightpie/pztp-containers-menu.php:463
+msgid "Back"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:297
+msgid "Build Your Pizza"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:308
+#: templates/colorbox/pztp-containers-menu.php:374
+#: templates/colorbox/pztp-containers-menu.php:407
+#: templates/colorbox/pztp-containers-menu.php:458
+#: templates/nightpie/pztp-containers-menu.php:300
+#: templates/nightpie/pztp-containers-menu.php:361
+#: templates/nightpie/pztp-containers-menu.php:394
+#: templates/nightpie/pztp-containers-menu.php:445
+msgid "Cheese"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:435
+#: templates/nightpie/pztp-containers-menu.php:422
+msgid "Choose a cut style."
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:418
+#: templates/nightpie/pztp-containers-menu.php:405
+msgid "Choose a Drizzle"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:384
+#: templates/nightpie/pztp-containers-menu.php:371
+msgid "Choose Your Cheese"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:352
+#: templates/nightpie/pztp-containers-menu.php:339
+msgid "Choose Your Crust"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:368
+#: templates/nightpie/pztp-containers-menu.php:355
+msgid "Choose Your Sauce"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:400
+#: templates/nightpie/pztp-containers-menu.php:387
+msgid "Choose Your Toppings"
+msgstr ""
+
+#: src/Admin/AdminMenu.php:109
+msgid "Content Hub"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:166
+#: templates/nightpie/pztp-containers-menu.php:166
+msgid "Coverage:"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:306
+#: templates/colorbox/pztp-containers-menu.php:373
+#: templates/colorbox/pztp-containers-menu.php:456
+#: templates/nightpie/pztp-containers-menu.php:298
+#: templates/nightpie/pztp-containers-menu.php:360
+#: templates/nightpie/pztp-containers-menu.php:443
+msgid "Crust"
+msgstr ""
+
+#: src/Admin/AdminHome.php:208
+msgid "Dismiss"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:310
+#: templates/colorbox/pztp-containers-menu.php:408
+#: templates/colorbox/pztp-containers-menu.php:439
+#: templates/colorbox/pztp-containers-menu.php:460
+#: templates/nightpie/pztp-containers-menu.php:302
+#: templates/nightpie/pztp-containers-menu.php:395
+#: templates/nightpie/pztp-containers-menu.php:426
+#: templates/nightpie/pztp-containers-menu.php:447
+msgid "Drizzle"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:47
+msgid "Edit %s"
+msgstr ""
+
+#: src/Blocks/BlockRegistrar.php:120
+msgid "Enter a layer slug in the block settings."
+msgstr ""
+
+#: src/Admin/PriceGrid.php:52
+msgid "Enter pricing as CSV. First row is the header. Each following row: Size, Full, Half, Quarter."
+msgstr ""
+
+#: src/Admin/AdminMenu.php:106
+msgid "Help"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:434
+#: templates/nightpie/pztp-containers-menu.php:421
+msgid "How Should We Slice It?"
+msgstr ""
+
+#: src/Admin/PriceGrid.php:56
+msgid "Leave blank if this item has no size-based pricing."
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:252
+#: templates/nightpie/pztp-containers-menu.php:252
+msgid "Live Preview"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:210
+#: templates/nightpie/pztp-containers-menu.php:210
+msgid "No cheeses found."
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:202
+#: templates/nightpie/pztp-containers-menu.php:202
+msgid "No crusts found."
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:223
+#: templates/nightpie/pztp-containers-menu.php:223
+msgid "No cut styles found."
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:214
+#: templates/nightpie/pztp-containers-menu.php:214
+msgid "No drizzles found."
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:206
+#: templates/nightpie/pztp-containers-menu.php:206
+msgid "No sauces found."
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:219
+#: templates/nightpie/pztp-containers-menu.php:219
+msgid "No toppings found."
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:469
+#: templates/nightpie/pztp-containers-menu.php:456
+msgid "none selected"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:51
+msgid "Not found"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:52
+msgid "Not found in Trash"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:419
+#: templates/nightpie/pztp-containers-menu.php:406
+msgid "Optional finishing drizzle."
+msgstr ""
+
+#: src/Admin/AdminMenu.php:65
+#: src/Admin/AdminMenu.php:66
+msgid "PizzaLayer"
+msgstr ""
+
+#: src/Shortcodes/BuilderShortcode.php:57
+msgid "PizzaLayer: template not found."
+msgstr ""
+
+#: src/Admin/PriceGrid.php:27
+msgid "Pricing Grid (CSV)"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:117
+#: templates/colorbox/pztp-containers-menu.php:190
+#: templates/nightpie/pztp-containers-menu.php:117
+#: templates/nightpie/pztp-containers-menu.php:190
+msgid "Remove"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:55
+msgid "Remove %s image"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:278
+#: templates/nightpie/pztp-containers-menu.php:278
+msgid "Reset"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:307
+#: templates/colorbox/pztp-containers-menu.php:358
+#: templates/colorbox/pztp-containers-menu.php:389
+#: templates/colorbox/pztp-containers-menu.php:457
+#: templates/nightpie/pztp-containers-menu.php:299
+#: templates/nightpie/pztp-containers-menu.php:345
+#: templates/nightpie/pztp-containers-menu.php:376
+#: templates/nightpie/pztp-containers-menu.php:444
+msgid "Sauce"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:50
+msgid "Search %s"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:440
+#: templates/nightpie/pztp-containers-menu.php:427
+msgid "See Your Pizza"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:385
+#: templates/nightpie/pztp-containers-menu.php:372
+msgid "Select one cheese."
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:353
+#: templates/nightpie/pztp-containers-menu.php:340
+msgid "Select one crust — it forms the base of your pizza."
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:369
+#: templates/nightpie/pztp-containers-menu.php:356
+msgid "Select one sauce."
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:54
+msgid "Set %s image"
+msgstr ""
+
+#: src/Admin/AdminMenu.php:105
+msgid "Settings"
+msgstr ""
+
+#: src/Admin/AdminMenu.php:102
+msgid "Setup Guide"
+msgstr ""
+
+#: src/Admin/AdminMenu.php:103
+msgid "Shortcode Generator"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:311
+#: templates/colorbox/pztp-containers-menu.php:424
+#: templates/colorbox/pztp-containers-menu.php:461
+#: templates/nightpie/pztp-containers-menu.php:303
+#: templates/nightpie/pztp-containers-menu.php:411
+#: templates/nightpie/pztp-containers-menu.php:448
+msgid "Slicing"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:477
+#: templates/nightpie/pztp-containers-menu.php:464
+msgid "Start Over"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:298
+msgid "Tap a category, then pick your favorites."
+msgstr ""
+
+#: src/Admin/AdminMenu.php:104
+msgid "Template"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:254
+#: templates/nightpie/pztp-containers-menu.php:254
+msgid "Toggle pizza preview"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:309
+#: templates/colorbox/pztp-containers-menu.php:390
+#: templates/colorbox/pztp-containers-menu.php:423
+#: templates/colorbox/pztp-containers-menu.php:459
+#: templates/nightpie/pztp-containers-menu.php:301
+#: templates/nightpie/pztp-containers-menu.php:377
+#: templates/nightpie/pztp-containers-menu.php:410
+#: templates/nightpie/pztp-containers-menu.php:446
+msgid "Toppings"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:282
+#: templates/nightpie/pztp-containers-menu.php:282
+msgid "toppings"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:48
+msgid "Update %s"
+msgstr ""
+
+#: src/PostTypes/PostTypeRegistrar.php:49
+msgid "View %s"
+msgstr ""
+
+#: templates/colorbox/pztp-containers-menu.php:270
+#: templates/colorbox/pztp-containers-menu.php:312
+#: templates/colorbox/pztp-containers-menu.php:450
+#: templates/nightpie/pztp-containers-menu.php:270
+#: templates/nightpie/pztp-containers-menu.php:304
+#: templates/nightpie/pztp-containers-menu.php:437
+msgid "Your Pizza"
+msgstr ""

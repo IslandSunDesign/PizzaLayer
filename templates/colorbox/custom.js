@@ -1,11 +1,11 @@
 /* ══════════════════════════════════════════════════════════════════════
-   PIZZALAYER — NightPie Template — custom.js
+   PIZZALAYER — Colorbox Template — custom.js
    
    Architecture:
-   - NP.createInstance(instanceId) → scoped builder instance
+   - CB.createInstance(instanceId) → scoped builder instance
    - Each instance maintains its own state and updates its own pizza stack
-   - Pizza stack = absolutely-positioned <div> layers inside .np-pizza-stage
-   - window.NP_{instanceId} exposed for global access (legacy + Pro hooks)
+   - Pizza stack = absolutely-positioned <div> layers inside .cb-pizza-stage
+   - window.CB_{instanceId} exposed for global access (legacy + Pro hooks)
    - window.PizzaLayerAPI = public API for external plugins
    ══════════════════════════════════════════════════════════════════════ */
 
@@ -14,7 +14,7 @@
 
     /* ════════════════════════════════════════════════════════════════
        PIZZA STACK RENDERER
-       Maintains a visual layer stack inside .np-pizza-stage.
+       Maintains a visual layer stack inside .cb-pizza-stage.
        Each layer is a <div> with an <img> absolutely filling it.
        Layers are identified by data-layer-id attributes.
        ════════════════════════════════════════════════════════════════ */
@@ -27,12 +27,12 @@
          * all layer divs are absolutely positioned inside.
          */
         getStage: function ($root) {
-            var $stage = $root.find('.np-pizza-stage');
+            var $stage = $root.find('.cb-pizza-stage');
             if (!$stage.length) {
                 // Wrap any existing initial HTML inside a stage
-                var $canvas = $root.find('.np-pizza-sticky__canvas, .np-pizza-stage-wrap').first();
+                var $canvas = $root.find('.cb-pizza-sticky__canvas, .cb-pizza-stage-wrap').first();
                 if (!$canvas.length) { return $(); }
-                $stage = $('<div class="np-pizza-stage"></div>');
+                $stage = $('<div class="cb-pizza-stage"></div>');
                 $canvas.append($stage);
             }
             return $stage;
@@ -50,7 +50,7 @@
         /**
          * Layer animation engine.
          * Reads the animation mode from the closest [data-layer-anim] ancestor
-         * (set on .np-root by PHP from shortcode/global setting).
+         * (set on .cb-root by PHP from shortcode/global setting).
          *
          * Modes: fade | scale-in | slide-up | flip-in | drop-in | instant
          */
@@ -159,7 +159,7 @@
                 $existing.find('img').attr('src', src).css('clip-path', clipStyle);
             } else {
                 /* Create new layer div */
-                var $layer = $('<div class="np-layer-div" data-layer-id="' + layerId + '"></div>').css({
+                var $layer = $('<div class="cb-layer-div" data-layer-id="' + layerId + '"></div>').css({
                     position: 'absolute',
                     inset: 0,
                     'z-index': zIndex,
@@ -182,7 +182,7 @@
                 $stage.append($layer);
 
                 /* Mark canvas as having layers (hides the dashed placeholder ring) */
-                $stage.closest('.np-pizza-sticky__canvas').addClass('np-has-layers');
+                $stage.closest('.cb-pizza-sticky__canvas').addClass('cb-has-layers');
 
                 /* Run the chosen animation */
                 PizzaStack._animateLayerIn($img, $stage, animMode);
@@ -253,7 +253,7 @@
        INSTANCE FACTORY
        ════════════════════════════════════════════════════════════════ */
 
-    function createNPInstance(instanceId) {
+    function createCBInstance(instanceId) {
 
         var $root      = $('#' + instanceId + ', [data-instance="' + instanceId + '"]').first();
         var maxTopping = parseInt($root.data('max-toppings')) || 99;
@@ -299,16 +299,16 @@
                 var $canvas = $find('#' + instanceId + '-canvas');
                 if (!$canvas.length) { return; }
 
-                // PHP now renders .np-pizza-stage-wrap > .np-pizza-stage (empty)
+                // PHP now renders .cb-pizza-stage-wrap > .cb-pizza-stage (empty)
                 // If for some reason it's missing, create it.
-                if (!$canvas.find('.np-pizza-stage').length) {
+                if (!$canvas.find('.cb-pizza-stage').length) {
                     $canvas.empty().append(
-                        $('<div class="np-pizza-stage-wrap"></div>').append(
-                            $('<div class="np-pizza-stage"></div>')
+                        $('<div class="cb-pizza-stage-wrap"></div>').append(
+                            $('<div class="cb-pizza-stage"></div>')
                         )
                     );
                 }
-                _$stage = $canvas.find('.np-pizza-stage');
+                _$stage = $canvas.find('.cb-pizza-stage');
 
                 /* ── Apply pizza shape from data-pizza-shape on root ── */
                 var shape = $root.data('pizza-shape') || 'round';
@@ -319,7 +319,7 @@
 
             /* ── Load default layers from data-* attrs on the stage-wrap ── */
             _initDefaultLayers: function () {
-                var $wrap = getStage().closest('.np-pizza-stage-wrap');
+                var $wrap = getStage().closest('.cb-pizza-stage-wrap');
 
                 // Helper: apply a base layer if URL exists, else fall back to first card
                 var applyBase = function (layerType, urlAttr, slugAttr, zIndex, cssClass) {
@@ -331,12 +331,12 @@
                         state[layerType] = { slug: slug, title: slug, layerImg: url, thumb: '' };
                         // Highlight the matching card as selected
                         if (slug) {
-                            $find('.np-card[data-layer="' + layerType + '"][data-slug="' + slug + '"]')
-                                .addClass('np-card--selected');
+                            $find('.cb-card[data-layer="' + layerType + '"][data-slug="' + slug + '"]')
+                                .addClass('cb-card--selected');
                         }
                     } else {
                         // No default set — auto-apply the first available card silently
-                        var $first = $find('.np-card[data-layer="' + layerType + '"]').first();
+                        var $first = $find('.cb-card[data-layer="' + layerType + '"]').first();
                         if ($first.length) {
                             var fSlug = $first.data('slug') || '';
                             var fImg  = $first.data('layer-img') || '';
@@ -344,7 +344,7 @@
                             if (fImg) {
                                 PizzaStack.setLayer(getStage(), 'layer-' + layerType, fImg, zIndex, cssClass);
                                 state[layerType] = { slug: fSlug, title: fSlug, layerImg: fImg, thumb: fThumb };
-                                $first.addClass('np-card--selected');
+                                $first.addClass('cb-card--selected');
                             }
                         }
                     }
@@ -380,21 +380,21 @@
 
             /* ── Tab switching ── */
             goTab: function (tabName) {
-                $find('.np-tab').each(function () {
+                $find('.cb-tab').each(function () {
                     var t = $(this).data('tab');
                     $(this)
                         .toggleClass('active', t === tabName)
                         .attr('aria-selected', t === tabName ? 'true' : 'false');
                 });
 
-                $find('.np-panel').each(function () {
+                $find('.cb-panel').each(function () {
                     var p = this.id.replace(instanceId + '-panel-', '');
                     $(this).toggleClass('active', p === tabName);
                 });
 
                 var order = ['crust','sauce','cheese','toppings','drizzle','slicing','yourpizza'];
                 var idx   = order.indexOf(tabName);
-                $find('.np-progress__dot').each(function () {
+                $find('.cb-progress__dot').each(function () {
                     var s  = $(this).data('step');
                     var si = order.indexOf(s);
                     $(this)
@@ -405,9 +405,9 @@
                 if (tabName === 'yourpizza') { instance._renderSummary(); }
 
                 // Scroll tabnav
-                var $activeTab = $find('.np-tab[data-tab="' + tabName + '"]');
+                var $activeTab = $find('.cb-tab[data-tab="' + tabName + '"]');
                 if ($activeTab.length) {
-                    var nav = $find('.np-tabnav')[0];
+                    var nav = $find('.cb-tabnav')[0];
                     if (nav) { nav.scrollTo({ left: $activeTab[0].offsetLeft - 20, behavior: 'smooth' }); }
                 }
             },
@@ -415,18 +415,18 @@
             /* ── Swap exclusive base layer (crust/sauce/cheese/drizzle/cut) ── */
             swapBase: function (layerType, slug, title, layerImg, triggerEl) {
                 // Deselect all cards of this type
-                $find('.np-card[data-layer="' + layerType + '"]').each(function () {
-                    $(this).removeClass('np-card--selected');
-                    $(this).find('.np-btn--add').show();
-                    $(this).find('.np-btn--remove').hide();
+                $find('.cb-card[data-layer="' + layerType + '"]').each(function () {
+                    $(this).removeClass('cb-card--selected');
+                    $(this).find('.cb-btn--add').show();
+                    $(this).find('.cb-btn--remove').hide();
                 });
 
                 // Select clicked card
-                var $card = $(triggerEl).closest('.np-card');
+                var $card = $(triggerEl).closest('.cb-card');
                 var thumb = $card.data('thumb') || '';
-                $card.addClass('np-card--selected');
-                $card.find('.np-btn--add').hide();
-                $card.find('.np-btn--remove').show();
+                $card.addClass('cb-card--selected');
+                $card.find('.cb-btn--add').hide();
+                $card.find('.cb-btn--remove').show();
 
                 // Update state
                 state[layerType] = { slug: slug, title: title, thumb: thumb, layerImg: layerImg };
@@ -438,18 +438,18 @@
 
                 // Mark tab done
                 var tabForLayer = (layerType === 'cut') ? 'slicing' : layerType;
-                $find('.np-tab[data-tab="' + tabForLayer + '"]').addClass('np-tab--done');
+                $find('.cb-tab[data-tab="' + tabForLayer + '"]').addClass('cb-tab--done');
 
-                instance._flyTo($card.find('.np-card__thumb'));
+                instance._flyTo($card.find('.cb-card__thumb'));
                 instance._updateSummaryRow(layerType);
             },
 
             /* ── Remove exclusive base layer ── */
             removeBase: function (layerType, slug, triggerEl) {
-                var $card = $(triggerEl).closest('.np-card');
-                $card.removeClass('np-card--selected');
-                $card.find('.np-btn--add').show();
-                $card.find('.np-btn--remove').hide();
+                var $card = $(triggerEl).closest('.cb-card');
+                $card.removeClass('cb-card--selected');
+                $card.find('.cb-btn--add').show();
+                $card.find('.cb-btn--remove').hide();
 
                 state[layerType] = null;
 
@@ -467,13 +467,13 @@
                     return;
                 }
 
-                var $card = $(triggerEl).closest('.np-card');
+                var $card = $(triggerEl).closest('.cb-card');
                 var thumb = $card.data('thumb') || '';
-                $card.addClass('np-card--selected');
-                $card.find('.np-btn--add').hide();
-                $card.find('.np-btn--remove').show();
-                $card.find('.np-coverage').show();
-                $card.find('.np-cov-btn[data-fraction="whole"]').addClass('active');
+                $card.addClass('cb-card--selected');
+                $card.find('.cb-btn--add').hide();
+                $card.find('.cb-btn--remove').show();
+                $card.find('.cb-coverage').show();
+                $card.find('.cb-cov-btn[data-fraction="whole"]').addClass('active');
 
                 state.toppings[slug] = {
                     slug: slug, title: title, thumb: thumb,
@@ -483,20 +483,20 @@
                 // ── Add to pizza stack ──
                 PizzaStack.setLayer(getStage(), 'layer-topping-' + slug, layerImg, zindex, 'nl-topping', 'whole');
 
-                $find('.np-tab[data-tab="toppings"]').addClass('np-tab--done');
-                instance._flyTo($card.find('.np-card__thumb'));
+                $find('.cb-tab[data-tab="toppings"]').addClass('cb-tab--done');
+                instance._flyTo($card.find('.cb-card__thumb'));
                 instance._updateCounter();
                 instance._updateSummaryRow('toppings');
             },
 
             /* ── Remove topping ── */
             removeTopping: function (layerId, slug, triggerEl) {
-                var $card = $(triggerEl).closest('.np-card');
-                $card.removeClass('np-card--selected');
-                $card.find('.np-btn--add').show();
-                $card.find('.np-btn--remove').hide();
-                $card.find('.np-coverage').hide();
-                $card.find('.np-cov-btn').removeClass('active');
+                var $card = $(triggerEl).closest('.cb-card');
+                $card.removeClass('cb-card--selected');
+                $card.find('.cb-btn--add').show();
+                $card.find('.cb-btn--remove').hide();
+                $card.find('.cb-coverage').hide();
+                $card.find('.cb-cov-btn').removeClass('active');
 
                 delete state.toppings[slug];
 
@@ -512,8 +512,8 @@
                 if (!state.toppings[slug]) { return; }
                 state.toppings[slug].coverage = fraction;
 
-                var $card = $(triggerEl).closest('.np-card');
-                $card.find('.np-cov-btn').removeClass('active');
+                var $card = $(triggerEl).closest('.cb-card');
+                $card.find('.cb-cov-btn').removeClass('active');
                 $(triggerEl).addClass('active');
 
                 // Update clip-path on the pizza stack layer
@@ -529,15 +529,15 @@
             resetAll: function () {
                 state = { crust: null, sauce: null, cheese: null, drizzle: null, cut: null, toppings: {} };
 
-                $find('.np-card').removeClass('np-card--selected');
-                $find('.np-btn--add').show();
-                $find('.np-btn--remove').hide();
-                $find('.np-coverage').hide();
-                $find('.np-cov-btn').removeClass('active');
-                $find('.np-tab').removeClass('np-tab--done');
+                $find('.cb-card').removeClass('cb-card--selected');
+                $find('.cb-btn--add').show();
+                $find('.cb-btn--remove').hide();
+                $find('.cb-coverage').hide();
+                $find('.cb-cov-btn').removeClass('active');
+                $find('.cb-tab').removeClass('cb-tab--done');
 
                 // Clear pizza stage
-                getStage().find('.np-layer-div').fadeOut(300, function () { $(this).remove(); });
+                getStage().find('.cb-layer-div').fadeOut(300, function () { $(this).remove(); });
 
                 instance._updateCounter();
                 instance._renderSummary();
@@ -560,9 +560,9 @@
                 if (newState.cut)     { instance._applyBaseFromState('cut',     newState.cut); }
                 if (newState.toppings) {
                     $.each(newState.toppings, function (slug, t) {
-                        var $card = $find('.np-card[data-layer="toppings"][data-slug="' + slug + '"]');
+                        var $card = $find('.cb-card[data-layer="toppings"][data-slug="' + slug + '"]');
                         if ($card.length) {
-                            $card.find('.np-btn--add').trigger('click');
+                            $card.find('.cb-btn--add').trigger('click');
                         } else {
                             // Headless add (no UI card)
                             state.toppings[slug] = t;
@@ -573,9 +573,9 @@
             },
 
             _applyBaseFromState: function (layerType, layerData) {
-                var $card = $find('.np-card[data-layer="' + layerType + '"][data-slug="' + layerData.slug + '"]');
+                var $card = $find('.cb-card[data-layer="' + layerType + '"][data-slug="' + layerData.slug + '"]');
                 if ($card.length) {
-                    $card.find('.np-btn--add').trigger('click');
+                    $card.find('.cb-btn--add').trigger('click');
                 } else {
                     state[layerType] = layerData;
                     var zMap = { crust: 100, sauce: 200, cheese: 300, drizzle: 900, cut: 950 };
@@ -585,7 +585,7 @@
 
             /* ── Private helpers ── */
             _bindTabs: function () {
-                $root.on('click', '.np-tab', function () {
+                $root.on('click', '.cb-tab', function () {
                     instance.goTab($(this).data('tab'));
                 });
             },
@@ -602,26 +602,26 @@
             _updateCounter: function () {
                 var count = Object.keys(state.toppings).length;
                 $find('#' + instanceId + '-count').text(count);
-                $find('.np-topping-counter').css('border-color', count >= maxTopping ? 'var(--np-accent)' : '');
+                $find('.cb-topping-counter').css('border-color', count >= maxTopping ? 'var(--cb-accent)' : '');
             },
 
             _flyTo: function ($thumbEl) {
                 if (!$thumbEl || !$thumbEl.length) { return; }
-                var $target = $find('#' + instanceId + '-canvas, .np-pizza-sticky__canvas').first();
+                var $target = $find('#' + instanceId + '-canvas, .cb-pizza-sticky__canvas').first();
                 if (!$target.length) { return; }
 
                 var srcRect = $thumbEl[0].getBoundingClientRect();
                 var dstRect = $target[0].getBoundingClientRect();
                 if (!srcRect.width || !dstRect.width) { return; }
 
-                var $clone = $('<div class="np-fly-clone"></div>').css({
+                var $clone = $('<div class="cb-fly-clone"></div>').css({
                     top: srcRect.top, left: srcRect.left,
                     width: srcRect.width, height: srcRect.height
                 });
                 if ($thumbEl.is('img')) {
                     $clone.append($('<img>').attr('src', $thumbEl.attr('src')).css({ width:'100%',height:'100%','object-fit':'cover' }));
                 }
-                $find('#' + instanceId + '-fly-container, #np-fly-container').first().append($clone);
+                $find('#' + instanceId + '-fly-container, #cb-fly-container').first().append($clone);
 
                 requestAnimationFrame(function () {
                     requestAnimationFrame(function () {
@@ -637,10 +637,10 @@
             },
 
             _showToast: function (msg) {
-                var $toast = $('<div class="np-toast"></div>').text(msg);
+                var $toast = $('<div class="cb-toast"></div>').text(msg);
                 $root.append($toast);
-                setTimeout(function () { $toast.addClass('np-toast--visible'); }, 10);
-                setTimeout(function () { $toast.removeClass('np-toast--visible'); setTimeout(function () { $toast.remove(); }, 400); }, 3000);
+                setTimeout(function () { $toast.addClass('cb-toast--visible'); }, 10);
+                setTimeout(function () { $toast.removeClass('cb-toast--visible'); setTimeout(function () { $toast.remove(); }, 400); }, 3000);
             },
 
             _updateSummaryRow: function () {
@@ -656,10 +656,10 @@
                     var sel  = state[lt];
                     if (sel) {
                         $val.html(instance._selBubble(sel.thumb, sel.title, null, null, lt, sel.slug));
-                        $val.closest('.np-yourpizza__row').addClass('has-selection');
+                        $val.closest('.cb-yourpizza__row').addClass('has-selection');
                     } else {
-                        $val.html('<span class="np-yp-none">— none selected —</span>');
-                        $val.closest('.np-yourpizza__row').removeClass('has-selection');
+                        $val.html('<span class="cb-yp-none">— none selected —</span>');
+                        $val.closest('.cb-yourpizza__row').removeClass('has-selection');
                     }
                 });
 
@@ -672,24 +672,24 @@
                         html += instance._selBubble(t.thumb, t.title, t.coverage, slug, 'toppings', slug);
                     });
                     $tVal.html(html);
-                    $tVal.closest('.np-yourpizza__row').addClass('has-selection');
+                    $tVal.closest('.cb-yourpizza__row').addClass('has-selection');
                 } else {
-                    $tVal.html('<span class="np-yp-none">— none added —</span>');
-                    $tVal.closest('.np-yourpizza__row').removeClass('has-selection');
+                    $tVal.html('<span class="cb-yp-none">— none added —</span>');
+                    $tVal.closest('.cb-yourpizza__row').removeClass('has-selection');
                 }
             },
 
             _selBubble: function (thumb, title, coverage, toppingSlug, layerType, slug) {
-                var npVar   = $root.data('np-var');
+                var npVar   = $root.data('cb-var');
                 var imgHtml = thumb ? '<img src="' + instance._esc(thumb) + '" alt="' + instance._esc(title) + '" />' : '';
-                var covHtml = coverage ? '<span class="np-yp-coverage"> · ' + coverage.replace('quarter-','Q').replace('half-','½') + '</span>' : '';
+                var covHtml = coverage ? '<span class="cb-yp-coverage"> · ' + coverage.replace('quarter-','Q').replace('half-','½') + '</span>' : '';
                 var remHtml = '';
                 if (layerType === 'toppings' && toppingSlug) {
-                    remHtml = '<button class="np-yp-remove" onclick="' + npVar + '.removeTopping(\'pizzalayer-topping-' + toppingSlug + '\',\'' + toppingSlug + '\',this);" title="Remove"><i class="fa fa-times"></i></button>';
+                    remHtml = '<button class="cb-yp-remove" onclick="' + npVar + '.removeTopping(\'pizzalayer-topping-' + toppingSlug + '\',\'' + toppingSlug + '\',this);" title="Remove"><i class="fa fa-times"></i></button>';
                 } else if (layerType && slug) {
-                    remHtml = '<button class="np-yp-remove" onclick="' + npVar + '.removeBase(\'' + layerType + '\',\'' + slug + '\',this);" title="Remove"><i class="fa fa-times"></i></button>';
+                    remHtml = '<button class="cb-yp-remove" onclick="' + npVar + '.removeBase(\'' + layerType + '\',\'' + slug + '\',this);" title="Remove"><i class="fa fa-times"></i></button>';
                 }
-                return '<div class="np-yp-bubble">' + imgHtml + '<span class="np-yp-name">' + instance._esc(title) + covHtml + '</span>' + remHtml + '</div>';
+                return '<div class="cb-yp-bubble">' + imgHtml + '<span class="cb-yp-name">' + instance._esc(title) + covHtml + '</span>' + remHtml + '</div>';
             },
 
             _esc: function (str) {
@@ -701,21 +701,21 @@
     }
 
     /* ════════════════════════════════════════════════════════════════
-       GLOBAL NP FACTORY + PIZZA API
+       GLOBAL CB FACTORY + PIZZA API
        ════════════════════════════════════════════════════════════════ */
 
-    var NP = {
+    var CB = {
 
         _instances: {},
 
         createInstance: function (instanceId) {
-            var inst = createNPInstance(instanceId);
-            NP._instances[instanceId] = inst;
+            var inst = createCBInstance(instanceId);
+            CB._instances[instanceId] = inst;
             return inst;
         },
 
         getInstance: function (instanceId) {
-            return NP._instances[instanceId] || null;
+            return CB._instances[instanceId] || null;
         },
 
         /**
@@ -739,15 +739,15 @@
          */
         API: {
             getState: function (instanceId) {
-                var inst = NP.getInstance(instanceId);
+                var inst = CB.getInstance(instanceId);
                 return inst ? inst.getState() : null;
             },
             setState: function (instanceId, newState) {
-                var inst = NP.getInstance(instanceId);
+                var inst = CB.getInstance(instanceId);
                 if (inst) { inst.setState(newState); }
             },
             getAllInstances: function () {
-                return Object.keys(NP._instances);
+                return Object.keys(CB._instances);
             },
 
             /**
@@ -813,7 +813,7 @@
                 if (!$container.length) { return; }
 
                 $container.empty().css({ position: 'relative', overflow: 'hidden' });
-                var $stage = $('<div class="np-pizza-stage"></div>');
+                var $stage = $('<div class="cb-pizza-stage"></div>');
                 $container.append($stage);
 
                 var zMap = { crust: 100, sauce: 200, cheese: 300, drizzle: 900, cut: 950 };
@@ -838,36 +838,36 @@
     };
 
     /* ════════════════════════════════════════════════════════════════
-       AUTO-INITIALISE ALL .np-root ELEMENTS ON PAGE LOAD
+       AUTO-INITIALISE ALL .cb-root ELEMENTS ON PAGE LOAD
        ════════════════════════════════════════════════════════════════ */
 
     $(document).ready(function () {
-        $('.np-root').each(function () {
+        $('.cb-root').each(function () {
             var instanceId = $(this).data('instance') || $(this).attr('id');
             if (!instanceId) { return; }
 
-            var npVar = $(this).data('np-var') || ('NP_' + instanceId.replace(/[^a-zA-Z0-9_]/g, '_'));
-            var inst  = NP.createInstance(instanceId);
+            var npVar = $(this).data('cb-var') || ('CB_' + instanceId.replace(/[^a-zA-Z0-9_]/g, '_'));
+            var inst  = CB.createInstance(instanceId);
             inst.init();
 
             // Expose instance globally for onclick= handlers in PHP-rendered HTML
             window[npVar] = inst;
         });
 
-        // Backward compat: single-instance sites that use window.NP directly
-        var allIds = NP.API.getAllInstances();
+        // Backward compat: single-instance sites that use window.CB directly
+        var allIds = CB.API.getAllInstances();
         if (allIds.length === 1) {
-            window.NP = NP._instances[allIds[0]];
+            window.CB = CB._instances[allIds[0]];
         } else {
-            window.NP = NP; // expose the factory
+            window.CB = CB; // expose the factory
         }
     });
 
     /* ════════════════════════════════════════════════════════════════
        EXPOSE GLOBAL API
        ════════════════════════════════════════════════════════════════ */
-    window.PizzaLayerAPI = NP.API;
-    window.PizzaLayerNP  = NP; // Factory always available
+    window.PizzaLayerAPI = CB.API;
+    window.PizzaLayerNP  = CB; // Factory always available
 
     /* ════════════════════════════════════════════════════════════════
        LEGACY GLOBAL FUNCTIONS (D62 compatibility)
@@ -876,21 +876,21 @@
     window.SwapBasePizzaLayer = function (divId, title, imgSrc) {
         // divId format: pizzalayer-base-layer-{type}
         var layerType = divId.replace('pizzalayer-base-layer-', '');
-        var $stage = $('.np-pizza-stage').first();
+        var $stage = $('.cb-pizza-stage').first();
         if (!$stage.length) { return; }
         var zMap = { crust: 100, sauce: 200, cheese: 300 };
         PizzaStack.setLayer($stage, 'layer-' + layerType, imgSrc, zMap[layerType] || 200);
     };
 
     window.AddPizzaLayer = function (zindex, slug, imgSrc, title, cssId) {
-        var $stage = $('.np-pizza-stage').first();
+        var $stage = $('.cb-pizza-stage').first();
         if ($stage.length) {
             PizzaStack.setLayer($stage, 'layer-topping-' + slug, imgSrc, zindex, 'nl-topping', 'whole');
         }
     };
 
     window.RemovePizzaLayer = function (layerId, title, slug) {
-        var $stage = $('.np-pizza-stage').first();
+        var $stage = $('.cb-pizza-stage').first();
         if ($stage.length) {
             PizzaStack.removeLayer($stage, 'layer-topping-' + slug);
         }
@@ -899,7 +899,7 @@
     window.SetToppingCoverage = function (fraction, divId) {
         // divId: pizzalayer-topping-{slug}
         var slug   = divId.replace('pizzalayer-topping-', '');
-        var $stage = $('.np-pizza-stage').first();
+        var $stage = $('.cb-pizza-stage').first();
         if (!$stage.length) { return; }
         var $layer = $stage.find('[data-layer-id="layer-topping-' + slug + '"]');
         if ($layer.length) {
@@ -908,8 +908,8 @@
     };
 
     window.ClearPizza = function () {
-        $('.np-pizza-stage').each(function () {
-            $(this).find('.np-layer-div').fadeOut(300, function () { $(this).remove(); });
+        $('.cb-pizza-stage').each(function () {
+            $(this).find('.cb-layer-div').fadeOut(300, function () { $(this).remove(); });
         });
     };
 

@@ -8,5 +8,6 @@ return [
     'support_url' => 'https://pizzalayer.com/support',
     'license'     => 'GPL-3.0-or-later',
     'version'     => '1.0.0',
-    'tags'        => ['dark', 'modern', 'tabbed', 'animated', 'bubble'],
+    'tags'            => ['dark', 'modern', 'tabbed', 'animated', 'bubble'],
+    'function_prefix' => 'pzt_nightpie',
 ];

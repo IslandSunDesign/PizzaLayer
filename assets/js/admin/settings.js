@@ -1,0 +1,97 @@
+( function () {
+	'use strict';
+
+	// Shape preview
+	var shapeSelect  = document.getElementById( 'pset-pizza-shape' );
+	var aspectInput  = document.querySelector( '[name="pizzalayer_setting_pizza_aspect"]' );
+	var radiusInput  = document.querySelector( '[name="pizzalayer_setting_pizza_radius"]' );
+	var shapePreview = document.getElementById( 'pset-shape-preview' );
+
+	function updateShapePreview() {
+		if ( ! shapeSelect || ! shapePreview ) { return; }
+		var shape  = shapeSelect.value;
+		var aspect = ( aspectInput && aspectInput.value ) || '4 / 3';
+		var radius = ( radiusInput && radiusInput.value ) || '8px';
+		var w = 80, h = 80;
+
+		if ( shape === 'round' ) {
+			shapePreview.style.borderRadius = '50%';
+			shapePreview.style.width        = w + 'px';
+			shapePreview.style.height       = w + 'px';
+		} else if ( shape === 'square' ) {
+			shapePreview.style.borderRadius = '8px';
+			shapePreview.style.width        = w + 'px';
+			shapePreview.style.height       = w + 'px';
+		} else if ( shape === 'rectangle' ) {
+			var parts = aspect.replace( /\s/g, '' ).split( '/' );
+			var ar    = parts.length === 2 ? parseFloat( parts[0] ) / parseFloat( parts[1] ) : 1.33;
+			shapePreview.style.borderRadius = '12px';
+			shapePreview.style.width        = ( h * ar ) + 'px';
+			shapePreview.style.height       = h + 'px';
+		} else if ( shape === 'custom' ) {
+			shapePreview.style.borderRadius = radius;
+			shapePreview.style.width        = w + 'px';
+			shapePreview.style.height       = w + 'px';
+		}
+	}
+
+	if ( shapeSelect )  { shapeSelect.addEventListener( 'change', updateShapePreview ); }
+	if ( aspectInput )  { aspectInput.addEventListener( 'input',  updateShapePreview ); }
+	if ( radiusInput )  { radiusInput.addEventListener( 'input',  updateShapePreview ); }
+	updateShapePreview();
+
+	// Animation preview
+	var animations = {
+		'fade':     function ( el ) {
+			el.style.transition = 'none'; el.style.opacity = 0; el.style.transform = '';
+			rAF( function () { rAF( function () {
+				el.style.transition = 'opacity 0.35s ease'; el.style.opacity = 1;
+			} ); } );
+		},
+		'scale-in': function ( el ) {
+			el.style.transition = 'none'; el.style.opacity = 0; el.style.transform = 'scale(0.4)';
+			rAF( function () { rAF( function () {
+				el.style.transition = 'opacity 0.4s ease,transform 0.4s cubic-bezier(0.34,1.56,0.64,1)';
+				el.style.opacity = 1; el.style.transform = 'scale(1)';
+			} ); } );
+		},
+		'slide-up': function ( el ) {
+			el.style.transition = 'none'; el.style.opacity = 0; el.style.transform = 'translateY(40%)';
+			rAF( function () { rAF( function () {
+				el.style.transition = 'opacity 0.35s ease,transform 0.35s cubic-bezier(0.22,1,0.36,1)';
+				el.style.opacity = 1; el.style.transform = 'translateY(0)';
+			} ); } );
+		},
+		'flip-in':  function ( el ) {
+			el.style.transition = 'none'; el.style.opacity = 0; el.style.transform = 'rotateY(90deg) scale(0.8)';
+			rAF( function () { rAF( function () {
+				el.style.transition = 'opacity 0.4s ease,transform 0.4s cubic-bezier(0.34,1.2,0.64,1)';
+				el.style.opacity = 1; el.style.transform = 'rotateY(0) scale(1)';
+			} ); } );
+		},
+		'drop-in':  function ( el ) {
+			el.style.transition = 'none'; el.style.opacity = 0; el.style.transform = 'translateY(-40%) scale(1.1)';
+			rAF( function () { rAF( function () {
+				el.style.transition = 'opacity 0.35s ease,transform 0.35s cubic-bezier(0.22,1,0.36,1)';
+				el.style.opacity = 1; el.style.transform = 'translateY(0) scale(1)';
+			} ); } );
+		},
+		'instant':  function ( el ) {
+			el.style.transition = 'none'; el.style.opacity = 1; el.style.transform = '';
+		}
+	};
+
+	function rAF( fn ) { requestAnimationFrame( fn ); }
+
+	var animPreviewBtn = document.getElementById( 'pset-anim-preview-btn' );
+	var animSelect     = document.getElementById( 'pset-layer-anim' );
+	var animDemo       = document.getElementById( 'pset-anim-demo' );
+
+	if ( animPreviewBtn && animSelect && animDemo ) {
+		animPreviewBtn.addEventListener( 'click', function () {
+			var mode = animSelect.value;
+			( animations[ mode ] || animations[ 'fade' ] )( animDemo );
+		} );
+	}
+
+} )();

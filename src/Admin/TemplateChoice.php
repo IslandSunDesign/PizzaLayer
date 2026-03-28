@@ -189,32 +189,6 @@ class TemplateChoice {
 
 		</div><!-- /.wrap -->
 
-		<script>
-		(function(){
-			var modal     = document.getElementById('ptc-modal');
-			var modalName = document.getElementById('ptc-modal-name');
-			var modalSlug = document.getElementById('ptc-modal-slug');
-			var cancelBtn = document.getElementById('ptc-modal-cancel');
-			var overlay   = document.getElementById('ptc-modal-overlay');
-
-			document.querySelectorAll('.ptc-activate-btn').forEach(function(btn){
-				btn.addEventListener('click', function(){
-					modalName.textContent = btn.dataset.name;
-					modalSlug.value       = btn.dataset.slug;
-					modal.style.display   = '';
-					document.body.style.overflow = 'hidden';
-				});
-			});
-
-			function closeModal(){
-				modal.style.display = 'none';
-				document.body.style.overflow = '';
-			}
-			cancelBtn.addEventListener('click', closeModal);
-			overlay.addEventListener('click', closeModal);
-			document.addEventListener('keydown', function(e){ if(e.key === 'Escape'){ closeModal(); } });
-		})();
-		</script>
 		<?php
 	}
 

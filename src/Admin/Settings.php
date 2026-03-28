@@ -215,29 +215,6 @@ class Settings {
 						display:inline-block; vertical-align:middle; box-shadow:0 4px 16px rgba(0,0,0,0.25);
 					"></div>
 				</div>
-				<script>
-				(function(){
-					function updateShapePreview(){
-						var shape  = document.getElementById('pset-pizza-shape').value;
-						var aspect = document.querySelector('[name="pizzalayer_setting_pizza_aspect"]').value || '4 / 3';
-						var radius = document.querySelector('[name="pizzalayer_setting_pizza_radius"]').value || '8px';
-						var el     = document.getElementById('pset-shape-preview');
-						var w = 80, h = 80;
-						if (shape === 'round')     { el.style.borderRadius='50%'; el.style.width=w+'px'; el.style.height=w+'px'; }
-						if (shape === 'square')    { el.style.borderRadius='8px'; el.style.width=w+'px'; el.style.height=w+'px'; }
-						if (shape === 'rectangle') {
-							var parts = aspect.replace(/\s/g,'').split('/');
-							var ar = parts.length===2 ? parseFloat(parts[0])/parseFloat(parts[1]) : 1.33;
-							el.style.borderRadius='12px'; el.style.width=(h*ar)+'px'; el.style.height=h+'px';
-						}
-						if (shape === 'custom')    { el.style.borderRadius=radius; el.style.width=w+'px'; el.style.height=w+'px'; }
-					}
-					document.getElementById('pset-pizza-shape').addEventListener('change', updateShapePreview);
-					document.querySelector('[name="pizzalayer_setting_pizza_aspect"]').addEventListener('input', updateShapePreview);
-					document.querySelector('[name="pizzalayer_setting_pizza_radius"]').addEventListener('input', updateShapePreview);
-					updateShapePreview();
-				})();
-				</script>
 			</div>
 		</div>
 
@@ -275,24 +252,6 @@ class Settings {
 						"></div>
 					</div>
 				</div>
-				<script>
-				(function(){
-					var animations = {
-						'fade':     function(el){ el.style.transition='none'; el.style.opacity=0; el.style.transform=''; rAF(function(){ rAF(function(){ el.style.transition='opacity 0.35s ease'; el.style.opacity=1; }); }); },
-						'scale-in': function(el){ el.style.transition='none'; el.style.opacity=0; el.style.transform='scale(0.4)'; rAF(function(){ rAF(function(){ el.style.transition='opacity 0.4s ease,transform 0.4s cubic-bezier(0.34,1.56,0.64,1)'; el.style.opacity=1; el.style.transform='scale(1)'; }); }); },
-						'slide-up': function(el){ el.style.transition='none'; el.style.opacity=0; el.style.transform='translateY(40%)'; rAF(function(){ rAF(function(){ el.style.transition='opacity 0.35s ease,transform 0.35s cubic-bezier(0.22,1,0.36,1)'; el.style.opacity=1; el.style.transform='translateY(0)'; }); }); },
-						'flip-in':  function(el){ el.style.transition='none'; el.style.opacity=0; el.style.transform='rotateY(90deg) scale(0.8)'; rAF(function(){ rAF(function(){ el.style.transition='opacity 0.4s ease,transform 0.4s cubic-bezier(0.34,1.2,0.64,1)'; el.style.opacity=1; el.style.transform='rotateY(0) scale(1)'; }); }); },
-						'drop-in':  function(el){ el.style.transition='none'; el.style.opacity=0; el.style.transform='translateY(-40%) scale(1.1)'; rAF(function(){ rAF(function(){ el.style.transition='opacity 0.35s ease,transform 0.35s cubic-bezier(0.22,1,0.36,1)'; el.style.opacity=1; el.style.transform='translateY(0) scale(1)'; }); }); },
-						'instant':  function(el){ el.style.transition='none'; el.style.opacity=1; el.style.transform=''; },
-					};
-					function rAF(fn){ requestAnimationFrame(fn); }
-					document.getElementById('pset-anim-preview-btn').addEventListener('click', function(){
-						var mode = document.getElementById('pset-layer-anim').value;
-						var el   = document.getElementById('pset-anim-demo');
-						(animations[mode] || animations['fade'])(el);
-					});
-				})();
-				</script>
 			</div>
 		</div>
 

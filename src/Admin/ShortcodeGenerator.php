@@ -295,7 +295,6 @@ class ShortcodeGenerator {
 		</div>
 
 		</div><!-- /.wrap -->
-		<?php $this->render_script(); ?>
 		<?php
 	}
 
@@ -339,105 +338,4 @@ class ShortcodeGenerator {
 	</style>
 	<?php }
 
-	private function render_script(): void { ?>
-	<script>
-	(function(){
-		// ── Type tab switching ──────────────────────────────────────────
-		var typeTabs = document.querySelectorAll('.pscg-type-tab');
-		var forms    = document.querySelectorAll('.pscg-form');
-		typeTabs.forEach(function(tab){
-			tab.addEventListener('click', function(){
-				typeTabs.forEach(function(t){ t.classList.remove('pscg-type-tab--active'); });
-				forms.forEach(function(f){ f.style.display = 'none'; });
-				tab.classList.add('pscg-type-tab--active');
-				var form = document.getElementById('pscg-form-' + tab.dataset.type);
-				if(form){ form.style.display = ''; }
-				buildShortcode();
-			});
-		});
-
-		// ── Shortcode builder ───────────────────────────────────────────
-		var output = document.getElementById('pscg-output');
-
-		function val(id){ var el = document.getElementById(id); return el ? el.value.trim() : ''; }
-		function multiVal(id){ var el = document.getElementById(id); if(!el){ return []; } return Array.from(el.selectedOptions).map(function(o){ return o.value; }); }
-
-		function buildShortcode(){
-			var active = document.querySelector('.pscg-type-tab--active');
-			if(!active){ return; }
-			var type = active.dataset.type;
-			var sc = '';
-
-			if(type === 'builder'){
-				var attrs = [];
-				var id = val('b-id'); if(id) attrs.push('id="'+id+'"');
-				var tpl = val('b-template'); if(tpl) attrs.push('template="'+tpl+'"');
-				var max = val('b-max-toppings'); if(max && max !== '0') attrs.push('max_toppings="'+max+'"');
-				var dc = val('b-default-crust'); if(dc) attrs.push('default_crust="'+dc+'"');
-				var ds = val('b-default-sauce'); if(ds) attrs.push('default_sauce="'+ds+'"');
-				var dch = val('b-default-cheese'); if(dch) attrs.push('default_cheese="'+dch+'"');
-				// Tabs: collect unchecked ones as hide_tabs
-				var allCbs = document.querySelectorAll('.pscg-cb-tab');
-				var hiddenTabs = [];
-				allCbs.forEach(function(cb){ if(!cb.checked) hiddenTabs.push(cb.value); });
-				if(hiddenTabs.length && hiddenTabs.length < allCbs.length) attrs.push('hide_tabs="'+hiddenTabs.join(',')+'"');
-				sc = '[pizza_builder' + (attrs.length ? ' '+attrs.join(' ') : '') + ']';
-
-			} else if(type === 'static'){
-				var attrs = [];
-				var preset = val('s-preset'); if(preset) attrs.push('preset="'+preset+'"');
-				var c = val('s-crust'); if(c) attrs.push('crust="'+c+'"');
-				var s = val('s-sauce'); if(s) attrs.push('sauce="'+s+'"');
-				var ch = val('s-cheese'); if(ch) attrs.push('cheese="'+ch+'"');
-				var dr = val('s-drizzle'); if(dr) attrs.push('drizzle="'+dr+'"');
-				var cu = val('s-cut'); if(cu) attrs.push('cut="'+cu+'"');
-				var tops = multiVal('s-toppings'); if(tops.length) attrs.push('toppings="'+tops.join(',')+'"');
-				sc = '[pizza_static' + (attrs.length ? ' '+attrs.join(' ') : '') + ']';
-
-			} else if(type === 'layer'){
-				var attrs = [];
-				var t = val('l-type'); if(t) attrs.push('type="'+t+'"');
-				var sl = val('l-slug'); if(sl) attrs.push('slug="'+sl+'"');
-				var img = val('l-image'); if(img && img !== 'layer') attrs.push('image="'+img+'"');
-				var cls = val('l-class'); if(cls) attrs.push('class="'+cls+'"');
-				sc = '[pizza_layer' + (attrs.length ? ' '+attrs.join(' ') : '') + ']';
-
-			} else if(type === 'layerinfo'){
-				var attrs = [];
-				var t = val('li-type'); if(t) attrs.push('type="'+t+'"');
-				var sl = val('li-slug'); if(sl) attrs.push('slug="'+sl+'"');
-				var f = val('li-field'); if(f) attrs.push('field="'+f+'"');
-				sc = '[pizza_layer_info' + (attrs.length ? ' '+attrs.join(' ') : '') + ']';
-			}
-
-			output.textContent = sc;
-		}
-
-		// Re-build on any change
-		document.querySelectorAll('.pscg-input,.pscg-select,.pscg-cb-tab').forEach(function(el){
-			el.addEventListener('change', buildShortcode);
-			el.addEventListener('input', buildShortcode);
-		});
-		buildShortcode();
-
-		// ── Copy ─────────────────────────────────────────────────────
-		document.getElementById('pscg-copy-btn').addEventListener('click', function(){
-			var text = output.textContent;
-			if(navigator.clipboard && navigator.clipboard.writeText){
-				navigator.clipboard.writeText(text);
-			} else {
-				var ta = document.createElement('textarea');
-				ta.value = text;
-				document.body.appendChild(ta);
-				ta.select();
-				document.execCommand('copy');
-				document.body.removeChild(ta);
-			}
-			var notice = document.getElementById('pscg-copy-notice');
-			notice.style.display = 'block';
-			setTimeout(function(){ notice.style.display = 'none'; }, 2500);
-		});
-	})();
-	</script>
-	<?php }
 }

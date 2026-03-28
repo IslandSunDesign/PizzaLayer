@@ -1,503 +1,494 @@
 <?php
+/**
+ * NightPie Template — [pizza_builder] output.
+ *
+ * This file is included (not called as a function) by BuilderShortcode.
+ * Variables available from the shortcode:
+ *   $instance_id  — unique ID string (e.g. "pizza-1", "pizzabuilder-1")
+ *   $atts         — shortcode attribute array
+ *
+ * Multi-instance support: every JS reference uses $np_var (the per-instance
+ * namespace) instead of the global "NP", so multiple builders on one page
+ * each maintain independent state.
+ */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
-do_action( 'pizzalayer_file_pztp-containers-menu_start' );
 
-/* =========================================================
-   NIGHTPIE TEMPLATE — Main [pizzalayer-menu] shortcode
-   Layout: sticky side-by-side on desktop (pizza left, tabs right)
-           stacked on mobile (pizza mini bar top, tabs below)
-   ========================================================= */
+// Ensure we have all expected variables (guard for direct include)
+if ( ! isset( $instance_id ) )    { $instance_id    = 'pizzabuilder-1'; }
+if ( ! isset( $atts ) )           { $atts           = []; }
+if ( ! isset( $template_slug ) )  { $template_slug  = 'nightpie'; }
+if ( ! isset( $function_prefix ) ) { $function_prefix = 'pzt_nightpie'; }
 
-function pizzalayer_toppings_menu_func() {
+// Per-instance JS namespace: NP_pizza1, NP_pizzabuilder2, etc.
+$np_var = 'NP_' . preg_replace( '/[^a-zA-Z0-9_]/', '_', $instance_id );
 
-    /* ── gather max toppings ── */
-    $max_toppings = intval( get_option( 'pizzalayer_setting_topping_maxtoppings' ) );
-    if ( $max_toppings < 1 ) { $max_toppings = 99; }
+// Resolve max toppings: shortcode attr → plugin option → default 99
+$max_toppings = isset( $atts['max_toppings'] ) && (int) $atts['max_toppings'] > 0
+	? (int) $atts['max_toppings']
+	: intval( get_option( 'pizzalayer_setting_topping_maxtoppings', 0 ) );
+if ( $max_toppings < 1 ) { $max_toppings = 99; }
 
-    /* ── query all CPTs we need ── */
-    $query_args_base = [
-        'posts_per_page' => -1,
-        'post_status'    => 'publish',
-        'orderby'        => 'menu_order title',
-        'order'          => 'ASC',
-    ];
+// Apply developer filter
+$max_toppings = (int) apply_filters( 'pizzalayer_max_toppings', $max_toppings, $instance_id );
 
-    $crusts   = get_posts( array_merge( $query_args_base, [ 'post_type' => 'pizzalayer_crusts'   ] ) );
-    $sauces   = get_posts( array_merge( $query_args_base, [ 'post_type' => 'pizzalayer_sauces'   ] ) );
-    $cheeses  = get_posts( array_merge( $query_args_base, [ 'post_type' => 'pizzalayer_cheeses'  ] ) );
-    $drizzles = get_posts( array_merge( $query_args_base, [ 'post_type' => 'pizzalayer_drizzles' ] ) );
-    $toppings = get_posts( array_merge( $query_args_base, [ 'post_type' => 'pizzalayer_toppings' ] ) );
-    $cuts     = get_posts( array_merge( $query_args_base, [ 'post_type' => 'pizzalayer_cuts'     ] ) );
+// Resolve pizza shape: shortcode attr → plugin option → 'round'
+$valid_shapes  = [ 'round', 'square', 'rectangle', 'custom' ];
+$pizza_shape   = sanitize_key( $atts['pizza_shape'] ?? get_option( 'pizzalayer_setting_pizza_shape', 'round' ) );
+if ( ! in_array( $pizza_shape, $valid_shapes, true ) ) { $pizza_shape = 'round'; }
+$pizza_aspect  = sanitize_text_field( $atts['pizza_aspect']  ?? get_option( 'pizzalayer_setting_pizza_aspect',  '1 / 1' ) );
+$pizza_radius  = sanitize_text_field( $atts['pizza_radius']  ?? get_option( 'pizzalayer_setting_pizza_radius',  '8px'   ) );
 
-    /* ── build per-tab panels ── */
+// Resolve layer animation: shortcode attr → plugin option → 'fade'
+$valid_anims   = [ 'fade', 'scale-in', 'slide-up', 'flip-in', 'drop-in', 'instant' ];
+$layer_anim    = sanitize_key( $atts['layer_anim'] ?? get_option( 'pizzalayer_setting_layer_anim', 'fade' ) );
+if ( ! in_array( $layer_anim, $valid_anims, true ) ) { $layer_anim = 'fade'; }
 
-    /* helper: single exclusive-select card (crust / sauce / cheese / drizzle / cut) */
-    function np_exclusive_card( $post, $layer_type, $zindex = 200 ) {
-        $id        = $post->ID;
-        $title     = get_the_title( $post );
-        $slug      = sanitize_title( $title );
-        $img_field = $layer_type . '_image';
-        $lyr_field = $layer_type . '_layer_image';
+// Resolve hidden tabs
+$hide_tabs_raw = $atts['hide_tabs'] ?? '';
+$show_tabs_raw = $atts['show_tabs'] ?? '';
+$all_tabs      = [ 'crust', 'sauce', 'cheese', 'toppings', 'drizzle', 'slicing', 'yourpizza' ];
+$all_tabs      = apply_filters( 'pizzalayer_tab_order', $all_tabs, $instance_id );
 
-        // prefer product image for the thumb (menu image)
-        $thumb_url = get_field( $img_field, $id );
-        if ( ! $thumb_url ) { $thumb_url = get_field( $lyr_field, $id ); }
-        if ( ! $thumb_url ) { $thumb_url = get_the_post_thumbnail_url( $id, 'medium' ); }
-
-        $layer_url = get_field( $lyr_field, $id );
-        if ( ! $layer_url ) { $layer_url = $thumb_url; }
-
-        $js_title  = esc_js( $title );
-        $js_layer  = esc_js( $layer_url ? $layer_url : '' );
-
-        // JS call for base-layer swap
-        $js_add    = "NP.swapBase('{$layer_type}','{$slug}','{$js_title}','{$js_layer}',this)";
-        $js_remove = "NP.removeBase('{$layer_type}','{$slug}',this)";
-
-        ob_start();
-        ?>
-        <div class="np-card np-card--exclusive"
-             data-layer="<?php echo esc_attr( $layer_type ); ?>"
-             data-slug="<?php echo esc_attr( $slug ); ?>"
-             data-title="<?php echo esc_attr( $title ); ?>"
-             data-thumb="<?php echo esc_attr( $thumb_url ); ?>"
-             data-layer-img="<?php echo esc_attr( $layer_url ); ?>">
-            <div class="np-card__thumb-wrap">
-                <?php if ( $thumb_url ) : ?>
-                    <img class="np-card__thumb" src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
-                <?php else : ?>
-                    <div class="np-card__thumb np-card__thumb--placeholder"></div>
-                <?php endif; ?>
-                <div class="np-card__check"><i class="fa fa-check"></i></div>
-            </div>
-            <div class="np-card__body">
-                <span class="np-card__name"><?php echo esc_html( $title ); ?></span>
-            </div>
-            <div class="np-card__actions">
-                <button type="button" class="np-btn np-btn--add"
-                        onclick="<?php echo esc_attr( $js_add ); ?>">
-                    <i class="fa fa-plus"></i> Add
-                </button>
-                <button type="button" class="np-btn np-btn--remove" style="display:none;"
-                        onclick="<?php echo esc_attr( $js_remove ); ?>">
-                    <i class="fa fa-times"></i> Remove
-                </button>
-            </div>
-        </div>
-        <?php
-        return ob_get_clean();
-    }
-
-    /* helper: topping card (multi-select, with quadrant coverage picker) */
-    function np_topping_card( $post, $zindex ) {
-        $id        = $post->ID;
-        $title     = get_the_title( $post );
-        $slug      = sanitize_title( $title );
-        $layer_id  = 'pizzalayer-topping-' . $slug;
-
-        $thumb_url = get_field( 'topping_image', $id );
-        if ( ! $thumb_url ) { $thumb_url = get_field( 'topping_layer_image', $id ); }
-        if ( ! $thumb_url ) { $thumb_url = get_the_post_thumbnail_url( $id, 'medium' ); }
-
-        $layer_url = get_field( 'topping_layer_image', $id );
-        if ( ! $layer_url ) { $layer_url = $thumb_url; }
-
-        $js_title  = esc_js( $title );
-        $js_slug   = esc_js( $slug );
-        $js_layer  = esc_js( $layer_url ? $layer_url : '' );
-        $fn_slug   = 'pizzalayer-topping-' . $slug;
-
-        // JS: AddPizzaLayer( zindex, slug, layerimage, title, cssid, menuitemcssid )
-        $js_add    = "NP.addTopping({$zindex},'{$js_slug}','{$js_layer}','{$js_title}','{$fn_slug}','{$fn_slug}',this)";
-        $js_remove = "NP.removeTopping('pizzalayer-topping-{$js_slug}','{$js_slug}',this)";
-
-        ob_start();
-        ?>
-        <div class="np-card np-card--topping"
-             data-layer="toppings"
-             data-slug="<?php echo esc_attr( $slug ); ?>"
-             data-title="<?php echo esc_attr( $title ); ?>"
-             data-thumb="<?php echo esc_attr( $thumb_url ); ?>"
-             data-layer-img="<?php echo esc_attr( $layer_url ); ?>"
-             data-zindex="<?php echo esc_attr( $zindex ); ?>">
-            <div class="np-card__thumb-wrap">
-                <?php if ( $thumb_url ) : ?>
-                    <img class="np-card__thumb" src="<?php echo esc_url( $thumb_url ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
-                <?php else : ?>
-                    <div class="np-card__thumb np-card__thumb--placeholder"></div>
-                <?php endif; ?>
-                <div class="np-card__check"><i class="fa fa-check"></i></div>
-            </div>
-            <div class="np-card__body">
-                <span class="np-card__name"><?php echo esc_html( $title ); ?></span>
-                <div class="np-coverage" style="display:none;">
-                    <span class="np-coverage__label">Coverage:</span>
-                    <div class="np-coverage__btns">
-                        <button type="button" class="np-cov-btn" data-fraction="whole"
-                                onclick="NP.setCoverage('<?php echo esc_js( $slug ); ?>','whole',this)">
-                            <span class="np-cov-ico np-cov-ico--whole"></span> Whole
-                        </button>
-                        <button type="button" class="np-cov-btn" data-fraction="half-left"
-                                onclick="NP.setCoverage('<?php echo esc_js( $slug ); ?>','half-left',this)">
-                            <span class="np-cov-ico np-cov-ico--left"></span> Left
-                        </button>
-                        <button type="button" class="np-cov-btn" data-fraction="half-right"
-                                onclick="NP.setCoverage('<?php echo esc_js( $slug ); ?>','half-right',this)">
-                            <span class="np-cov-ico np-cov-ico--right"></span> Right
-                        </button>
-                        <button type="button" class="np-cov-btn" data-fraction="quarter-top-left"
-                                onclick="NP.setCoverage('<?php echo esc_js( $slug ); ?>','quarter-top-left',this)">
-                            <span class="np-cov-ico np-cov-ico--q1"></span> Q1
-                        </button>
-                        <button type="button" class="np-cov-btn" data-fraction="quarter-top-right"
-                                onclick="NP.setCoverage('<?php echo esc_js( $slug ); ?>','quarter-top-right',this)">
-                            <span class="np-cov-ico np-cov-ico--q2"></span> Q2
-                        </button>
-                        <button type="button" class="np-cov-btn" data-fraction="quarter-bottom-left"
-                                onclick="NP.setCoverage('<?php echo esc_js( $slug ); ?>','quarter-bottom-left',this)">
-                            <span class="np-cov-ico np-cov-ico--q3"></span> Q3
-                        </button>
-                        <button type="button" class="np-cov-btn" data-fraction="quarter-bottom-right"
-                                onclick="NP.setCoverage('<?php echo esc_js( $slug ); ?>','quarter-bottom-right',this)">
-                            <span class="np-cov-ico np-cov-ico--q4"></span> Q4
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="np-card__actions">
-                <button type="button" class="np-btn np-btn--add"
-                        onclick="<?php echo esc_attr( $js_add ); ?>">
-                    <i class="fa fa-plus"></i> Add
-                </button>
-                <button type="button" class="np-btn np-btn--remove" style="display:none;"
-                        onclick="<?php echo esc_attr( $js_remove ); ?>">
-                    <i class="fa fa-times"></i> Remove
-                </button>
-            </div>
-        </div>
-        <?php
-        return ob_get_clean();
-    }
-
-    /* ── render all cards ── */
-    ob_start();
-
-    // crusts
-    $crusts_html = '';
-    foreach ( $crusts as $post ) { $crusts_html .= np_exclusive_card( $post, 'crust', 100 ); }
-    if ( ! $crusts_html ) { $crusts_html = '<p class="np-empty"><i class="fa fa-circle-exclamation"></i> No crusts found.</p>'; }
-
-    // sauces
-    $sauces_html = '';
-    foreach ( $sauces as $post ) { $sauces_html .= np_exclusive_card( $post, 'sauce', 150 ); }
-    if ( ! $sauces_html ) { $sauces_html = '<p class="np-empty"><i class="fa fa-circle-exclamation"></i> No sauces found.</p>'; }
-
-    // cheeses
-    $cheeses_html = '';
-    foreach ( $cheeses as $post ) { $cheeses_html .= np_exclusive_card( $post, 'cheese', 200 ); }
-    if ( ! $cheeses_html ) { $cheeses_html = '<p class="np-empty"><i class="fa fa-circle-exclamation"></i> No cheeses found.</p>'; }
-
-    // drizzles
-    $drizzles_html = '';
-    foreach ( $drizzles as $post ) { $drizzles_html .= np_exclusive_card( $post, 'drizzle', 900 ); }
-    if ( ! $drizzles_html ) { $drizzles_html = '<p class="np-empty"><i class="fa fa-circle-exclamation"></i> No drizzles found.</p>'; }
-
-    // toppings
-    $toppings_html = '';
-    $t_zindex = 400;
-    foreach ( $toppings as $post ) {
-        $toppings_html .= np_topping_card( $post, $t_zindex );
-        $t_zindex += 10;
-    }
-    if ( ! $toppings_html ) { $toppings_html = '<p class="np-empty"><i class="fa fa-circle-exclamation"></i> No toppings found.</p>'; }
-
-    // cuts (slicing) — same exclusive pattern as crust
-    $cuts_html = '';
-    foreach ( $cuts as $post ) { $cuts_html .= np_exclusive_card( $post, 'cut', 950 ); }
-    if ( ! $cuts_html ) { $cuts_html = '<p class="np-empty"><i class="fa fa-circle-exclamation"></i> No cut styles found.</p>'; }
-
-    ?>
-
-<!-- ═══════════════════════════════════════════════════
-     NIGHTPIE TEMPLATE — v2
-═══════════════════════════════════════════════════ -->
-<div id="np-root" class="np-root" data-max-toppings="<?php echo esc_attr( $max_toppings ); ?>">
-
-    <!-- ── Mobile mini-bar pizza (collapsed strip, always visible) ── -->
-    <div class="np-mobile-preview-bar">
-        <div class="np-mobile-preview-bar__inner">
-            <span class="np-mobile-preview-bar__label"><i class="fa fa-pizza-slice"></i> Live Preview</span>
-            <div class="np-mobile-preview-bar__pizza" id="np-pizza-mobile-slot">
-                <!-- JS will mirror/clone the main pizza here on mobile -->
-            </div>
-            <button class="np-mobile-preview-bar__toggle" id="np-mobile-toggle" aria-label="Toggle pizza preview">
-                <i class="fa fa-chevron-down"></i>
-            </button>
-        </div>
-        <div class="np-mobile-preview-bar__expanded" id="np-mobile-expanded" aria-hidden="true">
-            <!-- full pizza duplicated here when expanded -->
-        </div>
-    </div>
-
-    <!-- ── Main layout: pizza col + tabs col ── -->
-    <div class="np-layout">
-        <div class="np-layout__row">
-
-            <!-- ── LEFT: Sticky pizza visualizer ── -->
-            <div class="np-pizza-col" id="np-pizza-col">
-                <div class="np-pizza-sticky" id="np-pizza-sticky">
-                    <div class="np-pizza-sticky__header">
-                        <i class="fa fa-pizza-slice"></i>
-                        <span>Your Pizza</span>
-                    </div>
-                    <div class="np-pizza-sticky__canvas" id="np-pizza-canvas">
-                        <?php echo pizzalayer_pizza_dynamic_nested( 'pizzalayer-pizza', 'np-pizza-main' ); ?>
-                    </div>
-                    <div class="np-pizza-sticky__footer">
-                        <button type="button" class="np-btn np-btn--ghost np-btn--sm" onclick="ClearPizza(); NP.resetAll();">
-                            <i class="fa fa-rotate-left"></i> Reset
-                        </button>
-                        <span class="np-topping-counter" id="np-topping-counter">
-                            <i class="fa fa-layer-group"></i>
-                            <span id="np-topping-count">0</span> / <?php echo esc_html( $max_toppings ); ?> toppings
-                        </span>
-                    </div>
-                </div>
-            </div>
-
-            <!-- ── RIGHT: Tabbed builder ── -->
-            <div class="np-tabs-col">
-                <div class="np-builder">
-
-                    <!-- Tab nav -->
-                    <nav class="np-tabnav" id="np-tabnav" role="tablist" aria-label="Pizza builder steps">
-                        <button class="np-tab active" data-tab="crust"    role="tab" aria-selected="true"  aria-controls="np-panel-crust">
-                            <span class="np-tab__icon"><i class="fa fa-circle"></i></span>
-                            <span class="np-tab__label">Crust</span>
-                        </button>
-                        <button class="np-tab" data-tab="sauce"    role="tab" aria-selected="false" aria-controls="np-panel-sauce">
-                            <span class="np-tab__icon"><i class="fa fa-droplet"></i></span>
-                            <span class="np-tab__label">Sauce</span>
-                        </button>
-                        <button class="np-tab" data-tab="cheese"   role="tab" aria-selected="false" aria-controls="np-panel-cheese">
-                            <span class="np-tab__icon"><i class="fa fa-cheese"></i></span>
-                            <span class="np-tab__label">Cheese</span>
-                        </button>
-                        <button class="np-tab" data-tab="toppings" role="tab" aria-selected="false" aria-controls="np-panel-toppings">
-                            <span class="np-tab__icon"><i class="fa fa-seedling"></i></span>
-                            <span class="np-tab__label">Toppings</span>
-                        </button>
-                        <button class="np-tab" data-tab="drizzle"  role="tab" aria-selected="false" aria-controls="np-panel-drizzle">
-                            <span class="np-tab__icon"><i class="fa fa-wine-glass"></i></span>
-                            <span class="np-tab__label">Drizzle</span>
-                        </button>
-                        <button class="np-tab" data-tab="slicing"  role="tab" aria-selected="false" aria-controls="np-panel-slicing">
-                            <span class="np-tab__icon"><i class="fa fa-pizza-slice"></i></span>
-                            <span class="np-tab__label">Slicing</span>
-                        </button>
-                        <button class="np-tab" data-tab="yourpizza" role="tab" aria-selected="false" aria-controls="np-panel-yourpizza">
-                            <span class="np-tab__icon"><i class="fa fa-receipt"></i></span>
-                            <span class="np-tab__label">Your Pizza</span>
-                        </button>
-                    </nav>
-
-                    <!-- Progress dots -->
-                    <div class="np-progress" id="np-progress" aria-hidden="true">
-                        <?php
-                        $steps = ['crust','sauce','cheese','toppings','drizzle','slicing','yourpizza'];
-                        foreach ( $steps as $s ) {
-                            echo '<span class="np-progress__dot" data-step="' . esc_attr($s) . '"></span>';
-                        }
-                        ?>
-                    </div>
-
-                    <!-- Tab panels -->
-                    <div class="np-panels" id="np-panels">
-
-                        <!-- Crust -->
-                        <section class="np-panel active" id="np-panel-crust" role="tabpanel" aria-label="Choose your crust">
-                            <div class="np-panel__header">
-                                <h2 class="np-panel__title"><i class="fa fa-circle"></i> Choose Your Crust</h2>
-                                <p class="np-panel__hint">Select one crust — it forms the base of your pizza.</p>
-                            </div>
-                            <div class="np-cards-grid np-cards-grid--exclusive">
-                                <?php echo $crusts_html; ?>
-                            </div>
-                            <div class="np-panel__nav">
-                                <span></span>
-                                <button class="np-btn np-btn--next" onclick="NP.goTab('sauce')">Sauce <i class="fa fa-arrow-right"></i></button>
-                            </div>
-                        </section>
-
-                        <!-- Sauce -->
-                        <section class="np-panel" id="np-panel-sauce" role="tabpanel" aria-label="Choose your sauce">
-                            <div class="np-panel__header">
-                                <h2 class="np-panel__title"><i class="fa fa-droplet"></i> Choose Your Sauce</h2>
-                                <p class="np-panel__hint">Select one sauce — swaps the sauce layer on your pizza.</p>
-                            </div>
-                            <div class="np-cards-grid np-cards-grid--exclusive">
-                                <?php echo $sauces_html; ?>
-                            </div>
-                            <div class="np-panel__nav">
-                                <button class="np-btn np-btn--prev" onclick="NP.goTab('crust')"><i class="fa fa-arrow-left"></i> Crust</button>
-                                <button class="np-btn np-btn--next" onclick="NP.goTab('cheese')">Cheese <i class="fa fa-arrow-right"></i></button>
-                            </div>
-                        </section>
-
-                        <!-- Cheese -->
-                        <section class="np-panel" id="np-panel-cheese" role="tabpanel" aria-label="Choose your cheese">
-                            <div class="np-panel__header">
-                                <h2 class="np-panel__title"><i class="fa fa-cheese"></i> Choose Your Cheese</h2>
-                                <p class="np-panel__hint">Select one cheese — layers on top of the sauce.</p>
-                            </div>
-                            <div class="np-cards-grid np-cards-grid--exclusive">
-                                <?php echo $cheeses_html; ?>
-                            </div>
-                            <div class="np-panel__nav">
-                                <button class="np-btn np-btn--prev" onclick="NP.goTab('sauce')"><i class="fa fa-arrow-left"></i> Sauce</button>
-                                <button class="np-btn np-btn--next" onclick="NP.goTab('toppings')">Toppings <i class="fa fa-arrow-right"></i></button>
-                            </div>
-                        </section>
-
-                        <!-- Toppings -->
-                        <section class="np-panel" id="np-panel-toppings" role="tabpanel" aria-label="Choose your toppings">
-                            <div class="np-panel__header">
-                                <h2 class="np-panel__title"><i class="fa fa-seedling"></i> Choose Your Toppings</h2>
-                                <p class="np-panel__hint">
-                                    Add up to <strong id="np-max-display"><?php echo esc_html( $max_toppings ); ?></strong> toppings.
-                                    Choose coverage for each.
-                                    <span class="np-topping-counter-inline">
-                                        (<span id="np-topping-count-inline">0</span> added)
-                                    </span>
-                                </p>
-                            </div>
-                            <div class="np-cards-grid np-cards-grid--toppings">
-                                <?php echo $toppings_html; ?>
-                            </div>
-                            <div class="np-panel__nav">
-                                <button class="np-btn np-btn--prev" onclick="NP.goTab('cheese')"><i class="fa fa-arrow-left"></i> Cheese</button>
-                                <button class="np-btn np-btn--next" onclick="NP.goTab('drizzle')">Drizzle <i class="fa fa-arrow-right"></i></button>
-                            </div>
-                        </section>
-
-                        <!-- Drizzle -->
-                        <section class="np-panel" id="np-panel-drizzle" role="tabpanel" aria-label="Choose your drizzle">
-                            <div class="np-panel__header">
-                                <h2 class="np-panel__title"><i class="fa fa-wine-glass"></i> Choose a Drizzle</h2>
-                                <p class="np-panel__hint">Optional finishing drizzle on top.</p>
-                            </div>
-                            <div class="np-cards-grid np-cards-grid--exclusive">
-                                <?php echo $drizzles_html; ?>
-                            </div>
-                            <div class="np-panel__nav">
-                                <button class="np-btn np-btn--prev" onclick="NP.goTab('toppings')"><i class="fa fa-arrow-left"></i> Toppings</button>
-                                <button class="np-btn np-btn--next" onclick="NP.goTab('slicing')">Slicing <i class="fa fa-arrow-right"></i></button>
-                            </div>
-                        </section>
-
-                        <!-- Slicing -->
-                        <section class="np-panel" id="np-panel-slicing" role="tabpanel" aria-label="Choose how to slice">
-                            <div class="np-panel__header">
-                                <h2 class="np-panel__title"><i class="fa fa-pizza-slice"></i> How Should We Slice It?</h2>
-                                <p class="np-panel__hint">Choose a cut style for your pizza.</p>
-                            </div>
-                            <div class="np-cards-grid np-cards-grid--exclusive">
-                                <?php echo $cuts_html; ?>
-                            </div>
-                            <div class="np-panel__nav">
-                                <button class="np-btn np-btn--prev" onclick="NP.goTab('drizzle')"><i class="fa fa-arrow-left"></i> Drizzle</button>
-                                <button class="np-btn np-btn--next np-btn--cta" onclick="NP.goTab('yourpizza')"><i class="fa fa-receipt"></i> See Your Pizza</button>
-                            </div>
-                        </section>
-
-                        <!-- Your Pizza summary -->
-                        <section class="np-panel" id="np-panel-yourpizza" role="tabpanel" aria-label="Your pizza summary">
-                            <div class="np-panel__header">
-                                <h2 class="np-panel__title"><i class="fa fa-receipt"></i> Your Pizza</h2>
-                                <p class="np-panel__hint">Here's everything you've built. Looks delicious!</p>
-                            </div>
-
-                            <div class="np-yourpizza" id="np-yourpizza-summary">
-
-                                <!-- layer rows injected by JS -->
-                                <div class="np-yourpizza__row" id="np-yp-crust">
-                                    <div class="np-yourpizza__icon"><i class="fa fa-circle"></i></div>
-                                    <div class="np-yourpizza__layer-name">Crust</div>
-                                    <div class="np-yourpizza__selection np-yourpizza__selection--empty" id="np-yp-crust-val">
-                                        <span class="np-yp-none">— none selected —</span>
-                                    </div>
-                                    <button class="np-yourpizza__edit" onclick="NP.goTab('crust')"><i class="fa fa-pen"></i></button>
-                                </div>
-
-                                <div class="np-yourpizza__row" id="np-yp-sauce">
-                                    <div class="np-yourpizza__icon"><i class="fa fa-droplet"></i></div>
-                                    <div class="np-yourpizza__layer-name">Sauce</div>
-                                    <div class="np-yourpizza__selection np-yourpizza__selection--empty" id="np-yp-sauce-val">
-                                        <span class="np-yp-none">— none selected —</span>
-                                    </div>
-                                    <button class="np-yourpizza__edit" onclick="NP.goTab('sauce')"><i class="fa fa-pen"></i></button>
-                                </div>
-
-                                <div class="np-yourpizza__row" id="np-yp-cheese">
-                                    <div class="np-yourpizza__icon"><i class="fa fa-cheese"></i></div>
-                                    <div class="np-yourpizza__layer-name">Cheese</div>
-                                    <div class="np-yourpizza__selection np-yourpizza__selection--empty" id="np-yp-cheese-val">
-                                        <span class="np-yp-none">— none selected —</span>
-                                    </div>
-                                    <button class="np-yourpizza__edit" onclick="NP.goTab('cheese')"><i class="fa fa-pen"></i></button>
-                                </div>
-
-                                <div class="np-yourpizza__row np-yourpizza__row--toppings" id="np-yp-toppings-row">
-                                    <div class="np-yourpizza__icon"><i class="fa fa-seedling"></i></div>
-                                    <div class="np-yourpizza__layer-name">Toppings</div>
-                                    <div class="np-yourpizza__selection" id="np-yp-toppings-val">
-                                        <span class="np-yp-none">— none added —</span>
-                                    </div>
-                                    <button class="np-yourpizza__edit" onclick="NP.goTab('toppings')"><i class="fa fa-pen"></i></button>
-                                </div>
-
-                                <div class="np-yourpizza__row" id="np-yp-drizzle">
-                                    <div class="np-yourpizza__icon"><i class="fa fa-wine-glass"></i></div>
-                                    <div class="np-yourpizza__layer-name">Drizzle</div>
-                                    <div class="np-yourpizza__selection np-yourpizza__selection--empty" id="np-yp-drizzle-val">
-                                        <span class="np-yp-none">— none selected —</span>
-                                    </div>
-                                    <button class="np-yourpizza__edit" onclick="NP.goTab('drizzle')"><i class="fa fa-pen"></i></button>
-                                </div>
-
-                                <div class="np-yourpizza__row" id="np-yp-slicing">
-                                    <div class="np-yourpizza__icon"><i class="fa fa-pizza-slice"></i></div>
-                                    <div class="np-yourpizza__layer-name">Slicing</div>
-                                    <div class="np-yourpizza__selection np-yourpizza__selection--empty" id="np-yp-slicing-val">
-                                        <span class="np-yp-none">— none selected —</span>
-                                    </div>
-                                    <button class="np-yourpizza__edit" onclick="NP.goTab('slicing')"><i class="fa fa-pen"></i></button>
-                                </div>
-
-                            </div><!-- /.np-yourpizza -->
-
-                            <div class="np-panel__nav">
-                                <button class="np-btn np-btn--prev" onclick="NP.goTab('slicing')"><i class="fa fa-arrow-left"></i> Back</button>
-                                <button class="np-btn np-btn--ghost" onclick="ClearPizza(); NP.resetAll();">
-                                    <i class="fa fa-rotate-left"></i> Start Over
-                                </button>
-                            </div>
-                        </section>
-
-                    </div><!-- /.np-panels -->
-                </div><!-- /.np-builder -->
-            </div><!-- /.np-tabs-col -->
-
-        </div><!-- /.row -->
-    </div><!-- /.np-layout -->
-
-    <!-- Fly-to animation clone container (injected by JS) -->
-    <div id="np-fly-container" aria-hidden="true"></div>
-
-</div><!-- /#np-root -->
-
-<?php
-    return ob_get_clean();
+if ( $show_tabs_raw ) {
+	$visible_tabs = array_intersect( $all_tabs, array_map( 'trim', explode( ',', $show_tabs_raw ) ) );
+} elseif ( $hide_tabs_raw ) {
+	$hide_set     = array_map( 'trim', explode( ',', $hide_tabs_raw ) );
+	$visible_tabs = array_diff( $all_tabs, $hide_set );
+} else {
+	$visible_tabs = $all_tabs;
 }
 
-do_action( 'pizzalayer_file_pztp-containers-menu_end' );
+// Query all CPTs
+$query_base = [
+	'posts_per_page' => -1,
+	'post_status'    => 'publish',
+	'orderby'        => 'menu_order title',
+	'order'          => 'ASC',
+];
+$crusts   = apply_filters( 'pizzalayer_query_args_crusts',   get_posts( array_merge( $query_base, [ 'post_type' => 'pizzalayer_crusts'   ] ) ), 'crusts'   );
+$sauces   = apply_filters( 'pizzalayer_query_args_sauces',   get_posts( array_merge( $query_base, [ 'post_type' => 'pizzalayer_sauces'   ] ) ), 'sauces'   );
+$cheeses  = apply_filters( 'pizzalayer_query_args_cheeses',  get_posts( array_merge( $query_base, [ 'post_type' => 'pizzalayer_cheeses'  ] ) ), 'cheeses'  );
+$drizzles = apply_filters( 'pizzalayer_query_args_drizzles', get_posts( array_merge( $query_base, [ 'post_type' => 'pizzalayer_drizzles' ] ) ), 'drizzles' );
+$toppings = apply_filters( 'pizzalayer_query_args_toppings', get_posts( array_merge( $query_base, [ 'post_type' => 'pizzalayer_toppings' ] ) ), 'toppings' );
+$cuts     = apply_filters( 'pizzalayer_query_args_cuts',     get_posts( array_merge( $query_base, [ 'post_type' => 'pizzalayer_cuts'     ] ) ), 'cuts'     );
+
+/**
+ * Build an exclusive-select card (crust / sauce / cheese / drizzle / cut).
+ * Uses $np_var for JS calls instead of global NP.
+ */
+if ( ! function_exists( 'pzt_nightpie_exclusive_card' ) ) :
+function pzt_nightpie_exclusive_card( $post, string $layer_type, string $np_var, int $zindex = 200 ): string {
+	$id        = $post->ID;
+	$title     = get_the_title( $post );
+	$slug      = sanitize_title( $title );
+	$img_field = $layer_type . '_image';
+	$lyr_field = $layer_type . '_layer_image';
+
+	$thumb_url = get_field( $img_field, $id ) ?: get_field( $lyr_field, $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
+	$layer_url = get_field( $lyr_field, $id ) ?: $thumb_url;
+
+	$js_title  = esc_js( $title );
+	$js_layer  = esc_js( (string) $layer_url );
+	$js_add    = "window['{$np_var}']&&window['{$np_var}'].swapBase('{$layer_type}','{$slug}','{$js_title}','{$js_layer}',this)";
+	$js_remove = "window['{$np_var}']&&window['{$np_var}'].removeBase('{$layer_type}','{$slug}',this)";
+
+	ob_start();
+	do_action( 'pizzalayer_before_layer_card', $post, $layer_type );
+	?>
+	<div class="np-card np-card--exclusive"
+	     data-layer="<?php echo esc_attr( $layer_type ); ?>"
+	     data-slug="<?php echo esc_attr( $slug ); ?>"
+	     data-title="<?php echo esc_attr( $title ); ?>"
+	     data-thumb="<?php echo esc_attr( (string) $thumb_url ); ?>"
+	     data-layer-img="<?php echo esc_attr( (string) $layer_url ); ?>">
+		<div class="np-card__thumb-wrap">
+			<?php if ( $thumb_url ) : ?>
+				<img class="np-card__thumb" src="<?php echo esc_url( (string) $thumb_url ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
+			<?php else : ?>
+				<div class="np-card__thumb np-card__thumb--placeholder"></div>
+			<?php endif; ?>
+			<div class="np-card__check"><i class="fa fa-check"></i></div>
+		</div>
+		<div class="np-card__body">
+			<span class="np-card__name"><?php echo esc_html( $title ); ?></span>
+		</div>
+		<div class="np-card__actions">
+			<button type="button" class="np-btn np-btn--add" onclick="<?php echo esc_attr( $js_add ); ?>">
+				<i class="fa fa-plus"></i> <?php esc_html_e( 'Add', 'pizzalayer' ); ?>
+			</button>
+			<button type="button" class="np-btn np-btn--remove" style="display:none;" onclick="<?php echo esc_attr( $js_remove ); ?>">
+				<i class="fa fa-times"></i> <?php esc_html_e( 'Remove', 'pizzalayer' ); ?>
+			</button>
+		</div>
+	</div>
+	<?php
+	do_action( 'pizzalayer_after_layer_card', $post, $layer_type );
+	return apply_filters( 'pizzalayer_card_html', ob_get_clean(), $post, $layer_type );
+}
+endif;
+
+/**
+ * Build a topping card (multi-select with coverage picker).
+ */
+if ( ! function_exists( 'pzt_nightpie_topping_card' ) ) :
+function pzt_nightpie_topping_card( $post, string $np_var, int $zindex ): string {
+	$id        = $post->ID;
+	$title     = get_the_title( $post );
+	$slug      = sanitize_title( $title );
+	$layer_id  = 'pizzalayer-topping-' . $slug;
+
+	$thumb_url = get_field( 'topping_image', $id ) ?: get_field( 'topping_layer_image', $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
+	$layer_url = get_field( 'topping_layer_image', $id ) ?: $thumb_url;
+
+	$js_title  = esc_js( $title );
+	$js_slug   = esc_js( $slug );
+	$js_layer  = esc_js( (string) $layer_url );
+
+	$js_add    = "window['{$np_var}']&&window['{$np_var}'].addTopping({$zindex},'{$js_slug}','{$js_layer}','{$js_title}','{$layer_id}','{$layer_id}',this)";
+	$js_remove = "window['{$np_var}']&&window['{$np_var}'].removeTopping('pizzalayer-topping-{$js_slug}','{$js_slug}',this)";
+
+	ob_start();
+	do_action( 'pizzalayer_before_layer_card', $post, 'toppings' );
+	?>
+	<div class="np-card np-card--topping"
+	     data-layer="toppings"
+	     data-slug="<?php echo esc_attr( $slug ); ?>"
+	     data-title="<?php echo esc_attr( $title ); ?>"
+	     data-thumb="<?php echo esc_attr( (string) $thumb_url ); ?>"
+	     data-layer-img="<?php echo esc_attr( (string) $layer_url ); ?>"
+	     data-zindex="<?php echo esc_attr( (string) $zindex ); ?>">
+		<div class="np-card__thumb-wrap">
+			<?php if ( $thumb_url ) : ?>
+				<img class="np-card__thumb" src="<?php echo esc_url( (string) $thumb_url ); ?>" alt="<?php echo esc_attr( $title ); ?>" loading="lazy" />
+			<?php else : ?>
+				<div class="np-card__thumb np-card__thumb--placeholder"></div>
+			<?php endif; ?>
+			<div class="np-card__check"><i class="fa fa-check"></i></div>
+		</div>
+		<div class="np-card__body">
+			<span class="np-card__name"><?php echo esc_html( $title ); ?></span>
+			<div class="np-coverage" style="display:none;">
+				<span class="np-coverage__label"><?php esc_html_e( 'Coverage:', 'pizzalayer' ); ?></span>
+				<div class="np-coverage__btns">
+					<?php
+					$coverages = [ 'whole' => 'Whole', 'half-left' => 'Left', 'half-right' => 'Right',
+					               'quarter-top-left' => 'Q1', 'quarter-top-right' => 'Q2',
+					               'quarter-bottom-left' => 'Q3', 'quarter-bottom-right' => 'Q4' ];
+					foreach ( $coverages as $fraction => $label ) :
+						$js_cov = "window['{$np_var}']&&window['{$np_var}'].setCoverage('" . esc_js( $slug ) . "','" . esc_js( $fraction ) . "',this)";
+						$ico    = 'np-cov-ico--' . str_replace( [ 'half-', 'quarter-' ], [ '', '' ], $fraction );
+					?>
+					<button type="button" class="np-cov-btn" data-fraction="<?php echo esc_attr( $fraction ); ?>"
+					        onclick="<?php echo esc_attr( $js_cov ); ?>">
+						<span class="np-cov-ico <?php echo esc_attr( $ico ); ?>"></span>
+						<?php echo esc_html( $label ); ?>
+					</button>
+					<?php endforeach; ?>
+				</div>
+			</div>
+		</div>
+		<div class="np-card__actions">
+			<button type="button" class="np-btn np-btn--add" onclick="<?php echo esc_attr( $js_add ); ?>">
+				<i class="fa fa-plus"></i> <?php esc_html_e( 'Add', 'pizzalayer' ); ?>
+			</button>
+			<button type="button" class="np-btn np-btn--remove" style="display:none;" onclick="<?php echo esc_attr( $js_remove ); ?>">
+				<i class="fa fa-times"></i> <?php esc_html_e( 'Remove', 'pizzalayer' ); ?>
+			</button>
+		</div>
+	</div>
+	<?php
+	do_action( 'pizzalayer_after_layer_card', $post, 'toppings' );
+	return apply_filters( 'pizzalayer_card_html', ob_get_clean(), $post, 'toppings' );
+}
+endif;
+
+// Render card HTML for each tab
+$crusts_html = '';
+foreach ( $crusts as $post ) { $crusts_html .= pzt_nightpie_exclusive_card( $post, 'crust', $np_var, 100 ); }
+if ( ! $crusts_html ) { $crusts_html = '<p class="np-empty"><i class="fa fa-circle-exclamation"></i> ' . esc_html__( 'No crusts found.', 'pizzalayer' ) . '</p>'; }
+
+$sauces_html = '';
+foreach ( $sauces as $post ) { $sauces_html .= pzt_nightpie_exclusive_card( $post, 'sauce', $np_var, 150 ); }
+if ( ! $sauces_html ) { $sauces_html = '<p class="np-empty">' . esc_html__( 'No sauces found.', 'pizzalayer' ) . '</p>'; }
+
+$cheeses_html = '';
+foreach ( $cheeses as $post ) { $cheeses_html .= pzt_nightpie_exclusive_card( $post, 'cheese', $np_var, 200 ); }
+if ( ! $cheeses_html ) { $cheeses_html = '<p class="np-empty">' . esc_html__( 'No cheeses found.', 'pizzalayer' ) . '</p>'; }
+
+$drizzles_html = '';
+foreach ( $drizzles as $post ) { $drizzles_html .= pzt_nightpie_exclusive_card( $post, 'drizzle', $np_var, 900 ); }
+if ( ! $drizzles_html ) { $drizzles_html = '<p class="np-empty">' . esc_html__( 'No drizzles found.', 'pizzalayer' ) . '</p>'; }
+
+$toppings_html = '';
+$t_z = 400;
+foreach ( $toppings as $post ) { $toppings_html .= pzt_nightpie_topping_card( $post, $np_var, $t_z ); $t_z += 10; }
+if ( ! $toppings_html ) { $toppings_html = '<p class="np-empty">' . esc_html__( 'No toppings found.', 'pizzalayer' ) . '</p>'; }
+
+$cuts_html = '';
+foreach ( $cuts as $post ) { $cuts_html .= pzt_nightpie_exclusive_card( $post, 'cut', $np_var, 950 ); }
+if ( ! $cuts_html ) { $cuts_html = '<p class="np-empty">' . esc_html__( 'No cut styles found.', 'pizzalayer' ) . '</p>'; }
+
+// Use PizzaBuilder for the initial pizza display
+$builder = new \PizzaLayer\Builder\PizzaBuilder();
+$initial_pizza = $builder->build_dynamic(
+	$atts['default_crust']  ?? '',
+	$atts['default_sauce']  ?? '',
+	$atts['default_cheese'] ?? ''
+);
+
+// Pass $np_var, $instance_id to custom.js via data attribute on root
+?>
+<!-- ═══════════════════════════════════════════════════
+     NIGHTPIE TEMPLATE — PizzaLayer
+     Instance: <?php echo esc_html( $instance_id ); ?>
+═══════════════════════════════════════════════════ -->
+<div id="<?php echo esc_attr( $instance_id ); ?>"
+     class="np-root"
+     data-instance="<?php echo esc_attr( $instance_id ); ?>"
+     data-np-var="<?php echo esc_attr( $np_var ); ?>"
+     data-max-toppings="<?php echo esc_attr( (string) $max_toppings ); ?>"
+     data-pizza-shape="<?php echo esc_attr( $pizza_shape ); ?>"
+     data-pizza-aspect="<?php echo esc_attr( $pizza_aspect ); ?>"
+     data-pizza-radius="<?php echo esc_attr( $pizza_radius ); ?>"
+     data-layer-anim="<?php echo esc_attr( $layer_anim ); ?>">
+
+	<!-- Mobile mini-bar -->
+	<div class="np-mobile-preview-bar">
+		<div class="np-mobile-preview-bar__inner">
+			<span class="np-mobile-preview-bar__label"><i class="fa fa-pizza-slice"></i> <?php esc_html_e( 'Live Preview', 'pizzalayer' ); ?></span>
+			<div class="np-mobile-preview-bar__pizza" id="<?php echo esc_attr( $instance_id ); ?>-pizza-mobile-slot"></div>
+			<button class="np-mobile-preview-bar__toggle" id="<?php echo esc_attr( $instance_id ); ?>-mobile-toggle" aria-label="<?php esc_attr_e( 'Toggle pizza preview', 'pizzalayer' ); ?>">
+				<i class="fa fa-chevron-down"></i>
+			</button>
+		</div>
+		<div class="np-mobile-preview-bar__expanded" id="<?php echo esc_attr( $instance_id ); ?>-mobile-expanded" aria-hidden="true"></div>
+	</div>
+
+	<!-- Main layout -->
+	<div class="np-layout">
+		<div class="np-layout__row">
+
+			<!-- LEFT: sticky pizza visualizer -->
+			<div class="np-pizza-col" id="<?php echo esc_attr( $instance_id ); ?>-pizza-col">
+				<div class="np-pizza-sticky">
+					<div class="np-pizza-sticky__header">
+						<i class="fa fa-pizza-slice"></i>
+						<span><?php esc_html_e( 'Your Pizza', 'pizzalayer' ); ?></span>
+					</div>
+					<div class="np-pizza-sticky__canvas" id="<?php echo esc_attr( $instance_id ); ?>-canvas">
+						<?php echo $initial_pizza; // phpcs:ignore WordPress.Security.EscapeOutput -- built by PizzaBuilder with proper escaping ?>
+					</div>
+					<div class="np-pizza-sticky__footer">
+						<button type="button" class="np-btn np-btn--ghost np-btn--sm"
+						        onclick="ClearPizza(); window['<?php echo esc_js( $np_var ); ?>']&&window['<?php echo esc_js( $np_var ); ?>'].resetAll();">
+							<i class="fa fa-rotate-left"></i> <?php esc_html_e( 'Reset', 'pizzalayer' ); ?>
+						</button>
+						<span class="np-topping-counter">
+							<i class="fa fa-layer-group"></i>
+							<span id="<?php echo esc_attr( $instance_id ); ?>-count">0</span> / <?php echo esc_html( (string) $max_toppings ); ?> <?php esc_html_e( 'toppings', 'pizzalayer' ); ?>
+						</span>
+					</div>
+
+					<!-- Action bar: PizzaLayerPro hooks here for WC cart button -->
+					<?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
+				</div>
+			</div>
+
+			<!-- RIGHT: tabbed builder -->
+			<div class="np-tabs-col">
+				<div class="np-builder">
+
+					<nav class="np-tabnav" id="<?php echo esc_attr( $instance_id ); ?>-tabnav" role="tablist">
+						<?php
+						$tab_meta = [
+							'crust'     => [ 'fa-circle',      __( 'Crust',     'pizzalayer' ) ],
+							'sauce'     => [ 'fa-droplet',     __( 'Sauce',     'pizzalayer' ) ],
+							'cheese'    => [ 'fa-cheese',      __( 'Cheese',    'pizzalayer' ) ],
+							'toppings'  => [ 'fa-seedling',    __( 'Toppings',  'pizzalayer' ) ],
+							'drizzle'   => [ 'fa-wine-glass',  __( 'Drizzle',   'pizzalayer' ) ],
+							'slicing'   => [ 'fa-pizza-slice', __( 'Slicing',   'pizzalayer' ) ],
+							'yourpizza' => [ 'fa-receipt',     __( 'Your Pizza','pizzalayer' ) ],
+						];
+						$first_tab = true;
+						foreach ( $visible_tabs as $tab ) :
+							if ( ! isset( $tab_meta[ $tab ] ) ) { continue; }
+							[ $icon, $label ] = $tab_meta[ $tab ];
+							$active = $first_tab ? 'active' : '';
+							$selected = $first_tab ? 'true' : 'false';
+							$first_tab = false;
+						?>
+						<button class="np-tab <?php echo esc_attr( $active ); ?>"
+						        data-tab="<?php echo esc_attr( $tab ); ?>"
+						        data-instance="<?php echo esc_attr( $instance_id ); ?>"
+						        role="tab" aria-selected="<?php echo esc_attr( $selected ); ?>"
+						        aria-controls="<?php echo esc_attr( $instance_id . '-panel-' . $tab ); ?>">
+							<span class="np-tab__icon"><i class="fa <?php echo esc_attr( $icon ); ?>"></i></span>
+							<span class="np-tab__label"><?php echo esc_html( $label ); ?></span>
+						</button>
+						<?php endforeach; ?>
+					</nav>
+
+					<!-- Progress dots -->
+					<div class="np-progress" aria-hidden="true">
+						<?php foreach ( $visible_tabs as $s ) : ?>
+						<span class="np-progress__dot" data-step="<?php echo esc_attr( $s ); ?>"></span>
+						<?php endforeach; ?>
+					</div>
+
+					<!-- Tab panels -->
+					<div class="np-panels">
+
+						<?php if ( in_array( 'crust', $visible_tabs, true ) ) : ?>
+						<?php do_action( 'pizzalayer_before_tab_crust', $instance_id ); ?>
+						<section class="np-panel active" id="<?php echo esc_attr( $instance_id ); ?>-panel-crust" role="tabpanel">
+							<div class="np-panel__header">
+								<h2 class="np-panel__title"><i class="fa fa-circle"></i> <?php esc_html_e( 'Choose Your Crust', 'pizzalayer' ); ?></h2>
+								<p class="np-panel__hint"><?php esc_html_e( 'Select one crust — it forms the base of your pizza.', 'pizzalayer' ); ?></p>
+							</div>
+							<div class="np-cards-grid np-cards-grid--exclusive"><?php echo $crusts_html; // phpcs:ignore ?></div>
+							<div class="np-panel__nav">
+								<span></span>
+								<button class="np-btn np-btn--next" onclick="<?php echo esc_js( $np_var ); ?>.goTab('sauce')"><?php esc_html_e( 'Sauce', 'pizzalayer' ); ?> <i class="fa fa-arrow-right"></i></button>
+							</div>
+						</section>
+						<?php do_action( 'pizzalayer_after_tab_crust', $instance_id ); ?>
+						<?php endif; ?>
+
+						<?php if ( in_array( 'sauce', $visible_tabs, true ) ) : ?>
+						<?php do_action( 'pizzalayer_before_tab_sauce', $instance_id ); ?>
+						<section class="np-panel" id="<?php echo esc_attr( $instance_id ); ?>-panel-sauce" role="tabpanel">
+							<div class="np-panel__header">
+								<h2 class="np-panel__title"><i class="fa fa-droplet"></i> <?php esc_html_e( 'Choose Your Sauce', 'pizzalayer' ); ?></h2>
+								<p class="np-panel__hint"><?php esc_html_e( 'Select one sauce.', 'pizzalayer' ); ?></p>
+							</div>
+							<div class="np-cards-grid np-cards-grid--exclusive"><?php echo $sauces_html; // phpcs:ignore ?></div>
+							<div class="np-panel__nav">
+								<button class="np-btn np-btn--prev" onclick="<?php echo esc_js( $np_var ); ?>.goTab('crust')"><i class="fa fa-arrow-left"></i> <?php esc_html_e( 'Crust', 'pizzalayer' ); ?></button>
+								<button class="np-btn np-btn--next" onclick="<?php echo esc_js( $np_var ); ?>.goTab('cheese')"><?php esc_html_e( 'Cheese', 'pizzalayer' ); ?> <i class="fa fa-arrow-right"></i></button>
+							</div>
+						</section>
+						<?php do_action( 'pizzalayer_after_tab_sauce', $instance_id ); ?>
+						<?php endif; ?>
+
+						<?php if ( in_array( 'cheese', $visible_tabs, true ) ) : ?>
+						<?php do_action( 'pizzalayer_before_tab_cheese', $instance_id ); ?>
+						<section class="np-panel" id="<?php echo esc_attr( $instance_id ); ?>-panel-cheese" role="tabpanel">
+							<div class="np-panel__header">
+								<h2 class="np-panel__title"><i class="fa fa-cheese"></i> <?php esc_html_e( 'Choose Your Cheese', 'pizzalayer' ); ?></h2>
+								<p class="np-panel__hint"><?php esc_html_e( 'Select one cheese.', 'pizzalayer' ); ?></p>
+							</div>
+							<div class="np-cards-grid np-cards-grid--exclusive"><?php echo $cheeses_html; // phpcs:ignore ?></div>
+							<div class="np-panel__nav">
+								<button class="np-btn np-btn--prev" onclick="<?php echo esc_js( $np_var ); ?>.goTab('sauce')"><i class="fa fa-arrow-left"></i> <?php esc_html_e( 'Sauce', 'pizzalayer' ); ?></button>
+								<button class="np-btn np-btn--next" onclick="<?php echo esc_js( $np_var ); ?>.goTab('toppings')"><?php esc_html_e( 'Toppings', 'pizzalayer' ); ?> <i class="fa fa-arrow-right"></i></button>
+							</div>
+						</section>
+						<?php do_action( 'pizzalayer_after_tab_cheese', $instance_id ); ?>
+						<?php endif; ?>
+
+						<?php if ( in_array( 'toppings', $visible_tabs, true ) ) : ?>
+						<?php do_action( 'pizzalayer_before_tab_toppings', $instance_id ); ?>
+						<section class="np-panel" id="<?php echo esc_attr( $instance_id ); ?>-panel-toppings" role="tabpanel">
+							<div class="np-panel__header">
+								<h2 class="np-panel__title"><i class="fa fa-seedling"></i> <?php esc_html_e( 'Choose Your Toppings', 'pizzalayer' ); ?></h2>
+								<p class="np-panel__hint">
+									<?php printf( esc_html__( 'Add up to %s toppings.', 'pizzalayer' ), '<strong>' . esc_html( (string) $max_toppings ) . '</strong>' ); ?>
+								</p>
+							</div>
+							<div class="np-cards-grid np-cards-grid--toppings"><?php echo $toppings_html; // phpcs:ignore ?></div>
+							<div class="np-panel__nav">
+								<button class="np-btn np-btn--prev" onclick="<?php echo esc_js( $np_var ); ?>.goTab('cheese')"><i class="fa fa-arrow-left"></i> <?php esc_html_e( 'Cheese', 'pizzalayer' ); ?></button>
+								<button class="np-btn np-btn--next" onclick="<?php echo esc_js( $np_var ); ?>.goTab('drizzle')"><?php esc_html_e( 'Drizzle', 'pizzalayer' ); ?> <i class="fa fa-arrow-right"></i></button>
+							</div>
+						</section>
+						<?php do_action( 'pizzalayer_after_tab_toppings', $instance_id ); ?>
+						<?php endif; ?>
+
+						<?php if ( in_array( 'drizzle', $visible_tabs, true ) ) : ?>
+						<?php do_action( 'pizzalayer_before_tab_drizzle', $instance_id ); ?>
+						<section class="np-panel" id="<?php echo esc_attr( $instance_id ); ?>-panel-drizzle" role="tabpanel">
+							<div class="np-panel__header">
+								<h2 class="np-panel__title"><i class="fa fa-wine-glass"></i> <?php esc_html_e( 'Choose a Drizzle', 'pizzalayer' ); ?></h2>
+								<p class="np-panel__hint"><?php esc_html_e( 'Optional finishing drizzle.', 'pizzalayer' ); ?></p>
+							</div>
+							<div class="np-cards-grid np-cards-grid--exclusive"><?php echo $drizzles_html; // phpcs:ignore ?></div>
+							<div class="np-panel__nav">
+								<button class="np-btn np-btn--prev" onclick="<?php echo esc_js( $np_var ); ?>.goTab('toppings')"><i class="fa fa-arrow-left"></i> <?php esc_html_e( 'Toppings', 'pizzalayer' ); ?></button>
+								<button class="np-btn np-btn--next" onclick="<?php echo esc_js( $np_var ); ?>.goTab('slicing')"><?php esc_html_e( 'Slicing', 'pizzalayer' ); ?> <i class="fa fa-arrow-right"></i></button>
+							</div>
+						</section>
+						<?php do_action( 'pizzalayer_after_tab_drizzle', $instance_id ); ?>
+						<?php endif; ?>
+
+						<?php if ( in_array( 'slicing', $visible_tabs, true ) ) : ?>
+						<?php do_action( 'pizzalayer_before_tab_slicing', $instance_id ); ?>
+						<section class="np-panel" id="<?php echo esc_attr( $instance_id ); ?>-panel-slicing" role="tabpanel">
+							<div class="np-panel__header">
+								<h2 class="np-panel__title"><i class="fa fa-pizza-slice"></i> <?php esc_html_e( 'How Should We Slice It?', 'pizzalayer' ); ?></h2>
+								<p class="np-panel__hint"><?php esc_html_e( 'Choose a cut style.', 'pizzalayer' ); ?></p>
+							</div>
+							<div class="np-cards-grid np-cards-grid--exclusive"><?php echo $cuts_html; // phpcs:ignore ?></div>
+							<div class="np-panel__nav">
+								<button class="np-btn np-btn--prev" onclick="<?php echo esc_js( $np_var ); ?>.goTab('drizzle')"><i class="fa fa-arrow-left"></i> <?php esc_html_e( 'Drizzle', 'pizzalayer' ); ?></button>
+								<button class="np-btn np-btn--next np-btn--cta" onclick="<?php echo esc_js( $np_var ); ?>.goTab('yourpizza')"><i class="fa fa-receipt"></i> <?php esc_html_e( 'See Your Pizza', 'pizzalayer' ); ?></button>
+							</div>
+						</section>
+						<?php do_action( 'pizzalayer_after_tab_slicing', $instance_id ); ?>
+						<?php endif; ?>
+
+						<?php if ( in_array( 'yourpizza', $visible_tabs, true ) ) : ?>
+						<?php do_action( 'pizzalayer_before_tab_yourpizza', $instance_id ); ?>
+						<section class="np-panel" id="<?php echo esc_attr( $instance_id ); ?>-panel-yourpizza" role="tabpanel">
+							<div class="np-panel__header">
+								<h2 class="np-panel__title"><i class="fa fa-receipt"></i> <?php esc_html_e( 'Your Pizza', 'pizzalayer' ); ?></h2>
+								<p class="np-panel__hint"><?php esc_html_e( "Here's everything you've built!", 'pizzalayer' ); ?></p>
+							</div>
+							<div class="np-yourpizza" id="<?php echo esc_attr( $instance_id ); ?>-summary">
+								<?php
+								$summary_rows = [
+									'crust'    => [ 'fa-circle',      __( 'Crust',    'pizzalayer' ) ],
+									'sauce'    => [ 'fa-droplet',     __( 'Sauce',    'pizzalayer' ) ],
+									'cheese'   => [ 'fa-cheese',      __( 'Cheese',   'pizzalayer' ) ],
+									'toppings' => [ 'fa-seedling',    __( 'Toppings', 'pizzalayer' ) ],
+									'drizzle'  => [ 'fa-wine-glass',  __( 'Drizzle',  'pizzalayer' ) ],
+									'slicing'  => [ 'fa-pizza-slice', __( 'Slicing',  'pizzalayer' ) ],
+								];
+								foreach ( $summary_rows as $key => [ $ico, $label ] ) :
+								?>
+								<div class="np-yourpizza__row" id="<?php echo esc_attr( $instance_id ); ?>-yp-<?php echo esc_attr( $key ); ?>">
+									<div class="np-yourpizza__icon"><i class="fa <?php echo esc_attr( $ico ); ?>"></i></div>
+									<div class="np-yourpizza__layer-name"><?php echo esc_html( $label ); ?></div>
+									<div class="np-yourpizza__selection np-yourpizza__selection--empty" id="<?php echo esc_attr( $instance_id . '-yp-' . $key . '-val' ); ?>">
+										<span class="np-yp-none">— <?php esc_html_e( 'none selected', 'pizzalayer' ); ?> —</span>
+									</div>
+									<button class="np-yourpizza__edit" onclick="<?php echo esc_js( $np_var ); ?>.goTab('<?php echo esc_js( $key ); ?>')"><i class="fa fa-pen"></i></button>
+								</div>
+								<?php endforeach; ?>
+							</div>
+							<div class="np-panel__nav">
+								<button class="np-btn np-btn--prev" onclick="<?php echo esc_js( $np_var ); ?>.goTab('slicing')"><i class="fa fa-arrow-left"></i> <?php esc_html_e( 'Back', 'pizzalayer' ); ?></button>
+								<button class="np-btn np-btn--ghost" onclick="ClearPizza(); window['<?php echo esc_js( $np_var ); ?>']&&window['<?php echo esc_js( $np_var ); ?>'].resetAll();"><i class="fa fa-rotate-left"></i> <?php esc_html_e( 'Start Over', 'pizzalayer' ); ?></button>
+							</div>
+						</section>
+						<?php do_action( 'pizzalayer_after_tab_yourpizza', $instance_id ); ?>
+						<?php endif; ?>
+
+					</div><!-- /.np-panels -->
+				</div><!-- /.np-builder -->
+			</div><!-- /.np-tabs-col -->
+
+		</div><!-- /.np-layout__row -->
+	</div><!-- /.np-layout -->
+
+	<div id="<?php echo esc_attr( $instance_id ); ?>-fly-container" aria-hidden="true"></div>
+
+</div><!-- /#<?php echo esc_html( $instance_id ); ?> .np-root -->
+
+<?php
+// Initialize this instance's NP namespace via inline script
+$np_json_instance = wp_json_encode( $instance_id );
+echo "<script>
+if (typeof NP !== 'undefined' && typeof NP.createInstance === 'function') {
+    var " . esc_js( $np_var ) . " = NP.createInstance(" . $np_json_instance . ");
+}
+</script>\n";
