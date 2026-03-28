@@ -87,8 +87,6 @@ class AdminMenu {
 			$label = '<span class="pzl-cpt-item">'
 			       . '<span class="pzl-cpt-icon">' . $meta['icon'] . '</span>'
 			       . '<span class="pzl-cpt-label">' . esc_html( $meta['label'] ) . '</span>'
-			       . '<a href="' . esc_url( admin_url( 'post-new.php?post_type=pizzalayer_' . $slug ) ) . '"'
-			       . ' class="pzl-cpt-addnew" title="Add New ' . esc_attr( $meta['singular'] ) . '" onclick="event.stopPropagation();">+</a>'
 			       . '</span>';
 
 			// Using the full URL as the $menu_slug — WP renders it as-is in <a href>

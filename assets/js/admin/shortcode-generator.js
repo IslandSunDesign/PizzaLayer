@@ -43,6 +43,10 @@
 			var dc  = val( 'b-default-crust' ); if ( dc )          { attrs.push( 'default_crust="' + dc + '"' ); }
 			var ds  = val( 'b-default-sauce' ); if ( ds )          { attrs.push( 'default_sauce="' + ds + '"' ); }
 			var dch = val( 'b-default-cheese' ); if ( dch )        { attrs.push( 'default_cheese="' + dch + '"' ); }
+			var shp = val( 'b-pizza-shape' );  if ( shp )          { attrs.push( 'pizza_shape="' + shp + '"' ); }
+			var asp = val( 'b-pizza-aspect' ); if ( asp )          { attrs.push( 'pizza_aspect="' + asp + '"' ); }
+			var rad = val( 'b-pizza-radius' ); if ( rad )          { attrs.push( 'pizza_radius="' + rad + '"' ); }
+			var ani = val( 'b-layer-anim' );   if ( ani )          { attrs.push( 'layer_anim="' + ani + '"' ); }
 			var allCbs    = document.querySelectorAll( '.pscg-cb-tab' );
 			var hiddenTabs = [];
 			allCbs.forEach( function ( cb ) { if ( ! cb.checked ) { hiddenTabs.push( cb.value ); } } );
@@ -79,7 +83,7 @@
 		output.textContent = sc;
 	}
 
-	document.querySelectorAll( '.pscg-input, .pscg-select, .pscg-cb-tab' ).forEach( function ( el ) {
+	document.querySelectorAll( '.pscg-input, .pscg-select, .pscg-cb-tab, #b-pizza-shape, #b-pizza-aspect, #b-pizza-radius, #b-layer-anim' ).forEach( function ( el ) {
 		el.addEventListener( 'change', buildShortcode );
 		el.addEventListener( 'input',  buildShortcode );
 	} );

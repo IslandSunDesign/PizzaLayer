@@ -265,6 +265,13 @@ class AdminBar {
 		// ── Inject styles — works on both admin and front-end bar ────────
 		add_action( 'admin_head', [ $this, 'print_styles' ] );
 		add_action( 'wp_head',    [ $this, 'print_styles' ] );
+
+		// Ensure dashicons are available on the front end (for the admin bar)
+		add_action( 'wp_enqueue_scripts', function() {
+			if ( is_admin_bar_showing() ) {
+				wp_enqueue_style( 'dashicons' );
+			}
+		} );
 	}
 
 	public function print_styles(): void {
@@ -284,13 +291,18 @@ class AdminBar {
 
 		/* Dropdown icons */
 		#wpadminbar .pzlab-icon {
-			font-size: 14px !important;
-			width: 14px !important;
-			height: 14px !important;
+			font-family: dashicons !important;
+			font-size: 16px !important;
+			width: 16px !important;
+			height: 16px !important;
+			line-height: 1 !important;
+			display: inline-block !important;
 			vertical-align: middle !important;
 			margin-right: 5px !important;
-			opacity: .7 !important;
+			opacity: .85 !important;
 			flex-shrink: 0;
+			position: relative;
+			top: -1px;
 		}
 
 		/* Group headers — visual separators with uppercase label */

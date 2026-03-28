@@ -58,6 +58,12 @@ final class Plugin {
 		$rest_api = new Api\PizzaRestApi();
 		$this->loader->add_action( 'rest_api_init', $rest_api, 'register_routes' );
 
+		// ── Live template preview override (front-end + admin) ───────────
+		// Must run outside is_admin() — the iframe loads on the front-end.
+		// A signed ?pzl_preview=slug&pzl_nonce=HASH request temporarily
+		// swaps the active template for that page-load only (no DB write).
+		$this->loader->add_action( 'init', $this, 'handle_preview_override', 1 );
+
 		// Admin
 		if ( is_admin() ) {
 			$admin_menu = new Admin\AdminMenu();
@@ -131,5 +137,61 @@ final class Plugin {
 
 		update_option( 'pizzalayer_setting_global_template', $slug );
 		wp_send_json_success( [ 'slug' => $slug ] );
+	}
+
+	/**
+	 * If a valid ?pzl_preview=slug&pzl_nonce=hash is present, swap the active
+	 * template option for this request only (no DB write).
+	 * Only works for logged-in users with manage_options capability.
+	 */
+	public function handle_preview_override(): void {
+		if ( empty( $_GET['pzl_preview'] ) || empty( $_GET['pzl_nonce'] ) ) {
+			return;
+		}
+		$slug  = sanitize_key( wp_unslash( $_GET['pzl_preview'] ) );
+		$nonce = sanitize_text_field( wp_unslash( $_GET['pzl_nonce'] ) );
+
+		// Nonce is action-specific. wp_verify_nonce returns 1 or 2 on success.
+		if ( ! wp_verify_nonce( $nonce, 'pizzalayer_preview_' . $slug ) ) {
+			return;
+		}
+
+		// Validate slug exists
+		$loader    = new Template\TemplateLoader();
+		$templates = $loader->get_available_templates();
+		if ( ! isset( $templates[ $slug ] ) ) {
+			return;
+		}
+
+		// Override the option in-memory for this request only (no DB write)
+		add_filter( 'option_pizzalayer_setting_global_template', function() use ( $slug ) {
+			return $slug;
+		} );
+
+		// Remove X-Frame-Options so the admin iframe can embed the page.
+		// WordPress sets SAMEORIGIN by default; security plugins may set DENY.
+		// For same-origin admin preview, we need to clear this header.
+		add_filter( 'x_frame_options', '__return_false' );
+		add_filter( 'wp_headers', function( $headers ) {
+			unset( $headers['X-Frame-Options'] );
+			if ( isset( $headers['Content-Security-Policy'] ) ) {
+				$headers['Content-Security-Policy'] = preg_replace(
+					'/frame-ancestors[^;]*;?/',
+					'frame-ancestors \'self\';',
+					$headers['Content-Security-Policy']
+				);
+			}
+			return $headers;
+		} );
+
+		// Body class signals we are in preview mode
+		add_filter( 'body_class', function( $classes ) use ( $slug ) {
+			$classes[] = 'pizzalayer-preview-mode';
+			$classes[] = 'pizzalayer-preview-' . $slug;
+			return $classes;
+		} );
+
+		// Hide admin bar for a cleaner preview
+		add_filter( 'show_admin_bar', '__return_false' );
 	}
 }

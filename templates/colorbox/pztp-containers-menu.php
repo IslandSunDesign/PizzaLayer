@@ -42,6 +42,7 @@ $pizza_radius  = sanitize_text_field( $atts['pizza_radius']  ?? get_option( 'piz
 $valid_anims   = [ 'fade', 'scale-in', 'slide-up', 'flip-in', 'drop-in', 'instant' ];
 $layer_anim    = sanitize_key( $atts['layer_anim'] ?? get_option( 'pizzalayer_setting_layer_anim', 'fade' ) );
 if ( ! in_array( $layer_anim, $valid_anims, true ) ) { $layer_anim = 'fade'; }
+$layer_anim_speed = max( 80, min( 800, (int) get_option( 'pizzalayer_setting_layer_anim_speed', 320 ) ) );
 
 // Resolve hidden tabs
 $hide_tabs_raw = $atts['hide_tabs'] ?? '';
@@ -250,7 +251,8 @@ $initial_pizza = $builder->build_dynamic(
      data-pizza-shape="<?php echo esc_attr( $pizza_shape ); ?>"
      data-pizza-aspect="<?php echo esc_attr( $pizza_aspect ); ?>"
      data-pizza-radius="<?php echo esc_attr( $pizza_radius ); ?>"
-     data-layer-anim="<?php echo esc_attr( $layer_anim ); ?>">
+     data-layer-anim="<?php echo esc_attr( $layer_anim ); ?>"
+     data-layer-anim-speed="<?php echo esc_attr( (string) $layer_anim_speed ); ?>">
 
 	<!-- Mobile mini-bar -->
 	<div class="cb-mobile-preview-bar">

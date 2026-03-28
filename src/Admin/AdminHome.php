@@ -527,14 +527,17 @@ class AdminHome {
 		}
 		.plh-tab {
 			display: inline-flex; align-items: center; gap: 6px;
-			padding: 10px 14px; border: none; border-bottom: 2px solid transparent;
+			padding: 8px 14px; border: none; border-bottom: 2px solid transparent;
 			background: transparent; cursor: pointer; font-size: 13px; font-weight: 500;
-			color: #646970; white-space: nowrap; margin-bottom: -2px;
+			color: #646970; white-space: nowrap; margin-bottom: -2px; line-height: 1;
 			transition: color .15s, border-color .15s;
 		}
 		.plh-tab:hover { color: #1d2023; }
 		.plh-tab--active { color: #2271b1; border-bottom-color: #2271b1; font-weight: 600; }
-		.plh-tab .dashicons { font-size: 14px !important; width: 14px !important; height: 14px !important; }
+		.plh-tab .dashicons {
+			font-size: 14px !important; width: 14px !important; height: 14px !important;
+			line-height: 1 !important; vertical-align: middle; flex-shrink: 0;
+		}
 		.plh-tab__count {
 			background: #e0e3e7; color: #646970; border-radius: 999px;
 			font-size: 10px; font-weight: 700; padding: 1px 6px; min-width: 16px; text-align: center;

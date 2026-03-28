@@ -128,8 +128,41 @@ class ShortcodeGenerator {
 							</select>
 						</div>
 					</div>
+					<!-- Shape & animation -->
+					<div class="pscg-grid" style="margin-top:14px;">
+						<div class="pscg-field">
+							<label>Pizza Shape <span class="pscg-hint">Overrides global setting</span></label>
+							<select class="pscg-select" id="b-pizza-shape">
+								<option value="">— use global setting —</option>
+								<option value="round">⬤ Round</option>
+								<option value="square">■ Square</option>
+								<option value="rectangle">▬ Rectangle / Oval</option>
+								<option value="custom">✦ Custom</option>
+							</select>
+						</div>
+						<div class="pscg-field">
+							<label>Aspect Ratio <span class="pscg-hint">rectangle &amp; custom</span></label>
+							<input type="text" class="pscg-input" id="b-pizza-aspect" placeholder="4 / 3">
+						</div>
+						<div class="pscg-field">
+							<label>Border Radius <span class="pscg-hint">custom shape only</span></label>
+							<input type="text" class="pscg-input" id="b-pizza-radius" placeholder="8px">
+						</div>
+						<div class="pscg-field">
+							<label>Layer Animation <span class="pscg-hint">Overrides global setting</span></label>
+							<select class="pscg-select" id="b-layer-anim">
+								<option value="">— use global setting —</option>
+								<option value="fade">✦ Fade In</option>
+								<option value="scale-in">⊕ Scale In (bouncy)</option>
+								<option value="slide-up">↑ Slide Up</option>
+								<option value="flip-in">↻ Flip In (3-D)</option>
+								<option value="drop-in">↓ Drop In</option>
+								<option value="instant">⚡ Instant</option>
+							</select>
+						</div>
+					</div>
 					<!-- Tabs visibility -->
-					<div class="pscg-field pscg-field--full">
+					<div class="pscg-field pscg-field--full" style="margin-top:14px;">
 						<label>Visible Tabs <span class="pscg-hint">Uncheck to hide a tab from the builder. Leave all checked to show all.</span></label>
 						<div class="pscg-checkboxes">
 							<?php foreach ( $all_tabs as $tab ) : ?>

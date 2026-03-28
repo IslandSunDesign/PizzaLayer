@@ -55,7 +55,8 @@
          * Modes: fade | scale-in | slide-up | flip-in | drop-in | instant
          */
         _animateLayerIn: function ($img, $stage, mode) {
-            var dur = 320; // ms — base duration
+            var $root = $stage.closest('[data-layer-anim-speed]');
+            var dur = $root.length ? (parseInt($root.data('layer-anim-speed'), 10) || 320) : 320;
 
             /* Reset any in-progress animation */
             $img.css({ transition: 'none', opacity: 0, transform: '', filter: '' });

@@ -24,6 +24,15 @@ class SetupGuide {
 			update_option( 'pizzalayer_setup_done', $done );
 		}
 
+		// Handle quickstart CTA dismissal
+		if (
+			isset( $_GET['pizzalayer_dismiss_quickstart_cta'] )
+			&& check_admin_referer( 'pizzalayer_dismiss_quickstart_cta' )
+		) {
+			update_user_meta( get_current_user_id(), 'pizzalayer_quickstart_cta_dismissed', true );
+		}
+		$show_quickstart_cta = ! get_user_meta( get_current_user_id(), 'pizzalayer_quickstart_cta_dismissed', true );
+
 		$done = get_option( 'pizzalayer_setup_done', [] );
 
 		// ── Live stats for auto-detection ───────────────────────────────
@@ -408,6 +417,26 @@ class SetupGuide {
 			</div>
 		</div>
 
+		<!-- ══ Quickstart CTA ══════════════════════════════════════════ -->
+		<?php if ( $show_quickstart_cta ) : ?>
+		<div class="psg-quickstart-cta">
+			<div class="psg-quickstart-cta__icon">🚀</div>
+			<div class="psg-quickstart-cta__body">
+				<strong>New to PizzaLayer?</strong> Head to the full Help &amp; Reference page for the complete Quickstart guide — five clear steps from a blank install to a live interactive builder.
+				<div class="psg-quickstart-cta__actions">
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-help&section=quickstart' ) ); ?>" class="button button-primary">
+						<span class="dashicons dashicons-book-alt"></span> View Quickstart Guide
+					</a>
+					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-help' ) ); ?>" class="button">
+						<span class="dashicons dashicons-editor-help"></span> Help &amp; Reference
+					</a>
+				</div>
+			</div>
+			<a href="<?php echo esc_url( wp_nonce_url( add_query_arg( 'pizzalayer_dismiss_quickstart_cta', '1' ), 'pizzalayer_dismiss_quickstart_cta' ) ); ?>"
+			   class="psg-quickstart-cta__dismiss" title="<?php esc_attr_e( 'Dismiss', 'pizzalayer' ); ?>">✕</a>
+		</div>
+		<?php endif; ?>
+
 		<!-- ══ Help footer ════════════════════════════════════════════ -->
 		<div class="psg-card psg-card--help">
 			<span class="dashicons dashicons-sos"></span>
@@ -484,6 +513,24 @@ class SetupGuide {
 	.psg-card--help h3 { margin:0 0 3px; font-size:14px; }
 	.psg-card--help p { margin:0; font-size:13px; color:#646970; }
 	.psg-card--help > div { flex:1; }
+	/* Quickstart CTA */
+	.psg-quickstart-cta {
+		display:flex; align-items:flex-start; gap:14px;
+		background:linear-gradient(135deg,#f0f6ff,#e8f3ff); border:1px solid #b9d4f5;
+		border-radius:10px; padding:18px 20px; margin-bottom:20px; position:relative;
+	}
+	.psg-quickstart-cta__icon { font-size:26px; flex-shrink:0; margin-top:1px; }
+	.psg-quickstart-cta__body { flex:1; font-size:13px; color:#1d2023; line-height:1.6; }
+	.psg-quickstart-cta__body strong { font-weight:700; }
+	.psg-quickstart-cta__actions { display:flex; gap:8px; flex-wrap:wrap; margin-top:12px; }
+	.psg-quickstart-cta__actions .button { display:inline-flex; align-items:center; gap:5px; }
+	.psg-quickstart-cta__actions .dashicons { font-size:14px !important; width:14px !important; height:14px !important; }
+	.psg-quickstart-cta__dismiss {
+		color:#787c82; text-decoration:none; font-size:14px; flex-shrink:0;
+		padding:4px 7px; border-radius:4px; transition:background .15s; line-height:1;
+		border:1px solid transparent;
+	}
+	.psg-quickstart-cta__dismiss:hover { background:#dce8f7; color:#2271b1; border-color:#b9d4f5; }
 	</style>
 	<?php }
 }
