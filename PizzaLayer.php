@@ -61,6 +61,7 @@ include plugin_dir_path( __FILE__ ) . 'includes/admin/shortcode-generator.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/preset-pizza-builder.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/price-grid.php';
 include plugin_dir_path( __FILE__ ) . 'includes/admin/template-choice.php';
+include plugin_dir_path( __FILE__ ) . 'includes/admin/test-template-preview.php';
 
 
 /* +===  CUSTOMIZER CSS  +=========  */
@@ -68,6 +69,7 @@ include plugin_dir_path(__FILE__) . 'includes/public/topper-ui-css.php';
 
 /* +===  PIZZA BUILDER  +=========  */
 include plugin_dir_path(__FILE__) . 'includes/builder/topper-ui-pizza-layers.php';
+include plugin_dir_path(__FILE__) . 'includes/builder/topper-ui-pizza-layers-object.php';
 include plugin_dir_path(__FILE__) . 'includes/builder/topper-ui-pizza-builder.php';
 
 /* +===  CREATE CPTs FOR TOPPINGS, SAUCES, CRUSTS +=========  */

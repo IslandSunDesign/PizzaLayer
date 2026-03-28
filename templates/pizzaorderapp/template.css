@@ -6,11 +6,69 @@
 .pztp-mobileorder-wrapper { display:flex; flex-direction:column; width:100%;height:100vh; overflow:hidden; }
 #pztp-mobileorder-header { padding:1em; text-align:center; background:#fff;margin-bottom:0; }
 #pztp-logo { width:80px; border-radius:50%; }
-#pztp-mobileorder-nav-dropdown { display:none; width:100%; padding:12px 24px; font-size:1em; background:#eee; border:none; }
-#pztp-mobileorder-nav { display:flex; justify-content:center; background:#fff;height:auto; }
 
-.tab-btn { border:none; background:none;padding: 16px 32px; cursor:pointer; transition:background 0.5s; border:solid 1px rgba(0,0,0,.2); font-size:14px;margin:0px 6px; }
-.tab-btn.active, .tab-btn:hover { background:#ddd; border:solid 1px #ddd; }
+/* Nav: tabs row + responsive dropdown */
+#pztp-mobileorder-nav{
+  display:flex; flex-wrap:nowrap; justify-content:center; align-items:center; gap:.5rem;
+  background:var(--pz-surface);
+  height:auto;
+  padding:.5rem 1rem;
+  overflow:auto;
+  -webkit-overflow-scrolling: touch;
+  border-bottom:1px solid var(--pz-border);
+}
+
+#pztp-mobileorder-nav::-webkit-scrollbar{ height:6px; }
+#pztp-mobileorder-nav::-webkit-scrollbar-thumb{ background:var(--pz-border); border-radius:999px; }
+
+#pztp-mobileorder-nav-dropdown{
+  display:none;
+  width:100%;
+  padding:12px 14px;
+  font-size:1rem;
+  background:var(--pz-surface-alt);
+  border:1px solid var(--pz-border);
+  border-radius: var(--pz-radius-sm);
+}
+
+/* Modern tab buttons */
+.tab-btn{
+  position:relative;
+  border:none;
+  background:transparent;
+  padding:.65rem .9rem;
+  cursor:pointer;
+  font-size:14px;
+  font-weight:600;
+  color:var(--pz-muted);
+  border-radius:999px;
+  transition: background .2s ease, color .2s ease, transform .06s ease;
+  outline: none;
+}
+
+.tab-btn:hover{ background:rgba(0,0,0,.04); color:var(--pz-text); }
+@media (prefers-color-scheme: dark){
+  .tab-btn:hover{ background:rgba(255,255,255,.06); }
+}
+
+/* Active tab pill + underline indicator */
+.tab-btn.active{
+  color:var(--pz-primary);
+  background:var(--pz-primary-50);
+}
+.tab-btn.active::after{
+  content:"";
+  position:absolute;
+  left:14px; right:14px; bottom:-10px;
+  height:3px;
+  background:var(--pz-primary);
+  border-radius:999px;
+}
+
+/* Keyboard focus */
+.tab-btn:focus-visible{
+  box-shadow: 0 0 0 3px color-mix(in oklab, var(--pz-primary) 30%, transparent);
+}
 
 #pztp-mobileorder-preview { flex-shrink:0; display:flex; justify-content:center; align-items:center; height:40%; background:#fff;overflow:hidden;padding:1% 0; }
 #pztp-mobileorder-content { flex-grow:1; overflow-y:auto; padding:1em; border:solid 1px rgba(0,0,0,.2);}
