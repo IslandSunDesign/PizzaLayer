@@ -218,6 +218,13 @@ class TemplateChoice {
 
 					<!-- Action -->
 					<div class="ptc-item__action">
+						<?php if ( $purl ) : ?>
+						<button type="button" class="button ptc-preview-btn"
+						        data-preview-url="<?php echo esc_attr( $purl ); ?>"
+						        data-name="<?php echo esc_attr( $info['name'] ?? $slug ); ?>">
+							<span class="dashicons dashicons-visibility"></span> Preview
+						</button>
+						<?php endif; ?>
 						<?php if ( $is_active ) : ?>
 						<span class="ptc-item__check dashicons dashicons-yes-alt"></span>
 						<?php else : ?>
@@ -466,12 +473,15 @@ class TemplateChoice {
 	.ptc-item__tag { background:#ebebeb; color:#555; font-size:10px; padding:1px 5px; border-radius:3px; }
 
 	/* Action column */
-	.ptc-item__action { flex-shrink: 0; }
+	.ptc-item__action { flex-shrink: 0; display: flex; align-items: center; gap: 6px; flex-wrap: wrap; justify-content: flex-end; }
 	.ptc-item__check {
 		color: #00a32a;
 		font-size: 22px !important; width: 22px !important; height: 22px !important;
 	}
 	.ptc-item__action .button { font-size:12px; padding:4px 10px; }
+	.ptc-preview-btn { display:inline-flex !important; align-items:center; gap:4px; }
+	.ptc-preview-btn .dashicons { font-size:13px !important; width:13px !important; height:13px !important; }
+	.ptc-item--previewing .ptc-preview-btn { background:#dce8f7 !important; border-color:#2271b1 !important; color:#2271b1 !important; }
 
 	/* Dev card at bottom */
 	.ptc-list__devcard {

@@ -264,7 +264,68 @@ class AdminHome {
 				<?php do_action( 'pizzalayer_admin_home_quicknav' ); ?>
 			</div>
 
-			<!-- ══ Layer Manager ══════════════════════════════════════════ -->
+			<!-- ══ Hero intro ══════════════════════════════════════════════ -->
+			<div class="plh-hero">
+				<div class="plh-hero__inner">
+					<div class="plh-hero__copy">
+						<h2 class="plh-hero__heading">Build beautiful pizza builders — one layer at a time.</h2>
+						<p class="plh-hero__text">PizzaLayer turns your WordPress site into an interactive pizza configurator. Add your ingredients as layer images, choose a template, drop in a shortcode, and your customers build their perfect pizza in real time.</p>
+						<div class="plh-hero__steps">
+							<div class="plh-hero__step">
+								<span class="plh-hero__step-num">1</span>
+								<span><strong>Add content</strong> — upload crusts, sauces, cheeses &amp; toppings as layer images.</span>
+							</div>
+							<div class="plh-hero__step">
+								<span class="plh-hero__step-num">2</span>
+								<span><strong>Choose a template</strong> — pick the visual style for your builder UI.</span>
+							</div>
+							<div class="plh-hero__step">
+								<span class="plh-hero__step-num">3</span>
+								<span><strong>Embed &amp; go</strong> — paste <code>[pizza_builder]</code> on any page and you're live.</span>
+							</div>
+						</div>
+						<div class="plh-hero__btns">
+							<a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-setup') ); ?>" class="button button-primary">
+								<span class="dashicons dashicons-welcome-learn-more"></span> Setup Guide
+							</a>
+							<a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-template') ); ?>" class="button">
+								<span class="dashicons dashicons-admin-appearance"></span> Choose Template
+							</a>
+							<a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-shortcodes') ); ?>" class="button">
+								<span class="dashicons dashicons-editor-code"></span> Shortcodes
+							</a>
+						</div>
+					</div>
+					<div class="plh-hero__stats-side">
+						<div class="plh-hero__stat-pill">
+							<span class="dashicons dashicons-admin-appearance plh-hero__pill-icon"></span>
+							<div>
+								<span class="plh-hero__pill-label">Active Template</span>
+								<span class="plh-hero__pill-val"><?php echo esc_html( $active_template ? ucwords( str_replace('-',' ',$active_template) ) : 'Not set' ); ?></span>
+							</div>
+						</div>
+						<div class="plh-hero__stat-pill">
+							<span class="dashicons dashicons-images-alt2 plh-hero__pill-icon"></span>
+							<div>
+								<span class="plh-hero__pill-label">Total Layers Published</span>
+								<span class="plh-hero__pill-val"><?php echo esc_html( $total ); ?></span>
+							</div>
+						</div>
+						<div class="plh-hero__stat-pill">
+							<span class="dashicons dashicons-star-filled plh-hero__pill-icon"></span>
+							<div>
+								<span class="plh-hero__pill-label">Toppings</span>
+								<span class="plh-hero__pill-val"><?php echo esc_html( $stats['toppings'] ); ?></span>
+							</div>
+						</div>
+						<a href="<?php echo esc_url( home_url('/') ); ?>" target="_blank" rel="noopener" class="plh-hero__view-site">
+							<span class="dashicons dashicons-external"></span> View Site
+						</a>
+					</div>
+				</div>
+			</div>
+
+			<!-- ══ Layer Manager ══════════════════════════════════════════════ -->
 			<div class="plh-card plh-card--tabs">
 				<div class="plh-card__head">
 					<h2 class="plh-card__title">
@@ -592,6 +653,50 @@ class AdminHome {
 		.plh-credits { padding: 8px 0 24px; font-size: 12px; color: #aaa; }
 		.plh-credits a { color: #aaa; text-decoration: none; }
 		.plh-credits a:hover { color: #2271b1; }
+
+		/* ── Hero intro ────────────────────────────────────────────────── */
+		.plh-hero {
+			background: linear-gradient(135deg,#1a1e23 0%,#2d3748 60%,#1e3a5f 100%);
+			border-radius: 10px; margin-bottom: 20px; overflow: hidden;
+		}
+		.plh-hero__inner {
+			display: flex; align-items: flex-start; gap: 28px;
+			padding: 28px 28px 24px; flex-wrap: wrap;
+		}
+		.plh-hero__copy { flex: 1; min-width: 260px; }
+		.plh-hero__heading { margin: 0 0 10px; font-size: 20px; font-weight: 700; color: #fff; line-height: 1.3; }
+		.plh-hero__text { margin: 0 0 18px; font-size: 13px; color: #a0aec0; line-height: 1.65; }
+		.plh-hero__steps { display: flex; flex-direction: column; gap: 8px; margin-bottom: 20px; }
+		.plh-hero__step { display: flex; align-items: flex-start; gap: 10px; font-size: 13px; color: #cbd5e0; }
+		.plh-hero__step-num {
+			display: flex; align-items: center; justify-content: center;
+			width: 22px; height: 22px; border-radius: 50%;
+			background: #ff6b35; color: #fff; font-size: 11px; font-weight: 700; flex-shrink: 0; margin-top: 1px;
+		}
+		.plh-hero__step strong { color: #fff; }
+		.plh-hero__step code { background: rgba(255,255,255,.12); padding: 1px 5px; border-radius: 3px; font-size: 11px; color: #a3d977; }
+		.plh-hero__btns { display: flex; gap: 8px; flex-wrap: wrap; }
+		.plh-hero__btns .button { display: inline-flex !important; align-items: center; gap: 5px; }
+		.plh-hero__btns .dashicons { font-size: 14px !important; width: 14px !important; height: 14px !important; }
+		.plh-hero__stats-side {
+			display: flex; flex-direction: column; gap: 10px;
+			min-width: 180px; padding-top: 4px;
+		}
+		.plh-hero__stat-pill {
+			display: flex; align-items: center; gap: 10px;
+			background: rgba(255,255,255,.07); border-radius: 8px; padding: 10px 14px;
+		}
+		.plh-hero__pill-icon { font-size: 18px !important; width: 18px !important; height: 18px !important; color: #ff6b35; flex-shrink: 0; }
+		.plh-hero__pill-label { display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #718096; margin-bottom: 2px; }
+		.plh-hero__pill-val { display: block; font-size: 15px; font-weight: 700; color: #fff; }
+		.plh-hero__view-site {
+			display: inline-flex; align-items: center; gap: 6px;
+			font-size: 12px; color: #a0aec0; text-decoration: none;
+			padding: 8px 14px; border: 1px solid rgba(255,255,255,.12);
+			border-radius: 6px; transition: background .15s, color .15s; margin-top: 4px;
+		}
+		.plh-hero__view-site:hover { background: rgba(255,255,255,.08); color: #fff; }
+		.plh-hero__view-site .dashicons { font-size: 13px !important; width: 13px !important; height: 13px !important; }
 		</style>
 		<?php
 	}

@@ -96,6 +96,7 @@ class AdminMenu {
 		add_submenu_page( 'pizzalayer', '', '<span class="pzl-menu-group-header">Tools</span>', 'manage_options', 'pizzalayer-group-tools', '__return_null' );
 
 		// ── Tool pages ───────────────────────────────────────────────────
+		add_submenu_page( 'pizzalayer', __( 'Layer Image Maker',   'pizzalayer' ), __( 'Layer Image Maker',   'pizzalayer' ), 'manage_options', 'pizzalayer-layer-maker',[ $this, 'render_layer_maker'] );
 		add_submenu_page( 'pizzalayer', __( 'Setup Guide',         'pizzalayer' ), __( 'Setup Guide',         'pizzalayer' ), 'manage_options', 'pizzalayer-setup',      [ $this, 'render_setup'      ] );
 		add_submenu_page( 'pizzalayer', __( 'Shortcode Generator', 'pizzalayer' ), __( 'Shortcode Generator', 'pizzalayer' ), 'manage_options', 'pizzalayer-shortcodes', [ $this, 'render_shortcodes' ] );
 		add_submenu_page( 'pizzalayer', __( 'Template',            'pizzalayer' ), __( 'Template',            'pizzalayer' ), 'manage_options', 'pizzalayer-template',   [ $this, 'render_template'   ] );
@@ -148,11 +149,9 @@ class AdminMenu {
 			box-shadow: none !important;
 		}
 
-		/* Make WP's submenu <a> a flex row so our spans can spread out */
-		#adminmenu #adminmenu-pizzalayer .wp-submenu a,
-		#adminmenu .wp-submenu li a {
-			/* WP default is display:block — we only override for our CPT items */
-		}
+		/* Make WP's submenu <a> a flex row — scoped to submenu only, not top-level */
+		#adminmenu #toplevel_page_pizzalayer > a { display: block !important; text-align: left !important; }
+		#adminmenu #toplevel_page_pizzalayer .wp-menu-name { text-align: left !important; display: inline !important; }
 		#adminmenu li:has(.pzl-cpt-item) > a {
 			display: flex !important;
 			align-items: center !important;
@@ -225,6 +224,7 @@ class AdminMenu {
 	}
 
 	// ── Page renderers ────────────────────────────────────────────────
+	public function render_layer_maker():   void { ( new LayerImageMaker() )->render(); }
 	public function render_home():       void { ( new AdminHome() )->render(); }
 	public function render_content():    void { ( new ContentHub() )->render(); }
 	public function render_setup():      void { ( new SetupGuide() )->render(); }

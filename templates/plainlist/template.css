@@ -1,0 +1,437 @@
+/*
+ * Plainlist Template — template.css
+ * A clean, text-first checklist layout with zero image dependency.
+ *
+ * All variable defaults here are overridden by the CSS vars injected
+ * by pztp-template-custom.php from saved settings.
+ */
+
+/* ── Root / Reset ─────────────────────────────────────────────────── */
+.pl-root {
+	--pl-accent:         #1a1a1a;
+	--pl-bg:             #ffffff;
+	--pl-heading-color:  #111111;
+	--pl-item-color:     #333333;
+	--pl-divider:        #e0e0e0;
+	--pl-font:           -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Helvetica, Arial, sans-serif;
+	--pl-base-size:      15px;
+	--pl-heading-size:   18px;
+	--pl-heading-weight: 700;
+	--pl-text-transform: none;
+	--pl-check-size:     18px;
+	--pl-max-width:      680px;
+	--pl-section-gap:    32px;
+	--pl-item-gap:       10px;
+
+	/* Derived */
+	--pl-accent-10: color-mix(in srgb, var(--pl-accent) 10%, transparent);
+	--pl-accent-20: color-mix(in srgb, var(--pl-accent) 20%, transparent);
+
+	box-sizing: border-box;
+	background: var(--pl-bg);
+	color: var(--pl-item-color);
+	font-family: var(--pl-font);
+	font-size: var(--pl-base-size);
+	line-height: 1.5;
+	padding: 24px;
+}
+
+.pl-root *, .pl-root *::before, .pl-root *::after {
+	box-sizing: inherit;
+}
+
+/* ── Inner container ─────────────────────────────────────────────── */
+.pl-inner {
+	max-width: var(--pl-max-width);
+	margin: 0 auto;
+}
+
+/* ── Intro text ──────────────────────────────────────────────────── */
+.pl-intro {
+	margin: 0 0 24px;
+	color: var(--pl-item-color);
+	font-size: var(--pl-base-size);
+	opacity: 0.75;
+}
+
+/* ── Sections ────────────────────────────────────────────────────── */
+.pl-section {
+	margin-bottom: var(--pl-section-gap);
+}
+
+.pl-section + .pl-section {
+	padding-top: var(--pl-section-gap);
+}
+
+.pl-section--with-divider + .pl-section--with-divider {
+	border-top: 1px solid var(--pl-divider);
+}
+
+/* ── Section header ──────────────────────────────────────────────── */
+.pl-section__header {
+	display: flex;
+	align-items: baseline;
+	gap: 8px;
+	margin-bottom: 14px;
+}
+
+.pl-section__icon {
+	color: var(--pl-accent);
+	font-size: calc( var(--pl-heading-size) * 0.9 );
+	flex-shrink: 0;
+}
+
+.pl-section__title {
+	font-size: var(--pl-heading-size);
+	font-weight: var(--pl-heading-weight);
+	text-transform: var(--pl-text-transform);
+	color: var(--pl-heading-color);
+	margin: 0;
+	line-height: 1.2;
+}
+
+.pl-section__badge {
+	margin-left: auto;
+	font-size: 11px;
+	font-weight: 600;
+	color: var(--pl-accent);
+	background: var(--pl-accent-10);
+	border: 1px solid var(--pl-accent-20);
+	border-radius: 20px;
+	padding: 1px 8px;
+	line-height: 1.6;
+	white-space: nowrap;
+}
+
+/* ── Item list ───────────────────────────────────────────────────── */
+.pl-list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+	display: grid;
+	gap: var(--pl-item-gap);
+}
+
+/* Columns */
+.pl-list--cols-2 { grid-template-columns: repeat(2, 1fr); }
+.pl-list--cols-3 { grid-template-columns: repeat(3, 1fr); }
+.pl-list--cols-auto { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
+/* default (1 col) is just the block flow */
+
+/* ── Item ─────────────────────────────────────────────────────────── */
+.pl-item {
+	display: flex;
+	align-items: center;
+	gap: 10px;
+	cursor: pointer;
+	padding: 4px 2px;
+	border-radius: 4px;
+	transition: background 0.12s;
+	user-select: none;
+}
+
+.pl-item:hover {
+	background: var(--pl-accent-10);
+}
+
+.pl-item--selected {
+	color: var(--pl-accent);
+}
+
+/* Hide the real <input> but keep it accessible */
+.pl-item__input {
+	position: absolute;
+	opacity: 0;
+	width: 0;
+	height: 0;
+	pointer-events: none;
+}
+
+/* ── Custom checkbox / marker ────────────────────────────────────── */
+.pl-item__check {
+	flex-shrink: 0;
+	width: var(--pl-check-size);
+	height: var(--pl-check-size);
+	display: inline-flex;
+	align-items: center;
+	justify-content: center;
+	border: 2px solid currentColor;
+	border-radius: 3px;
+	color: var(--pl-item-color);
+	font-size: calc( var(--pl-check-size) * 0.7 );
+	transition: background 0.12s, color 0.12s, border-color 0.12s;
+	position: relative;
+}
+
+/* Round radio variant */
+.pl-root--check-radio .pl-item__check {
+	border-radius: 50%;
+}
+
+/* Bullet / dash / arrow / star — hide box, show pseudo */
+.pl-root--check-bullet .pl-item__check,
+.pl-root--check-dash   .pl-item__check,
+.pl-root--check-arrow  .pl-item__check,
+.pl-root--check-star   .pl-item__check,
+.pl-root--check-circle-dot .pl-item__check {
+	border: none;
+	background: transparent !important;
+}
+
+.pl-root--check-bullet .pl-item__check::before { content: '•'; font-size: calc( var(--pl-check-size) * 1.1 ); }
+.pl-root--check-dash   .pl-item__check::before { content: '–'; }
+.pl-root--check-arrow  .pl-item__check::before { content: '→'; }
+.pl-root--check-star   .pl-item__check::before { content: '★'; }
+.pl-root--check-circle-dot .pl-item__check {
+	border: 2px solid currentColor;
+	border-radius: 50%;
+}
+.pl-root--check-circle-dot .pl-item__check::before { content: ''; }
+.pl-root--check-circle-dot .pl-item--selected .pl-item__check::before {
+	display: block;
+	width: calc( var(--pl-check-size) * 0.45 );
+	height: calc( var(--pl-check-size) * 0.45 );
+	background: var(--pl-accent);
+	border-radius: 50%;
+}
+
+/* Checked state for checkbox/radio */
+.pl-item--selected .pl-item__check {
+	background: var(--pl-accent);
+	border-color: var(--pl-accent);
+	color: var(--pl-bg);
+}
+
+.pl-item--selected .pl-item__check::after {
+	content: '';
+	display: block;
+	width: 30%;
+	height: 55%;
+	border-right: 2px solid currentColor;
+	border-bottom: 2px solid currentColor;
+	transform: rotate(40deg) translate(-1px, -1px);
+}
+
+/* For bullet/dash/arrow/star: tint the color on selection */
+.pl-root--check-bullet .pl-item--selected .pl-item__check,
+.pl-root--check-dash   .pl-item--selected .pl-item__check,
+.pl-root--check-arrow  .pl-item--selected .pl-item__check,
+.pl-root--check-star   .pl-item--selected .pl-item__check {
+	color: var(--pl-accent);
+}
+/* suppress the checkmark pseudo on these */
+.pl-root--check-bullet .pl-item--selected .pl-item__check::after,
+.pl-root--check-dash   .pl-item--selected .pl-item__check::after,
+.pl-root--check-arrow  .pl-item--selected .pl-item__check::after,
+.pl-root--check-star   .pl-item--selected .pl-item__check::after {
+	display: none;
+}
+
+/* ── Item label ───────────────────────────────────────────────────── */
+.pl-item__label {
+	flex: 1;
+	font-size: var(--pl-base-size);
+	color: inherit;
+	line-height: 1.4;
+}
+
+.pl-item--selected .pl-item__label {
+	color: var(--pl-accent);
+	font-weight: 600;
+}
+
+.pl-item__price {
+	font-size: calc( var(--pl-base-size) * 0.9 );
+	color: var(--pl-accent);
+	opacity: 0.75;
+	margin-left: 4px;
+	white-space: nowrap;
+}
+
+/* ── Step mode ───────────────────────────────────────────────────── */
+.pl-step-wrapper {
+	position: relative;
+}
+
+.pl-section--step {
+	display: none;
+}
+
+.pl-section--step.pl-section--active {
+	display: block;
+}
+
+/* Progress bar */
+.pl-progress {
+	display: flex;
+	align-items: center;
+	gap: 8px;
+	margin-bottom: 20px;
+	font-size: calc( var(--pl-base-size) * 0.87 );
+	color: var(--pl-heading-color);
+	opacity: 0.7;
+}
+
+.pl-progress__bar-wrap {
+	flex: 1;
+	height: 3px;
+	background: var(--pl-divider);
+	border-radius: 2px;
+	overflow: hidden;
+}
+
+.pl-progress__bar {
+	height: 100%;
+	background: var(--pl-accent);
+	border-radius: 2px;
+	transition: width 0.3s ease;
+}
+
+.pl-progress__text {
+	white-space: nowrap;
+}
+
+/* Step nav buttons */
+.pl-step-nav {
+	display: flex;
+	align-items: center;
+	justify-content: space-between;
+	gap: 12px;
+	margin-top: 24px;
+	padding-top: 16px;
+	border-top: 1px solid var(--pl-divider);
+}
+
+.pl-step-nav__btn {
+	padding: 8px 18px;
+	border: 2px solid var(--pl-accent);
+	background: transparent;
+	color: var(--pl-accent);
+	font-family: var(--pl-font);
+	font-size: var(--pl-base-size);
+	font-weight: 600;
+	cursor: pointer;
+	border-radius: 4px;
+	transition: background 0.15s, color 0.15s;
+	line-height: 1;
+}
+
+.pl-step-nav__btn:hover:not(:disabled) {
+	background: var(--pl-accent);
+	color: var(--pl-bg);
+}
+
+.pl-step-nav__btn:disabled {
+	opacity: 0.35;
+	cursor: default;
+}
+
+.pl-step-nav__btn--next {
+	margin-left: auto;
+}
+
+/* ── Summary block ───────────────────────────────────────────────── */
+.pl-summary {
+	margin-top: var(--pl-section-gap);
+	padding-top: var(--pl-section-gap);
+	border-top: 2px solid var(--pl-accent);
+}
+
+.pl-summary__heading {
+	font-size: var(--pl-heading-size);
+	font-weight: var(--pl-heading-weight);
+	color: var(--pl-heading-color);
+	text-transform: var(--pl-text-transform);
+	margin: 0 0 12px;
+}
+
+.pl-summary__list {
+	list-style: none;
+	margin: 0;
+	padding: 0;
+}
+
+.pl-summary__item {
+	display: flex;
+	gap: 6px;
+	padding: 4px 0;
+	font-size: var(--pl-base-size);
+	color: var(--pl-item-color);
+	border-bottom: 1px solid var(--pl-divider);
+}
+
+.pl-summary__item:last-child {
+	border-bottom: none;
+}
+
+.pl-summary__item-section {
+	font-weight: 600;
+	min-width: 80px;
+	color: var(--pl-heading-color);
+}
+
+.pl-summary__empty {
+	color: var(--pl-item-color);
+	opacity: 0.5;
+	font-style: italic;
+}
+
+/* ── Reset button ────────────────────────────────────────────────── */
+.pl-reset-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 6px;
+	margin-top: 16px;
+	padding: 6px 14px;
+	background: transparent;
+	border: 1px solid var(--pl-divider);
+	border-radius: 4px;
+	color: var(--pl-item-color);
+	font-family: var(--pl-font);
+	font-size: calc( var(--pl-base-size) * 0.9 );
+	cursor: pointer;
+	opacity: 0.6;
+	transition: opacity 0.15s, border-color 0.15s;
+}
+
+.pl-reset-btn:hover {
+	opacity: 1;
+	border-color: var(--pl-accent);
+	color: var(--pl-accent);
+}
+
+/* ── Footer note ─────────────────────────────────────────────────── */
+.pl-footer-note {
+	margin-top: 24px;
+	padding-top: 16px;
+	border-top: 1px solid var(--pl-divider);
+	font-size: calc( var(--pl-base-size) * 0.87 );
+	color: var(--pl-item-color);
+	opacity: 0.65;
+}
+
+/* ── Action bar (WooCommerce / PizzaLayerPro hook) ───────────────── */
+.pl-action-bar {
+	margin-top: 24px;
+}
+
+/* ── Empty state ─────────────────────────────────────────────────── */
+.pl-empty {
+	color: var(--pl-item-color);
+	opacity: 0.45;
+	font-style: italic;
+	font-size: var(--pl-base-size);
+	padding: 4px 0;
+}
+
+/* ── Responsive ──────────────────────────────────────────────────── */
+@media ( max-width: 600px ) {
+	.pl-root {
+		padding: 16px;
+	}
+	.pl-list--cols-2,
+	.pl-list--cols-3,
+	.pl-list--cols-auto {
+		grid-template-columns: 1fr;
+	}
+}

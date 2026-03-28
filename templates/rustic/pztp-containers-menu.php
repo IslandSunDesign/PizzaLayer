@@ -42,7 +42,9 @@ $pizza_radius = sanitize_text_field( $atts['pizza_radius'] ?? get_option( 'pizza
 $valid_anims      = [ 'fade', 'scale-in', 'slide-up', 'flip-in', 'drop-in', 'instant' ];
 $layer_anim       = sanitize_key( $atts['layer_anim'] ?? get_option( 'pizzalayer_setting_layer_anim', 'fade' ) );
 if ( ! in_array( $layer_anim, $valid_anims, true ) ) { $layer_anim = 'fade'; }
-$layer_anim_speed = max( 80, min( 800, (int) get_option( 'pizzalayer_setting_layer_anim_speed', 320 ) ) );
+$layer_anim_speed = isset( $atts['layer_anim_speed'] ) && (int) $atts['layer_anim_speed'] > 0
+	? max( 80, min( 800, (int) $atts['layer_anim_speed'] ) )
+	: max( 80, min( 800, (int) get_option( 'pizzalayer_setting_layer_anim_speed', 320 ) ) );
 
 // Resolve hidden/visible tabs
 $hide_tabs_raw = $atts['hide_tabs'] ?? '';
@@ -198,7 +200,7 @@ function pzt_rustic_topping_card( $post, string $rp_var, int $zindex, string $ad
                 <span class="rp-coverage__label"><?php esc_html_e( 'Coverage:', 'pizzalayer' ); ?></span>
                 <div class="rp-coverage__btns">
                     <?php
-                    $coverages = [
+                    $_all_coverages_rp = [
                         'whole'               => 'Whole',
                         'half-left'           => 'Left',
                         'half-right'          => 'Right',
@@ -207,6 +209,8 @@ function pzt_rustic_topping_card( $post, string $rp_var, int $zindex, string $ad
                         'quarter-bottom-left' => 'Q3',
                         'quarter-bottom-right'=> 'Q4',
                     ];
+                    $_enabled_fracs_rp = function_exists( 'pz_get_enabled_fractions' ) ? pz_get_enabled_fractions() : array_keys( $_all_coverages_rp );
+                    $coverages         = array_intersect_key( $_all_coverages_rp, array_flip( $_enabled_fracs_rp ) );
                     foreach ( $coverages as $fraction => $label ) :
                         $js_cov = "window['{$rp_var}']&&window['{$rp_var}'].setCoverage('" . esc_js( $slug ) . "','" . esc_js( $fraction ) . "',this)";
                     ?>

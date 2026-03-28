@@ -123,7 +123,23 @@ class ContentHub {
 		$_GET['post_type']  = $active_cpt;
 		$_POST['post_type'] = $active_cpt;
 		$list_table = $this->get_list_table( $active_cpt );
-		$list_table->process_bulk_action();
+
+		// Process bulk actions first (handles delete, trash, etc.)
+		// WP needs $_REQUEST['action'] and post[] to be set correctly
+		if ( isset( $_REQUEST['action'] ) || isset( $_REQUEST['action2'] ) ) {
+			$_REQUEST['post_type'] = $active_cpt;
+			$list_table->process_bulk_action();
+			// After processing, redirect back cleanly
+			$redirect = add_query_arg( [
+				'page'   => 'pizzalayer-content',
+				'pl_cpt' => $active_slug,
+			], admin_url( 'admin.php' ) );
+			if ( ! headers_sent() ) {
+				wp_safe_redirect( $redirect );
+				exit;
+			}
+		}
+
 		$list_table->prepare_items();
 
 		$hub_url = admin_url( 'admin.php?page=pizzalayer-content' );
@@ -143,6 +159,11 @@ class ContentHub {
 				<p class="plch-header__desc" id="plch-header-desc"><?php echo esc_html( $active_meta['desc'] ); ?></p>
 			</div>
 			<div class="plch-header__actions">
+				<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=' . $active_cpt ) ); ?>"
+				   class="button plch-wp-list-btn" id="plch-wp-list-btn" title="Open native WordPress list for this post type">
+					<span class="dashicons dashicons-list-view"></span>
+					<span id="plch-wp-list-label">WP List</span>
+				</a>
 				<a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . $active_cpt ) ); ?>"
 				   class="button button-primary plch-add-btn" id="plch-add-btn">
 					<span class="dashicons dashicons-plus-alt2"></span>
@@ -167,7 +188,8 @@ class ContentHub {
 						'icon'     => $meta['icon'],
 						'color'    => $meta['color'],
 						'desc'     => $meta['desc'],
-						'addUrl'   => admin_url( 'post-new.php?post_type=pizzalayer_' . $slug ),
+						'addUrl'    => admin_url( 'post-new.php?post_type=pizzalayer_' . $slug ),
+					'wpListUrl' => admin_url( 'edit.php?post_type=pizzalayer_' . $slug ),
 					] ) );
 				?>
 				<a href="<?php echo esc_url( add_query_arg( 'pl_cpt', $slug, $hub_url ) ); ?>"
@@ -226,6 +248,63 @@ class ContentHub {
 		$active_cpt  = 'pizzalayer_' . $active_slug;
 		$active_meta = self::CPTS[ $active_slug ];
 		$hub_url     = admin_url( 'admin.php?page=pizzalayer-content' );
+
+		// ── Register thumbnail column hooks for this CPT ─────────────
+		// field names: {type}_image (thumb), {type}_layer_image (stack PNG)
+		$type = rtrim( $active_slug, 's' ); // toppings→topping, crusts→crust, etc.
+		// sizes CPT has no image field — skip
+		$has_images = $active_slug !== 'sizes';
+
+		if ( $has_images ) {
+			$col_filter = 'manage_' . $active_cpt . '_posts_columns';
+			$val_action = 'manage_' . $active_cpt . '_posts_custom_column';
+
+			add_filter( $col_filter, function( $cols ) {
+				$new = [ 'cb' => $cols['cb'] ?? '<input type="checkbox">' ];
+				$new['pzl_thumb'] = '<span title="Thumbnail">🖼</span>';
+				unset( $cols['cb'] );
+				return array_merge( $new, $cols );
+			} );
+
+			add_action( $val_action, function( $col_name, $post_id ) use ( $type ) {
+				if ( $col_name !== 'pzl_thumb' ) { return; }
+				// Try thumbnail image first, fall back to layer image
+				$thumb_url = '';
+				if ( function_exists( 'get_field' ) ) {
+					$thumb_url = (string) ( get_field( $type . '_image', $post_id ) ?? '' );
+					if ( ! $thumb_url ) {
+						$thumb_url = (string) ( get_field( $type . '_layer_image', $post_id ) ?? '' );
+					}
+				}
+				// Also try post meta directly (some setups store URL as string)
+				if ( ! $thumb_url ) {
+					$meta = get_post_meta( $post_id, $type . '_image', true );
+					if ( is_array( $meta ) && ! empty( $meta['url'] ) ) {
+						$thumb_url = $meta['url'];
+					} elseif ( is_string( $meta ) && $meta ) {
+						$thumb_url = $meta;
+					}
+				}
+				if ( ! $thumb_url ) {
+					$meta = get_post_meta( $post_id, $type . '_layer_image', true );
+					if ( is_array( $meta ) && ! empty( $meta['url'] ) ) {
+						$thumb_url = $meta['url'];
+					} elseif ( is_string( $meta ) && $meta ) {
+						$thumb_url = $meta;
+					}
+				}
+				if ( $thumb_url ) {
+					echo '<img src="' . esc_url( $thumb_url ) . '" alt="" style="width:40px;height:40px;object-fit:cover;border-radius:4px;border:1px solid #e0e3e7;display:block;">';
+				} else {
+					echo '<span style="display:inline-flex;align-items:center;justify-content:center;width:40px;height:40px;background:#f0f0f1;border-radius:4px;color:#ccc;font-size:18px;">🍕</span>';
+				}
+			}, 10, 2 );
+
+			// Column width
+			add_action( 'admin_head', function() use ( $active_cpt ) {
+				echo '<style>.column-pzl_thumb{width:52px;}</style>';
+			} );
+		}
 
 		if ( $list_table === null ) {
 			$_GET['post_type']  = $active_cpt;
@@ -292,6 +371,11 @@ class ContentHub {
 		white-space: nowrap; transition: background .2s, border-color .2s;
 	}
 	.plch-add-btn .dashicons { font-size: 15px !important; width: 15px !important; height: 15px !important; margin: 0; }
+	.plch-wp-list-btn {
+		display: inline-flex !important; align-items: center; gap: 5px;
+		white-space: nowrap;
+	}
+	.plch-wp-list-btn .dashicons { font-size: 14px !important; width: 14px !important; height: 14px !important; margin: 0; }
 
 	/* ── Layout ────────────────────────────────────────────────────── */
 	.plch-layout {

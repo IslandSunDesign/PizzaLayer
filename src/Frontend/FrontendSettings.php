@@ -462,6 +462,8 @@ class FrontendSettings {
 			// Advanced
 			'debugMode'         => self::gb( 'pizzalayer_setting_adv_debug_mode' ) ? 'yes' : 'no',
 			'logLevel'          => self::g( 'pizzalayer_setting_adv_log_level', 'off' ),
+			// Enabled topping coverage fractions
+			'enabledFractions'  => function_exists( 'pz_get_enabled_fractions' ) ? pz_get_enabled_fractions() : [ 'whole', 'half-left', 'half-right', 'quarter-top-left', 'quarter-top-right', 'quarter-bottom-left', 'quarter-bottom-right' ],
 		];
 
 		wp_localize_script( 'pizzalayer-js', 'pizzalayerSettings', $data );

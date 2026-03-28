@@ -42,7 +42,9 @@ $pizza_radius  = sanitize_text_field( $atts['pizza_radius']  ?? get_option( 'piz
 $valid_anims   = [ 'fade', 'scale-in', 'slide-up', 'flip-in', 'drop-in', 'instant' ];
 $layer_anim    = sanitize_key( $atts['layer_anim'] ?? get_option( 'pizzalayer_setting_layer_anim', 'fade' ) );
 if ( ! in_array( $layer_anim, $valid_anims, true ) ) { $layer_anim = 'fade'; }
-$layer_anim_speed = max( 80, min( 800, (int) get_option( 'pizzalayer_setting_layer_anim_speed', 320 ) ) );
+$layer_anim_speed = isset( $atts['layer_anim_speed'] ) && (int) $atts['layer_anim_speed'] > 0
+	? max( 80, min( 800, (int) $atts['layer_anim_speed'] ) )
+	: max( 80, min( 800, (int) get_option( 'pizzalayer_setting_layer_anim_speed', 320 ) ) );
 
 // Resolve hidden tabs
 $hide_tabs_raw = $atts['hide_tabs'] ?? '';
@@ -174,9 +176,11 @@ function pzt_colorbox_topping_card( $post, string $cb_var, int $zindex ): string
 				<span class="cb-coverage__label"><?php esc_html_e( 'Coverage:', 'pizzalayer' ); ?></span>
 				<div class="cb-coverage__btns">
 					<?php
-					$coverages = [ 'whole' => 'Whole', 'half-left' => 'Left', 'half-right' => 'Right',
+					$_all_coverages = [ 'whole' => 'Whole', 'half-left' => 'Left', 'half-right' => 'Right',
 					               'quarter-top-left' => 'Q1', 'quarter-top-right' => 'Q2',
 					               'quarter-bottom-left' => 'Q3', 'quarter-bottom-right' => 'Q4' ];
+					$_enabled_fracs = function_exists( 'pz_get_enabled_fractions' ) ? pz_get_enabled_fractions() : array_keys( $_all_coverages );
+					$coverages      = array_intersect_key( $_all_coverages, array_flip( $_enabled_fracs ) );
 					foreach ( $coverages as $fraction => $label ) :
 						$js_cov = "window['{$cb_var}']&&window['{$cb_var}'].setCoverage('" . esc_js( $slug ) . "','" . esc_js( $fraction ) . "',this)";
 						$ico    = 'cb-cov-ico--' . str_replace( [ 'half-', 'quarter-' ], [ '', '' ], $fraction );

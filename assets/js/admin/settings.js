@@ -94,4 +94,34 @@
 		} );
 	}
 
+
+	// ── Export: detached form to avoid nested-form HTML restriction ──
+	var $exportBtn = document.getElementById( 'pset-export-btn' );
+	if ( $exportBtn ) {
+		$exportBtn.addEventListener( 'click', function () {
+			var actionUrl = $exportBtn.getAttribute( 'data-action-url' );
+			var nonce     = $exportBtn.getAttribute( 'data-nonce' );
+			var form = document.createElement( 'form' );
+			form.method = 'post';
+			form.action = actionUrl;
+			form.style.display = 'none';
+
+			var fAction = document.createElement( 'input' );
+			fAction.type  = 'hidden';
+			fAction.name  = 'action';
+			fAction.value = 'pizzalayer_export_settings';
+
+			var fNonce = document.createElement( 'input' );
+			fNonce.type  = 'hidden';
+			fNonce.name  = '_wpnonce';
+			fNonce.value = nonce;
+
+			form.appendChild( fAction );
+			form.appendChild( fNonce );
+			document.body.appendChild( form );
+			form.submit();
+			setTimeout( function () { document.body.removeChild( form ); }, 2000 );
+		} );
+	}
+
 } )();

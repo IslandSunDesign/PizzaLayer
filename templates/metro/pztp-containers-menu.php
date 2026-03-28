@@ -76,7 +76,9 @@ $pizza_radius = sanitize_text_field( $atts['pizza_radius'] ?? get_option( 'pizza
 $valid_anims = [ 'fade', 'scale-in', 'slide-up', 'flip-in', 'drop-in', 'instant' ];
 $layer_anim  = sanitize_key( $atts['layer_anim'] ?? get_option( 'pizzalayer_setting_layer_anim', 'fade' ) );
 if ( ! in_array( $layer_anim, $valid_anims, true ) ) { $layer_anim = 'fade'; }
-$layer_anim_speed = max( 80, min( 800, (int) get_option( 'pizzalayer_setting_layer_anim_speed', 320 ) ) );
+$layer_anim_speed = isset( $atts['layer_anim_speed'] ) && (int) $atts['layer_anim_speed'] > 0
+	? max( 80, min( 800, (int) $atts['layer_anim_speed'] ) )
+	: max( 80, min( 800, (int) get_option( 'pizzalayer_setting_layer_anim_speed', 320 ) ) );
 
 // Layer offset values (0–100, controls how much each layer is inset from the pizza edge)
 $clamp_offset = function( $val ) { $v = (int) $val; return max( 0, min( 100, $v ) ); };
@@ -498,7 +500,7 @@ $section_meta = [
 			</div>
 			<div class="mt-cov-modal__btns">
 				<?php
-				$coverages = [
+				$_all_coverages_mt = [
 					'whole'               => [ 'Whole',   'mt-cov--whole',  'fa-circle'                ],
 					'half-left'           => [ 'Left ½',  'mt-cov--hl',     'fa-circle-half-stroke'    ],
 					'half-right'          => [ 'Right ½', 'mt-cov--hr',     'fa-circle-half-stroke'    ],
@@ -507,6 +509,8 @@ $section_meta = [
 					'quarter-bottom-left' => [ 'Q3',      'mt-cov--q3',     'fa-circle-quarter-stroke' ],
 					'quarter-bottom-right'=> [ 'Q4',      'mt-cov--q4',     'fa-circle-quarter-stroke' ],
 				];
+				$_enabled_fracs_mt = function_exists( 'pz_get_enabled_fractions' ) ? pz_get_enabled_fractions() : array_keys( $_all_coverages_mt );
+				$coverages         = array_intersect_key( $_all_coverages_mt, array_flip( $_enabled_fracs_mt ) );
 				foreach ( $coverages as $fraction => [ $label, $cls, $ico ] ) :
 				?>
 				<button type="button" class="mt-cov-modal__btn <?php echo esc_attr( $cls ); ?>"

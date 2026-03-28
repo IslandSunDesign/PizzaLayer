@@ -35,6 +35,40 @@ define( 'PIZZALAYER_ASSETS_URL',    PIZZALAYER_PLUGIN_URL . 'assets/' );
 define( 'PIZZALAYER_IMAGES_URL',    PIZZALAYER_PLUGIN_URL . 'assets/images/' );
 define( 'PIZZALAYER_BLOCKS_DIR',    PIZZALAYER_PLUGIN_DIR . 'blocks/' );
 
+/**
+ * Returns the array of enabled topping coverage fractions from settings.
+ * Always includes 'whole'. Handles legacy single-value migration.
+ *
+ * @return string[]
+ */
+if ( ! function_exists( 'pz_get_enabled_fractions' ) ) {
+	function pz_get_enabled_fractions(): array {
+		$saved = get_option( 'pizzalayer_setting_topping_fractions', [] );
+		if ( ! is_array( $saved ) ) {
+			// Migrate legacy string values
+			$lv    = (string) $saved;
+			$saved = [ 'whole' ];
+			if ( $lv === 'halves' || $lv === 'quarters' ) {
+				$saved[] = 'half-left';
+				$saved[] = 'half-right';
+			}
+			if ( $lv === 'quarters' ) {
+				$saved[] = 'quarter-top-left';
+				$saved[] = 'quarter-top-right';
+				$saved[] = 'quarter-bottom-left';
+				$saved[] = 'quarter-bottom-right';
+			}
+		}
+		if ( empty( $saved ) ) {
+			return [ 'whole', 'half-left', 'half-right', 'quarter-top-left', 'quarter-top-right', 'quarter-bottom-left', 'quarter-bottom-right' ];
+		}
+		if ( ! in_array( 'whole', $saved, true ) ) {
+			array_unshift( $saved, 'whole' );
+		}
+		return $saved;
+	}
+}
+
 // Boot
 add_action( 'plugins_loaded', [ 'PizzaLayer\\Plugin', 'init' ] );
 

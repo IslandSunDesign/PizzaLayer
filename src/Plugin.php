@@ -94,6 +94,14 @@ final class Plugin {
 			// Content Hub AJAX panel switcher
 			$content_hub = new Admin\ContentHub();
 			$this->loader->add_action( 'wp_ajax_pizzalayer_content_panel', $content_hub, 'ajax_panel' );
+
+			// Layer Image Maker — upload result to media library
+			$layer_maker = new Admin\LayerImageMaker();
+			$this->loader->add_action( 'wp_ajax_pizzalayer_upload_layer_image', $layer_maker, 'ajax_upload_layer_image' );
+
+			// Layer Image Maker meta box — on CPT edit/new screens
+			$layer_meta_box = new Admin\LayerImageMetaBox();
+			$layer_meta_box->register_hooks();
 		}
 
 		// Debug logging — only when WP_DEBUG is on

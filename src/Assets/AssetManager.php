@@ -145,10 +145,22 @@ class AssetManager {
 				$v,
 				true
 			);
+			// Pass CPT items for the layer slug select
+			$q = [ 'posts_per_page' => -1, 'post_status' => 'publish', 'orderby' => 'title', 'order' => 'ASC' ];
+			$cpt_items = [];
+			foreach ( [ 'topping', 'crust', 'sauce', 'cheese', 'drizzle', 'cut' ] as $type ) {
+				$posts = get_posts( array_merge( $q, [ 'post_type' => 'pizzalayer_' . $type . 's' ] ) );
+				$cpt_items[ $type ] = array_map( fn( $p ) => [
+					'slug'  => sanitize_title( $p->post_title ),
+					'title' => $p->post_title,
+				], $posts );
+			}
+			wp_localize_script( 'pizzalayer-shortcode-generator', 'pizzalayerSCG', [ 'cptItems' => $cpt_items ] );
 		}
 
 		// Settings
 		if ( false !== strpos( $hook, 'pizzalayer-settings' ) ) {
+			wp_enqueue_media(); // Required for the logo image picker
 			wp_enqueue_script(
 				'pizzalayer-settings',
 				$base . 'settings.js',

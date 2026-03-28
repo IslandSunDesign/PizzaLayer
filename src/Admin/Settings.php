@@ -161,6 +161,38 @@ class Settings {
 		'pizzalayer_setting_adv_disable_css',
 		'pizzalayer_setting_adv_rest_cache_ttl',
 		'pizzalayer_setting_adv_log_level',
+		// Plainlist template settings
+		'plainlist_setting_layout_mode',
+		'plainlist_setting_accent_color',
+		'plainlist_setting_bg_color',
+		'plainlist_setting_section_header_color',
+		'plainlist_setting_item_text_color',
+		'plainlist_setting_divider_color',
+		'plainlist_setting_font_family',
+		'plainlist_setting_base_font_size',
+		'plainlist_setting_heading_size',
+		'plainlist_setting_heading_weight',
+		'plainlist_setting_text_transform',
+		'plainlist_setting_check_style',
+		'plainlist_setting_check_size',
+		'plainlist_setting_max_width',
+		'plainlist_setting_section_gap',
+		'plainlist_setting_item_gap',
+		'plainlist_setting_columns',
+		'plainlist_setting_show_dividers',
+		'plainlist_setting_show_section_icons',
+		'plainlist_setting_show_prices',
+		'plainlist_setting_show_item_count',
+		'plainlist_setting_show_summary',
+		'plainlist_setting_show_reset',
+		'plainlist_setting_step_btn_label_next',
+		'plainlist_setting_step_btn_label_prev',
+		'plainlist_setting_step_show_progress',
+		'plainlist_setting_step_require_selection',
+		'plainlist_setting_intro_text',
+		'plainlist_setting_footer_note',
+		'plainlist_setting_summary_heading',
+		'plainlist_setting_reset_label',
 	];
 
 	public function render(): void {
@@ -327,14 +359,55 @@ class Settings {
 						<input type="number" name="pizzalayer_setting_topping_maxtoppings" min="0"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_topping_maxtoppings') ); ?>" class="pset-input">
 					</div>
-					<div class="pset-field">
+					<div class="pset-field pset-field--full">
 						<label>Topping Portions</label>
-						<p class="pset-desc">The smallest pizza portion customers can apply toppings to.</p>
-						<select name="pizzalayer_setting_topping_fractions" class="pset-select">
-							<?php foreach ( [ 'whole' => 'Whole only', 'halves' => 'Halves', 'quarters' => 'Quarters' ] as $v => $l ) : ?>
-							<option value="<?php echo esc_attr( $v ); ?>"<?php selected( $g('pizzalayer_setting_topping_fractions'), $v ); ?>><?php echo esc_html( $l ); ?></option>
+						<p class="pset-desc">Choose which coverage options are available when customers apply toppings. <strong>Whole</strong> is always shown first. Uncheck any portions you do not want to offer.</p>
+						<?php
+						$_saved_fractions = get_option( 'pizzalayer_setting_topping_fractions', [] );
+						if ( ! is_array( $_saved_fractions ) ) {
+							// Migrate legacy single-value string → array
+							$_lv = (string) $_saved_fractions;
+							$_saved_fractions = [ 'whole' ];
+							if ( $_lv === 'halves' || $_lv === 'quarters' ) {
+								$_saved_fractions[] = 'half-left';
+								$_saved_fractions[] = 'half-right';
+							}
+							if ( $_lv === 'quarters' ) {
+								$_saved_fractions[] = 'quarter-top-left';
+								$_saved_fractions[] = 'quarter-top-right';
+								$_saved_fractions[] = 'quarter-bottom-left';
+								$_saved_fractions[] = 'quarter-bottom-right';
+							}
+						}
+						if ( empty( $_saved_fractions ) ) {
+							$_saved_fractions = [ 'whole', 'half-left', 'half-right', 'quarter-top-left', 'quarter-top-right', 'quarter-bottom-left', 'quarter-bottom-right' ];
+						}
+						$_fraction_opts = [
+							'whole'                => [ 'Whole',    'dashicons-marker',           'Always available — the full pizza.' ],
+							'half-left'            => [ 'Left ½',   'dashicons-arrow-left-alt2',  'Left half of the pizza.' ],
+							'half-right'           => [ 'Right ½',  'dashicons-arrow-right-alt2', 'Right half of the pizza.' ],
+							'quarter-top-left'     => [ 'Q1 ↖',     'dashicons-editor-ul',        'Top-left quarter.' ],
+							'quarter-top-right'    => [ 'Q2 ↗',     'dashicons-editor-ul',        'Top-right quarter.' ],
+							'quarter-bottom-left'  => [ 'Q3 ↙',     'dashicons-editor-ul',        'Bottom-left quarter.' ],
+							'quarter-bottom-right' => [ 'Q4 ↘',     'dashicons-editor-ul',        'Bottom-right quarter.' ],
+						];
+						?>
+						<div class="pset-portions-grid">
+							<?php foreach ( $_fraction_opts as $_fv => [ $_fl, $_fi, $_fd ] ) : ?>
+							<label class="pset-portion-box<?php echo in_array( $_fv, $_saved_fractions, true ) ? ' pset-portion-box--on' : ''; ?>"
+							       title="<?php echo esc_attr( $_fd ); ?>">
+								<input type="checkbox"
+								       name="pizzalayer_setting_topping_fractions[]"
+								       value="<?php echo esc_attr( $_fv ); ?>"
+								       <?php checked( in_array( $_fv, $_saved_fractions, true ) ); ?>
+								       <?php echo $_fv === 'whole' ? 'disabled checked' : ''; ?>>
+								<span class="pset-portion-box__label"><?php echo esc_html( $_fl ); ?></span>
+							</label>
 							<?php endforeach; ?>
-						</select>
+						</div>
+						<p class="pset-desc" style="margin-top:6px;">
+							<em>Whole is always enabled. Changes here affect all templates and the fraction picker shown to customers.</em>
+						</p>
 					</div>
 				</div>
 			</div>
@@ -517,18 +590,27 @@ class Settings {
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-crust-options"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
 			</div>
 			<div class="pset-card__body" id="pset-body-crust-options">
+				<p class="pset-desc" style="padding:0 22px 4px;margin:0;color:#646970;font-size:12px;">
+					<span class="dashicons dashicons-info-outline" style="font-size:13px;vertical-align:middle;"></span>
+					Crust shape and aspect ratio are controlled globally in <a href="<?php echo esc_url(admin_url('admin.php?page=pizzalayer-settings#pset-body-pizza-display')); ?>">Pizza Display settings</a>.
+				</p>
 				<div class="pset-grid">
 					<div class="pset-field">
-						<label>Aspect Ratio / Shape</label>
-						<p class="pset-desc">CSS aspect-ratio for the crust, e.g. <code>1</code> for round, <code>4/3</code> for rectangular.</p>
-						<input type="text" name="pizzalayer_setting_crust_aspectratio"
-						       value="<?php echo esc_attr( $g('pizzalayer_setting_crust_aspectratio', '1') ); ?>" class="pset-input" placeholder="1">
-					</div>
-					<div class="pset-field">
-						<label>Crust Padding</label>
-						<p class="pset-desc">CSS padding value, e.g. <code>10px</code>.</p>
-						<input type="text" name="pizzalayer_setting_crust_padding"
-						       value="<?php echo esc_attr( $g('pizzalayer_setting_crust_padding') ); ?>" class="pset-input" placeholder="0">
+						<label>Crust Padding
+							<span class="pset-hint" id="pset-spc-crust_padding-lbl">(<?php echo esc_html( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_crust_padding','0')) ); ?>px)</span>
+						</label>
+						<p class="pset-desc">Inset padding applied to the crust layer image.</p>
+						<div class="pset-range__wrap">
+							<input type="range" id="pset-spc-crust_padding-range" min="0" max="80" step="1"
+							       value="<?php echo esc_attr( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_crust_padding','0')) ); ?>"
+							       class="pset-range__slider pset-spacing-range"
+							       data-target="pset-spc-crust_padding-text" data-label="pset-spc-crust_padding-lbl">
+							<input type="text" id="pset-spc-crust_padding-text" name="pizzalayer_setting_crust_padding"
+							       value="<?php echo esc_attr( $g('pizzalayer_setting_crust_padding') ?: '0px' ); ?>"
+							       class="pset-range__val pset-spacing-text"
+							       data-range="pset-spc-crust_padding-range" data-label="pset-spc-crust_padding-lbl"
+							       placeholder="0px" style="width:72px;">
+						</div>
 					</div>
 				</div>
 			</div>
@@ -546,22 +628,55 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-sauce-cheese">
 				<div class="pset-grid">
 					<div class="pset-field">
-						<label>Sauce Padding</label>
+						<label>Sauce Padding
+							<span class="pset-hint" id="pset-spc-sauce_padding-lbl">(<?php echo esc_html( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_sauce_padding','0')) ); ?>px)</span>
+						</label>
 						<p class="pset-desc">Padding between sauce and crust edge.</p>
-						<input type="text" name="pizzalayer_setting_sauce_padding"
-						       value="<?php echo esc_attr( $g('pizzalayer_setting_sauce_padding') ); ?>" class="pset-input" placeholder="0">
+						<div class="pset-range__wrap">
+							<input type="range" id="pset-spc-sauce_padding-range" min="0" max="80" step="1"
+							       value="<?php echo esc_attr( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_sauce_padding','0')) ); ?>"
+							       class="pset-range__slider pset-spacing-range"
+							       data-target="pset-spc-sauce_padding-text" data-label="pset-spc-sauce_padding-lbl">
+							<input type="text" id="pset-spc-sauce_padding-text" name="pizzalayer_setting_sauce_padding"
+							       value="<?php echo esc_attr( $g('pizzalayer_setting_sauce_padding') ?: '0px' ); ?>"
+							       class="pset-range__val pset-spacing-text"
+							       data-range="pset-spc-sauce_padding-range" data-label="pset-spc-sauce_padding-lbl"
+							       placeholder="0px" style="width:72px;">
+						</div>
 					</div>
 					<div class="pset-field">
-						<label>Cheese Distance from Edge</label>
+						<label>Cheese Distance from Edge
+							<span class="pset-hint" id="pset-spc-cheese_dist-lbl">(<?php echo esc_html( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_cheese_setting_cheesedistance','0')) ); ?>px)</span>
+						</label>
 						<p class="pset-desc">How far inset the cheese layer is.</p>
-						<input type="text" name="pizzalayer_cheese_setting_cheesedistance"
-						       value="<?php echo esc_attr( $g('pizzalayer_cheese_setting_cheesedistance') ); ?>" class="pset-input" placeholder="0">
+						<div class="pset-range__wrap">
+							<input type="range" id="pset-spc-cheese_dist-range" min="0" max="80" step="1"
+							       value="<?php echo esc_attr( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_cheese_setting_cheesedistance','0')) ); ?>"
+							       class="pset-range__slider pset-spacing-range"
+							       data-target="pset-spc-cheese_dist-text" data-label="pset-spc-cheese_dist-lbl">
+							<input type="text" id="pset-spc-cheese_dist-text" name="pizzalayer_cheese_setting_cheesedistance"
+							       value="<?php echo esc_attr( $g('pizzalayer_cheese_setting_cheesedistance') ?: '0px' ); ?>"
+							       class="pset-range__val pset-spacing-text"
+							       data-range="pset-spc-cheese_dist-range" data-label="pset-spc-cheese_dist-lbl"
+							       placeholder="0px" style="width:72px;">
+						</div>
 					</div>
 					<div class="pset-field">
-						<label>Cheese Padding</label>
+						<label>Cheese Padding
+							<span class="pset-hint" id="pset-spc-cheese_padding-lbl">(<?php echo esc_html( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_cheese_padding','0')) ); ?>px)</span>
+						</label>
 						<p class="pset-desc">Padding between cheese and toppings.</p>
-						<input type="text" name="pizzalayer_setting_cheese_padding"
-						       value="<?php echo esc_attr( $g('pizzalayer_setting_cheese_padding') ); ?>" class="pset-input" placeholder="0">
+						<div class="pset-range__wrap">
+							<input type="range" id="pset-spc-cheese_padding-range" min="0" max="80" step="1"
+							       value="<?php echo esc_attr( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_cheese_padding','0')) ); ?>"
+							       class="pset-range__slider pset-spacing-range"
+							       data-target="pset-spc-cheese_padding-text" data-label="pset-spc-cheese_padding-lbl">
+							<input type="text" id="pset-spc-cheese_padding-text" name="pizzalayer_setting_cheese_padding"
+							       value="<?php echo esc_attr( $g('pizzalayer_setting_cheese_padding') ?: '0px' ); ?>"
+							       class="pset-range__val pset-spacing-text"
+							       data-range="pset-spc-cheese_padding-range" data-label="pset-spc-cheese_padding-lbl"
+							       placeholder="0px" style="width:72px;">
+						</div>
 					</div>
 				</div>
 			</div>
@@ -630,11 +745,35 @@ class Settings {
 
 					<!-- Logo -->
 					<div class="pset-field pset-field--full">
-						<label>Logo URL <span class="pset-hint">For templates that show a header logo</span></label>
+						<label>Logo Image <span class="pset-hint">For templates that show a header logo</span></label>
 						<?php $logoVal = $g('pizzalayer_setting_branding_altlogo'); ?>
-						<p class="pset-desc">Current: <?php echo $logoVal ? '<a href="'.esc_url($logoVal).'" target="_blank">'.esc_html(basename($logoVal)).'</a>' : '<em>none</em>'; ?></p>
-						<input type="url" name="pizzalayer_setting_branding_altlogo"
-						       value="<?php echo esc_attr( $logoVal ); ?>" class="pset-input pset-input--wide" placeholder="https://...">
+						<div class="pset-logo-picker" id="pset-logo-picker">
+							<div class="pset-logo-picker__preview" id="pset-logo-preview">
+								<?php if ( $logoVal ) : ?>
+								<img src="<?php echo esc_url( $logoVal ); ?>" alt="Current logo" style="max-height:60px;max-width:200px;border-radius:4px;border:1px solid #e0e3e7;">
+								<?php else : ?>
+								<span class="pset-logo-picker__placeholder"><span class="dashicons dashicons-format-image"></span> No logo selected</span>
+								<?php endif; ?>
+							</div>
+							<div class="pset-logo-picker__actions">
+								<button type="button" class="button" id="pset-logo-select-btn">
+									<span class="dashicons dashicons-upload"></span>
+									<?php echo $logoVal ? 'Change Logo' : 'Select / Upload Logo'; ?>
+								</button>
+								<?php if ( $logoVal ) : ?>
+								<button type="button" class="button pset-logo-remove-btn" id="pset-logo-remove-btn" style="color:#b32d2e;border-color:#b32d2e;">
+									<span class="dashicons dashicons-trash"></span> Remove
+								</button>
+								<?php endif; ?>
+							</div>
+							<input type="hidden" name="pizzalayer_setting_branding_altlogo" id="pset-logo-url-input"
+							       value="<?php echo esc_attr( $logoVal ); ?>">
+							<?php if ( $logoVal ) : ?>
+							<p class="pset-desc" style="margin-top:4px;word-break:break-all;">
+								<a href="<?php echo esc_url( $logoVal ); ?>" target="_blank" rel="noopener"><?php echo esc_html( basename( $logoVal ) ); ?></a>
+							</p>
+							<?php endif; ?>
+						</div>
 					</div>
 
 					<div class="pset-field">
@@ -696,20 +835,20 @@ class Settings {
 					<!-- Builder copy -->
 					<div class="pset-field pset-field--full">
 						<label>Content Above Menu Icons</label>
-						<p class="pset-desc">Intro text or custom HTML shown above the builder tab icons.</p>
-						<textarea name="pizzalayer_setting_branding_menu_title" class="pset-textarea" rows="3"><?php echo esc_textarea( $g('pizzalayer_setting_branding_menu_title') ); ?></textarea>
+						<p class="pset-desc">Intro text or custom HTML shown above the builder tab icons. Use Visual mode for rich text, Text tab for raw HTML.</p>
+						<?php wp_editor( $g('pizzalayer_setting_branding_menu_title'), 'pzl_editor_menu_title', [ 'textarea_name' => 'pizzalayer_setting_branding_menu_title', 'media_buttons' => false, 'teeny' => true, 'textarea_rows' => 4, 'tinymce' => [ 'toolbar1' => 'bold,italic,underline,link,unlink,removeformat,code' ], 'quicktags' => [ 'buttons' => 'strong,em,link,code,close' ] ] ); ?>
 					</div>
 
 					<div class="pset-field pset-field--full">
 						<label>Header Custom Content</label>
-						<p class="pset-desc">Custom HTML for the branding area in the builder header (logo area, above the tabs).</p>
-						<textarea name="pizzalayer_setting_branding_header_custom_content" class="pset-textarea" rows="3"><?php echo esc_textarea( $g('pizzalayer_setting_branding_header_custom_content') ); ?></textarea>
+						<p class="pset-desc">Custom HTML for the branding area in the builder header (logo area, above the tabs). Use Text tab for raw HTML with image tags etc.</p>
+						<?php wp_editor( $g('pizzalayer_setting_branding_header_custom_content'), 'pzl_editor_header_content', [ 'textarea_name' => 'pizzalayer_setting_branding_header_custom_content', 'media_buttons' => true, 'teeny' => true, 'textarea_rows' => 4, 'tinymce' => [ 'toolbar1' => 'bold,italic,underline,link,unlink,image,removeformat,code' ], 'quicktags' => [ 'buttons' => 'strong,em,link,img,code,close' ] ] ); ?>
 					</div>
 
 					<div class="pset-field pset-field--full">
 						<label>Builder Footer Text</label>
 						<p class="pset-desc">Optional text or HTML shown in the footer of the builder (e.g. allergen notice, T&amp;Cs link).</p>
-						<textarea name="pizzalayer_setting_branding_footer_text" class="pset-textarea" rows="2" placeholder="e.g. Allergen info available on request."><?php echo esc_textarea( $g('pizzalayer_setting_branding_footer_text') ); ?></textarea>
+						<?php wp_editor( $g('pizzalayer_setting_branding_footer_text'), 'pzl_editor_footer_text', [ 'textarea_name' => 'pizzalayer_setting_branding_footer_text', 'media_buttons' => false, 'teeny' => true, 'textarea_rows' => 3, 'tinymce' => [ 'toolbar1' => 'bold,italic,underline,link,unlink,removeformat,code' ], 'quicktags' => [ 'buttons' => 'strong,em,link,code,close' ] ] ); ?>
 					</div>
 
 				</div>
@@ -1121,56 +1260,49 @@ class Settings {
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-spacing-borders"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
 			</div>
 			<div class="pset-card__body" id="pset-body-spacing-borders">
+				<?php
+				// Helper: render a px-slider field with a live text box for exact override
+				// $key = option key, $label = label, $desc = description, $default = px int, $max = slider max px
+				$_render_spacing_slider = function( string $key, string $label, string $desc, int $default, int $max ) use ( $g ) {
+					$raw = $g( $key );
+					// Extract numeric value from stored string (e.g. "16px" → 16)
+					$num = (int) preg_replace( '/[^0-9]/', '', $raw );
+					if ( $num === 0 && $raw === '' ) { $num = $default; }
+					$uid = 'pset-spc-' . str_replace( [ 'pizzalayer_setting_spacing_', 'pizzalayer_setting_' ], '', $key );
+					?>
+					<div class="pset-field">
+						<label><?php echo esc_html( $label ); ?>
+							<span class="pset-hint" id="<?php echo esc_attr( $uid ); ?>-lbl">(<?php echo esc_html( (string)$num ); ?>px)</span>
+						</label>
+						<p class="pset-desc"><?php echo wp_kses_post( $desc ); ?></p>
+						<div class="pset-range__wrap">
+							<input type="range" id="<?php echo esc_attr( $uid ); ?>-range"
+							       min="0" max="<?php echo esc_attr( (string)$max ); ?>" step="1"
+							       value="<?php echo esc_attr( (string)$num ); ?>"
+							       class="pset-range__slider pset-spacing-range"
+							       data-target="<?php echo esc_attr( $uid ); ?>-text"
+							       data-label="<?php echo esc_attr( $uid ); ?>-lbl">
+							<input type="text" id="<?php echo esc_attr( $uid ); ?>-text"
+							       name="<?php echo esc_attr( $key ); ?>"
+							       value="<?php echo esc_attr( $raw !== '' ? $raw : $num . 'px' ); ?>"
+							       class="pset-range__val pset-spacing-text"
+							       data-range="<?php echo esc_attr( $uid ); ?>-range"
+							       data-label="<?php echo esc_attr( $uid ); ?>-lbl"
+							       placeholder="<?php echo esc_attr( (string)$default ); ?>px"
+							       style="width:72px;">
+						</div>
+					</div>
+					<?php
+				};
+				?>
 				<div class="pset-grid">
-					<div class="pset-field">
-						<label>Builder Outer Padding</label>
-						<p class="pset-desc">Padding around the outermost builder container.</p>
-						<input type="text" name="pizzalayer_setting_spacing_outer_pad"
-						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_outer_pad','')); ?>"
-						       class="pset-input" placeholder="16px">
-					</div>
-					<div class="pset-field">
-						<label>Menu Grid Gap</label>
-						<p class="pset-desc">Gap between item cards in the menu grid.</p>
-						<input type="text" name="pizzalayer_setting_spacing_grid_gap"
-						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_grid_gap','')); ?>"
-						       class="pset-input" placeholder="12px">
-					</div>
-					<div class="pset-field">
-						<label>Card Inner Padding</label>
-						<p class="pset-desc">Padding inside each item card.</p>
-						<input type="text" name="pizzalayer_setting_spacing_card_pad"
-						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_card_pad','')); ?>"
-						       class="pset-input" placeholder="10px">
-					</div>
-					<div class="pset-field">
-						<label>Card Border Radius</label>
-						<p class="pset-desc">Corner rounding for item cards, e.g. <code>8px</code>.</p>
-						<input type="text" name="pizzalayer_setting_spacing_card_radius"
-						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_card_radius','')); ?>"
-						       class="pset-input" placeholder="8px">
-					</div>
-					<div class="pset-field">
-						<label>Card Border Width</label>
-						<p class="pset-desc">Thickness of the border around item cards.</p>
-						<input type="text" name="pizzalayer_setting_spacing_card_border"
-						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_card_border','')); ?>"
-						       class="pset-input" placeholder="1px">
-					</div>
-					<div class="pset-field">
-						<label>Button Border Radius</label>
-						<p class="pset-desc">Corner rounding for buttons in the builder.</p>
-						<input type="text" name="pizzalayer_setting_spacing_btn_radius"
-						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_btn_radius','')); ?>"
-						       class="pset-input" placeholder="6px">
-					</div>
-					<div class="pset-field">
-						<label>Tab Bar Height</label>
-						<p class="pset-desc">Height of the layer category tab bar.</p>
-						<input type="text" name="pizzalayer_setting_spacing_tab_height"
-						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_spacing_tab_height','')); ?>"
-						       class="pset-input" placeholder="48px">
-					</div>
+					<?php $_render_spacing_slider( 'pizzalayer_setting_spacing_outer_pad',   'Builder Outer Padding',  'Padding around the outermost builder container.',      16, 80 ); ?>
+					<?php $_render_spacing_slider( 'pizzalayer_setting_spacing_grid_gap',    'Menu Grid Gap',          'Gap between item cards in the menu grid.',              12, 60 ); ?>
+					<?php $_render_spacing_slider( 'pizzalayer_setting_spacing_card_pad',    'Card Inner Padding',     'Padding inside each item card.',                        10, 60 ); ?>
+					<?php $_render_spacing_slider( 'pizzalayer_setting_spacing_card_radius', 'Card Border Radius',     'Corner rounding for item cards.',                        8, 40 ); ?>
+					<?php $_render_spacing_slider( 'pizzalayer_setting_spacing_card_border', 'Card Border Width',      'Thickness of the border around item cards.',             1, 10 ); ?>
+					<?php $_render_spacing_slider( 'pizzalayer_setting_spacing_btn_radius',  'Button Border Radius',   'Corner rounding for buttons in the builder.',            6, 40 ); ?>
+					<?php $_render_spacing_slider( 'pizzalayer_setting_spacing_tab_height',  'Tab Bar Height',         'Height of the layer category tab bar.',                 48, 100 ); ?>
 					<div class="pset-field">
 						<label>Card Box Shadow</label>
 						<p class="pset-desc">Shadow preset for item cards.</p>
@@ -1624,6 +1756,27 @@ class Settings {
 						</div>
 					</div>
 					<?php endif; ?>
+					<?php if ( $active_template === 'plainlist' ) : ?>
+					<div class="pset-scheme-row">
+						<span class="pset-scheme-label">Style Presets:</span>
+						<div class="pset-scheme-chips" id="pset-scheme-chips">
+							<?php foreach ( $this->get_plainlist_presets() as $preset ) :
+								$safe = esc_attr( wp_json_encode( $preset['keys'] ) );
+							?>
+							<button type="button" class="pset-scheme-chip"
+							        data-scheme="<?php echo $safe; ?>"
+							        title="<?php echo esc_attr( $preset['name'] ); ?>">
+								<span class="pset-scheme-chip__swatches">
+									<?php foreach ( $preset['colors'] as $c ) : ?>
+									<span class="pset-scheme-chip__dot" style="background:<?php echo esc_attr( $c ); ?>;"></span>
+									<?php endforeach; ?>
+								</span>
+								<span class="pset-scheme-chip__name"><?php echo esc_html( $preset['name'] ); ?></span>
+							</button>
+							<?php endforeach; ?>
+						</div>
+					</div>
+					<?php endif; ?>
 					<div class="pset-grid pset-grid--wide">
 					<?php foreach ( $template_settings as $field ) :
 						if ( empty( $field['key'] ) || empty( $field['type'] ) ) { continue; }
@@ -1734,14 +1887,12 @@ class Settings {
 			<div class="pset-info-card pset-io-card">
 				<h3><span class="dashicons dashicons-database-import"></span> Import / Export</h3>
 				<p class="pset-desc">Back up all settings to a JSON file, or restore from one.</p>
-				<!-- Export — separate form so it bypasses the main settings form -->
-				<form method="post" action="<?php echo esc_url( admin_url('admin-post.php') ); ?>" style="margin:0;">
-					<?php wp_nonce_field( 'pizzalayer_export_settings' ); ?>
-					<input type="hidden" name="action" value="pizzalayer_export_settings">
-					<button type="submit" class="button pset-io-btn pset-io-btn--export">
-						<span class="dashicons dashicons-download"></span> Export Settings
-					</button>
-				</form>
+				<!-- Export — button triggers a detached form appended to <body> to avoid nested-form issue -->
+				<button type="button" id="pset-export-btn" class="button pset-io-btn pset-io-btn--export"
+				        data-action-url="<?php echo esc_url( admin_url('admin-post.php') ); ?>"
+				        data-nonce="<?php echo esc_attr( wp_create_nonce('pizzalayer_export_settings') ); ?>">
+					<span class="dashicons dashicons-download"></span> Export Settings
+				</button>
 				<!-- Import -->
 				<div class="pset-io-import-wrap" style="margin-top:10px;">
 					<label class="pset-io-file-label" for="pset-import-file">
@@ -1774,11 +1925,30 @@ class Settings {
 		foreach ( self::OPTIONS as $key ) {
 			$data[ $key ] = get_option( $key, null );
 		}
-		// Also include active template setting
 		$data['pizzalayer_setting_global_template'] = get_option( 'pizzalayer_setting_global_template', '' );
 
-		$json     = wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
+		$json     = (string) wp_json_encode( $data, JSON_PRETTY_PRINT | JSON_UNESCAPED_UNICODE );
 		$filename = 'pizzalayer-settings-' . gmdate( 'Y-m-d' ) . '.json';
+
+		// Discard any buffered output so download headers can be sent cleanly
+		while ( ob_get_level() > 0 ) {
+			ob_end_clean();
+		}
+
+		if ( headers_sent() ) {
+			// Headers already committed — use a JS Blob download as fallback
+			echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Exporting…</title></head><body>';
+			echo '<script>';
+			printf( 'var d=%s;', $json ); // phpcs:ignore WordPress.Security.EscapeOutput
+			echo 'var b=new Blob([JSON.stringify(d,null,2)],{type:"application/json"});';
+			printf( 'var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=%s;', wp_json_encode( $filename ) );
+			echo 'document.body.appendChild(a);a.click();';
+			echo 'setTimeout(function(){history.back();},1200);';
+			echo '</script>';
+			echo '<p style="font-family:sans-serif;padding:20px;">Downloading <strong>' . esc_html( $filename ) . '</strong>… <a href="javascript:history.back()">Go back</a></p>';
+			echo '</body></html>';
+			exit;
+		}
 
 		nocache_headers();
 		header( 'Content-Type: application/json; charset=utf-8' );
@@ -1874,7 +2044,6 @@ class Settings {
 			'pizzalayer_setting_cheese_defaultcheese',
 			'pizzalayer_setting_drizzle_defaultdrizzle',
 			'pizzalayer_setting_cut_defaultcut',
-			'pizzalayer_setting_topping_fractions',
 			'pizzalayer_setting_show_thumbnails',
 			'pizzalayer_setting_element_style_layers',
 			'pizzalayer_setting_element_style_toppings',
@@ -1976,15 +2145,18 @@ class Settings {
 			'pizzalayer_setting_adv_disable_css',
 		];
 		$textarea_options = [
-			// Existing
-			'pizzalayer_setting_branding_menu_title',
-			'pizzalayer_setting_branding_header_custom_content',
-			'pizzalayer_setting_branding_footer_text',
+			// Global help content (plain text)
 			'pizzalayer_setting_settings_demonotice',
 			'pizzalayer_setting_global_help_content',
 			// Advanced
 			'pizzalayer_setting_adv_custom_css',
 			'pizzalayer_setting_adv_custom_js',
+		];
+		// Branding HTML fields — use wp_kses_post to allow rich HTML from the editor
+		$html_options = [
+			'pizzalayer_setting_branding_menu_title',
+			'pizzalayer_setting_branding_header_custom_content',
+			'pizzalayer_setting_branding_footer_text',
 		];
 		// Price base is a decimal string
 		$decimal_options = [
@@ -2016,14 +2188,31 @@ class Settings {
 			// Hidden field sends 'no'; checkbox sends 'yes' when checked
 			update_option( $key, ( isset( $_POST[ $key ] ) && sanitize_key( wp_unslash( $_POST[ $key ] ) ) === 'yes' ) ? 'yes' : 'no' );
 		}
+		// Topping fractions — multi-checkbox array
+		$_allowed_fractions = [ 'whole', 'half-left', 'half-right', 'quarter-top-left', 'quarter-top-right', 'quarter-bottom-left', 'quarter-bottom-right' ];
+		$_posted_fractions  = isset( $_POST['pizzalayer_setting_topping_fractions'] ) && is_array( $_POST['pizzalayer_setting_topping_fractions'] )
+			? array_values( array_intersect( array_map( 'sanitize_key', wp_unslash( $_POST['pizzalayer_setting_topping_fractions'] ) ), $_allowed_fractions ) )
+			: [];
+		// Always include 'whole'
+		if ( ! in_array( 'whole', $_posted_fractions, true ) ) {
+			array_unshift( $_posted_fractions, 'whole' );
+		}
+		update_option( 'pizzalayer_setting_topping_fractions', $_posted_fractions );
+
 		foreach ( $textarea_options as $key ) {
 			if ( isset( $_POST[ $key ] ) ) {
-				// Custom CSS/JS: use wp_kses_post to allow CSS/JS content but strip dangerous HTML
+				// Custom CSS/JS: use raw (capability-gated)
 				if ( in_array( $key, [ 'pizzalayer_setting_adv_custom_css', 'pizzalayer_setting_adv_custom_js' ], true ) ) {
 					update_option( $key, wp_unslash( $_POST[ $key ] ) ); // phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- intentional, validated by capability check above
 				} else {
 					update_option( $key, sanitize_textarea_field( wp_unslash( $_POST[ $key ] ) ) );
 				}
+			}
+		}
+		// Branding HTML fields — allow rich markup from wp_editor
+		foreach ( $html_options as $key ) {
+			if ( isset( $_POST[ $key ] ) ) {
+				update_option( $key, wp_kses_post( wp_unslash( $_POST[ $key ] ) ) );
 			}
 		}
 		foreach ( $decimal_options as $key ) {
@@ -2375,6 +2564,51 @@ class Settings {
 		];
 	}
 
+	private function get_plainlist_presets(): array {
+		return [
+			[
+				'name'   => 'Classic Black',
+				'colors' => [ '#1a1a1a', '#ffffff', '#111111' ],
+				'keys'   => [ 'plainlist_setting_accent_color' => '#1a1a1a', 'plainlist_setting_bg_color' => '#ffffff', 'plainlist_setting_section_header_color' => '#111111' ],
+			],
+			[
+				'name'   => 'Warm Paper',
+				'colors' => [ '#7c3a00', '#fdf6ec', '#3d2000' ],
+				'keys'   => [ 'plainlist_setting_accent_color' => '#7c3a00', 'plainlist_setting_bg_color' => '#fdf6ec', 'plainlist_setting_section_header_color' => '#3d2000' ],
+			],
+			[
+				'name'   => 'Dark Mode',
+				'colors' => [ '#f97316', '#18181b', '#ffffff' ],
+				'keys'   => [ 'plainlist_setting_accent_color' => '#f97316', 'plainlist_setting_bg_color' => '#18181b', 'plainlist_setting_section_header_color' => '#ffffff' ],
+			],
+			[
+				'name'   => 'Forest',
+				'colors' => [ '#2d6a4f', '#f4f9f6', '#1b3d2d' ],
+				'keys'   => [ 'plainlist_setting_accent_color' => '#2d6a4f', 'plainlist_setting_bg_color' => '#f4f9f6', 'plainlist_setting_section_header_color' => '#1b3d2d' ],
+			],
+			[
+				'name'   => 'Navy Clean',
+				'colors' => [ '#1e3a8a', '#f8faff', '#0f2060' ],
+				'keys'   => [ 'plainlist_setting_accent_color' => '#1e3a8a', 'plainlist_setting_bg_color' => '#f8faff', 'plainlist_setting_section_header_color' => '#0f2060' ],
+			],
+			[
+				'name'   => 'Rose',
+				'colors' => [ '#be185d', '#fff0f6', '#7c103d' ],
+				'keys'   => [ 'plainlist_setting_accent_color' => '#be185d', 'plainlist_setting_bg_color' => '#fff0f6', 'plainlist_setting_section_header_color' => '#7c103d' ],
+			],
+			[
+				'name'   => 'Slate',
+				'colors' => [ '#475569', '#f1f5f9', '#1e293b' ],
+				'keys'   => [ 'plainlist_setting_accent_color' => '#475569', 'plainlist_setting_bg_color' => '#f1f5f9', 'plainlist_setting_section_header_color' => '#1e293b' ],
+			],
+			[
+				'name'   => 'Newspaper',
+				'colors' => [ '#222222', '#f7f4ee', '#000000' ],
+				'keys'   => [ 'plainlist_setting_accent_color' => '#222222', 'plainlist_setting_bg_color' => '#f7f4ee', 'plainlist_setting_section_header_color' => '#000000', 'plainlist_setting_font_family' => 'georgia', 'plainlist_setting_check_style' => 'bullet' ],
+			],
+		];
+	}
+
 	private function render_styles(): void { ?>
 	<style>
 	.pset-wrap { max-width: 1100px; }
@@ -2628,6 +2862,50 @@ class Settings {
 	.pset-io-file-label:hover { background:#e0ecf8; }
 	.pset-io-file-label .dashicons { font-size:13px !important; width:13px !important; height:13px !important; }
 	.pset-io-file-input { position:absolute; opacity:0; width:0; height:0; }
+
+	/* ── Topping Portions multi-checkbox grid ─────────────────── */
+	.pset-portions-grid { display:flex; flex-wrap:wrap; gap:8px; margin-top:6px; }
+	.pset-portion-box {
+		display:flex; flex-direction:column; align-items:center; justify-content:center;
+		gap:4px; min-width:72px; padding:10px 12px;
+		background:#f8f9fa; border:2px solid #e0e3e7; border-radius:8px;
+		cursor:pointer; transition:border-color .15s, background .15s, box-shadow .15s;
+		user-select:none; position:relative;
+	}
+	.pset-portion-box input[type=checkbox] { position:absolute; opacity:0; width:0; height:0; }
+	.pset-portion-box__label { font-size:12px; font-weight:600; color:#3c434a; pointer-events:none; }
+	.pset-portion-box:hover { border-color:#2271b1; background:#f0f5fc; }
+	.pset-portion-box--on { border-color:#2271b1; background:#dce8f7; box-shadow:0 0 0 2px #b9d4f5; }
+	.pset-portion-box--on .pset-portion-box__label { color:#2271b1; }
+	.pset-portion-box input:disabled + .pset-portion-box__label::after { content:' ✓'; color:#00a32a; font-size:10px; }
+	/* "Whole" is always-on — style accordingly */
+	.pset-portion-box:has(input:disabled) { border-color:#00a32a; background:#f0fbf0; cursor:default; }
+	.pset-portion-box:has(input:disabled) .pset-portion-box__label { color:#00a32a; }
+
+	/* ── Logo media picker ───────────────────────────────────── */
+	.pset-logo-picker { display:flex; flex-direction:column; gap:10px; }
+	.pset-logo-picker__preview {
+		display:flex; align-items:center; justify-content:center;
+		min-height:72px; padding:12px; background:#f8f9fa;
+		border:2px dashed #e0e3e7; border-radius:8px;
+		max-width:320px;
+	}
+	.pset-logo-picker__placeholder { display:flex; align-items:center; gap:8px; color:#8c8f94; font-size:13px; }
+	.pset-logo-picker__placeholder .dashicons { font-size:22px !important; width:22px !important; height:22px !important; }
+	.pset-logo-picker__actions { display:flex; gap:8px; flex-wrap:wrap; align-items:center; }
+	.pset-logo-picker__actions .button { display:inline-flex; align-items:center; gap:5px; }
+	.pset-logo-picker__actions .dashicons { font-size:13px !important; width:13px !important; height:13px !important; }
+
+	/* ── Spacing slider rows ─────────────────────────────────── */
+	.pset-range__wrap { display:flex; align-items:center; gap:10px; margin-top:4px; }
+	.pset-range__slider { flex:1; min-width:80px; accent-color:#2271b1; cursor:pointer; }
+	.pset-range__val {
+		width:68px !important; padding:5px 7px !important;
+		border:1px solid #8c8f94; border-radius:4px;
+		font-size:12px; font-family:monospace; text-align:center;
+		background:#fff; color:#1d2023;
+	}
+	.pset-range__val:focus { border-color:#2271b1; outline:none; box-shadow:0 0 0 2px #dce8f7; }
 	</style>
 	<script>
 	document.addEventListener('DOMContentLoaded', function() {
@@ -2789,22 +3067,46 @@ class Settings {
 		// ── Color scheme presets ─────────────────────────────────────
 		document.querySelectorAll('.pset-scheme-chip').forEach(function(chip) {
 			chip.addEventListener('click', function() {
-				var colors;
-				try { colors = JSON.parse(chip.getAttribute('data-scheme')); } catch(e) { return; }
-				// colors = [accent, bg, card_bg]
-				var keys = [
-					'metro_setting_accent_color',
-					'metro_setting_background_color',
-					'metro_setting_card_bg_color'
-				];
-				colors.forEach(function(hex, i) {
-					var input = document.getElementById('pset-color-' + keys[i]);
-					if (input) {
-						input.value = hex;
-						input.dispatchEvent(new Event('input'));
-						input.dispatchEvent(new Event('change'));
-					}
-				});
+				var data;
+				try { data = JSON.parse(chip.getAttribute('data-scheme')); } catch(e) { return; }
+				// data can be:
+				//   array  [hex, hex, hex]  — legacy metro format (positional)
+				//   object { option_key: hex, ... } — new per-template format
+				if (Array.isArray(data)) {
+					// Legacy: metro positional array
+					var legacyKeys = [
+						'metro_setting_accent_color',
+						'metro_setting_background_color',
+						'metro_setting_card_bg_color'
+					];
+					data.forEach(function(hex, i) {
+						var input = document.getElementById('pset-color-' + legacyKeys[i]);
+						if (input) {
+							input.value = hex;
+							input.dispatchEvent(new Event('input'));
+							input.dispatchEvent(new Event('change'));
+						}
+					});
+				} else if (data && typeof data === 'object') {
+					// New format: { option_key: value }
+					Object.keys(data).forEach(function(optKey) {
+						var val = data[optKey];
+						// Try color input first, then select, then text
+						var colorInput = document.getElementById('pset-color-' + optKey);
+						if (colorInput) {
+							colorInput.value = val;
+							colorInput.dispatchEvent(new Event('input'));
+							colorInput.dispatchEvent(new Event('change'));
+						} else {
+							var anyInput = document.querySelector('[name="' + optKey + '"]');
+							if (anyInput) {
+								anyInput.value = val;
+								anyInput.dispatchEvent(new Event('input'));
+								anyInput.dispatchEvent(new Event('change'));
+							}
+						}
+					});
+				}
 				document.querySelectorAll('.pset-scheme-chip').forEach(function(c) {
 					c.classList.remove('pset-scheme-chip--active');
 				});
@@ -2925,6 +3227,74 @@ class Settings {
 				}
 			});
 		})();
+
+		// ── Spacing slider ↔ text sync ──────────────────────────
+		document.querySelectorAll('.pset-spacing-range').forEach(function(range) {
+			var textId  = range.getAttribute('data-target');
+			var labelId = range.getAttribute('data-label');
+			var text    = document.getElementById(textId);
+			var label   = document.getElementById(labelId);
+			if (!text) return;
+			range.addEventListener('input', function() {
+				text.value = range.value + 'px';
+				if (label) label.textContent = '(' + range.value + 'px)';
+			});
+			text.addEventListener('input', function() {
+				var num = parseInt(text.value, 10);
+				if (!isNaN(num) && num >= 0 && num <= parseInt(range.max, 10)) {
+					range.value = num;
+					if (label) label.textContent = '(' + num + 'px)';
+				}
+			});
+			text.addEventListener('blur', function() {
+				if (text.value && !/[a-z%]/i.test(text.value)) {
+					text.value = text.value + 'px';
+				}
+			});
+		});
+
+		// ── Portion checkboxes — visual toggle ───────────────────
+		document.querySelectorAll('.pset-portion-box').forEach(function(box) {
+			var cb = box.querySelector('input[type=checkbox]');
+			if (!cb || cb.disabled) return;
+			box.addEventListener('click', function() {
+				cb.checked = !cb.checked;
+				box.classList.toggle('pset-portion-box--on', cb.checked);
+			});
+		});
+
+		// ── Logo WP Media Picker ─────────────────────────────────
+		(function() {
+			var selectBtn = document.getElementById('pset-logo-select-btn');
+			var removeBtn = document.getElementById('pset-logo-remove-btn');
+			var urlInput  = document.getElementById('pset-logo-url-input');
+			var preview   = document.getElementById('pset-logo-preview');
+			if (!selectBtn || !urlInput || !preview || typeof wp === 'undefined' || !wp.media) return;
+			var frame;
+			selectBtn.addEventListener('click', function(e) {
+				e.preventDefault();
+				if (frame) { frame.open(); return; }
+				frame = wp.media({ title: 'Select or Upload Logo', button: { text: 'Use this image' }, multiple: false, library: { type: 'image' } });
+				frame.on('select', function() {
+					var att = frame.state().get('selection').first().toJSON();
+					urlInput.value = att.url;
+					preview.innerHTML = '<img src="' + att.url + '" alt="Logo" style="max-height:60px;max-width:200px;border-radius:4px;border:1px solid #e0e3e7;">';
+					selectBtn.innerHTML = '<span class="dashicons dashicons-upload"></span> Change Logo';
+					if (removeBtn) removeBtn.style.display = '';
+				});
+				frame.open();
+			});
+			if (removeBtn) {
+				removeBtn.addEventListener('click', function(e) {
+					e.preventDefault();
+					urlInput.value = '';
+					preview.innerHTML = '<span class="pset-logo-picker__placeholder"><span class="dashicons dashicons-format-image"></span> No logo selected</span>';
+					selectBtn.innerHTML = '<span class="dashicons dashicons-upload"></span> Select / Upload Logo';
+					removeBtn.style.display = 'none';
+				});
+			}
+		})();
+
 	});
 	</script>
 	<?php }

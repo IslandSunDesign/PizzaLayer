@@ -25,6 +25,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  *   pizza_aspect    CSS aspect-ratio override (used with rectangle/custom shapes).
  *   pizza_radius    CSS border-radius override (used with custom shape).
  *   layer_anim      Layer add animation: fade | scale-in | slide-up | flip-in | drop-in | instant.
+ *   layer_anim_speed  Animation duration in ms (80–800). Overrides global setting.
  */
 class BuilderShortcode {
 
@@ -33,18 +34,19 @@ class BuilderShortcode {
 
 	public function render( $atts ): string {
 		$atts = apply_filters( 'pizzalayer_builder_atts', shortcode_atts( [
-			'id'             => '',
-			'template'       => '',
-			'max_toppings'   => '',
-			'show_tabs'      => '',
-			'hide_tabs'      => '',
-			'default_crust'  => '',
-			'default_sauce'  => '',
-			'default_cheese' => '',
-			'pizza_shape'    => '',
-			'pizza_aspect'   => '',
-			'pizza_radius'   => '',
-			'layer_anim'     => '',
+			'id'               => '',
+			'template'         => '',
+			'max_toppings'     => '',
+			'show_tabs'        => '',
+			'hide_tabs'        => '',
+			'default_crust'    => '',
+			'default_sauce'    => '',
+			'default_cheese'   => '',
+			'pizza_shape'      => '',
+			'pizza_aspect'     => '',
+			'pizza_radius'     => '',
+			'layer_anim'       => '',
+			'layer_anim_speed' => '',
 		], $atts, 'pizza_builder' ) );
 
 		// Ensure a unique instance ID

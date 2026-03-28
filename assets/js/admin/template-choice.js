@@ -87,55 +87,25 @@
 			}
 		}
 
-		/* ── Debounce hover ──────────────────────────────────────── */
-		var hoverTimer        = null;
-		var currentPreviewing = null;
-
-		function schedulePreview( url, name ) {
-			clearTimeout( hoverTimer );
-			hoverTimer = setTimeout( function () {
-				loadPreview( url, name );
-			}, 200 );
-		}
-
 		/* ── Wire up template item rows ──────────────────────────── */
-		items.forEach( function ( item ) {
-			var previewUrl = item.getAttribute( 'data-preview-url' );
-			var name       = item.getAttribute( 'data-name' );
-			var slug       = item.getAttribute( 'data-slug' );
+		// Preview button click — explicit, no hover
+		document.querySelectorAll( '.ptc-preview-btn' ).forEach( function ( btn ) {
+			btn.addEventListener( 'click', function ( e ) {
+				e.stopPropagation();
+				var url  = btn.getAttribute( 'data-preview-url' );
+				var name = btn.getAttribute( 'data-name' );
+				if ( ! url ) { return; }
 
-			if ( ! previewUrl ) { return; }
-
-			/* Hover → debounced preview */
-			item.addEventListener( 'mouseenter', function () {
-				if ( slug === currentPreviewing ) { return; }
-				currentPreviewing = slug;
-
+				// Mark this item as previewing
 				document.querySelectorAll( '.ptc-item' ).forEach( function ( el ) {
 					el.classList.remove( 'ptc-item--previewing' );
 				} );
-				item.classList.add( 'ptc-item--previewing' );
+				var item = btn.closest( '.ptc-item' );
+				if ( item ) { item.classList.add( 'ptc-item--previewing' ); }
 
-				schedulePreview( previewUrl, name );
-			} );
-
-			/* Click anywhere on the row (except the Activate button) */
-			item.addEventListener( 'click', function ( e ) {
-				if ( e.target.closest( '.ptc-activate-btn' ) ) { return; }
-				clearTimeout( hoverTimer );
-				currentPreviewing = slug;
-				loadPreview( previewUrl, name );
+				loadPreview( url, name );
 			} );
 		} );
-
-		/* Mouse leaves the list → cancel pending debounced load */
-		var list = document.getElementById( 'ptc-list' );
-		if ( list ) {
-			list.addEventListener( 'mouseleave', function () {
-				clearTimeout( hoverTimer );
-				currentPreviewing = null;
-			} );
-		}
 
 		/* ── Reload button ───────────────────────────────────────── */
 		if ( reloadBtn ) {

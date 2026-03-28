@@ -32,6 +32,9 @@
 		if ( $panel )   { $panel.classList.remove( 'plch-fading' ); }
 	}
 
+	var $wpListBtn   = document.getElementById( 'plch-wp-list-btn' );
+	var $wpListLabel = document.getElementById( 'plch-wp-list-label' );
+
 	function setActiveRailItem( slug ) {
 		var meta = CPT_DATA[ slug ];
 		if ( ! meta ) { return; }
@@ -62,6 +65,7 @@
 		if ( $addBtn )      { $addBtn.href = meta.addUrl; }
 		if ( $addSingular ) { $addSingular.textContent = meta.singular; }
 		if ( $header )      { $header.style.borderColor = meta.color + '60'; }
+		if ( $wpListBtn )   { $wpListBtn.href = meta.wpListUrl || ( AJAX_URL.replace( 'admin-ajax.php', 'edit.php' ) + '?post_type=pizzalayer_' + slug ); }
 	}
 
 	function reinitTableLinks( slug ) {
@@ -136,6 +140,23 @@
 			if ( slug ) { loadPanel( slug ); }
 		} );
 	}
+
+	// ── Bulk form: use event delegation so it works after AJAX panel swaps ─
+	document.addEventListener( 'submit', function ( e ) {
+		var form = e.target;
+		if ( ! form || form.id !== 'plch-bulk-form' ) { return; }
+		var hubBase = window.location.pathname + '?page=pizzalayer-content&pl_cpt=' + encodeURIComponent( current );
+		form.action = hubBase;
+		// Let native submit proceed (no preventDefault)
+	} );
+
+	// ── Search form: also delegation-safe ───────────────────────────────
+	document.addEventListener( 'submit', function ( e ) {
+		var form = e.target;
+		if ( ! form || form.id !== 'plch-search-form' ) { return; }
+		var cptInput = form.querySelector( 'input[name="pl_cpt"]' );
+		if ( cptInput ) { cptInput.value = current; }
+	} );
 
 	reinitTableLinks( current );
 

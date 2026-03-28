@@ -159,6 +159,10 @@ class ShortcodeGenerator {
 								<option value="instant">⚡ Instant</option>
 							</select>
 						</div>
+						<div class="pscg-field">
+							<label>Animation Speed <span class="pscg-hint">ms — overrides global setting</span></label>
+							<input type="number" class="pscg-input" id="b-layer-anim-speed" min="80" max="800" step="20" placeholder="320">
+						</div>
 					</div>
 					<!-- Tabs visibility -->
 					<div class="pscg-field pscg-field--full" style="margin-top:14px;">
@@ -181,8 +185,19 @@ class ShortcodeGenerator {
 			<div class="pscg-card">
 				<div class="pscg-card__head"><h2>Static Display — <code>[pizza_static]</code></h2></div>
 				<div class="pscg-card__body">
-					<p class="pscg-desc">Renders a non-interactive pizza image. Specify layers individually.</p>
+					<p class="pscg-desc">Renders a non-interactive pizza image. Specify layers individually, or pick a saved preset.</p>
 					<div class="pscg-grid">
+						<div class="pscg-field">
+							<label>Preset <span class="pscg-hint">Load a saved pizza preset by slug</span></label>
+							<select class="pscg-select" id="s-preset">
+								<option value="">— none (specify layers below) —</option>
+								<?php
+								$presets = get_posts( array_merge( $q_args, [ 'post_type' => 'pizzalayer_presets' ] ) );
+								foreach ( $presets as $p ) : $sl = sanitize_title( $p->post_title ); ?>
+								<option value="<?php echo esc_attr( $sl ); ?>"><?php echo esc_html( $p->post_title ); ?></option>
+								<?php endforeach; ?>
+							</select>
+						</div>
 						<div class="pscg-field">
 							<label>Crust</label>
 							<select class="pscg-select" id="s-crust">
@@ -258,8 +273,10 @@ class ShortcodeGenerator {
 							</select>
 						</div>
 						<div class="pscg-field">
-							<label>Slug <span class="pscg-hint">Lowercase, hyphenated post slug</span></label>
-							<input type="text" class="pscg-input" id="l-slug" placeholder="pepperoni">
+							<label>Item <span class="pscg-hint">Select a specific item</span></label>
+							<select class="pscg-select" id="l-slug">
+								<option value="">— select layer type first —</option>
+							</select>
 						</div>
 						<div class="pscg-field">
 							<label>Image Type</label>

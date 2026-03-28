@@ -46,7 +46,8 @@
 			var shp = val( 'b-pizza-shape' );  if ( shp )          { attrs.push( 'pizza_shape="' + shp + '"' ); }
 			var asp = val( 'b-pizza-aspect' ); if ( asp )          { attrs.push( 'pizza_aspect="' + asp + '"' ); }
 			var rad = val( 'b-pizza-radius' ); if ( rad )          { attrs.push( 'pizza_radius="' + rad + '"' ); }
-			var ani = val( 'b-layer-anim' );   if ( ani )          { attrs.push( 'layer_anim="' + ani + '"' ); }
+			var ani  = val( 'b-layer-anim' );   if ( ani )          { attrs.push( 'layer_anim="' + ani + '"' ); }
+			var spd  = val( 'b-layer-anim-speed' ); if ( spd && spd !== '0' ) { attrs.push( 'layer_anim_speed="' + spd + '"' ); }
 			var allCbs    = document.querySelectorAll( '.pscg-cb-tab' );
 			var hiddenTabs = [];
 			allCbs.forEach( function ( cb ) { if ( ! cb.checked ) { hiddenTabs.push( cb.value ); } } );
@@ -83,7 +84,44 @@
 		output.textContent = sc;
 	}
 
-	document.querySelectorAll( '.pscg-input, .pscg-select, .pscg-cb-tab, #b-pizza-shape, #b-pizza-aspect, #b-pizza-radius, #b-layer-anim' ).forEach( function ( el ) {
+	// ── Layer type → slug select population ───────────────────────────────
+	var lTypeEl = document.getElementById( 'l-type' );
+	var lSlugEl = document.getElementById( 'l-slug' );
+	var cptItems = ( window.pizzalayerSCG && window.pizzalayerSCG.cptItems ) ? window.pizzalayerSCG.cptItems : {};
+
+	function populateLayerSlugSelect( type ) {
+		if ( ! lSlugEl ) { return; }
+		var items = cptItems[ type ] || [];
+		lSlugEl.innerHTML = '';
+		if ( items.length === 0 ) {
+			var opt = document.createElement( 'option' );
+			opt.value = '';
+			opt.textContent = '— no items found —';
+			lSlugEl.appendChild( opt );
+		} else {
+			var blank = document.createElement( 'option' );
+			blank.value = '';
+			blank.textContent = '— select item —';
+			lSlugEl.appendChild( blank );
+			items.forEach( function ( item ) {
+				var o = document.createElement( 'option' );
+				o.value = item.slug;
+				o.textContent = item.title + ' (' + item.slug + ')';
+				lSlugEl.appendChild( o );
+			} );
+		}
+		buildShortcode();
+	}
+
+	if ( lTypeEl ) {
+		lTypeEl.addEventListener( 'change', function () {
+			populateLayerSlugSelect( lTypeEl.value );
+		} );
+		// Populate on load with initial type
+		populateLayerSlugSelect( lTypeEl.value );
+	}
+
+	document.querySelectorAll( '.pscg-input, .pscg-select, .pscg-cb-tab, #b-pizza-shape, #b-pizza-aspect, #b-pizza-radius, #b-layer-anim, #b-layer-anim-speed' ).forEach( function ( el ) {
 		el.addEventListener( 'change', buildShortcode );
 		el.addEventListener( 'input',  buildShortcode );
 	} );
