@@ -5,6 +5,25 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
 
 class AssetManager {
 
+	/**
+	 * Template slugs requested by shortcode instances on this page load.
+	 * Populated via require_template() before wp_enqueue_scripts fires.
+	 *
+	 * @var string[]
+	 */
+	private static array $required_templates = [];
+
+	/**
+	 * Register a template slug as required for this page.
+	 * Called by BuilderShortcode during render so that enqueue_frontend()
+	 * knows which template assets to load beyond the global default.
+	 */
+	public static function require_template( string $slug ): void {
+		if ( $slug && ! in_array( $slug, self::$required_templates, true ) ) {
+			self::$required_templates[] = $slug;
+		}
+	}
+
 	public function enqueue_frontend(): void {
 		$v = PIZZALAYER_VERSION;
 
@@ -13,16 +32,21 @@ class AssetManager {
 		wp_enqueue_script( 'pizzalayer-js',            PIZZALAYER_ASSETS_URL . 'js/pizzalayer-main.js',         [ 'jquery' ], $v, true );
 
 		$loader = new \PizzaLayer\Template\TemplateLoader();
-		$slug   = $loader->get_active_slug();
 
-		// Load the template's custom PHP file (hooks, helpers) exactly once per page load.
-		$loader->load_template_custom( $slug );
+		// Always enqueue the globally active template.
+		$active_slug = $loader->get_active_slug();
+		$slugs_to_load = array_unique( array_merge( [ $active_slug ], self::$required_templates ) );
 
-		if ( file_exists( $loader->get_template_file( 'template.css', $slug ) ) ) {
-			wp_enqueue_style( 'pizzalayer-template-' . $slug, $loader->get_template_url( 'template.css', $slug ), [ 'pizzalayer-css' ], $v );
-		}
-		if ( file_exists( $loader->get_template_file( 'custom.js', $slug ) ) ) {
-			wp_enqueue_script( 'pizzalayer-template-' . $slug, $loader->get_template_url( 'custom.js', $slug ), [ 'jquery', 'pizzalayer-js' ], $v, true );
+		foreach ( $slugs_to_load as $slug ) {
+			// Load the template's custom PHP file (hooks, helpers) exactly once per page load.
+			$loader->load_template_custom( $slug );
+
+			if ( file_exists( $loader->get_template_file( 'template.css', $slug ) ) ) {
+				wp_enqueue_style( 'pizzalayer-template-' . $slug, $loader->get_template_url( 'template.css', $slug ), [ 'pizzalayer-css' ], $v );
+			}
+			if ( file_exists( $loader->get_template_file( 'custom.js', $slug ) ) ) {
+				wp_enqueue_script( 'pizzalayer-template-' . $slug, $loader->get_template_url( 'custom.js', $slug ), [ 'jquery', 'pizzalayer-js' ], $v, true );
+			}
 		}
 	}
 

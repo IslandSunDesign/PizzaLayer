@@ -19,15 +19,6 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  *   ├─ ✂  Cuts         [All]  [+ New]
  *   ├─ 📏 Sizes        [All]  [+ New]
  *   │
- *   ├─ ── ADD NEW ──
- *   ├─ + New Topping
- *   ├─ + New Crust
- *   ├─ + New Sauce
- *   ├─ + New Cheese
- *   ├─ + New Drizzle
- *   ├─ + New Cut
- *   ├─ + New Size
- *   │
  *   ├─ ── TOOLS ──
  *   ├─ 📋 Setup Guide
  *   ├─ </> Shortcode Generator
@@ -58,7 +49,10 @@ class AdminBar {
 		// ── Root ─────────────────────────────────────────────────────────
 		$bar->add_menu( [
 			'id'    => 'pizzalayer',
-			'title' => '<span class="ab-icon dashicons dashicons-pizza pzlab-root-icon"></span>'
+			'title' => '<span class="ab-icon pzlab-root-icon" aria-hidden="true">'
+			         . '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="18" height="18" fill="currentColor" style="display:inline-block;vertical-align:middle;position:relative;top:-1px">'
+			         . '<path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2zm0 1.5a6.5 6.5 0 0 1 6.18 4.52L10 10 3.82 8.02A6.5 6.5 0 0 1 10 3.5zM3.5 10c0-.17.01-.34.03-.5L10 11.5l6.47-2c.02.16.03.33.03.5a6.5 6.5 0 0 1-13 0z"/>'
+			         . '</svg></span>'
 			         . '<span class="ab-label">PizzaLayer</span>',
 			'href'  => $dashboard,
 			'meta'  => [ 'title' => __( 'PizzaLayer Dashboard', 'pizzalayer' ) ],
@@ -114,26 +108,6 @@ class AdminBar {
 				'title'  => '<span class="dashicons dashicons-plus-alt2 pzlab-icon"></span> ' . sprintf( esc_html__( 'Add New %s', 'pizzalayer' ), esc_html( $meta['singular'] ) ),
 				'href'   => $new_url,
 				'meta'   => [ 'title' => sprintf( __( 'Add a new %s', 'pizzalayer' ), $meta['singular'] ) ],
-			] );
-		}
-
-		// ── ADD NEW group separator ──────────────────────────────────────
-		$bar->add_menu( [
-			'parent' => 'pizzalayer',
-			'id'     => 'pizzalayer-grp-addnew',
-			'title'  => '<span class="pzlab-group-label">' . esc_html__( 'Add New', 'pizzalayer' ) . '</span>',
-			'href'   => '#',
-			'meta'   => [ 'class' => 'pzlab-group-header' ],
-		] );
-
-		// ── Add New quick-links ──────────────────────────────────────────
-		foreach ( self::CPTS as $slug => $meta ) {
-			$bar->add_menu( [
-				'parent' => 'pizzalayer',
-				'id'     => 'pizzalayer-new-' . $slug,
-				'title'  => '<span class="pzlab-addnew-plus">+</span> ' . sprintf( esc_html__( 'New %s', 'pizzalayer' ), esc_html( $meta['singular'] ) ),
-				'href'   => admin_url( 'post-new.php?post_type=pizzalayer_' . $slug ),
-				'meta'   => [ 'class' => 'pzlab-addnew-item', 'title' => sprintf( __( 'Add new %s', 'pizzalayer' ), $meta['singular'] ) ],
 			] );
 		}
 
@@ -280,11 +254,9 @@ class AdminBar {
 		/* Root icon */
 		#wpadminbar #wp-admin-bar-pizzalayer > .ab-item .pzlab-root-icon {
 			color: #ff6b35 !important;
-			font-size: 18px !important;
-			width: 18px !important;
-			height: 18px !important;
-			top: 2px;
-			position: relative;
+			display: inline-flex !important;
+			align-items: center !important;
+			margin-right: 4px !important;
 		}
 
 		/* Dropdown icons */
@@ -328,21 +300,6 @@ class AdminBar {
 		#wpadminbar .pzlab-cpt-row > .ab-item {
 			display: flex !important;
 			align-items: center !important;
-		}
-
-		/* Add-new items in the "Add New" group */
-		#wpadminbar .pzlab-addnew-item > .ab-item {
-			display: flex !important;
-			align-items: center !important;
-			gap: 6px !important;
-		}
-		.pzlab-addnew-plus {
-			font-size: 16px !important;
-			font-weight: 700 !important;
-			color: #ff6b35 !important;
-			width: 18px !important;
-			text-align: center !important;
-			flex-shrink: 0 !important;
 		}
 
 		/* Highlight currently-active CPT */

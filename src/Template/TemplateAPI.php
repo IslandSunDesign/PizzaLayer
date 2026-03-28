@@ -36,8 +36,8 @@ class TemplateAPI {
 	public static function get_list_image( int $post_id, string $type ): string {
 		$field  = $type . '_image'; // e.g. topping_image, sauce_image
 		$lfield = $type . '_layer_image';
-		$url    = get_field( $field, $post_id );
-		if ( ! $url ) { $url = get_field( $lfield, $post_id ); }
+		$url    = function_exists( 'get_field' ) ? get_field( $field, $post_id ) : null;
+		if ( ! $url ) { $url = function_exists( 'get_field' ) ? get_field( $lfield, $post_id ) : null; }
 		if ( ! $url ) { $url = (string) get_the_post_thumbnail_url( $post_id, 'medium' ); }
 		return (string) $url;
 	}
@@ -46,7 +46,7 @@ class TemplateAPI {
 	 * Resolve the layer-stack image URL (the transparent PNG used in the pizza visualization).
 	 */
 	public static function get_layer_image( int $post_id, string $type ): string {
-		$url = get_field( $type . '_layer_image', $post_id );
+		$url = function_exists( 'get_field' ) ? get_field( $type . '_layer_image', $post_id ) : null;
 		if ( ! $url ) { $url = self::get_list_image( $post_id, $type ); }
 		return (string) $url;
 	}

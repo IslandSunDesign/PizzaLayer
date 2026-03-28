@@ -13,7 +13,6 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  *   toppings Comma-separated topping slugs.
  *   drizzle  Layer slug.
  *   cut      Layer slug.
- *   size     Size slug (adds a label; no visual layer).
  */
 class StaticShortcode {
 
@@ -25,7 +24,6 @@ class StaticShortcode {
 			'toppings' => '',
 			'drizzle'  => '',
 			'cut'      => '',
-			'size'     => '',
 			// Legacy support for [pizzalayer-static slices="..."]
 			'slices'   => '',
 		], $atts, 'pizza_static' ) );
@@ -34,8 +32,6 @@ class StaticShortcode {
 		if ( $atts['cut'] === '' && $atts['slices'] !== '' ) {
 			$atts['cut'] = $atts['slices'];
 		}
-
-		do_action( 'pizzalayer_before_static_pizza', $atts );
 
 		$builder = new \PizzaLayer\Builder\PizzaBuilder();
 		$html    = '<div class="pizzalayer-static-wrap">'
@@ -49,8 +45,6 @@ class StaticShortcode {
 		               ''
 		           )
 		         . '</div>';
-
-		do_action( 'pizzalayer_after_static_pizza', $atts );
 
 		return $html;
 	}

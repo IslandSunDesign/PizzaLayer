@@ -66,6 +66,7 @@ class PizzaBuilder {
 	 * @return string       Image URL or empty string
 	 */
 	public static function get_layer_url( string $type, string $slug ): string {
+		if ( ! function_exists( 'get_field' ) ) { return ''; }
 		$builder = new self();
 		$id      = $builder->get_id_by_slug( $slug, $type . 's' );
 		if ( ! $id ) { return ''; }
@@ -103,6 +104,7 @@ class PizzaBuilder {
 	 */
 	private function get_img( string $field, int $id ): string {
 		if ( ! $id ) { return ''; }
+		if ( ! function_exists( 'get_field' ) ) { return ''; }
 		$val = get_field( $field, $id );
 		// ACF may return an array (when return format = 'array') — unwrap to URL
 		if ( is_array( $val ) ) { $val = $val['url'] ?? ''; }

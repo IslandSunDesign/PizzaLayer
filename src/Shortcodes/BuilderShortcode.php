@@ -60,6 +60,10 @@ class BuilderShortcode {
 		$loader = new \PizzaLayer\Template\TemplateLoader();
 		$template_slug = $atts['template'] ? sanitize_key( $atts['template'] ) : $loader->get_active_slug();
 
+		// Register this template's assets so AssetManager enqueues them on this page.
+		// This handles the case where template="" differs from the global active template.
+		\PizzaLayer\Assets\AssetManager::require_template( $template_slug );
+
 		$menu_file = $loader->get_template_file( 'pztp-containers-menu.php', $template_slug );
 		if ( ! file_exists( $menu_file ) ) {
 			return '<p class="pizzalayer-error">' . esc_html__( 'PizzaLayer: template not found.', 'pizzalayer' ) . '</p>';
