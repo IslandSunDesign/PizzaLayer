@@ -1,7 +1,7 @@
 /* ══════════════════════════════════════════════════════════════
    NIGHTPIE TEMPLATE — template.css
-   Modern dark pizza builder UI with sticky split-screen preview,
-   rounded bubble style, tab navigation, fly-to animation.
+   Dark pizza builder: sticky split-screen preview, rounded cards,
+   tab navigation, fly-to animation.
    ══════════════════════════════════════════════════════════════ */
 
 /* ── Design Tokens ─────────────────────────────────────────── */
@@ -25,17 +25,15 @@
     --np-shadow:        0 4px 24px rgba(0,0,0,0.45);
     --np-shadow-sm:     0 2px 8px  rgba(0,0,0,0.3);
     --np-transition:    0.22s cubic-bezier(0.4,0,0.2,1);
-    --np-pizza-col-w:   360px;
-    --np-tabnav-h:      62px;
     --np-font:          system-ui, -apple-system, 'Segoe UI', Roboto, Arial, sans-serif;
 }
 
 /* ── Base reset scoped to NightPie ─────────────────────────── */
-#np-root,
-#np-root * {
+.np-root,
+.np-root * {
     box-sizing: border-box;
 }
-#np-root {
+.np-root {
     font-family:  var(--np-font);
     font-size:    15px;
     line-height:  1.5;
@@ -47,34 +45,54 @@
 }
 
 /* ══════════════════════════════════════════════════════════════
-   LAYOUT — pure CSS two-column split (no Bootstrap dependency)
+   LAYOUT
+   Mobile:  pizza preview stacked above the tabs
+   Desktop: two-column split — pizza left, tabs right
    ══════════════════════════════════════════════════════════════ */
-.np-layout {
-    padding: 0;
-    width: 100%;
-}
+
+.np-layout { padding: 0; width: 100%; }
+
 .np-layout__row {
-    display:         flex;
-    flex-direction:  row;
-    align-items:     stretch;
-    min-height:      600px;
-    width:           100%;
+    display:        flex;
+    flex-direction: column;   /* mobile: stacked */
+    align-items:    stretch;
+    width:          100%;
 }
 
-/* ── LEFT: Pizza sticky column ─────────────────────────────── */
-.np-pizza-col {
-    display:         none;         /* hidden on mobile – revealed by media query */
-    flex-direction:  column;
-    flex:            0 0 360px;
-    width:           360px;
-    max-width:       42%;
-    border-right:    1px solid var(--np-border);
-    background:      var(--np-surface);
-    min-height:      600px;
+@media (min-width: 900px) {
+    .np-layout__row {
+        flex-direction: row;  /* desktop: side by side */
+        align-items:    stretch;
+        min-height:     580px;
+    }
 }
-@media (min-width: 992px) {
+
+/* ── LEFT: Pizza preview column ─────────────────────────────── */
+
+/* Always visible — mobile shows it at the top */
+.np-pizza-col {
+    display:         flex;
+    flex-direction:  column;
+    align-items:     center;
+    justify-content: flex-start;
+    background:      var(--np-surface);
+    padding:         20px 16px 16px;
+    border-bottom:   1px solid var(--np-border);
+}
+
+@media (min-width: 900px) {
     .np-pizza-col {
-        display: flex;
+        flex:          0 0 320px;
+        width:         320px;
+        max-width:     38%;
+        border-bottom: none;
+        border-right:  1px solid var(--np-border);
+        padding:       28px 20px 20px;
+        position:      sticky;
+        top:           0;
+        align-self:    flex-start;
+        max-height:    100vh;
+        overflow-y:    auto;
     }
     .np-mobile-preview-bar {
         display: none !important;
@@ -82,86 +100,141 @@
 }
 
 .np-pizza-sticky {
-    position: sticky;
-    top: 0;
-    max-height: 100vh;
-    display: flex;
+    display:        flex;
     flex-direction: column;
-    align-items: center;
-    padding: 24px 16px 16px;
-    gap: 12px;
-    width: 100%;
+    align-items:    center;
+    gap:            12px;
+    width:          100%;
 }
 
 .np-pizza-sticky__header {
-    display: flex;
-    align-items: center;
-    gap: 8px;
-    font-size: 13px;
-    font-weight: 600;
+    display:        flex;
+    align-items:    center;
+    gap:            8px;
+    font-size:      12px;
+    font-weight:    700;
     text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--np-text-muted);
-    align-self: flex-start;
+    letter-spacing: 0.09em;
+    color:          var(--np-text-muted);
+    align-self:     flex-start;
+    padding-left:   4px;
 }
-.np-pizza-sticky__header .fa {
-    color: var(--np-accent);
-    font-size: 15px;
+.np-pizza-sticky__header .fa { color: var(--np-accent); font-size: 14px; }
+
+/* ────────────────────────────────────────────────────────────
+   THE PIZZA CANVAS
+   A round dark plate that layers stack inside.
+   Canvas clips to circle; the stage fills it absolutely.
+   ──────────────────────────────────────────────────────────── */
+.np-pizza-sticky__canvas {
+    position:     relative;
+    width:        100%;
+    max-width:    260px;    /* compact on mobile */
+    aspect-ratio: 1 / 1;
+    border-radius: 50%;
+    /* dark pizza-dough background — visible before any layer loads */
+    background:   radial-gradient(
+                      circle at 44% 40%,
+                      #3a2e1a 0%,
+                      #251e0e 45%,
+                      #161006 100%
+                  );
+    box-shadow:
+        0 0 0 4px rgba(255,255,255,0.05),   /* subtle rim */
+        0 0 0 8px rgba(0,0,0,0.5),
+        0 12px 48px rgba(0,0,0,0.75),
+        inset 0 2px 16px rgba(0,0,0,0.6);
+    overflow:     hidden;   /* clip all layers to circle */
+    flex-shrink:  0;
 }
 
-.np-pizza-sticky__canvas {
-    width: 100%;
-    max-width: 320px;
-    aspect-ratio: 1 / 1;
-    position: relative;
+@media (min-width: 900px) {
+    .np-pizza-sticky__canvas { max-width: 270px; }
 }
-/* Ensure the PizzaLayer pizza div fills the canvas */
-.np-pizza-sticky__canvas #pizzalayer-pizza,
-.np-pizza-sticky__canvas .pizzalayer-pizza-dynamic {
-    width:  100% !important;
-    height: 100% !important;
-    position: relative !important;
+
+/* Stage-wrap and stage fill canvas absolutely */
+.np-pizza-sticky__canvas .np-pizza-stage-wrap {
+    position: absolute;
+    inset:    0;
+    width:    100%;
+    height:   100%;
 }
+
+.np-pizza-sticky__canvas .np-pizza-stage {
+    position:      absolute;
+    inset:         0;
+    width:         100%;
+    height:        100%;
+    background:    transparent;
+    border-radius: 0;  /* canvas already clips */
+}
+
+/* Layer divs fill stage */
+.np-pizza-sticky__canvas .np-layer-div {
+    position:       absolute;
+    inset:          0;
+    pointer-events: none;
+}
+.np-pizza-sticky__canvas .np-layer-div img {
+    position:   absolute;
+    inset:      0;
+    width:      100%;
+    height:     100%;
+    object-fit: contain;
+    display:    block;
+    transition: opacity 0.3s ease, clip-path 0.25s ease;
+}
+
+/* Dashed ring shown before any layer loads */
+.np-pizza-sticky__canvas::before {
+    content:        '';
+    position:       absolute;
+    inset:          6%;
+    border-radius:  50%;
+    border:         1px dashed rgba(255,255,255,0.08);
+    pointer-events: none;
+    z-index:        1;
+    transition:     opacity 0.4s ease;
+}
+.np-pizza-sticky__canvas.np-has-layers::before { opacity: 0; }
 
 .np-pizza-sticky__footer {
-    display: flex;
-    align-items: center;
+    display:         flex;
+    align-items:     center;
     justify-content: space-between;
-    width: 100%;
-    max-width: 320px;
-    gap: 8px;
+    width:           100%;
+    max-width:       260px;
+    gap:             8px;
+}
+@media (min-width: 900px) {
+    .np-pizza-sticky__footer { max-width: 270px; }
 }
 
 .np-topping-counter {
-    display: flex;
-    align-items: center;
-    gap: 6px;
-    font-size: 12px;
-    color: var(--np-text-muted);
-    background: var(--np-surface-2);
-    border: 1px solid var(--np-border);
+    display:       flex;
+    align-items:   center;
+    gap:           6px;
+    font-size:     12px;
+    color:         var(--np-text-muted);
+    background:    var(--np-surface-2);
+    border:        1px solid var(--np-border);
     border-radius: var(--np-radius-pill);
-    padding: 4px 12px;
+    padding:       4px 12px;
 }
-.np-topping-counter .fa {
-    color: var(--np-accent);
-}
-.np-topping-counter-inline {
-    font-size: 12px;
-    color: var(--np-text-muted);
-}
+.np-topping-counter .fa { color: var(--np-accent); }
+.np-topping-counter-inline { font-size: 12px; color: var(--np-text-muted); }
 
-/* ── RIGHT: Tabs column ────────────────────────────────────── */
+/* ── RIGHT: Tabs column ──────────────────────────────────── */
 .np-tabs-col {
-    flex:            1 1 0;
-    min-width:       0;            /* prevent flex blowout */
-    background:      var(--np-bg);
-    display:         flex;
-    flex-direction:  column;
+    flex:           1 1 0;
+    min-width:      0;
+    background:     var(--np-bg);
+    display:        flex;
+    flex-direction: column;
 }
 .np-builder {
-    flex: 1;
-    display: flex;
+    flex:           1;
+    display:        flex;
     flex-direction: column;
 }
 
@@ -169,151 +242,111 @@
    TAB NAV
    ══════════════════════════════════════════════════════════════ */
 .np-tabnav {
-    position: sticky;
-    top: 0;
-    z-index: 50;
-    display: flex;
+    position:   sticky;
+    top:        0;
+    z-index:    50;
+    display:    flex;
     align-items: center;
-    gap: 4px;
-    padding: 12px 16px 0;
+    gap:        4px;
+    padding:    12px 16px 0;
     background: var(--np-bg);
     border-bottom: 1px solid var(--np-border);
     overflow-x: auto;
     -webkit-overflow-scrolling: touch;
     scrollbar-width: none;
-    flex-wrap: nowrap;
+    flex-wrap:  nowrap;
 }
 .np-tabnav::-webkit-scrollbar { display: none; }
 
 .np-tab {
-    display:         flex;
-    flex-direction:  column;
-    align-items:     center;
-    gap:             4px;
-    padding:         8px 14px 12px;
-    border:          none;
-    background:      transparent;
-    color:           var(--np-text-muted);
-    cursor:          pointer;
-    border-radius:   var(--np-radius) var(--np-radius) 0 0;
-    font-size:       12px;
-    font-weight:     600;
-    letter-spacing:  0.03em;
-    transition:      color var(--np-transition), background var(--np-transition);
-    white-space:     nowrap;
-    position:        relative;
-    outline:         none;
+    display:        flex;
+    flex-direction: column;
+    align-items:    center;
+    gap:            4px;
+    padding:        8px 14px 12px;
+    border:         none;
+    background:     transparent;
+    color:          var(--np-text-muted);
+    cursor:         pointer;
+    border-radius:  var(--np-radius) var(--np-radius) 0 0;
+    font-size:      12px;
+    font-weight:    600;
+    letter-spacing: 0.03em;
+    transition:     color var(--np-transition), background var(--np-transition);
+    white-space:    nowrap;
+    position:       relative;
+    outline:        none;
 }
-.np-tab:hover {
-    color:       var(--np-text);
-    background:  var(--np-surface-2);
-}
-.np-tab.active {
-    color:       var(--np-accent);
-    background:  var(--np-surface);
-}
+.np-tab:hover  { color: var(--np-text); background: var(--np-surface-2); }
+.np-tab.active { color: var(--np-accent); background: var(--np-surface); }
 .np-tab.active::after {
-    content:     '';
-    position:    absolute;
-    bottom:      0;
-    left:        12px;
-    right:       12px;
-    height:      3px;
-    background:  var(--np-accent);
+    content:       '';
+    position:      absolute;
+    bottom:        0; left: 12px; right: 12px;
+    height:        3px;
+    background:    var(--np-accent);
     border-radius: var(--np-radius-pill) var(--np-radius-pill) 0 0;
 }
-.np-tab.np-tab--done:not(.active) {
-    color: #4caf50;
-}
+.np-tab.np-tab--done:not(.active) { color: #4caf50; }
 .np-tab.np-tab--done:not(.active)::after {
-    content: '';
-    position: absolute;
-    bottom: 0;
-    left: 12px;
-    right: 12px;
-    height: 3px;
-    background: #4caf5060;
+    content:       '';
+    position:      absolute;
+    bottom:        0; left: 12px; right: 12px;
+    height:        3px;
+    background:    #4caf5060;
     border-radius: var(--np-radius-pill) var(--np-radius-pill) 0 0;
 }
-
-.np-tab__icon {
-    font-size: 16px;
-    line-height: 1;
-}
-.np-tab__label {
-    font-size: 11px;
-}
+.np-tab__icon  { font-size: 16px; line-height: 1; }
+.np-tab__label { font-size: 11px; }
 
 /* Progress dots */
 .np-progress {
-    display: flex;
-    gap: 6px;
-    padding: 8px 20px 0;
-    background: var(--np-surface);
-    align-items: center;
+    display:         flex;
+    gap:             6px;
+    padding:         8px 20px 0;
+    background:      var(--np-surface);
+    align-items:     center;
     justify-content: center;
 }
 .np-progress__dot {
-    width:  8px;
-    height: 8px;
+    width:         8px;
+    height:        8px;
     border-radius: var(--np-radius-pill);
-    background: var(--np-surface-3);
-    border: 1px solid var(--np-border);
-    transition: background var(--np-transition), transform var(--np-transition);
+    background:    var(--np-surface-3);
+    border:        1px solid var(--np-border);
+    transition:    background var(--np-transition), transform var(--np-transition);
 }
 .np-progress__dot.active {
-    background:  var(--np-accent);
-    transform:   scale(1.3);
-    box-shadow:  0 0 8px var(--np-accent-glow);
+    background: var(--np-accent);
+    transform:  scale(1.3);
+    box-shadow: 0 0 8px var(--np-accent-glow);
 }
-.np-progress__dot.done {
-    background: #4caf5080;
-}
+.np-progress__dot.done { background: #4caf5080; }
 
 /* ══════════════════════════════════════════════════════════════
    PANELS
    ══════════════════════════════════════════════════════════════ */
-.np-panels {
-    flex: 1;
-    background: var(--np-surface);
-}
-
-.np-panel {
-    display:    none;
-    padding:    24px 20px;
-    min-height: 400px;
-}
-.np-panel.active {
-    display: block;
-    animation: np-fadein 0.25s ease;
-}
+.np-panels  { flex: 1; background: var(--np-surface); }
+.np-panel   { display: none; padding: 24px 20px; min-height: 400px; }
+.np-panel.active { display: block; animation: np-fadein 0.25s ease; }
 
 @keyframes np-fadein {
     from { opacity: 0; transform: translateY(6px); }
     to   { opacity: 1; transform: translateY(0);   }
 }
 
-.np-panel__header {
-    margin-bottom: 20px;
-}
+.np-panel__header { margin-bottom: 20px; }
 .np-panel__title {
-    font-size: 20px;
+    font-size:   20px;
     font-weight: 700;
-    color: var(--np-text);
-    margin: 0 0 6px;
-    display: flex;
+    color:       var(--np-text);
+    margin:      0 0 6px;
+    display:     flex;
     align-items: center;
-    gap: 10px;
+    gap:         10px;
 }
-.np-panel__title .fa {
-    color: var(--np-accent);
-    font-size: 18px;
-}
-.np-panel__hint {
-    font-size: 13px;
-    color: var(--np-text-muted);
-    margin: 0;
-}
+.np-panel__title .fa { color: var(--np-accent); font-size: 18px; }
+.np-panel__hint  { font-size: 13px; color: var(--np-text-muted); margin: 0; }
 
 .np-panel__nav {
     display:         flex;
@@ -329,32 +362,24 @@
 /* ══════════════════════════════════════════════════════════════
    CARD GRID
    ══════════════════════════════════════════════════════════════ */
-.np-cards-grid {
-    display: grid;
-    gap:     14px;
-}
-.np-cards-grid--exclusive {
-    grid-template-columns: repeat(auto-fill, minmax(160px, 1fr));
-}
-.np-cards-grid--toppings {
-    grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
-}
+.np-cards-grid { display: grid; gap: 14px; }
+.np-cards-grid--exclusive { grid-template-columns: repeat(auto-fill, minmax(160px, 1fr)); }
+.np-cards-grid--toppings  { grid-template-columns: repeat(auto-fill, minmax(180px, 1fr)); }
 
-/* ── Individual card ───────────────────────────────────────── */
 .np-card {
-    background:    var(--np-surface-2);
-    border:        1px solid var(--np-border);
-    border-radius: var(--np-radius);
-    padding:       14px;
-    display:       flex;
+    background:     var(--np-surface-2);
+    border:         1px solid var(--np-border);
+    border-radius:  var(--np-radius);
+    padding:        14px;
+    display:        flex;
     flex-direction: column;
-    gap:           10px;
-    cursor:        pointer;
-    transition:    border-color var(--np-transition),
-                   background   var(--np-transition),
-                   box-shadow   var(--np-transition),
-                   transform    var(--np-transition);
-    position:      relative;
+    gap:            10px;
+    cursor:         pointer;
+    transition:     border-color var(--np-transition),
+                    background   var(--np-transition),
+                    box-shadow   var(--np-transition),
+                    transform    var(--np-transition);
+    position:       relative;
 }
 .np-card:hover {
     border-color: var(--np-border-hover);
@@ -367,18 +392,10 @@
     background:   var(--np-accent-dim);
     box-shadow:   0 0 0 1px var(--np-accent), var(--np-shadow-sm);
 }
-.np-card.np-card--selected .np-card__check {
-    opacity:   1;
-    transform: scale(1);
-}
-.np-card.np-card--selected .np-btn--add {
-    display: none !important;
-}
-.np-card.np-card--selected .np-btn--remove {
-    display: flex !important;
-}
+.np-card.np-card--selected .np-card__check { opacity: 1; transform: scale(1); }
+.np-card.np-card--selected .np-btn--add    { display: none !important; }
+.np-card.np-card--selected .np-btn--remove { display: flex !important; }
 
-/* Thumb */
 .np-card__thumb-wrap {
     position:      relative;
     width:         100%;
@@ -395,57 +412,32 @@
     display:    block;
     transition: transform var(--np-transition);
 }
-.np-card:hover .np-card__thumb {
-    transform: scale(1.04);
-}
+.np-card:hover .np-card__thumb { transform: scale(1.04); }
 .np-card__thumb--placeholder {
-    width:      100%;
-    height:     100%;
+    width:  100%; height: 100%;
     background: linear-gradient(135deg, var(--np-surface-3) 0%, var(--np-surface-2) 100%);
 }
 
-/* Checkmark overlay */
 .np-card__check {
-    position:      absolute;
-    top:           6px;
-    right:         6px;
-    width:         26px;
-    height:        26px;
-    border-radius: var(--np-radius-pill);
-    background:    var(--np-accent);
-    color:         #fff;
-    display:       flex;
-    align-items:   center;
+    position:        absolute;
+    top:             6px; right: 6px;
+    width:           26px; height: 26px;
+    border-radius:   var(--np-radius-pill);
+    background:      var(--np-accent);
+    color:           #fff;
+    display:         flex;
+    align-items:     center;
     justify-content: center;
-    font-size:     12px;
-    opacity:       0;
-    transform:     scale(0.6);
-    transition:    opacity var(--np-transition), transform var(--np-transition);
-    box-shadow:    0 2px 8px var(--np-accent-glow);
-    pointer-events: none;
+    font-size:       12px;
+    opacity:         0;
+    transform:       scale(0.6);
+    transition:      opacity var(--np-transition), transform var(--np-transition);
+    box-shadow:      0 2px 8px var(--np-accent-glow);
+    pointer-events:  none;
 }
-
-/* Card body */
-.np-card__body {
-    display:        flex;
-    flex-direction: column;
-    gap:            6px;
-    flex:           1;
-}
-.np-card__name {
-    font-size:   13px;
-    font-weight: 600;
-    color:       var(--np-text);
-    line-height: 1.3;
-}
-
-/* Card actions */
-.np-card__actions {
-    display:     flex;
-    gap:         6px;
-    flex-wrap:   wrap;
-    margin-top:  auto;
-}
+.np-card__body  { display: flex; flex-direction: column; gap: 6px; flex: 1; }
+.np-card__name  { font-size: 13px; font-weight: 600; color: var(--np-text); line-height: 1.3; }
+.np-card__actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
 
 /* ══════════════════════════════════════════════════════════════
    BUTTONS
@@ -471,158 +463,78 @@
 }
 .np-btn:active { transform: scale(0.97); }
 
-/* Primary add */
-.np-btn--add {
-    background: var(--np-accent);
-    color:      #fff;
-    border-color: var(--np-accent);
-    width:      100%;
-    justify-content: center;
-}
-.np-btn--add:hover {
-    background: #e64e1a;
-    box-shadow: 0 4px 14px var(--np-accent-glow);
-}
+.np-btn--add    { background: var(--np-accent); color: #fff; border-color: var(--np-accent); width: 100%; justify-content: center; }
+.np-btn--add:hover { background: #e64e1a; box-shadow: 0 4px 14px var(--np-accent-glow); }
 
-/* Remove / outline */
-.np-btn--remove {
-    background:   transparent;
-    color:        var(--np-text-muted);
-    border-color: var(--np-border);
-    width:        100%;
-    justify-content: center;
-}
-.np-btn--remove:hover {
-    border-color: #f44336;
-    color:        #f44336;
-}
+.np-btn--remove { background: transparent; color: var(--np-text-muted); border-color: var(--np-border); width: 100%; justify-content: center; }
+.np-btn--remove:hover { border-color: #f44336; color: #f44336; }
 
-/* Ghost */
-.np-btn--ghost {
-    background:   transparent;
-    color:        var(--np-text-muted);
-    border-color: var(--np-border);
-}
-.np-btn--ghost:hover {
-    color:        var(--np-text);
-    border-color: var(--np-border-hover);
-    background:   var(--np-surface-2);
-}
+.np-btn--ghost  { background: transparent; color: var(--np-text-muted); border-color: var(--np-border); }
+.np-btn--ghost:hover { color: var(--np-text); border-color: var(--np-border-hover); background: var(--np-surface-2); }
 
-/* Nav buttons */
-.np-btn--prev {
-    background:   var(--np-surface-2);
-    color:        var(--np-text-muted);
-    border-color: var(--np-border);
-}
-.np-btn--prev:hover {
-    color:        var(--np-text);
-    border-color: var(--np-border-hover);
-}
-.np-btn--next {
-    background:   var(--np-accent);
-    color:        #fff;
-    border-color: var(--np-accent);
-    margin-left:  auto;
-}
-.np-btn--next:hover {
-    background: #e64e1a;
-    box-shadow: 0 4px 14px var(--np-accent-glow);
-}
-.np-btn--cta {
-    padding:     10px 24px;
-    font-size:   14px;
-    letter-spacing: 0.02em;
-    box-shadow:  0 4px 20px var(--np-accent-glow);
-}
-.np-btn--sm {
-    padding:   5px 12px;
-    font-size: 12px;
-}
+.np-btn--prev   { background: var(--np-surface-2); color: var(--np-text-muted); border-color: var(--np-border); }
+.np-btn--prev:hover { color: var(--np-text); border-color: var(--np-border-hover); }
+
+.np-btn--next   { background: var(--np-accent); color: #fff; border-color: var(--np-accent); margin-left: auto; }
+.np-btn--next:hover { background: #e64e1a; box-shadow: 0 4px 14px var(--np-accent-glow); }
+
+.np-btn--cta    { padding: 10px 24px; font-size: 14px; letter-spacing: 0.02em; box-shadow: 0 4px 20px var(--np-accent-glow); }
+.np-btn--sm     { padding: 5px 12px; font-size: 12px; }
 
 /* ══════════════════════════════════════════════════════════════
-   COVERAGE SELECTOR (toppings)
+   COVERAGE SELECTOR
    ══════════════════════════════════════════════════════════════ */
-.np-coverage {
-    margin-top: 6px;
-}
+.np-coverage { margin-top: 6px; }
 .np-coverage__label {
-    font-size:   11px;
-    font-weight: 600;
-    color:       var(--np-text-muted);
+    font-size:      11px;
+    font-weight:    600;
+    color:          var(--np-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    display:     block;
-    margin-bottom: 6px;
+    display:        block;
+    margin-bottom:  6px;
 }
-.np-coverage__btns {
-    display:   flex;
-    flex-wrap: wrap;
-    gap:       5px;
-}
+.np-coverage__btns { display: flex; flex-wrap: wrap; gap: 5px; }
 .np-cov-btn {
-    display:      flex;
-    align-items:  center;
-    gap:          5px;
-    padding:      5px 8px;
+    display:       flex;
+    align-items:   center;
+    gap:           5px;
+    padding:       5px 8px;
     border-radius: var(--np-radius-sm);
-    border:       1px solid var(--np-border);
-    background:   var(--np-surface-3);
-    color:        var(--np-text-muted);
-    font-size:    11px;
-    font-weight:  600;
-    cursor:       pointer;
-    transition:   all var(--np-transition);
-    outline:      none;
+    border:        1px solid var(--np-border);
+    background:    var(--np-surface-3);
+    color:         var(--np-text-muted);
+    font-size:     11px;
+    font-weight:   600;
+    cursor:        pointer;
+    transition:    all var(--np-transition);
+    outline:       none;
 }
-.np-cov-btn:hover {
-    border-color: var(--np-border-hover);
-    color:        var(--np-text);
-}
-.np-cov-btn.active {
-    border-color: var(--np-accent);
-    background:   var(--np-accent-dim);
-    color:        var(--np-accent);
-    box-shadow:   0 0 0 1px var(--np-accent);
-}
+.np-cov-btn:hover  { border-color: var(--np-border-hover); color: var(--np-text); }
+.np-cov-btn.active { border-color: var(--np-accent); background: var(--np-accent-dim); color: var(--np-accent); box-shadow: 0 0 0 1px var(--np-accent); }
 
-/* Coverage mini-icons (2×2 grid representing pizza quadrants) */
 .np-cov-ico {
-    display:             grid;
+    display:               grid;
     grid-template-columns: repeat(2, 7px);
-    grid-template-rows:  repeat(2, 7px);
-    gap:                 1px;
-    border:              1px solid rgba(255,255,255,0.18);
-    border-radius:       3px;
-    overflow:            hidden;
-    flex-shrink:         0;
+    grid-template-rows:    repeat(2, 7px);
+    gap:                   1px;
+    border:                1px solid rgba(255,255,255,0.18);
+    border-radius:         3px;
+    overflow:              hidden;
+    flex-shrink:           0;
 }
-.np-cov-ico::before,
-.np-cov-ico::after,
-.np-cov-ico > span {
-    /* cells generated via CSS: use box-shadow trick or direct approach */
-    content: '';
-    background: var(--np-surface-3);
-}
-
-/* Use simple background + clip-path for each coverage type */
-.np-cov-ico--whole  { background: var(--np-accent); }
-.np-cov-ico--left   { background: linear-gradient(to right, var(--np-accent) 50%, var(--np-surface-3) 50%); }
-.np-cov-ico--right  { background: linear-gradient(to left,  var(--np-accent) 50%, var(--np-surface-3) 50%); }
-.np-cov-ico--q1     { background: linear-gradient(135deg, var(--np-accent) 50%, var(--np-surface-3) 50%); }
-.np-cov-ico--q2     { background: linear-gradient(225deg, var(--np-accent) 50%, var(--np-surface-3) 50%); }
-.np-cov-ico--q3     { background: linear-gradient(315deg, var(--np-accent) 50%, var(--np-surface-3) 50%); }
-.np-cov-ico--q4     { background: linear-gradient(45deg,  var(--np-accent) 50%, var(--np-surface-3) 50%); }
+.np-cov-ico--whole { background: var(--np-accent); }
+.np-cov-ico--left  { background: linear-gradient(to right, var(--np-accent) 50%, var(--np-surface-3) 50%); }
+.np-cov-ico--right { background: linear-gradient(to left,  var(--np-accent) 50%, var(--np-surface-3) 50%); }
+.np-cov-ico--q1    { background: linear-gradient(135deg, var(--np-accent) 50%, var(--np-surface-3) 50%); }
+.np-cov-ico--q2    { background: linear-gradient(225deg, var(--np-accent) 50%, var(--np-surface-3) 50%); }
+.np-cov-ico--q3    { background: linear-gradient(315deg, var(--np-accent) 50%, var(--np-surface-3) 50%); }
+.np-cov-ico--q4    { background: linear-gradient(45deg,  var(--np-accent) 50%, var(--np-surface-3) 50%); }
 
 /* ══════════════════════════════════════════════════════════════
    YOUR PIZZA SUMMARY
    ══════════════════════════════════════════════════════════════ */
-.np-yourpizza {
-    display:        flex;
-    flex-direction: column;
-    gap:            10px;
-    margin-bottom:  24px;
-}
+.np-yourpizza { display: flex; flex-direction: column; gap: 10px; margin-bottom: 24px; }
 .np-yourpizza__row {
     display:       flex;
     align-items:   flex-start;
@@ -633,104 +545,74 @@
     border-radius: var(--np-radius);
     transition:    border-color var(--np-transition), background var(--np-transition);
 }
-.np-yourpizza__row.has-selection {
-    border-color: rgba(255,87,34,0.3);
-    background:   var(--np-accent-dim);
-}
+.np-yourpizza__row.has-selection { border-color: rgba(255,87,34,0.3); background: var(--np-accent-dim); }
 .np-yourpizza__icon {
-    width:         34px;
-    height:        34px;
-    border-radius: var(--np-radius-pill);
-    background:    var(--np-surface-3);
-    border:        1px solid var(--np-border);
-    display:       flex;
-    align-items:   center;
+    width:           34px; height: 34px;
+    border-radius:   var(--np-radius-pill);
+    background:      var(--np-surface-3);
+    border:          1px solid var(--np-border);
+    display:         flex;
+    align-items:     center;
     justify-content: center;
-    color:         var(--np-accent);
-    font-size:     15px;
-    flex-shrink:   0;
+    color:           var(--np-accent);
+    font-size:       15px;
+    flex-shrink:     0;
 }
 .np-yourpizza__layer-name {
-    font-size:   12px;
-    font-weight: 600;
-    color:       var(--np-text-muted);
+    font-size:      12px;
+    font-weight:    600;
+    color:          var(--np-text-muted);
     text-transform: uppercase;
     letter-spacing: 0.06em;
-    min-width:   64px;
-    padding-top: 4px;
-    flex-shrink: 0;
+    min-width:      64px;
+    padding-top:    4px;
+    flex-shrink:    0;
 }
-.np-yourpizza__selection {
-    flex:         1;
-    min-width:    0;
-    display:      flex;
-    flex-wrap:    wrap;
-    gap:          6px;
-    align-items:  center;
-}
-.np-yp-none {
-    font-size:  13px;
-    color:      var(--np-text-faint);
-    font-style: italic;
-}
+.np-yourpizza__selection { flex: 1; min-width: 0; display: flex; flex-wrap: wrap; gap: 6px; align-items: center; }
+.np-yp-none { font-size: 13px; color: var(--np-text-faint); font-style: italic; }
 .np-yourpizza__edit {
-    margin-left:   auto;
-    background:    transparent;
+    margin-left:     auto;
+    background:      transparent;
+    border:          1px solid var(--np-border);
+    border-radius:   var(--np-radius-pill);
+    color:           var(--np-text-muted);
+    cursor:          pointer;
+    width:           30px; height: 30px;
+    display:         flex;
+    align-items:     center;
+    justify-content: center;
+    font-size:       12px;
+    flex-shrink:     0;
+    transition:      all var(--np-transition);
+}
+.np-yourpizza__edit:hover { color: var(--np-accent); border-color: var(--np-accent); background: var(--np-accent-dim); }
+
+.np-yp-bubble {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           6px;
+    padding:       4px 10px;
+    background:    var(--np-surface-3);
     border:        1px solid var(--np-border);
     border-radius: var(--np-radius-pill);
-    color:         var(--np-text-muted);
-    cursor:        pointer;
-    width:         30px;
-    height:        30px;
-    display:       flex;
-    align-items:   center;
-    justify-content: center;
     font-size:     12px;
-    flex-shrink:   0;
-    transition:    all var(--np-transition);
+    font-weight:   600;
+    color:         var(--np-text);
 }
-.np-yourpizza__edit:hover {
-    color:        var(--np-accent);
-    border-color: var(--np-accent);
-    background:   var(--np-accent-dim);
-}
-
-/* Selection bubbles in summary */
-.np-yp-bubble {
-    display:      inline-flex;
-    align-items:  center;
-    gap:          6px;
-    padding:      4px 10px;
-    background:   var(--np-surface-3);
-    border:       1px solid var(--np-border);
-    border-radius: var(--np-radius-pill);
-    font-size:    12px;
-    font-weight:  600;
-    color:        var(--np-text);
-}
-.np-yp-bubble img {
-    width:        20px;
-    height:       20px;
-    border-radius: var(--np-radius-pill);
-    object-fit:   cover;
-}
-.np-yp-bubble .np-yp-coverage {
-    font-size:  10px;
-    color:      var(--np-text-muted);
-    font-weight: 400;
-}
+.np-yp-bubble img        { width: 20px; height: 20px; border-radius: var(--np-radius-pill); object-fit: cover; }
+.np-yp-bubble .np-yp-coverage { font-size: 10px; color: var(--np-text-muted); font-weight: 400; }
 .np-yp-bubble .np-yp-remove {
-    background:   transparent;
-    border:       none;
-    cursor:       pointer;
-    color:        var(--np-text-muted);
-    padding:      0;
-    line-height:  1;
-    margin-left:  2px;
-    font-size:    12px;
-    display:      flex;
-    align-items:  center;
-    transition:   color var(--np-transition);
+    background:  transparent;
+    border:      none;
+    cursor:      pointer;
+    color:       var(--np-text-muted);
+    padding:     0;
+    line-height: 1;
+    margin-left: 2px;
+    font-size:   12px;
+    display:     flex;
+    align-items: center;
+    transition:  color var(--np-transition);
 }
 .np-yp-bubble .np-yp-remove:hover { color: #f44336; }
 
@@ -738,183 +620,139 @@
    EMPTY STATE
    ══════════════════════════════════════════════════════════════ */
 .np-empty {
-    color:        var(--np-text-muted);
-    font-size:    14px;
-    padding:      24px;
-    text-align:   center;
-    background:   var(--np-surface-2);
-    border:       1px dashed var(--np-border);
+    color:         var(--np-text-muted);
+    font-size:     14px;
+    padding:       24px;
+    text-align:    center;
+    background:    var(--np-surface-2);
+    border:        1px dashed var(--np-border);
     border-radius: var(--np-radius);
-    grid-column:  1 / -1;
+    grid-column:   1 / -1;
 }
 .np-empty .fa { margin-right: 6px; }
 
 /* ══════════════════════════════════════════════════════════════
-   MOBILE MINI-PREVIEW BAR
+   MOBILE MINI-PREVIEW BAR  (shown below 900px as fallback)
    ══════════════════════════════════════════════════════════════ */
 .np-mobile-preview-bar {
-    position:   sticky;
-    top:        0;
-    z-index:    60;
-    background: var(--np-surface);
-    border-bottom: 1px solid var(--np-border);
-    box-shadow: var(--np-shadow-sm);
-}
-.np-mobile-preview-bar__inner {
-    display:     flex;
-    align-items: center;
-    gap:         10px;
-    padding:     8px 14px;
-    height:      56px;
-}
-.np-mobile-preview-bar__label {
-    font-size:   12px;
-    font-weight: 600;
-    color:       var(--np-text-muted);
-    white-space: nowrap;
-    flex-shrink: 0;
-}
-.np-mobile-preview-bar__label .fa {
-    color: var(--np-accent);
-    margin-right: 4px;
-}
-.np-mobile-preview-bar__pizza {
-    flex:        1;
-    min-width:   0;
-    height:      40px;
-    overflow:    hidden;
-    position:    relative;
-    display:     flex;
-    align-items: center;
-    justify-content: center;
-}
-/* Shrink the pizza down into the mini strip */
-.np-mobile-preview-bar__pizza #pizzalayer-pizza,
-.np-mobile-preview-bar__pizza .pizzalayer-pizza-dynamic {
-    width:    40px !important;
-    height:   40px !important;
-    position: relative !important;
-    transform-origin: top left;
-}
-.np-mobile-preview-bar__toggle {
-    background:    transparent;
-    border:        1px solid var(--np-border);
-    border-radius: var(--np-radius-pill);
-    color:         var(--np-text-muted);
-    cursor:        pointer;
-    width:         30px;
-    height:        30px;
-    display:       flex;
-    align-items:   center;
-    justify-content: center;
-    font-size:     12px;
-    transition:    all var(--np-transition);
-    flex-shrink:   0;
-}
-.np-mobile-preview-bar__toggle:hover {
-    color:        var(--np-text);
-    border-color: var(--np-border-hover);
-}
-.np-mobile-preview-bar__expanded {
-    max-height: 0;
-    overflow:   hidden;
-    transition: max-height 0.35s cubic-bezier(0.4,0,0.2,1);
-    display:    flex;
-    justify-content: center;
-    padding:    0 16px;
-    background: var(--np-surface);
-}
-.np-mobile-preview-bar__expanded.open {
-    max-height: 300px;
-    padding:    16px;
-}
-.np-mobile-preview-bar__expanded #pizzalayer-pizza,
-.np-mobile-preview-bar__expanded .pizzalayer-pizza-dynamic {
-    width:    220px !important;
-    height:   220px !important;
-    position: relative !important;
+    display:    none;   /* hidden — pizza-col is always visible now */
 }
 
 /* ══════════════════════════════════════════════════════════════
    FLY-TO ANIMATION CLONE
    ══════════════════════════════════════════════════════════════ */
 #np-fly-container {
-    position:      fixed;
-    top:           0;
-    left:          0;
-    width:         0;
-    height:        0;
-    overflow:      visible;
+    position:       fixed;
+    top:            0; left: 0;
+    width:          0; height: 0;
+    overflow:       visible;
     pointer-events: none;
-    z-index:       9999;
+    z-index:        9999;
 }
 .np-fly-clone {
-    position:      fixed;
-    border-radius: var(--np-radius);
-    overflow:      hidden;
+    position:       fixed;
+    border-radius:  var(--np-radius);
+    overflow:       hidden;
     pointer-events: none;
-    box-shadow:    0 4px 20px var(--np-accent-glow);
-    border:        2px solid var(--np-accent);
-    transition:    none; /* transitions applied via JS rAF */
+    box-shadow:     0 4px 20px var(--np-accent-glow);
+    border:         2px solid var(--np-accent);
+    transition:     none;
 }
 
 /* ══════════════════════════════════════════════════════════════
-   PizzaLayer core overrides (keep pizza layers stacking right)
+   PIZZA STACK LAYER SYSTEM
+   .np-pizza-stage-wrap > .np-pizza-stage > .np-layer-div > img
+   Each .np-layer-div absolutely fills the stage.
    ══════════════════════════════════════════════════════════════ */
-#np-root .pizzalayer-pizza-dynamic {
-    position: relative;
+
+/* Standalone stage (outside canvas, e.g. static shortcode) */
+.np-pizza-stage-wrap {
+    position:      relative;
+    width:         100%;
+    aspect-ratio:  1;
+    border-radius: 50%;
+    overflow:      hidden;
 }
-#np-root .pizzalayer-pizza-dynamic > div,
-#np-root .pizzalayer-pizza-dynamic img {
-    position: absolute;
-    top:      0;
-    left:     0;
-    width:    100%;
-    height:   100%;
-    object-fit: contain;
+
+.np-pizza-stage {
+    position:      absolute;
+    inset:         0;
+    width:         100%;
+    height:        100%;
+    background:    transparent;
 }
-/* Base layers show at their natural z-index */
-#np-root #pizzalayer-toppings-wrapper {
-    position: absolute;
-    top:  0; left: 0;
-    width: 100%; height: 100%;
+
+/* Within the canvas, stage-wrap and stage are already set above */
+
+.np-layer-div {
+    position:       absolute;
+    inset:          0;
     pointer-events: none;
 }
+.np-layer-div img {
+    position:   absolute;
+    inset:      0;
+    width:      100%;
+    height:     100%;
+    object-fit: contain;
+    display:    block;
+    transition: opacity 0.3s ease, clip-path 0.25s ease;
+}
+
+/* Static pizza (non-interactive) uses same system */
+.np-pizza-stage--static { }
+
+/* ══════════════════════════════════════════════════════════════
+   TOAST
+   ══════════════════════════════════════════════════════════════ */
+.np-toast {
+    position:       fixed;
+    bottom:         24px;
+    left:           50%;
+    transform:      translateX(-50%) translateY(20px);
+    background:     #1a1e23;
+    color:          #fff;
+    padding:        10px 20px;
+    border-radius:  99px;
+    font-size:      13px;
+    font-weight:    600;
+    opacity:        0;
+    transition:     opacity 0.3s ease, transform 0.3s ease;
+    pointer-events: none;
+    z-index:        9999;
+}
+.np-toast--visible { opacity: 1; transform: translateX(-50%) translateY(0); }
 
 /* ══════════════════════════════════════════════════════════════
    RESPONSIVE
    ══════════════════════════════════════════════════════════════ */
-@media (max-width: 991px) {
-    #np-root {
-        border-radius: var(--np-radius);
+@media (max-width: 899px) {
+    .np-root { border-radius: var(--np-radius); }
+
+    /* Pizza preview area on mobile — constrained height, centered */
+    .np-pizza-col {
+        padding:    16px 16px 12px;
+        background: var(--np-surface);
     }
-    .np-panels {
-        min-height: 500px;
+    .np-pizza-sticky {
+        flex-direction: row;          /* header + pizza side by side on mobile */
+        align-items:    center;
+        justify-content: center;
+        gap:            16px;
+        flex-wrap:      wrap;
     }
-    .np-cards-grid--exclusive {
-        grid-template-columns: repeat(auto-fill, minmax(130px, 1fr));
-    }
+    .np-pizza-sticky__header { align-self: center; }
 }
 
 @media (max-width: 575px) {
-    .np-tabnav {
-        padding: 8px 8px 0;
-        gap: 2px;
-    }
-    .np-tab {
-        padding: 6px 10px 10px;
-    }
-    .np-tab__label {
-        font-size: 10px;
-    }
-    .np-panel {
-        padding: 16px 12px;
-    }
+    .np-tabnav { padding: 8px 8px 0; gap: 2px; }
+    .np-tab     { padding: 6px 10px 10px; }
+    .np-tab__label { font-size: 10px; }
+    .np-panel   { padding: 16px 12px; }
     .np-cards-grid--exclusive,
-    .np-cards-grid--toppings {
-        grid-template-columns: 1fr 1fr;
-    }
-    .np-yourpizza__layer-name {
-        display: none;
-    }
+    .np-cards-grid--toppings { grid-template-columns: 1fr 1fr; }
+    .np-yourpizza__layer-name { display: none; }
+
+    .np-pizza-sticky__canvas { max-width: 200px; }
+    .np-pizza-sticky__footer { max-width: 200px; }
 }

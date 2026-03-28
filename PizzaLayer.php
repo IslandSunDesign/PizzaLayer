@@ -1,146 +1,42 @@
 <?php
+/**
+ * Plugin Name: Pizza Layer
+ * Plugin URI:  https://pizzalayer.com
+ * Description: Pizza toppings customizer and visualizer.
+ * Version:     1.0.0
+ * Author:      Island Sun Design
+ * Author URI:  https://pizzalayer.com
+ * License:     GPLv2 or later
+ * Text Domain: pizzalayer
+ * Domain Path: /languages
+ */
+
 if ( ! defined( 'ABSPATH' ) ) { exit; }
 
-/**
- 
- * @package pizzalayer
- 
- */
- 
-/*
- 
-Plugin Name: Pizza Layer
-Plugin URI: https://pizzalayer.com 
-Description: pizza toppings customizer and visualizer 
-Version: .9
-Author: RyanBishop 
-Author URI: http://www.pizzalayer.com
-License: GPLv2 or later 
-Text Domain: pizzalayer
- 
-*/
+// Autoloader (PSR-4: PizzaLayer\ → src/)
+spl_autoload_register( function ( $class ) {
+	$prefix   = 'PizzaLayer\\';
+	$base_dir = __DIR__ . '/src/';
+	$len      = strlen( $prefix );
+	if ( strncmp( $prefix, $class, $len ) !== 0 ) { return; }
+	$relative = substr( $class, $len );
+	$file     = $base_dir . str_replace( '\\', '/', $relative ) . '.php';
+	if ( file_exists( $file ) ) { require $file; }
+} );
 
+// Constants
+define( 'PIZZALAYER_VERSION',       '1.0.0' );
+define( 'PIZZALAYER_PLUGIN_FILE',   __FILE__ );
+define( 'PIZZALAYER_PLUGIN_DIR',    plugin_dir_path( __FILE__ ) );
+define( 'PIZZALAYER_PLUGIN_URL',    plugin_dir_url( __FILE__ ) );
+define( 'PIZZALAYER_TEMPLATES_DIR', PIZZALAYER_PLUGIN_DIR . 'templates/' );
+define( 'PIZZALAYER_TEMPLATES_URL', PIZZALAYER_PLUGIN_URL . 'templates/' );
+define( 'PIZZALAYER_ASSETS_URL',    PIZZALAYER_PLUGIN_URL . 'assets/' );
+define( 'PIZZALAYER_IMAGES_URL',    PIZZALAYER_PLUGIN_URL . 'assets/images/' );
+define( 'PIZZALAYER_BLOCKS_DIR',    PIZZALAYER_PLUGIN_DIR . 'blocks/' );
 
-/* +===  READ PLUGIN OPTIONS THEN ASSEMBLE A FEW VARS === */
+// Boot
+add_action( 'plugins_loaded', [ 'PizzaLayer\\Plugin', 'init' ] );
 
-
-/* +===  ENQUEUE BASE CSS & JS +=========  */
-function pizzalayer_enqueue_css_and_js(){
-wp_register_style( 'pizzalayer-css', plugins_url( 'includes/css/pizzalayer.css', __FILE__ ) );
-wp_enqueue_style( 'pizzalayer-css', plugins_url( 'includes/css/pizzalayer.css', __FILE__ ) );
-
-wp_register_style( 'pizzalayer-bootsrap-grid-css', plugins_url( 'includes/css/bootstrap-grid-system.css', __FILE__ ) );
-wp_enqueue_style( 'pizzalayer-bootstrap-grid-css', plugins_url( 'includes/css/bootstrap-grid-system.css', __FILE__ ) );
-
-wp_enqueue_script( 'pizzalayer-js', plugins_url( 'includes/js/pizzalayer-main.js', __FILE__ ), array(), '0.9.0', true );
-} //function
-add_action( 'wp_enqueue_scripts', 'pizzalayer_enqueue_css_and_js' );
-
-
-/* +===  LOAD TEMPLATE +=========  */
-include plugin_dir_path( __FILE__ ) . 'templates/template.php';
-
-/* +===  PATH VARIABLES +=========  */
-define( 'PIZZALAYER_PLUGIN_PATH', plugin_dir_url( __FILE__ ));
-define( 'PIZZALAYER_ASSETS_PATH', plugin_dir_url( __FILE__ ) . 'assets/');
-define( 'PIZZALAYER_IMAGES_PATH', plugin_dir_url( __FILE__ ) . 'assets/images/');
-define( 'PIZZALAYER_TEMPLATES_PATH', plugin_dir_path( __FILE__ ) . '/templates/');
-define( 'PIZZALAYER_TEMPLATES_URL', plugin_dir_url( __FILE__ ) . '/templates/');
-
-/* +===  PLUGIN OPTIONS & DASHBOARD MENU PAGES +=========  */
-include plugin_dir_path( __FILE__ ) . 'includes/admin/dashboard-menu.php';
-include plugin_dir_path( __FILE__ ) . 'includes/admin/admin-bar-menu.php';
-include plugin_dir_path( __FILE__ ) . 'includes/admin/customizer.php';
-include plugin_dir_path( __FILE__ ) . 'includes/admin/admin-home.php';
-include plugin_dir_path( __FILE__ ) . 'includes/admin/setup-guide.php';
-include plugin_dir_path( __FILE__ ) . 'includes/admin/help.php';
-include plugin_dir_path( __FILE__ ) . 'includes/admin/shortcode-generator.php';
-include plugin_dir_path( __FILE__ ) . 'includes/admin/preset-pizza-builder.php';
-include plugin_dir_path( __FILE__ ) . 'includes/admin/price-grid.php';
-include plugin_dir_path( __FILE__ ) . 'includes/admin/template-choice.php';
-include plugin_dir_path( __FILE__ ) . 'includes/admin/test-template-preview.php';
-
-
-/* +===  CUSTOMIZER CSS  +=========  */
-include plugin_dir_path(__FILE__) . 'includes/public/topper-ui-css.php';
-
-/* +===  PIZZA BUILDER  +=========  */
-include plugin_dir_path(__FILE__) . 'includes/builder/topper-ui-pizza-layers.php';
-include plugin_dir_path(__FILE__) . 'includes/builder/topper-ui-pizza-layers-object.php';
-include plugin_dir_path(__FILE__) . 'includes/builder/topper-ui-pizza-builder.php';
-
-/* +===  CREATE CPTs FOR TOPPINGS, SAUCES, CRUSTS +=========  */
-include plugin_dir_path(__FILE__) . 'includes/init/cpt-toppings.php';
-include plugin_dir_path(__FILE__) . 'includes/init/cpt-cheeses.php';
-include plugin_dir_path(__FILE__) . 'includes/init/cpt-sauces.php';
-include plugin_dir_path(__FILE__) . 'includes/init/cpt-drizzles.php';
-include plugin_dir_path(__FILE__) . 'includes/init/cpt-crusts.php';
-include plugin_dir_path(__FILE__) . 'includes/init/cpt-sizes.php';
-
-/* +===  CREATE CPTs FOR PIZZA PRESETS +=========  */
-include plugin_dir_path(__FILE__) . 'includes/init/cpt-pizza-presets.php';
-
-/* +===  CREATE CUSTOM FIELDS FOR LAYERS +=========  */
-/* Custom fields now integrated using Secure Custom Fields, located in the 'SCF' menu in your WordPress dashboard (ACF compatible) */
-
-/* +===  CREATE CPT + CUSTOM FIELDS FOR SLICING / CUT CHART LAYERS +=========  */
-include plugin_dir_path(__FILE__) . 'includes/init/cpt-cuts.php';
-
-/* +===  TOPPINGS VISUALIZER / TOPPER +=========  */
-include plugin_dir_path(__FILE__) . 'includes/public/topper.php';
-
-/* +===  MENU - DASHBOARD +=========  */
-
-
-/* +===  MENU - WP TOP BAR +=========  */
-
-
-
-/* +=== FIELD SANITIZATION AND SECURITY FUNCTIONS ===+ */
-function pizzalayer_sanitize_text( $text ) {
-    return sanitize_text_field( wp_kses_post( $text ) );
-}
-
-function write_log($log) {
-    if (true === WP_DEBUG) {
-        if (is_array($log) || is_object($log)) {
-            error_log(print_r($log, true));
-        } else {
-            error_log($log);
-        }
-    }
-}
-
-
-
-
-
-// Register AJAX handler for logged-in users
-add_action( 'wp_ajax_pizzalayer_set_template', 'pizzalayer_ajax_set_template' );
-
-function pizzalayer_ajax_set_template() {
-	if ( ! current_user_can( 'manage_options' ) ) {
-		wp_send_json_error( [ 'message' => 'Unauthorized' ], 403 );
-	}
-
-	check_ajax_referer( 'pizzalayer_set_template', 'nonce' );
-
-	$slug = isset( $_POST['slug'] ) ? sanitize_key( wp_unslash( $_POST['slug'] ) ) : '';
-	if ( ! $slug ) {
-		wp_send_json_error( [ 'message' => 'Missing slug' ], 400 );
-	}
-
-	// Ensure this function is available in ajax context (include its file if needed)
-	if ( ! function_exists( 'pizzalayer_get_available_templates_from_dirs' ) ) {
-		// include_once __DIR__ . '/path-to-file-that-defines-it.php';
-		wp_send_json_error( [ 'message' => 'Template lookup not available' ], 500 );
-	}
-	$templates = pizzalayer_get_available_templates_from_dirs();
-	if ( ! isset( $templates[ $slug ] ) ) {
-		wp_send_json_error( [ 'message' => 'Invalid template' ], 400 );
-	}
-
-	update_option( 'pizzalayer_setting_global_template', $slug );
-	wp_send_json_success( [ 'slug' => $slug ] );
-}
-
+register_activation_hook(   __FILE__, [ 'PizzaLayer\\Core\\Activator',   'activate'   ] );
+register_deactivation_hook( __FILE__, [ 'PizzaLayer\\Core\\Deactivator', 'deactivate' ] );
