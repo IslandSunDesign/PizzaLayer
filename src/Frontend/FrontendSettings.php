@@ -432,7 +432,10 @@ class FrontendSettings {
 		$custom_js  = self::g( 'pizzalayer_setting_adv_custom_js',  '' );
 
 		if ( $custom_css ) {
-			echo '<style id="pizzalayer-custom-css">' . wp_strip_all_tags( $custom_css ) . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput
+			// Strip any </style> sequences that could break out of the style block,
+			// then strip remaining HTML tags before echoing inside the <style> element.
+			$safe_css = wp_strip_all_tags( str_replace( '</style>', '', $custom_css ) );
+			echo '<style id="pizzalayer-custom-css">' . $safe_css . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput
 		}
 
 		// Inline JS is output in wp_footer so it runs after builder scripts

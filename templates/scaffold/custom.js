@@ -2,6 +2,17 @@
  * Instance config is read from data-sc-cfg attribute on .sc-root.
  * This file is enqueued by AssetManager; no inline <script> blocks.
  */
+
+/** HTML-escape a value before inserting into innerHTML. */
+function scEscHtml( s ) {
+  return String( s )
+    .replace( /&/g, '&amp;' )
+    .replace( /</g, '&lt;' )
+    .replace( />/g, '&gt;' )
+    .replace( /"/g, '&quot;' )
+    .replace( /'/g, '&#39;' );
+}
+
 /* initScaffoldInstance — run once per .sc-root on this page. */
 function initScaffoldInstance( ROOT, cfg ) {
   'use strict';
@@ -158,10 +169,10 @@ function initScaffoldInstance( ROOT, cfg ) {
     Object.keys( state.layers ).forEach( function( ltype ) {
       var l = state.layers[ ltype ];
       var label = ( layerLabels[ ltype ] || ltype );
-      rows += '<li class="sc-summary__row"><span class="sc-summary__layer-type">' + label + '</span><span class="sc-summary__layer-name">' + l.title + '</span></li>';
+      rows += '<li class="sc-summary__row"><span class="sc-summary__layer-type">' + scEscHtml( label ) + '</span><span class="sc-summary__layer-name">' + scEscHtml( l.title ) + '</span></li>';
     } );
     state.toppings.forEach( function( t ) {
-      rows += '<li class="sc-summary__row sc-summary__row--topping"><span class="sc-summary__layer-type">Topping</span><span class="sc-summary__layer-name">' + t.title + '</span><span class="sc-summary__coverage">' + t.coverage + '</span></li>';
+      rows += '<li class="sc-summary__row sc-summary__row--topping"><span class="sc-summary__layer-type">Topping</span><span class="sc-summary__layer-name">' + scEscHtml( t.title ) + '</span><span class="sc-summary__coverage">' + scEscHtml( t.coverage ) + '</span></li>';
     } );
 
     list.innerHTML = rows;

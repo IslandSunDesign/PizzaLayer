@@ -179,6 +179,11 @@ final class Plugin {
 		$slug  = sanitize_key( wp_unslash( $_GET['pzl_preview'] ) );
 		$nonce = sanitize_text_field( wp_unslash( $_GET['pzl_nonce'] ) );
 
+		// Require a logged-in admin — nonce alone is not sufficient.
+		if ( ! current_user_can( 'manage_options' ) ) {
+			return;
+		}
+
 		// Nonce is action-specific. wp_verify_nonce returns 1 or 2 on success.
 		if ( ! wp_verify_nonce( $nonce, 'pizzalayer_preview_' . $slug ) ) {
 			return;

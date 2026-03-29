@@ -4,7 +4,7 @@ Tags: pizza, restaurant, food, customizer, builder, woocommerce, interactive, me
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 1.0.0
+Stable tag: 1.0.1
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -154,6 +154,15 @@ Visit [pizzalayer.com/support](https://pizzalayer.com/support) or use the WordPr
 8. Settings — colour palette, typography, and layout controls
 
 == Changelog ==
+
+= 1.0.1 =
+* Security: added `current_user_can('manage_options')` capability check to template preview override handler (paired with existing nonce verification)
+* Security: strip `</style>` sequences from admin-entered custom CSS before output to prevent style-block breakout
+* Security: added `escHtml()` helper to settings-page admin JS; applied to all `item.title` and `item.thumb` values injected via `innerHTML` in the layer picker modal and trigger button
+* Security: added `scEscHtml()` helper to Scaffold template JS; applied to `l.title`, `t.title`, and `t.coverage` in summary panel `innerHTML` construction
+* Security: escaped `att.url` value from WordPress media library object before injecting into logo preview `innerHTML`
+* Compatibility: replaced `str_ends_with()` calls in `LayerImageMaker.php` and `LayerImageMetaBox.php` with `substr()` equivalents for PHP 7.4 compatibility
+* Compatibility: replaced `str_starts_with()` call in `TemplateLoader.php` with `strpos() === 0` for PHP 7.4 compatibility
 
 = 1.0.0 =
 * Initial public release

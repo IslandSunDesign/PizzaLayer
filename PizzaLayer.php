@@ -3,7 +3,7 @@
  * Plugin Name: Pizza Layer
  * Plugin URI:  https://pizzalayer.com
  * Description: Pizza toppings customizer and visualizer.
- * Version:     1.0.0
+ * Version:     1.0.1
  * Author:      Island Sun Design
  * Author URI:  https://pizzalayer.com
  * License:     GPLv2 or later
@@ -25,7 +25,7 @@ spl_autoload_register( function ( $class ) {
 } );
 
 // Constants
-define( 'PIZZALAYER_VERSION',       '1.0.0' );
+define( 'PIZZALAYER_VERSION',       '1.0.1' );
 define( 'PIZZALAYER_PLUGIN_FILE',   __FILE__ );
 define( 'PIZZALAYER_PLUGIN_DIR',    plugin_dir_path( __FILE__ ) );
 define( 'PIZZALAYER_PLUGIN_URL',    plugin_dir_url( __FILE__ ) );

@@ -1,6 +1,16 @@
 /* PizzaLayer Settings Page — admin UI interactions */
 /* eslint-disable no-var */
 document.addEventListener('DOMContentLoaded', function() {
+	/** Escape a string for safe injection into innerHTML. */
+	function escHtml(s) {
+		return String(s)
+			.replace(/&/g, '&amp;')
+			.replace(/</g, '&lt;')
+			.replace(/>/g, '&gt;')
+			.replace(/"/g, '&quot;')
+			.replace(/'/g, '&#39;');
+	}
+
 	var storageKey = 'pset_collapsed_sections';
 	var collapsed = {};
 	try { collapsed = JSON.parse(localStorage.getItem(storageKey) || '{}'); } catch(e) {}
@@ -68,9 +78,9 @@ document.addEventListener('DOMContentLoaded', function() {
 			div.className = 'pset-modal__item' + (item.slug === currentSlug ? ' pset-modal__item--active' : '');
 			div.dataset.slug = item.slug;
 			var imgHtml = item.thumb
-				? '<img src="' + item.thumb + '" alt="' + item.title.replace(/"/g,'&quot;') + '" loading="lazy">'
+				? '<img src="' + escHtml(item.thumb) + '" alt="' + escHtml(item.title) + '" loading="lazy">'
 				: '<span class="pset-modal__item__no-img"><span class="dashicons dashicons-format-image"></span></span>';
-			div.innerHTML = imgHtml + '<span class="pset-modal__item__name">' + item.title + '</span>';
+			div.innerHTML = imgHtml + '<span class="pset-modal__item__name">' + escHtml(item.title) + '</span>';
 			div.addEventListener('click', function() {
 				if (!activeField) return;
 				applyLayerChoice(activeField, item);
@@ -107,10 +117,10 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (!hidden || !trigger) return;
 		hidden.value = item.slug;
 		var thumbHtml = item.thumb
-			? '<span class="pset-layer-trigger__thumb"><img src="' + item.thumb + '" alt="' + item.title.replace(/"/g,'&quot;') + '"></span>'
+			? '<span class="pset-layer-trigger__thumb"><img src="' + escHtml(item.thumb) + '" alt="' + escHtml(item.title) + '"></span>'
 			: '<span class="pset-layer-trigger__placeholder dashicons dashicons-format-image"></span>';
 		trigger.innerHTML = thumbHtml
-			+ '<span class="pset-layer-trigger__name">' + item.title + '</span>'
+			+ '<span class="pset-layer-trigger__name">' + escHtml(item.title) + '</span>'
 			+ '<span class="pset-layer-trigger__edit dashicons dashicons-edit"></span>';
 		trigger.classList.add('pset-layer-trigger--has-value');
 	}
@@ -370,7 +380,7 @@ document.addEventListener('DOMContentLoaded', function() {
 			frame.on('select', function() {
 				var att = frame.state().get('selection').first().toJSON();
 				urlInput.value = att.url;
-				preview.innerHTML = '<img src="' + att.url + '" alt="Logo" style="max-height:60px;max-width:200px;border-radius:4px;border:1px solid #e0e3e7;">';
+				preview.innerHTML = '<img src="' + escHtml(att.url) + '" alt="Logo" style="max-height:60px;max-width:200px;border-radius:4px;border:1px solid #e0e3e7;">';
 				selectBtn.innerHTML = '<span class="dashicons dashicons-upload"></span> Change Logo';
 				if (removeBtn) removeBtn.style.display = '';
 			});

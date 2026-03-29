@@ -126,6 +126,6 @@ class TemplateLoader {
 			}
 			return false;
 		}
-		return str_starts_with( $real_dir, $real_base );
+		return strpos( $real_dir, $real_base ) === 0;
 	}
 }

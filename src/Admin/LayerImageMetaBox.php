@@ -246,7 +246,7 @@ class LayerImageMetaBox {
 		$raw = base64_decode( $data ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 		if ( ! $raw ) { wp_send_json_error( 'Bad image data' ); }
 
-		if ( ! str_ends_with( $filename, '.png' ) ) {
+		if ( substr( $filename, -4 ) !== '.png' ) {
 			$filename = pathinfo( $filename, PATHINFO_FILENAME ) . '.png';
 		}
 
