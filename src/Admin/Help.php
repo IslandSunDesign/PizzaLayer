@@ -822,7 +822,7 @@ window.PizzaLayerAPI.renderStatic(\'#my-container\', stateObject);'
 
 		<!-- REST API ────────────────────────────────────────────────────── -->
 		<h3>REST API Endpoints</h3>
-		<p>All endpoints are under the <code>/wp-json/pizzalayer/v1/</code> namespace. Write endpoints require a valid WP nonce passed as <code>X-WP-Nonce</code> header.</p>
+		<p>All endpoints are under the <code>/wp-json/pizzalayer/v1/</code> namespace. Both endpoints are read-only and publicly accessible — no authentication or nonce is required. They must be enabled first under <strong>Settings &rarr; Advanced &rarr; REST API</strong>.</p>
 
 		<table class="plhelp-attr-table">
 			<thead><tr><th>Method</th><th>Endpoint</th><th>Body / Params</th><th>Response</th></tr></thead>
@@ -839,12 +839,7 @@ window.PizzaLayerAPI.renderStatic(\'#my-container\', stateObject);'
 					<td><code>?type=topping&amp;slug=pepperoni</code></td>
 					<td><code>{ url: "https://..." }</code></td>
 				</tr>
-				<tr>
-					<td><code>GET</code></td>
-					<td><code>/pizzalayer/v1/layers</code></td>
-					<td><code>?type=toppings</code></td>
-					<td><code>[ { slug, title, layerImg, thumb }, ... ]</code></td>
-				</tr>
+
 			</tbody>
 		</table>
 
@@ -860,7 +855,7 @@ PizzaLayer\Admin\Help             — this help page
 PizzaLayer\Admin\SetupGuide       — onboarding checklist
 PizzaLayer\Admin\ShortcodeGenerator — visual shortcode builder
 PizzaLayer\Admin\TemplateChoice   — template picker UI
-PizzaLayer\PostTypes\PostTypeRegistrar — all 7 CPT registrations
+PizzaLayer\PostTypes\PostTypeRegistrar — all 8 CPT registrations
 PizzaLayer\Shortcodes\BuilderShortcode — [pizza_builder]
 PizzaLayer\Shortcodes\StaticShortcode  — [pizza_static]
 PizzaLayer\Shortcodes\LayerImageShortcode — [pizza_layer]

@@ -25,6 +25,8 @@ class PizzaRestApi {
 		register_rest_route( 'pizzalayer/v1', '/render', [
 			'methods'             => \WP_REST_Server::CREATABLE,
 			'callback'            => [ $this, 'render_pizza' ],
+			// Intentionally public — this endpoint renders layer HTML for the
+			// frontend builder, which is visible to all site visitors.
 			'permission_callback' => '__return_true',
 			'args'                => [
 				'crust'    => [ 'type' => 'string',              'default' => '', 'sanitize_callback' => 'sanitize_text_field' ],
@@ -33,13 +35,18 @@ class PizzaRestApi {
 				'drizzle'  => [ 'type' => 'string',              'default' => '', 'sanitize_callback' => 'sanitize_text_field' ],
 				'cut'      => [ 'type' => 'string',              'default' => '', 'sanitize_callback' => 'sanitize_text_field' ],
 				'preset'   => [ 'type' => 'string',              'default' => '', 'sanitize_callback' => 'sanitize_text_field' ],
-				'toppings' => [ 'type' => [ 'array', 'string' ], 'default' => []  ],
+				'toppings' => [ 'type' => [ 'array', 'string' ], 'default' => [], 'sanitize_callback' => static function( $val ) {
+					if ( is_array( $val ) ) { return array_map( 'sanitize_text_field', $val ); }
+					return sanitize_text_field( (string) $val );
+				} ],
 			],
 		] );
 
 		register_rest_route( 'pizzalayer/v1', '/layer-url', [
 			'methods'             => \WP_REST_Server::READABLE,
 			'callback'            => [ $this, 'get_layer_url' ],
+			// Intentionally public — returns a layer image URL for display in
+			// the frontend builder, accessible to all site visitors.
 			'permission_callback' => '__return_true',
 			'args'                => [
 				'type' => [ 'type' => 'string', 'required' => true, 'sanitize_callback' => 'sanitize_text_field' ],

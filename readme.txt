@@ -4,7 +4,7 @@ Tags: pizza, restaurant, food, customizer, builder, woocommerce, interactive, me
 Requires at least: 6.2
 Tested up to: 6.7
 Requires PHP: 8.0
-Stable tag: 1.0.1
+Stable tag: 1.0.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -155,6 +155,16 @@ Visit [pizzalayer.com/support](https://pizzalayer.com/support) or use the WordPr
 
 == Changelog ==
 
+= 1.0.2 =
+* Security: validate base64-decoded image bytes via `finfo::buffer()` before writing to disk in Layer Image Maker and Layer Image Meta Box upload handlers — rejects payloads that are not a recognised image type (PNG, JPEG, GIF, WebP)
+* Security: derive file extension from the real MIME type of the uploaded bytes rather than the client-supplied filename; pass the verified MIME type to `media_handle_sideload` instead of the previously hardcoded `image/png`
+* Security: added `upload_files` capability check to Layer Image Meta Box AJAX handler (previously only `edit_post` was required)
+* Security: added allowlist validation to the `field_key` parameter in Layer Image Meta Box AJAX handler — only known layer image meta keys are accepted, preventing arbitrary meta key writes
+* Security: added `sanitize_callback` to the `toppings` argument of the `/render` REST endpoint — previously the only parameter without one
+* Docs: corrected REST API section of Help page — both endpoints are read-only and public, no nonce is required; removed false "write endpoints require nonce" statement
+* Docs: removed `/pizzalayer/v1/layers` endpoint row from Help page — that endpoint was never registered
+* Docs: corrected CPT count in Help page source reference from 7 to 8
+
 = 1.0.1 =
 * Security: added `current_user_can('manage_options')` capability check to template preview override handler (paired with existing nonce verification)
 * Security: strip `</style>` sequences from admin-entered custom CSS before output to prevent style-block breakout
@@ -180,6 +190,9 @@ Visit [pizzalayer.com/support](https://pizzalayer.com/support) or use the WordPr
 * `.pot` translation file included
 
 == Upgrade Notice ==
+
+= 1.0.2 =
+Security update. No database changes. Safe to update in place.
 
 = 1.0.0 =
 Initial release. No upgrade steps required.

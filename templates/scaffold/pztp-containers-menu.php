@@ -106,13 +106,21 @@ if ( ! function_exists( 'pzt_scaffold_partial' ) ) :
 function pzt_scaffold_partial( string $name, array $extra_vars = [], array $atts_ref = [] ): void {
     // Check shortcode attr override (dashes → underscores for attr name)
     $attr_key = 'partial_' . str_replace( '-', '_', $name );
-    $filename  = isset( $atts_ref[ $attr_key ] ) ? sanitize_file_name( $atts_ref[ $attr_key ] ) : ( $name . '.html' );
+    $filename  = ! empty( $atts_ref[ $attr_key ] ) ? sanitize_file_name( $atts_ref[ $attr_key ] ) : ( $name . '.html' );
 
     // Allow filter override
     $filename = (string) apply_filters( 'pizzalayer_scaffold_partial', $filename, $name );
 
+    // Guard against empty filename (e.g. filter returned '' or sanitize_file_name() stripped everything)
+    if ( '' === trim( $filename ) ) {
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+        trigger_error( "PizzaLayer Scaffold: empty partial filename for '{$name}'", E_USER_WARNING );
+        return;
+    }
+
     $path = __DIR__ . '/partials/' . $filename;
-    if ( ! file_exists( $path ) ) {
+    // Use is_file() — file_exists() returns true for directories, which causes include() to fail
+    if ( ! is_file( $path ) ) {
         // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
         trigger_error( "PizzaLayer Scaffold: partial not found: {$path}", E_USER_WARNING );
         return;

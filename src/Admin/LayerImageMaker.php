@@ -275,9 +275,17 @@ class LayerImageMaker {
 		$raw = base64_decode( $data ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 		if ( ! $raw ) { wp_send_json_error( 'Bad data' ); }
 
-		if ( substr( $filename, -4 ) !== '.png' ) {
-			$filename = pathinfo( $filename, PATHINFO_FILENAME ) . '.png';
+		// Verify the decoded bytes are a real image before touching the filesystem.
+		$finfo     = new \finfo( FILEINFO_MIME_TYPE );
+		$real_mime = $finfo->buffer( $raw );
+		if ( ! in_array( $real_mime, [ 'image/png', 'image/jpeg', 'image/gif', 'image/webp' ], true ) ) {
+			wp_send_json_error( 'Invalid image data' );
 		}
+
+		// Force a safe extension that matches the real MIME type.
+		$ext_map  = [ 'image/png' => '.png', 'image/jpeg' => '.jpg', 'image/gif' => '.gif', 'image/webp' => '.webp' ];
+		$safe_ext = $ext_map[ $real_mime ];
+		$filename = pathinfo( $filename, PATHINFO_FILENAME ) . $safe_ext;
 
 		// Write temp file
 		$tmp = wp_tempnam( $filename );
@@ -286,7 +294,7 @@ class LayerImageMaker {
 		$attachment_id = media_handle_sideload(
 			[
 				'name'     => $filename,
-				'type'     => 'image/png',
+				'type'     => $real_mime,
 				'tmp_name' => $tmp,
 				'error'    => 0,
 				'size'     => strlen( $raw ),

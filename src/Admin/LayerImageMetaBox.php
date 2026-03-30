@@ -226,18 +226,31 @@ class LayerImageMetaBox {
 
 	public function ajax_set_layer_image(): void {
 		$post_id   = (int) ( $_POST['post_id']   ?? 0 );
-		$field_key = sanitize_key( $_POST['field_key'] ?? '' );
 		$filename  = sanitize_file_name( $_POST['filename']  ?? 'layer-image.png' );
 		$data      = $_POST['data'] ?? ''; // phpcs:ignore
 
 		check_ajax_referer( 'pzl_metabox_set_layer_image_' . $post_id, 'meta_nonce' );
 
-		if ( ! current_user_can( 'edit_post', $post_id ) ) {
+		// Require both edit and upload rights.
+		if ( ! current_user_can( 'edit_post', $post_id ) || ! current_user_can( 'upload_files' ) ) {
 			wp_send_json_error( 'Forbidden' );
 		}
-		if ( ! $field_key || ! $post_id ) {
+		if ( ! $post_id ) {
 			wp_send_json_error( 'Missing parameters' );
 		}
+
+		// Allowlist the writable meta keys to prevent arbitrary meta writes.
+		$raw_key = sanitize_key( $_POST['field_key'] ?? '' );
+		$allowed_keys = array_map(
+			static function( string $slug ): string {
+				return rtrim( $slug, 's' ) . '_layer_image';
+			},
+			self::IMAGE_TYPES
+		);
+		if ( ! in_array( $raw_key, $allowed_keys, true ) ) {
+			wp_send_json_error( 'Invalid field key' );
+		}
+		$field_key = $raw_key;
 
 		// Strip data-URI header
 		if ( strpos( $data, 'base64,' ) !== false ) {
@@ -246,9 +259,17 @@ class LayerImageMetaBox {
 		$raw = base64_decode( $data ); // phpcs:ignore WordPress.PHP.DiscouragedPHPFunctions
 		if ( ! $raw ) { wp_send_json_error( 'Bad image data' ); }
 
-		if ( substr( $filename, -4 ) !== '.png' ) {
-			$filename = pathinfo( $filename, PATHINFO_FILENAME ) . '.png';
+		// Validate decoded bytes are a real image before touching the filesystem.
+		$finfo     = new \finfo( FILEINFO_MIME_TYPE );
+		$real_mime = $finfo->buffer( $raw );
+		if ( ! in_array( $real_mime, [ 'image/png', 'image/jpeg', 'image/gif', 'image/webp' ], true ) ) {
+			wp_send_json_error( 'Invalid image data' );
 		}
+
+		// Derive a safe extension from the real MIME type (never trust the client name).
+		$ext_map  = [ 'image/png' => '.png', 'image/jpeg' => '.jpg', 'image/gif' => '.gif', 'image/webp' => '.webp' ];
+		$safe_ext = $ext_map[ $real_mime ];
+		$filename = pathinfo( $filename, PATHINFO_FILENAME ) . $safe_ext;
 
 		$tmp = wp_tempnam( $filename );
 		file_put_contents( $tmp, $raw ); // phpcs:ignore WordPress.WP.AlternativeFunctions
@@ -256,7 +277,7 @@ class LayerImageMetaBox {
 		$att_id = media_handle_sideload(
 			[
 				'name'     => $filename,
-				'type'     => 'image/png',
+				'type'     => $real_mime,
 				'tmp_name' => $tmp,
 				'error'    => 0,
 				'size'     => strlen( $raw ),
