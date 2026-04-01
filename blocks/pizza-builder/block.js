@@ -197,16 +197,44 @@
             );
 
             /* ── Server-side live preview ──────────────────────── */
+            /* render_builder() returns a branded static preview via REST  */
             return el( 'div', blockProps,
                 inspectorPanel,
                 el( ServerSideRender, {
                     block:      'pizzalayer/pizza-builder',
                     attributes: attributes,
+                    LoadingResponsePlaceholder: function () {
+                        /* Shown while the REST request is in flight */
+                        return el( 'div', {
+                            style: {
+                                background: 'linear-gradient(135deg,#1a1a2e 0%,#2d1b0e 100%)',
+                                border: '2px solid #ff6b35',
+                                borderRadius: '6px',
+                                padding: '14px 16px',
+                                display: 'flex',
+                                alignItems: 'center',
+                                gap: '10px',
+                                minHeight: '80px'
+                            }
+                        },
+                            el( Spinner, { style: { margin: 0 } } ),
+                            el( 'span', { style: { color: '#ff8c42', fontSize: '13px' } },
+                                __( 'Loading PizzaLayer preview…', 'pizzalayer' )
+                            )
+                        );
+                    },
                     EmptyResponsePlaceholder: function () {
                         return el( Placeholder, {
-                            icon:  'pizza-slice',
+                            icon:  el( 'svg', {
+                                xmlns: 'http://www.w3.org/2000/svg',
+                                viewBox: '0 0 20 20',
+                                width: '24', height: '24', fill: '#ff6b35'
+                            },
+                                el( 'path', { d: 'M10 1C5.03 1 1 5.03 1 10s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9zM10 2.6c3.37 0 6.27 2.08 7.52 5.06L10 10.1 2.48 7.66C3.73 4.68 6.63 2.6 10 2.6zM2.6 10c0-.38.03-.75.09-1.11L10 11.7l7.31-2.81c.06.36.09.73.09 1.11 0 4.08-3.32 7.4-7.4 7.4S2.6 14.08 2.6 10z' } )
+                            ),
                             label: __( 'Pizza Builder', 'pizzalayer' ),
-                        }, el( Spinner ) );
+                            instructions: __( 'Configure this block using the sidebar panels. The builder will appear on the front end.', 'pizzalayer' )
+                        } );
                     },
                     ErrorResponsePlaceholder: function ( p ) {
                         return el( Placeholder, {

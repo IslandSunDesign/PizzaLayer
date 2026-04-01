@@ -106,6 +106,10 @@ final class Plugin {
 			// Layer Image Maker meta box — on CPT edit/new screens
 			$layer_meta_box = new Admin\LayerImageMetaBox();
 			$layer_meta_box->register_hooks();
+
+			// Layer Builder Wizard — save new layer post via AJAX
+			$layer_wizard = new Admin\LayerBuilderWizard();
+			$this->loader->add_action( 'wp_ajax_pizzalayer_wizard_save_layer', $layer_wizard, 'ajax_save_layer' );
 		}
 
 		// Debug logging — only when WP_DEBUG is on

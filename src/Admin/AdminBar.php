@@ -30,13 +30,13 @@ class AdminBar {
 
 	/** CPT definitions */
 	private const CPTS = [
-		'toppings' => [ 'label' => 'Toppings', 'singular' => 'Topping',  'emoji' => '🍕', 'icon' => 'dashicons-carrot'           ],
-		'crusts'   => [ 'label' => 'Crusts',   'singular' => 'Crust',    'emoji' => '⬤',  'icon' => 'dashicons-admin-generic'    ],
-		'sauces'   => [ 'label' => 'Sauces',   'singular' => 'Sauce',    'emoji' => '🥫', 'icon' => 'dashicons-food'             ],
-		'cheeses'  => [ 'label' => 'Cheeses',  'singular' => 'Cheese',   'emoji' => '🧀', 'icon' => 'dashicons-category'         ],
+		'toppings' => [ 'label' => 'Toppings', 'singular' => 'Topping',  'emoji' => '🍕', 'icon' => 'dashicons-tag'              ],
+		'crusts'   => [ 'label' => 'Crusts',   'singular' => 'Crust',    'emoji' => '⬤',  'icon' => 'dashicons-admin-page'       ],
+		'sauces'   => [ 'label' => 'Sauces',   'singular' => 'Sauce',    'emoji' => '🥫', 'icon' => 'dashicons-portfolio'        ],
+		'cheeses'  => [ 'label' => 'Cheeses',  'singular' => 'Cheese',   'emoji' => '🧀', 'icon' => 'dashicons-star-filled'      ],
 		'drizzles' => [ 'label' => 'Drizzles', 'singular' => 'Drizzle',  'emoji' => '💧', 'icon' => 'dashicons-admin-customizer' ],
-		'cuts'     => [ 'label' => 'Cuts',     'singular' => 'Cut',      'emoji' => '✂',  'icon' => 'dashicons-editor-table'     ],
-		'sizes'    => [ 'label' => 'Sizes',    'singular' => 'Size',     'emoji' => '📏', 'icon' => 'dashicons-image-rotate'     ],
+		'cuts'     => [ 'label' => 'Cuts',     'singular' => 'Cut',      'emoji' => '✂',  'icon' => 'dashicons-image-crop'       ],
+		'sizes'    => [ 'label' => 'Sizes',    'singular' => 'Size',     'emoji' => '📏', 'icon' => 'dashicons-editor-expand'    ],
 
 	];
 

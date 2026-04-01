@@ -47,12 +47,13 @@ class AdminMenu {
 	];
 
 	private function get_icon(): string {
-		$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24">'
-			. '<path fill="black" d="M12 2C6.48 2 2 6.48 2 12s4.48 10 10 10 10-4.48 10-10S17.52 2 12 2z'
-			. 'M11.5 3.07c.17-.01.33-.01.5-.01 3.77 0 7.04 2.1 8.74 5.2L11.5 12.37V3.07z'
-			. 'M4 12c0-3.86 2.42-7.17 5.86-8.48L4.48 18.02C4.17 16.1 4 14.06 4 12z'
-			. 'M12 21c-2.02 0-3.9-.59-5.48-1.6l1.52-2.64L12 21z'
-			. 'M10.5 16.5l-1.5 2.6C7.41 18.08 6.08 16.41 5.5 14.5l5-8.66v10.66z"/>'
+		// Pizza with two topping dots — clean at 20px sidebar size
+		$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">'
+			. '<path fill="black" d="M10 1C5.03 1 1 5.03 1 10s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9z'
+			. 'M10 2.6c3.37 0 6.27 2.08 7.52 5.06L10 10.1 2.48 7.66C3.73 4.68 6.63 2.6 10 2.6z'
+			. 'M2.6 10c0-.38.03-.75.09-1.11L10 11.7l7.31-2.81c.06.36.09.73.09 1.11 0 4.08-3.32 7.4-7.4 7.4S2.6 14.08 2.6 10z'
+			. 'M7.2 11.8a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z'
+			. 'M12.4 12.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z"/>'
 			. '</svg>';
 		return 'data:image/svg+xml;base64,' . base64_encode( $svg );
 	}
@@ -97,6 +98,7 @@ class AdminMenu {
 
 		// ── Tool pages ───────────────────────────────────────────────────
 		add_submenu_page( 'pizzalayer', __( 'Layer Image Maker',   'pizzalayer' ), __( 'Layer Image Maker',   'pizzalayer' ), 'manage_options', 'pizzalayer-layer-maker',[ $this, 'render_layer_maker'] );
+		add_submenu_page( 'pizzalayer', __( 'Layer Builder Wizard','pizzalayer' ), __( '✦ Layer Builder',      'pizzalayer' ), 'manage_options', 'pizzalayer-layer-wizard',[ $this, 'render_layer_wizard'] );
 		add_submenu_page( 'pizzalayer', __( 'Setup Guide',         'pizzalayer' ), __( 'Setup Guide',         'pizzalayer' ), 'manage_options', 'pizzalayer-setup',      [ $this, 'render_setup'      ] );
 		add_submenu_page( 'pizzalayer', __( 'Shortcode Generator', 'pizzalayer' ), __( 'Shortcode Generator', 'pizzalayer' ), 'manage_options', 'pizzalayer-shortcodes', [ $this, 'render_shortcodes' ] );
 		add_submenu_page( 'pizzalayer', __( 'Template',            'pizzalayer' ), __( 'Template',            'pizzalayer' ), 'manage_options', 'pizzalayer-template',   [ $this, 'render_template'   ] );
@@ -289,6 +291,7 @@ class AdminMenu {
 
 	// ── Page renderers ────────────────────────────────────────────────
 	public function render_layer_maker():   void { ( new LayerImageMaker() )->render(); }
+	public function render_layer_wizard():  void { ( new LayerBuilderWizard() )->render(); }
 	public function render_home():       void { ( new AdminHome() )->render(); }
 	public function render_content():    void { ( new ContentHub() )->render(); }
 	public function render_setup():      void { ( new SetupGuide() )->render(); }
