@@ -44,10 +44,49 @@ $layer_anim    = sanitize_key( $atts['layer_anim'] ?? get_option( 'pizzalayer_se
 if ( ! in_array( $layer_anim, $valid_anims, true ) ) { $layer_anim = 'fade'; }
 $layer_anim_speed = max( 80, min( 800, (int) get_option( 'pizzalayer_setting_layer_anim_speed', 320 ) ) );
 
+
+// ── PizzaLayerPro: inline size selector ──────────────────────────────────────
+if ( ! function_exists( 'pzt_get_pro_sizes' ) ) :
+function pzt_get_pro_sizes(): array {
+	if ( ! function_exists( 'pztpro_get_setting' ) || ! class_exists( 'PizzaLayerPro\\Pro\\PriceGrid\\Grid' ) ) { return []; }
+	$product_id = ( function_exists( 'get_queried_object_id' ) ? (int) get_queried_object_id() : 0 );
+	if ( ! $product_id ) { global $post; if ( $post instanceof \WP_Post ) { $product_id = $post->ID; } }
+	$grid = new \PizzaLayerPro\Pro\PriceGrid\Grid(); return $grid->get_sizes( $product_id );
+}
+endif;
+if ( ! function_exists( 'pzt_render_inline_size_selector' ) ) :
+function pzt_render_inline_size_selector( array $sizes, string $instance_id, string $css_prefix = 'cb' ): void {
+	if ( empty( $sizes ) ) { return; }
+	// Extract numeric suffix from instance_id (handles pztpro-1, pizzabuilder-1, pztpro-1-2, etc)
+	preg_match( '/-(\d+)$/', $instance_id, $_m_suf );
+	$radio_name_raw = ! empty( $_m_suf[1] ) ? $_m_suf[1] : preg_replace( '/[^a-zA-Z0-9_]/', '_', $instance_id );
+	$radio_name = 'pztpro_size_' . $radio_name_raw;
+	$heading = function_exists( 'pztpro_get_setting' ) ? (string) pztpro_get_setting( 'size_selector_label', '' ) : '';
+	if ( '' === $heading ) { $heading = __( 'Choose a Size', 'pizzalayer' ); }
+	?>
+	<div class="<?php echo esc_attr( $css_prefix ); ?>-size-selector pztpro-inline-size-selector" id="<?php echo esc_attr( $instance_id ); ?>-size-selector" role="group" aria-label="<?php echo esc_attr( $heading ); ?>">
+		<p class="<?php echo esc_attr( $css_prefix ); ?>-size-selector__heading"><?php echo esc_html( $heading ); ?></p>
+		<div class="<?php echo esc_attr( $css_prefix ); ?>-size-selector__options">
+			<?php foreach ( $sizes as $i => $size ) :
+				$inp_id = esc_attr( $instance_id ) . '-sz-' . sanitize_html_class( strtolower( $size ) ); ?>
+			<label class="<?php echo esc_attr( $css_prefix ); ?>-size-option pztpro-size-option<?php echo 0 === $i ? ' pztpro-size-option--active' : ''; ?>" for="<?php echo esc_attr( $inp_id ); ?>">
+				<input type="radio" id="<?php echo esc_attr( $inp_id ); ?>" name="<?php echo esc_attr( $radio_name ); ?>" value="<?php echo esc_attr( $size ); ?>" class="pztpro-size-radio" <?php checked( 0, $i ); ?> />
+				<span class="<?php echo esc_attr( $css_prefix ); ?>-size-option__name"><?php echo esc_html( $size ); ?></span>
+			</label>
+			<?php endforeach; ?>
+		</div>
+	</div>
+	<?php
+}
+endif;
+
+$_pro_sizes = pzt_get_pro_sizes();
+$_has_pro   = ! empty( $_pro_sizes );
+
 // Resolve hidden tabs
 $hide_tabs_raw = $atts['hide_tabs'] ?? '';
 $show_tabs_raw = $atts['show_tabs'] ?? '';
-$all_tabs      = [ 'crust', 'sauce', 'cheese', 'toppings', 'drizzle', 'slicing', 'yourpizza' ];
+$all_tabs      = array_merge( $_has_pro ? [ 'size' ] : [], [ 'crust', 'sauce', 'cheese', 'toppings', 'drizzle', 'slicing', 'yourpizza' ] );
 $all_tabs      = apply_filters( 'pizzalayer_tab_order', $all_tabs, $instance_id );
 
 if ( $show_tabs_raw ) {
@@ -234,9 +273,12 @@ if ( ! $cuts_html ) { $cuts_html = '<p class="np-empty">' . esc_html__( 'No cut 
 // Use PizzaBuilder for the initial pizza display
 $builder = new \PizzaLayer\Builder\PizzaBuilder();
 $initial_pizza = $builder->build_dynamic(
-	$atts['default_crust']  ?? '',
-	$atts['default_sauce']  ?? '',
-	$atts['default_cheese'] ?? ''
+	$atts['default_crust']    ?? '',
+	$atts['default_sauce']    ?? '',
+	$atts['default_cheese']   ?? '',
+	$atts['default_toppings'] ?? '',
+	$atts['default_drizzle']  ?? '',
+	$atts['default_cut']      ?? ''
 );
 
 // Pass $np_var, $instance_id to custom.js via data attribute on root
@@ -294,7 +336,7 @@ $initial_pizza = $builder->build_dynamic(
 					</div>
 
 					<!-- Action bar: PizzaLayerPro hooks here for WC cart button -->
-					<?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
+					<!-- Action bar moved to root level below -->
 				</div>
 			</div>
 
@@ -305,6 +347,7 @@ $initial_pizza = $builder->build_dynamic(
 					<nav class="np-tabnav" id="<?php echo esc_attr( $instance_id ); ?>-tabnav" role="tablist">
 						<?php
 						$tab_meta = [
+							'size'      => [ 'fa-ruler-combined', __( 'Size',     'pizzalayer' ) ],
 							'crust'     => [ 'fa-circle',      __( 'Crust',     'pizzalayer' ) ],
 							'sauce'     => [ 'fa-droplet',     __( 'Sauce',     'pizzalayer' ) ],
 							'cheese'    => [ 'fa-cheese',      __( 'Cheese',    'pizzalayer' ) ],
@@ -339,12 +382,45 @@ $initial_pizza = $builder->build_dynamic(
 						<?php endforeach; ?>
 					</div>
 
+					<!-- Section navigation (prev/next) -->
+					<div class="np-section-nav" id="<?php echo esc_attr( $instance_id ); ?>-section-nav">
+						<button type="button" class="np-section-nav__btn np-section-nav__btn--prev"
+						        id="<?php echo esc_attr( $instance_id ); ?>-nav-prev"
+						        onclick="<?php echo esc_js( $np_var ); ?>.navPrev()"
+						        disabled aria-label="<?php esc_attr_e( 'Previous section', 'pizzalayer' ); ?>">
+							<i class="fa fa-arrow-left"></i> <?php esc_html_e( 'Prev', 'pizzalayer' ); ?>
+						</button>
+						<button type="button" class="np-section-nav__btn np-section-nav__btn--next"
+						        id="<?php echo esc_attr( $instance_id ); ?>-nav-next"
+						        onclick="<?php echo esc_js( $np_var ); ?>.navNext()"
+						        aria-label="<?php esc_attr_e( 'Next section', 'pizzalayer' ); ?>">
+							<?php esc_html_e( 'Next', 'pizzalayer' ); ?> <i class="fa fa-arrow-right"></i>
+						</button>
+					</div>
+
 					<!-- Tab panels -->
 					<div class="np-panels">
 
+
+						<?php if ( $_has_pro && in_array( 'size', $visible_tabs, true ) ) : ?>
+						<?php do_action( 'pizzalayer_before_tab_size', $instance_id ); ?>
+						<section class="np-panel active" id="<?php echo esc_attr( $instance_id ); ?>-panel-size" role="tabpanel">
+							<div class="np-panel__header">
+								<h2 class="np-panel__title"><i class="fa fa-ruler-combined"></i> <?php esc_html_e( 'Choose Your Size', 'pizzalayer' ); ?></h2>
+								<p class="np-panel__hint"><?php esc_html_e( 'Select the size of your pizza.', 'pizzalayer' ); ?></p>
+							</div>
+							<?php pzt_render_inline_size_selector( $_pro_sizes, $instance_id, 'np' ); ?>
+							<div class="np-panel__nav">
+								<span></span>
+								<button class="np-btn np-btn--next" onclick="<?php echo esc_js( $np_var ); ?>.goTab('crust')"><?php esc_html_e( 'Crust', 'pizzalayer' ); ?> <i class="fa fa-arrow-right"></i></button>
+							</div>
+						</section>
+						<?php do_action( 'pizzalayer_after_tab_size', $instance_id ); ?>
+						<?php endif; ?>
+
 						<?php if ( in_array( 'crust', $visible_tabs, true ) ) : ?>
 						<?php do_action( 'pizzalayer_before_tab_crust', $instance_id ); ?>
-						<section class="np-panel active" id="<?php echo esc_attr( $instance_id ); ?>-panel-crust" role="tabpanel">
+						<section class="np-panel<?php echo $_has_pro ? '' : ' active'; ?>" id="<?php echo esc_attr( $instance_id ); ?>-panel-crust" role="tabpanel">
 							<div class="np-panel__header">
 								<h2 class="np-panel__title"><i class="fa fa-circle"></i> <?php esc_html_e( 'Choose Your Crust', 'pizzalayer' ); ?></h2>
 								<p class="np-panel__hint"><?php esc_html_e( 'Select one crust — it forms the base of your pizza.', 'pizzalayer' ); ?></p>
@@ -450,6 +526,7 @@ $initial_pizza = $builder->build_dynamic(
 							<div class="np-yourpizza" id="<?php echo esc_attr( $instance_id ); ?>-summary">
 								<?php
 								$summary_rows = [
+									'size'     => [ 'fa-ruler-combined', __( 'Size',    'pizzalayer' ) ],
 									'crust'    => [ 'fa-circle',      __( 'Crust',    'pizzalayer' ) ],
 									'sauce'    => [ 'fa-droplet',     __( 'Sauce',    'pizzalayer' ) ],
 									'cheese'   => [ 'fa-cheese',      __( 'Cheese',   'pizzalayer' ) ],
@@ -485,6 +562,8 @@ $initial_pizza = $builder->build_dynamic(
 	</div><!-- /.np-layout -->
 
 	<div id="<?php echo esc_attr( $instance_id ); ?>-fly-container" aria-hidden="true"></div>
+
+	<?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
 
 </div><!-- /#<?php echo esc_html( $instance_id ); ?> .np-root -->
 

@@ -293,6 +293,7 @@
                 this.goTab('crust');
                 this._updateCounter();
                 this._initDefaultLayers();
+                this._updateSectionNav(this._currentTab() || 'crust');
             },
 
             /* ── Create / locate the pizza stage ── */
@@ -373,6 +374,7 @@
                         defaultTops.forEach(function (t) {
                             PizzaStack.setLayer(getStage(), 'layer-topping-' + t.slug, t.layerImg, t.zindex || 400, 'nl-topping', t.coverage || 'whole');
                             state.toppings[t.slug] = { slug: t.slug, title: t.slug, layerImg: t.layerImg, zindex: t.zindex || 400, coverage: t.coverage || 'whole' };
+                            $find('.np-card[data-layer="toppings"][data-slug="' + t.slug + '"]').addClass('np-card--selected');
                         });
                         _$root.find('#' + instanceId + '-count').text(Object.keys(state.toppings).length);
                     }
@@ -411,6 +413,41 @@
                     var nav = $find('.np-tabnav')[0];
                     if (nav) { nav.scrollTo({ left: $activeTab[0].offsetLeft - 20, behavior: 'smooth' }); }
                 }
+
+                // Update sidebar prev/next button states
+                instance._updateSectionNav(tabName);
+            },
+
+            /* ── Sidebar prev/next section navigation ── */
+            _getTabOrder: function () {
+                var tabs = [];
+                $find('.np-tab').each(function () { var t = $(this).data('tab'); if (t) tabs.push(t); });
+                return tabs;
+            },
+            _currentTab: function () {
+                var active = null;
+                $find('.np-tab.active').each(function () { active = $(this).data('tab'); });
+                return active;
+            },
+            _updateSectionNav: function (tabName) {
+                var order = instance._getTabOrder();
+                var i     = order.indexOf(tabName);
+                var $prev = $('#' + instanceId + '-nav-prev');
+                var $next = $('#' + instanceId + '-nav-next');
+                if ($prev.length) $prev.prop('disabled', i <= 0);
+                if ($next.length) $next.prop('disabled', i >= order.length - 1);
+            },
+            navPrev: function () {
+                var order = instance._getTabOrder();
+                var cur   = instance._currentTab();
+                var i     = order.indexOf(cur);
+                if (i > 0) instance.goTab(order[i - 1]);
+            },
+            navNext: function () {
+                var order = instance._getTabOrder();
+                var cur   = instance._currentTab();
+                var i     = order.indexOf(cur);
+                if (i < order.length - 1) instance.goTab(order[i + 1]);
             },
 
             /* ── Swap exclusive base layer (crust/sauce/cheese/drizzle/cut) ── */

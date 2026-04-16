@@ -217,5 +217,71 @@ class AssetManager {
 				true
 			);
 		}
+
+		// Settings Wizard
+		if ( false !== strpos( $hook, 'pizzalayer-wizard' ) ) {
+			wp_enqueue_script(
+				'pizzalayer-settings-wizard',
+				$base . 'settings-wizard.js',
+				[],
+				$v,
+				true
+			);
+		}
+
+		// Layer Builder Wizard
+		if ( false !== strpos( $hook, 'pizzalayer-layer-wizard' ) ) {
+			wp_enqueue_script(
+				'pizzalayer-layer-builder-wizard',
+				$base . 'layer-builder-wizard.js',
+				[ 'jquery' ],
+				$v,
+				true
+			);
+			wp_localize_script(
+				'pizzalayer-layer-builder-wizard',
+				'pizzalayerLBW',
+				[
+					'nonce'      => wp_create_nonce( 'pizzalayer_layer_builder' ),
+					'ajaxUrl'    => admin_url( 'admin-ajax.php' ),
+					'limUrl'     => admin_url( 'admin.php?page=pizzalayer-layer-maker' ),
+					'layerTypes' => \PizzaLayer\Admin\LayerBuilderWizard::LAYER_TYPES,
+				]
+			);
+		}
+
+		// Layer Image Maker (full-page tool)
+		if ( false !== strpos( $hook, 'pizzalayer-layer-maker' ) ) {
+			wp_enqueue_script(
+				'pizzalayer-layer-image-maker',
+				$base . 'layer-image-maker.js',
+				[],
+				$v,
+				true
+			);
+			wp_localize_script(
+				'pizzalayer-layer-image-maker',
+				'plimConfig',
+				[
+					'ajaxUrl'     => admin_url( 'admin-ajax.php' ),
+					'nonce'       => wp_create_nonce( 'pizzalayer_layer_image_maker' ),
+					'aspectRatio' => preg_replace( '/\s+/', '', get_option( 'pizzalayer_setting_pizza_aspect', '4 / 3' ) ),
+				]
+			);
+		}
+
+		// Layer Image MetaBox — CPT post-edit screens
+		if ( in_array( $hook, [ 'post.php', 'post-new.php' ], true ) ) {
+			$screen = get_current_screen();
+			if ( $screen && strpos( $screen->post_type ?? '', 'pizzalayer_' ) === 0 ) {
+				wp_enqueue_script(
+					'pizzalayer-layer-image-metabox',
+					$base . 'layer-image-metabox.js',
+					[],
+					$v,
+					true
+				);
+			}
+		}
 	}
 }

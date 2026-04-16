@@ -92,6 +92,45 @@ $layer_offsets = [
 ];
 $offsets_json = wp_json_encode( $layer_offsets );
 
+
+// ── PizzaLayerPro: inline size selector ──────────────────────────────────────
+if ( ! function_exists( 'pzt_get_pro_sizes' ) ) :
+function pzt_get_pro_sizes(): array {
+	if ( ! function_exists( 'pztpro_get_setting' ) || ! class_exists( 'PizzaLayerPro\\Pro\\PriceGrid\\Grid' ) ) { return []; }
+	$product_id = ( function_exists( 'get_queried_object_id' ) ? (int) get_queried_object_id() : 0 );
+	if ( ! $product_id ) { global $post; if ( $post instanceof \WP_Post ) { $product_id = $post->ID; } }
+	$grid = new \PizzaLayerPro\Pro\PriceGrid\Grid(); return $grid->get_sizes( $product_id );
+}
+endif;
+if ( ! function_exists( 'pzt_render_inline_size_selector' ) ) :
+function pzt_render_inline_size_selector( array $sizes, string $instance_id, string $css_prefix = 'cb' ): void {
+	if ( empty( $sizes ) ) { return; }
+	// Extract numeric suffix from instance_id (handles pztpro-1, pizzabuilder-1, pztpro-1-2, etc)
+	preg_match( '/-(\d+)$/', $instance_id, $_m_suf );
+	$radio_name_raw = ! empty( $_m_suf[1] ) ? $_m_suf[1] : preg_replace( '/[^a-zA-Z0-9_]/', '_', $instance_id );
+	$radio_name = 'pztpro_size_' . $radio_name_raw;
+	$heading = function_exists( 'pztpro_get_setting' ) ? (string) pztpro_get_setting( 'size_selector_label', '' ) : '';
+	if ( '' === $heading ) { $heading = __( 'Choose a Size', 'pizzalayer' ); }
+	?>
+	<div class="<?php echo esc_attr( $css_prefix ); ?>-size-selector pztpro-inline-size-selector" id="<?php echo esc_attr( $instance_id ); ?>-size-selector" role="group" aria-label="<?php echo esc_attr( $heading ); ?>">
+		<p class="<?php echo esc_attr( $css_prefix ); ?>-size-selector__heading"><?php echo esc_html( $heading ); ?></p>
+		<div class="<?php echo esc_attr( $css_prefix ); ?>-size-selector__options">
+			<?php foreach ( $sizes as $i => $size ) :
+				$inp_id = esc_attr( $instance_id ) . '-sz-' . sanitize_html_class( strtolower( $size ) ); ?>
+			<label class="<?php echo esc_attr( $css_prefix ); ?>-size-option pztpro-size-option<?php echo 0 === $i ? ' pztpro-size-option--active' : ''; ?>" for="<?php echo esc_attr( $inp_id ); ?>">
+				<input type="radio" id="<?php echo esc_attr( $inp_id ); ?>" name="<?php echo esc_attr( $radio_name ); ?>" value="<?php echo esc_attr( $size ); ?>" class="pztpro-size-radio" <?php checked( 0, $i ); ?> />
+				<span class="<?php echo esc_attr( $css_prefix ); ?>-size-option__name"><?php echo esc_html( $size ); ?></span>
+			</label>
+			<?php endforeach; ?>
+		</div>
+	</div>
+	<?php
+}
+endif;
+
+$_pro_sizes = pzt_get_pro_sizes();
+$_has_pro   = ! empty( $_pro_sizes );
+
 // Visible tabs
 $hide_tabs_raw = $atts['hide_tabs'] ?? '';
 $show_tabs_raw = $atts['show_tabs'] ?? '';
@@ -284,14 +323,18 @@ if ( ! $cuts_html ) { $cuts_html = '<p class="mt-empty">' . esc_html__( 'No cut 
 // Initial pizza render
 $builder       = new \PizzaLayer\Builder\PizzaBuilder();
 $initial_pizza = $builder->build_dynamic(
-	$atts['default_crust']  ?? '',
-	$atts['default_sauce']  ?? '',
-	$atts['default_cheese'] ?? ''
+	$atts['default_crust']    ?? '',
+	$atts['default_sauce']    ?? '',
+	$atts['default_cheese']   ?? '',
+	$atts['default_toppings'] ?? '',
+	$atts['default_drizzle']  ?? '',
+	$atts['default_cut']      ?? ''
 );
 
 // Section meta: tab key → [ icon, label, content ]
 // Icons chosen to reflect the ingredient type clearly.
 $section_meta = [
+	'size'     => [ 'fa-ruler-combined', __( 'Size',    'pizzalayer' ), '' ],
 	'crust'    => [ 'fa-layer-group',  __( 'Crust',   'pizzalayer' ), $crusts_html   ],
 	'sauce'    => [ 'fa-droplet',      __( 'Sauce',   'pizzalayer' ), $sauces_html   ],
 	'cheese'   => [ 'fa-cheese',       __( 'Cheese',  'pizzalayer' ), $cheeses_html  ],
@@ -436,6 +479,21 @@ $section_meta = [
 		</div>
 
 		<!-- Section rows -->
+
+	<?php if ( $_has_pro && in_array( 'size', $visible_tabs, true ) ) : ?>
+	<?php do_action( 'pizzalayer_before_tab_size', $instance_id ); ?>
+	<section class="mt-section" id="<?php echo esc_attr( $instance_id . '-section-size' ); ?>" data-section="size">
+		<div class="mt-section__header">
+			<div class="mt-section__header-inner">
+				<span class="mt-section__icon"><i class="fa fa-ruler-combined"></i></span>
+				<h2 class="mt-section__title"><?php esc_html_e( 'Size', 'pizzalayer' ); ?></h2>
+			</div>
+		</div>
+		<?php pzt_render_inline_size_selector( $_pro_sizes, $instance_id, 'mt' ); ?>
+	</section>
+	<?php do_action( 'pizzalayer_after_tab_size', $instance_id ); ?>
+	<?php endif; ?>
+
 		<?php foreach ( $visible_tabs as $tab ) :
 			if ( ! isset( $section_meta[ $tab ] ) ) { continue; }
 			[ $icon, $label, $cards_html ] = $section_meta[ $tab ];
@@ -470,7 +528,7 @@ $section_meta = [
 			<?php if ( $tab === 'slicing' ) : ?>
 			<!-- Action bar: PizzaLayerPro hooks here -->
 			<div class="mt-action-bar">
-				<?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
+				<!-- Action bar moved to root level below -->
 			</div>
 			<?php endif; ?>
 
@@ -547,6 +605,8 @@ $section_meta = [
 			</button>
 		</div>
 	</div>
+
+	<?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
 
 </div><!-- /#<?php echo esc_html( $instance_id ); ?> .mt-root -->
 

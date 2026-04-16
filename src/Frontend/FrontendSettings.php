@@ -555,7 +555,7 @@ class FrontendSettings {
 
 		// Also attach to all template script handles so they pick up settings regardless of load order
 		$template_handles = [
-			'pizzalayer-template-colorbox',
+			'pizzalayer-template-commandcenter',
 			'pizzalayer-template-metro',
 			'pizzalayer-template-nightpie',
 			'pizzalayer-template-rustic',

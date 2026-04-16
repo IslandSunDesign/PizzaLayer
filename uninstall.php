@@ -4,9 +4,8 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) { exit; }
 /**
  * PizzaLayer Uninstall
  *
- * Removes all plugin options from the database.
- * CPT posts are intentionally preserved (standard WP convention).
- * To also delete CPT data, use the "Reset Data" admin action instead.
+ * Removes all plugin options, CPT posts (and their postmeta), and
+ * transients from the database.
  */
 
 // ── Core plugin options (mirrors Settings::OPTIONS) ────────────────────
@@ -328,8 +327,46 @@ $options = [
 
 	// ── Preview URL (Template page) ───────────────────────────────
 	'pizzalayer_template_preview_url',
+
+	// ── Plugin state / UI flags ────────────────────────────────────
+	'pizzalayer_setup_done',
+	'pizzalayer_setting_dark_mode',
+	'pizzalayer_wizard_done',
 ];
 
 foreach ( $options as $opt ) {
 	delete_option( $opt );
 }
+
+// ── Delete all CPT posts and their postmeta ────────────────────────────
+$cpt_slugs = [
+	'pizzalayer_toppings',
+	'pizzalayer_crusts',
+	'pizzalayer_sauces',
+	'pizzalayer_cheeses',
+	'pizzalayer_drizzles',
+	'pizzalayer_cuts',
+	'pizzalayer_sizes',
+];
+
+foreach ( $cpt_slugs as $post_type ) {
+	$posts = get_posts( [
+		'post_type'      => $post_type,
+		'post_status'    => 'any',
+		'posts_per_page' => -1,
+		'fields'         => 'ids',
+	] );
+
+	foreach ( $posts as $post_id ) {
+		wp_delete_post( (int) $post_id, true ); // true = force-delete, skip trash
+	}
+}
+
+// ── Delete any plugin transients ──────────────────────────────────────
+global $wpdb;
+// phpcs:ignore WordPress.DB.DirectDatabaseQuery
+$wpdb->query(
+	"DELETE FROM {$wpdb->options}
+	 WHERE option_name LIKE '_transient_pizzalayer_%'
+	    OR option_name LIKE '_transient_timeout_pizzalayer_%'"
+);

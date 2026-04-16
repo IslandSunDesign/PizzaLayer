@@ -222,7 +222,7 @@ class SettingsWizard {
 	// ── Save step settings ────────────────────────────────────────────────────
 
 	private function save_step( string $step_key ): void {
-		/** Map of step key → option keys it owns */
+		/** Map of step key → option keys it owns (must match actual Settings.php keys) */
 		$step_options = [
 			'defaults'    => [
 				'pizzalayer_setting_crust_defaultcrust',
@@ -232,42 +232,34 @@ class SettingsWizard {
 				'pizzalayer_setting_cut_defaultcut',
 			],
 			'toppings'    => [
-				'pizzalayer_setting_max_toppings',
-				'pizzalayer_setting_allow_duplicate_toppings',
+				'pizzalayer_setting_topping_maxtoppings',
 			],
 			'display'     => [
-				'pizzalayer_setting_pizza_size',
+				'pizzalayer_setting_pizza_size_max',
 				'pizzalayer_setting_pizza_shape',
 				'pizzalayer_setting_pizza_border_color',
 				'pizzalayer_setting_global_color',
 			],
 			'appearance'  => [
-				'pizzalayer_setting_dark_mode',
 				'pizzalayer_setting_branding_primary_color',
 				'pizzalayer_setting_branding_secondary_color',
-				'pizzalayer_setting_global_font',
+				'pizzalayer_setting_typo_font_family',
 			],
 			'layout'      => [
 				'pizzalayer_setting_layout_tab_order',
-				'pizzalayer_setting_layout_hide_empty_tabs',
-				'pizzalayer_setting_layout_show_step_numbers',
+				'pizzalayer_setting_layout_hide_empty',
+				'pizzalayer_setting_layout_step_by_step',
 			],
 			'messaging'   => [
-				'pizzalayer_setting_builder_title',
-				'pizzalayer_setting_demo_notice',
-				'pizzalayer_setting_builder_intro_text',
-				'pizzalayer_setting_builder_help_text',
-				'pizzalayer_setting_confirm_button_text',
+				'pizzalayer_setting_branding_tagline',
+				'pizzalayer_setting_settings_demonotice',
 			],
 			'ux'          => [
 				'pizzalayer_setting_cx_show_summary',
-				'pizzalayer_setting_cx_summary_position',
-				'pizzalayer_setting_cx_show_price_live',
-				'pizzalayer_setting_cx_allow_name',
-				'pizzalayer_setting_cx_require_name',
-				'pizzalayer_setting_cx_special_instr',
+				'pizzalayer_setting_cx_special_instructions',
 				'pizzalayer_setting_cx_special_instr_max',
 				'pizzalayer_setting_cx_review_modal',
+				'pizzalayer_setting_cx_show_start_over',
 			],
 			'animations'  => [
 				'pizzalayer_setting_layer_anim',
@@ -276,7 +268,7 @@ class SettingsWizard {
 			'accessibility' => [
 				'pizzalayer_setting_a11y_focus_ring',
 				'pizzalayer_setting_a11y_reduce_motion',
-				'pizzalayer_setting_perf_lazy_images',
+				'pizzalayer_setting_perf_lazy_load',
 			],
 		];
 
@@ -285,19 +277,14 @@ class SettingsWizard {
 		}
 
 		$yes_no_keys = [
-			'pizzalayer_setting_allow_duplicate_toppings',
-			'pizzalayer_setting_dark_mode',
-			'pizzalayer_setting_layout_hide_empty_tabs',
-			'pizzalayer_setting_layout_show_step_numbers',
+			'pizzalayer_setting_layout_hide_empty',
+			'pizzalayer_setting_layout_step_by_step',
 			'pizzalayer_setting_cx_show_summary',
-			'pizzalayer_setting_cx_show_price_live',
-			'pizzalayer_setting_cx_allow_name',
-			'pizzalayer_setting_cx_require_name',
-			'pizzalayer_setting_cx_special_instr',
+			'pizzalayer_setting_cx_special_instructions',
 			'pizzalayer_setting_cx_review_modal',
-			'pizzalayer_setting_a11y_focus_ring',
+			'pizzalayer_setting_cx_show_start_over',
 			'pizzalayer_setting_a11y_reduce_motion',
-			'pizzalayer_setting_perf_lazy_images',
+			'pizzalayer_setting_perf_lazy_load',
 		];
 
 		foreach ( $step_options[ $step_key ] as $opt_key ) {
@@ -373,25 +360,17 @@ class SettingsWizard {
 				'key'   => 'toppings',
 				'title' => __( 'Topping Rules', 'pizzalayer' ),
 				'icon'  => 'dashicons-star-filled',
-				'intro' => __( 'Set some basic rules for toppings. How many can a customer add? Can they put the same topping on twice (like extra pepperoni)? These help you control the ordering experience and match how your kitchen actually works.', 'pizzalayer' ),
+				'intro' => __( 'Set the maximum number of toppings a customer can add. Set to 0 for unlimited. This helps you control the ordering experience and match how your kitchen actually works.', 'pizzalayer' ),
 				'fields' => [
 					[
 						'type'    => 'number',
-						'key'     => 'pizzalayer_setting_max_toppings',
+						'key'     => 'pizzalayer_setting_topping_maxtoppings',
 						'label'   => __( 'Maximum Toppings Allowed', 'pizzalayer' ),
 						'tip'     => __( 'The most toppings a customer can add to one pizza. Set to 0 for unlimited. Most pizzerias allow 5–8 toppings on a standard build.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_max_toppings', '0' ),
+						'value'   => $g( 'pizzalayer_setting_topping_maxtoppings', '0' ),
 						'min'     => 0,
 						'max'     => 99,
 						'placeholder' => '0 = unlimited',
-					],
-					[
-						'type'    => 'toggle',
-						'key'     => 'pizzalayer_setting_allow_duplicate_toppings',
-						'label'   => __( 'Allow "Extra" / Duplicate Toppings', 'pizzalayer' ),
-						'tip'     => __( 'Turn this on if customers should be able to add the same topping more than once (e.g. "extra pepperoni"). Turn it off for one-of-each only.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_allow_duplicate_toppings', 'no' ),
-						'toggle_label' => __( 'Allow adding the same topping more than once', 'pizzalayer' ),
 					],
 				],
 			],
@@ -399,35 +378,36 @@ class SettingsWizard {
 				'key'   => 'display',
 				'title' => __( 'Pizza Display', 'pizzalayer' ),
 				'icon'  => 'dashicons-format-image',
-				'intro' => __( 'Control how the pizza visualizer looks — its size on screen, whether it\'s round or square, and its border style. This is purely visual and doesn\'t affect ordering. Pick whatever looks best on your website.', 'pizzalayer' ),
+				'intro' => __( 'Control how the pizza visualizer looks — its maximum size on screen, whether it\'s round or square, and its border/accent colors. This is purely visual and doesn\'t affect ordering. Pick whatever looks best on your website.', 'pizzalayer' ),
 				'fields' => [
 					[
 						'type'    => 'number',
-						'key'     => 'pizzalayer_setting_pizza_size',
-						'label'   => __( 'Pizza Display Size (pixels)', 'pizzalayer' ),
-						'tip'     => __( 'How wide the pizza image appears on screen. 400px is a good default for most layouts. If the pizza looks too big or too small on your page, adjust this number.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_pizza_size', '400' ),
+						'key'     => 'pizzalayer_setting_pizza_size_max',
+						'label'   => __( 'Pizza Max Display Size (pixels)', 'pizzalayer' ),
+						'tip'     => __( 'The maximum width of the pizza visualizer. 600px is a good default for most layouts. The pizza will still scale down on smaller screens.', 'pizzalayer' ),
+						'value'   => $g( 'pizzalayer_setting_pizza_size_max', '600' ),
 						'min'     => 100,
-						'max'     => 800,
-						'placeholder' => '400',
+						'max'     => 1200,
+						'placeholder' => '600',
 					],
 					[
 						'type'    => 'select',
 						'key'     => 'pizzalayer_setting_pizza_shape',
 						'label'   => __( 'Pizza Shape', 'pizzalayer' ),
-						'tip'     => __( 'Round (circle) looks like a real pizza. Square works well for pan/Detroit-style pizzas. Custom lets you use a freeform shape.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_pizza_shape', 'circle' ),
+						'tip'     => __( 'Round (circle) looks like a real pizza. Square works well for pan/Detroit-style pizzas. Rectangle is good for sheet pizzas. Custom lets you set your own aspect ratio and radius.', 'pizzalayer' ),
+						'value'   => $g( 'pizzalayer_setting_pizza_shape', 'round' ),
 						'options' => [
-							'circle' => __( 'Round (circle)', 'pizzalayer' ),
-							'square' => __( 'Square', 'pizzalayer' ),
-							'rounded-square' => __( 'Rounded square', 'pizzalayer' ),
+							'round'     => __( 'Round (circle)', 'pizzalayer' ),
+							'square'    => __( 'Square', 'pizzalayer' ),
+							'rectangle' => __( 'Rectangle (pan/sheet style)', 'pizzalayer' ),
+							'custom'    => __( 'Custom (set aspect ratio and radius)', 'pizzalayer' ),
 						],
 					],
 					[
 						'type'    => 'color',
 						'key'     => 'pizzalayer_setting_pizza_border_color',
 						'label'   => __( 'Pizza Border Color', 'pizzalayer' ),
-						'tip'     => __( 'The thin line around the pizza image. Use a warm brown or orange to make it look like a crust edge, or pick transparent/white to hide it.', 'pizzalayer' ),
+						'tip'     => __( 'The thin line around the pizza image. Use a warm brown or orange to make it look like a crust edge.', 'pizzalayer' ),
 						'value'   => $g( 'pizzalayer_setting_pizza_border_color', '#c8a46e' ),
 					],
 					[
@@ -443,16 +423,8 @@ class SettingsWizard {
 				'key'   => 'appearance',
 				'title' => __( 'Look & Feel', 'pizzalayer' ),
 				'icon'  => 'dashicons-art',
-				'intro' => __( 'Give the builder your brand\'s personality. Set your brand colors, choose a font, and decide whether you want a light or dark theme. None of these affect how the builder works — just how it looks.', 'pizzalayer' ),
+				'intro' => __( 'Give the builder your brand\'s personality. Set your primary and secondary brand colors, and choose a font family. These work alongside your chosen template\'s own styling.', 'pizzalayer' ),
 				'fields' => [
-					[
-						'type'    => 'toggle',
-						'key'     => 'pizzalayer_setting_dark_mode',
-						'label'   => __( 'Dark Mode', 'pizzalayer' ),
-						'tip'     => __( 'Switches the builder to a dark background with light text. Great if your website has a dark theme, or you just prefer the look.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_dark_mode', 'no' ),
-						'toggle_label' => __( 'Use dark background theme', 'pizzalayer' ),
-					],
 					[
 						'type'    => 'color',
 						'key'     => 'pizzalayer_setting_branding_primary_color',
@@ -469,10 +441,10 @@ class SettingsWizard {
 					],
 					[
 						'type'    => 'text',
-						'key'     => 'pizzalayer_setting_global_font',
+						'key'     => 'pizzalayer_setting_typo_font_family',
 						'label'   => __( 'Font Family', 'pizzalayer' ),
-						'tip'     => __( 'The font used inside the builder. Leave blank to use your theme\'s default font. To use a Google Font, enter its name here (e.g. "Lato" or "Poppins") — make sure the font is loaded by your theme.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_global_font', '' ),
+						'tip'     => __( 'The font used inside the builder. Leave blank to use your theme\'s default font. To use a Google Font, enter its exact name (e.g. "Lato" or "Poppins") — make sure the font is already loaded by your theme.', 'pizzalayer' ),
+						'value'   => $g( 'pizzalayer_setting_typo_font_family', '' ),
 						'placeholder' => __( 'e.g. Lato, Poppins, or leave blank', 'pizzalayer' ),
 					],
 				],
@@ -481,7 +453,7 @@ class SettingsWizard {
 				'key'   => 'layout',
 				'title' => __( 'Builder Layout', 'pizzalayer' ),
 				'icon'  => 'dashicons-layout',
-				'intro' => __( 'Control the order of the ingredient tabs (crust, sauce, cheese, etc.) and a couple of layout options. The tab order determines the steps customers follow when building their pizza — you can put the most important choices first.', 'pizzalayer' ),
+				'intro' => __( 'Control the order of the ingredient tabs and a couple of layout options. The tab order determines the steps customers follow when building their pizza — put the most important choices first.', 'pizzalayer' ),
 				'fields' => [
 					[
 						'type'    => 'text',
@@ -493,19 +465,19 @@ class SettingsWizard {
 					],
 					[
 						'type'    => 'toggle',
-						'key'     => 'pizzalayer_setting_layout_hide_empty_tabs',
+						'key'     => 'pizzalayer_setting_layout_hide_empty',
 						'label'   => __( 'Hide Tabs With No Items', 'pizzalayer' ),
 						'tip'     => __( 'If you haven\'t added any drizzles yet, should the "Drizzle" tab be hidden? Turn this on to keep the builder tidy — tabs only appear once you\'ve added content for them.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_layout_hide_empty_tabs', 'yes' ),
+						'value'   => $g( 'pizzalayer_setting_layout_hide_empty', 'no' ),
 						'toggle_label' => __( 'Hide tabs that have no published items', 'pizzalayer' ),
 					],
 					[
 						'type'    => 'toggle',
-						'key'     => 'pizzalayer_setting_layout_show_step_numbers',
-						'label'   => __( 'Show Step Numbers on Tabs', 'pizzalayer' ),
-						'tip'     => __( 'Adds a number to each tab (1. Crust, 2. Sauce…) to guide customers through the process. Good for first-time users.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_layout_show_step_numbers', 'no' ),
-						'toggle_label' => __( 'Number the tabs (1, 2, 3…)', 'pizzalayer' ),
+						'key'     => 'pizzalayer_setting_layout_step_by_step',
+						'label'   => __( 'Step-by-Step Mode', 'pizzalayer' ),
+						'tip'     => __( 'Locks customers to one tab at a time, stepping through crust → sauce → cheese → toppings in order. Great for guided ordering workflows.', 'pizzalayer' ),
+						'value'   => $g( 'pizzalayer_setting_layout_step_by_step', 'no' ),
+						'toggle_label' => __( 'Guide customers through tabs one step at a time', 'pizzalayer' ),
 					],
 				],
 			],
@@ -513,31 +485,23 @@ class SettingsWizard {
 				'key'   => 'messaging',
 				'title' => __( 'Text & Messaging', 'pizzalayer' ),
 				'icon'  => 'dashicons-format-chat',
-				'intro' => __( 'Customise the words customers see inside the builder — the title, intro text, button labels, and help messages. This is your chance to give the experience your restaurant\'s voice and personality.', 'pizzalayer' ),
+				'intro' => __( 'Customise the words customers see inside the builder — the tagline shown in the header and an optional demo/notice banner. This is your chance to give the experience your restaurant\'s voice and personality.', 'pizzalayer' ),
 				'fields' => [
 					[
 						'type'    => 'text',
-						'key'     => 'pizzalayer_setting_builder_title',
-						'label'   => __( 'Builder Heading', 'pizzalayer' ),
-						'tip'     => __( 'The big heading shown at the top of the builder. Something like "Build Your Perfect Pizza" or "Create Your Order".', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_builder_title', '' ),
+						'key'     => 'pizzalayer_setting_branding_tagline',
+						'label'   => __( 'Builder Tagline', 'pizzalayer' ),
+						'tip'     => __( 'A short tagline shown in the builder header — something like "Build Your Perfect Pizza" or "Create Your Masterpiece". Leave blank to hide it.', 'pizzalayer' ),
+						'value'   => $g( 'pizzalayer_setting_branding_tagline', '' ),
 						'placeholder' => __( 'e.g. Build Your Perfect Pizza', 'pizzalayer' ),
 					],
 					[
 						'type'    => 'text',
-						'key'     => 'pizzalayer_setting_demo_notice',
+						'key'     => 'pizzalayer_setting_settings_demonotice',
 						'label'   => __( 'Demo / Notice Banner', 'pizzalayer' ),
 						'tip'     => __( 'An optional notice shown above the builder — useful for "This is a demo" messages, promotions, or reminders like "Delivery orders close at 9 PM". Leave blank to hide it.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_demo_notice', '' ),
+						'value'   => $g( 'pizzalayer_setting_settings_demonotice', '' ),
 						'placeholder' => __( 'Leave blank to hide', 'pizzalayer' ),
-					],
-					[
-						'type'    => 'text',
-						'key'     => 'pizzalayer_setting_confirm_button_text',
-						'label'   => __( 'Order / Confirm Button Text', 'pizzalayer' ),
-						'tip'     => __( 'The text on the main action button at the end of the builder. Something like "Add to Cart", "Submit Order", or "Confirm Selection".', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_confirm_button_text', '' ),
-						'placeholder' => __( 'e.g. Add to Cart', 'pizzalayer' ),
 					],
 				],
 			],
@@ -551,34 +515,26 @@ class SettingsWizard {
 					[
 						'type'    => 'toggle',
 						'key'     => 'pizzalayer_setting_cx_show_summary',
-						'label'   => __( 'Show Order Summary', 'pizzalayer' ),
+						'label'   => __( 'Show Order Summary Panel', 'pizzalayer' ),
 						'tip'     => __( 'Shows a running list of what the customer has chosen so far (e.g. "Thin Crust + Tomato Sauce + Mozzarella + Pepperoni"). Helps customers review their choices before confirming.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_cx_show_summary', 'yes' ),
+						'value'   => $g( 'pizzalayer_setting_cx_show_summary', 'no' ),
 						'toggle_label' => __( 'Show a summary of selected ingredients', 'pizzalayer' ),
 					],
 					[
 						'type'    => 'toggle',
-						'key'     => 'pizzalayer_setting_cx_show_price_live',
-						'label'   => __( 'Show Live Price Update', 'pizzalayer' ),
-						'tip'     => __( 'Updates the price in real-time as the customer adds toppings. If you\'re using PizzaLayer Pro with pricing set up, this shows the running total.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_cx_show_price_live', 'no' ),
-						'toggle_label' => __( 'Show live price as customer builds', 'pizzalayer' ),
+						'key'     => 'pizzalayer_setting_cx_show_start_over',
+						'label'   => __( 'Show "Start Over" Button', 'pizzalayer' ),
+						'tip'     => __( 'Adds a "Start Over" button that resets all selections. Useful for customers who want to try a completely different build.', 'pizzalayer' ),
+						'value'   => $g( 'pizzalayer_setting_cx_show_start_over', 'yes' ),
+						'toggle_label' => __( 'Show a button to reset all selections', 'pizzalayer' ),
 					],
 					[
 						'type'    => 'toggle',
-						'key'     => 'pizzalayer_setting_cx_special_instr',
+						'key'     => 'pizzalayer_setting_cx_special_instructions',
 						'label'   => __( 'Allow Special Instructions', 'pizzalayer' ),
 						'tip'     => __( 'Adds a text box where customers can type notes for the kitchen — like "well done", "no salt", or "nut allergy". Useful for accommodating dietary needs.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_cx_special_instr', 'no' ),
+						'value'   => $g( 'pizzalayer_setting_cx_special_instructions', 'no' ),
 						'toggle_label' => __( 'Show a "Special instructions" text field', 'pizzalayer' ),
-					],
-					[
-						'type'    => 'toggle',
-						'key'     => 'pizzalayer_setting_cx_allow_name',
-						'label'   => __( 'Allow Customer to Name Their Pizza', 'pizzalayer' ),
-						'tip'     => __( 'Lets customers give their pizza a fun name — "The Ryan Special". Adds a personal touch and is great for shareable custom orders.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_cx_allow_name', 'no' ),
-						'toggle_label' => __( 'Show a "Name your pizza" field', 'pizzalayer' ),
 					],
 					[
 						'type'    => 'toggle',
@@ -601,14 +557,15 @@ class SettingsWizard {
 						'type'    => 'select',
 						'key'     => 'pizzalayer_setting_layer_anim',
 						'label'   => __( 'Layer Animation Style', 'pizzalayer' ),
-						'tip'     => __( 'How ingredients appear on the pizza when selected. "Fade in" is subtle and clean. "Drop in" feels more dramatic. "None" shows them instantly with no animation.', 'pizzalayer' ),
+						'tip'     => __( 'How ingredients appear on the pizza when selected. "Fade in" is subtle and clean. "Drop in" feels more dramatic. "Instant" shows them immediately with no animation.', 'pizzalayer' ),
 						'value'   => $g( 'pizzalayer_setting_layer_anim', 'fade' ),
 						'options' => [
-							'none'    => __( 'None — instant, no animation', 'pizzalayer' ),
-							'fade'    => __( 'Fade in — smooth and subtle', 'pizzalayer' ),
-							'drop'    => __( 'Drop in — falls from above', 'pizzalayer' ),
-							'scale'   => __( 'Scale in — grows from small', 'pizzalayer' ),
-							'slide'   => __( 'Slide in from side', 'pizzalayer' ),
+							'instant'  => __( 'Instant — no animation', 'pizzalayer' ),
+							'fade'     => __( 'Fade in — smooth and subtle', 'pizzalayer' ),
+							'drop-in'  => __( 'Drop in — falls from above', 'pizzalayer' ),
+							'scale-in' => __( 'Scale in — grows from small', 'pizzalayer' ),
+							'slide-up' => __( 'Slide up — enters from below', 'pizzalayer' ),
+							'flip-in'  => __( 'Flip in — 3D rotation reveal', 'pizzalayer' ),
 						],
 					],
 					[
@@ -632,27 +589,32 @@ class SettingsWizard {
 				'intro'    => __( 'A few settings that make the builder more usable for everyone — including customers with disabilities — and can help the page load faster. These are safe to leave on their defaults.', 'pizzalayer' ),
 				'fields' => [
 					[
-						'type'    => 'toggle',
+						'type'    => 'select',
 						'key'     => 'pizzalayer_setting_a11y_focus_ring',
-						'label'   => __( 'Show Focus Ring for Keyboard Users', 'pizzalayer' ),
-						'tip'     => __( 'When someone navigates with a keyboard instead of a mouse, this shows a visible outline around the currently selected item. Important for accessibility and required by some regulations.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_a11y_focus_ring', 'yes' ),
-						'toggle_label' => __( 'Show a visible outline for keyboard navigation', 'pizzalayer' ),
+						'label'   => __( 'Keyboard Focus Ring Style', 'pizzalayer' ),
+						'tip'     => __( 'When someone navigates with a keyboard instead of a mouse, this shows a visible outline around the currently focused item. Important for accessibility and required by some regulations.', 'pizzalayer' ),
+						'value'   => $g( 'pizzalayer_setting_a11y_focus_ring', 'default' ),
+						'options' => [
+							'default' => __( 'Theme default', 'pizzalayer' ),
+							'bold'    => __( 'Bold outline (high visibility)', 'pizzalayer' ),
+							'glow'    => __( 'Glow ring', 'pizzalayer' ),
+							'none'    => __( 'None (not recommended)', 'pizzalayer' ),
+						],
 					],
 					[
 						'type'    => 'toggle',
 						'key'     => 'pizzalayer_setting_a11y_reduce_motion',
 						'label'   => __( 'Respect "Reduce Motion" Setting', 'pizzalayer' ),
 						'tip'     => __( 'Some users turn on "Reduce Motion" in their device settings (common for people with vestibular disorders or motion sensitivity). Turning this on respects that preference and disables animations for them.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_a11y_reduce_motion', 'yes' ),
+						'value'   => $g( 'pizzalayer_setting_a11y_reduce_motion', 'no' ),
 						'toggle_label' => __( 'Disable animations for users who prefer reduced motion', 'pizzalayer' ),
 					],
 					[
 						'type'    => 'toggle',
-						'key'     => 'pizzalayer_setting_perf_lazy_images',
+						'key'     => 'pizzalayer_setting_perf_lazy_load',
 						'label'   => __( 'Lazy Load Ingredient Images', 'pizzalayer' ),
 						'tip'     => __( 'Only load ingredient images when they\'re about to come into view on screen. This makes the page load faster, especially if you have a lot of toppings. Recommended: on.', 'pizzalayer' ),
-						'value'   => $g( 'pizzalayer_setting_perf_lazy_images', 'yes' ),
+						'value'   => $g( 'pizzalayer_setting_perf_lazy_load', 'yes' ),
 						'toggle_label' => __( 'Load images only when needed (faster page load)', 'pizzalayer' ),
 					],
 				],
@@ -729,18 +691,7 @@ class SettingsWizard {
 							echo '<input type="color" id="pzwiz-' . esc_attr( $key ) . '" name="' . esc_attr( $key ) . '" value="' . esc_attr( $field['value'] ) . '" class="pzwiz-color">';
 							echo '<input type="text" name="' . esc_attr( $key ) . '_text_display" value="' . esc_attr( $field['value'] ) . '" class="pzwiz-color-text" maxlength="7" readonly>';
 							echo '</div>';
-							// Hidden real field driven by color input
-							echo '<script>
-(function(){
-var c=document.getElementById("pzwiz-' . esc_js( $key ) . '");
-if(c){
-  var t=c.parentNode.querySelector(".pzwiz-color-text");
-  c.addEventListener("input",function(){t.value=c.value;});
-  // rename hidden to real
-  c.removeAttribute("disabled");
-}
-})();
-</script>';
+							// color sync handled by settings-wizard.js via .pzwiz-color class delegation
 							break;
 
 						case 'range':
@@ -751,15 +702,9 @@ if(c){
 							$id     = 'pzwiz-' . esc_attr( $key );
 							echo '<div class="pzwiz-range-wrap">';
 							echo '<input type="range" id="' . esc_attr( $id ) . '" name="' . esc_attr( $key ) . '" value="' . esc_attr( $field['value'] ) . '" class="pzwiz-range"' . $min . $max . $step_a . '>'; // phpcs:ignore
-							echo '<span class="pzwiz-range-val" id="' . esc_attr( $id ) . '-val">' . esc_html( $field['value'] ) . esc_html( $suffix ) . '</span>';
+							echo '<span class="pzwiz-range-val" id="' . esc_attr( $id ) . '-val" data-suffix="' . esc_attr( $suffix ) . '">' . esc_html( $field['value'] ) . esc_html( $suffix ) . '</span>';
 							echo '</div>';
-							echo '<script>
-(function(){
-  var r=document.getElementById("' . esc_js( $id ) . '");
-  var v=document.getElementById("' . esc_js( $id ) . '-val");
-  if(r&&v){r.addEventListener("input",function(){v.textContent=r.value+"' . esc_js( $suffix ) . '";});}
-})();
-</script>';
+							// range sync handled by settings-wizard.js via .pzwiz-range class delegation
 							break;
 					}
 					?>

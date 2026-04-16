@@ -1192,3 +1192,132 @@
     .pp-cq-panel { width: 150px; }
     .pp-layout--corner-quad .pp-cq-pizza .pp-pizza-stage-wrap { width: 120px; height: 120px; }
 }
+
+/* ── Responsive — standard phone (≤ 600px) ─────────────────────────── */
+@media (max-width: 600px) {
+    .pp-root { border-radius: 0; }
+    .pp-chips-grid--toppings .pp-chip { width: calc(50% - 4px); }
+    .pp-layout--corner-quad .pp-cq-pizza .pp-pizza-stage-wrap { width: 140px; height: 140px; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   POCKETPIE — TABLET RESPONSIVE (341px – 768px)
+   ══════════════════════════════════════════════════════════════ */
+@media (min-width: 341px) and (max-width: 768px) {
+    /* Corner quad: bigger central pizza on mid-size devices */
+    .pp-layout--corner-quad .pp-cq-wrap { max-width: 420px; }
+    .pp-layout--corner-quad .pp-cq-pizza .pp-pizza-stage-wrap {
+        width: 150px;
+        height: 150px;
+    }
+    .pp-cq-trigger { width: 68px; }
+    .pp-cq-panel   { width: 170px; }
+
+    /* Layer deck: constrain pizza zone height on tablet */
+    .pp-ld-pizza-zone { max-height: 260px; }
+    .pp-ld-pizza-zone .pp-pizza-stage-wrap { max-width: 220px; }
+
+    /* Slide drawer pizza zone */
+    .pp-sd-pizza-zone { max-height: 240px; }
+
+    /* Chips: 3-column on tablet */
+    .pp-chip { width: calc(33.33% - 6px); }
+    .pp-chips-grid--toppings .pp-chip { width: calc(33.33% - 6px); }
+
+    /* Stack panel mini pizza */
+    .pp-sp-pizza-mini,
+    .pp-sp-pizza-mini .pp-pizza-stage-wrap { width: 80px; height: 80px; }
+}
+
+@media (min-width: 601px) and (max-width: 900px) {
+    /* Corner quad wider on tablet — allow more pizza space */
+    .pp-layout--corner-quad .pp-cq-wrap { max-width: 460px; }
+    .pp-layout--corner-quad .pp-cq-pizza .pp-pizza-stage-wrap {
+        width: 160px;
+        height: 160px;
+    }
+    .pp-cq-panel { max-height: 240px; width: 190px; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   POCKETPIE — CHECKOUT BAR RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 540px) {
+    .pztpro-checkout-bar--pocketpie .pztpro-pp-bar__actions {
+        flex-wrap: wrap;
+    }
+    .pztpro-checkout-bar--pocketpie .pztpro-bar-row__btn {
+        width: 100%;
+        justify-content: center;
+    }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   POCKETPIE — ISSUE FIXES & ENHANCEMENTS
+   ══════════════════════════════════════════════════════════════ */
+
+/* 1. Size selection row — matches PocketPie's own layer-card visual language */
+.pp-size-row {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    padding: 10px 14px;
+    background: var(--pp-bg-2, #251808);
+    border: 1px solid var(--pp-border, rgba(255,190,80,0.15));
+    border-radius: var(--pp-radius, 10px);
+    margin-bottom: 10px;
+    flex-wrap: wrap;
+}
+.pp-size-row__label {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    font-size: 12px;
+    font-weight: 700;
+    color: var(--pp-muted, #a08060);
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    flex-shrink: 0;
+}
+.pp-size-row__icon {
+    color: var(--pp-accent, #ff9a1a);
+    font-size: 10px;
+}
+.pp-size-row__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    flex: 1;
+}
+.pp-size-chip {
+    display: inline-flex;
+    align-items: center;
+    padding: 8px 16px;
+    background: var(--pp-bg-3, #2e1e0a);
+    border: 2px solid var(--pp-border, rgba(255,190,80,0.15));
+    border-radius: var(--pp-radius, 10px);
+    cursor: pointer;
+    font-size: 13px;
+    font-weight: 700;
+    color: var(--pp-text, #f5e8cc);
+    font-family: var(--pp-font, Georgia, serif);
+    transition: all 0.16s;
+}
+.pp-size-chip input[type="radio"] { display: none; }
+.pp-size-chip:hover,
+.pp-size-chip.pp-size-chip--active,
+.pp-size-chip.pztpro-size-option--active {
+    border-color: var(--pp-accent, #ff9a1a);
+    background: rgba(255,154,26,0.14);
+    color: var(--pp-accent, #ff9a1a);
+    box-shadow: 0 0 0 1px var(--pp-accent, #ff9a1a);
+}
+.pp-size-chip__name {
+    line-height: 1;
+}
+
+/* 2. Custom checkout bar — PocketPie edition */
+.pztpro-checkout-bar--pocketpie {
+    margin-top: 10px;
+}

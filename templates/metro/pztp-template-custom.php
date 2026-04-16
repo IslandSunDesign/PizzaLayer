@@ -144,22 +144,22 @@ add_action( 'wp_head', function() use (
 	$card_r_esc       = (int) $mt_card_radius;
 	$gap_esc          = (int) $mt_section_gap;
 
-	echo "<style id=\"mt-settings-override\">\n";
-	echo ".mt-root {\n";
-	echo "  --mt-accent:         {$accent_esc};\n";
-	echo "  --mt-accent-hover:   {$accent_hover_esc};\n";
-	echo "  --mt-accent-dim:     {$accent_dim_esc};\n";
-	echo "  --mt-bg:             {$bg_esc};\n";
-	echo "  --mt-surface:        {$card_bg_esc};\n";
-	echo "  --mt-font:           {$font_esc};\n";
-	echo "  --mt-hero-pizza-size:{$hero_esc};\n";
-	echo "  --mt-card-w:         {$card_min_w_esc};\n";
-	echo "  --mt-radius:         {$card_r_esc}px;\n";
-	echo "  font-size:           {$font_size_esc}px;\n";
-	echo "}\n";
+	$_mt_css = "";
+	$_mt_css .= ".mt-root {\n";
+	$_mt_css .= "  --mt-accent:         {$accent_esc};\n";
+	$_mt_css .= "  --mt-accent-hover:   {$accent_hover_esc};\n";
+	$_mt_css .= "  --mt-accent-dim:     {$accent_dim_esc};\n";
+	$_mt_css .= "  --mt-bg:             {$bg_esc};\n";
+	$_mt_css .= "  --mt-surface:        {$card_bg_esc};\n";
+	$_mt_css .= "  --mt-font:           {$font_esc};\n";
+	$_mt_css .= "  --mt-hero-pizza-size:{$hero_esc};\n";
+	$_mt_css .= "  --mt-card-w:         {$card_min_w_esc};\n";
+	$_mt_css .= "  --mt-radius:         {$card_r_esc}px;\n";
+	$_mt_css .= "  font-size:           {$font_size_esc}px;\n";
+	$_mt_css .= "}\n";
 
 	// Section gap
-	echo ".mt-root .mt-section { padding-top:{$gap_esc}px; padding-bottom:{$gap_esc}px; }\n";
+	$_mt_css .= ".mt-root .mt-section { padding-top:{$gap_esc}px; padding-bottom:{$gap_esc}px; }\n";
 
 	// Hide tray if disabled
 	if ( ! $mt_show_tray ) {
@@ -214,9 +214,9 @@ add_action( 'wp_head', function() use (
 	// Card style modifier class
 	$card_style_esc = esc_attr( $mt_card_style );
 	$tab_style_esc  = esc_attr( $mt_tab_style );
-	echo ".mt-root { --mt-card-style: '{$card_style_esc}'; --mt-tab-style: '{$tab_style_esc}'; }\n";
+	$_mt_css .= ".mt-root { --mt-card-style: '{$card_style_esc}'; --mt-tab-style: '{$tab_style_esc}'; }\n";
 
-	echo "</style>\n";
+	wp_add_inline_style( 'pizzalayer-template-metro', $_mt_css );
 }, 20 );
 
 do_action( 'pizzalayer_file_pztp-template-custom_end' );

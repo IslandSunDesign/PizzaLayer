@@ -254,6 +254,7 @@
                         defaultTops.forEach(function (t) {
                             PizzaStack.setLayer(getStage(), 'layer-topping-' + t.slug, t.layerImg, t.zindex || 400, 'nl-topping', t.coverage || 'whole');
                             state.toppings[t.slug] = { slug: t.slug, title: t.slug, layerImg: t.layerImg, zindex: t.zindex || 400, coverage: t.coverage || 'whole' };
+                            $find('.rp-card[data-layer="toppings"][data-slug="' + t.slug + '"]').addClass('rp-card--selected');
                         });
                         $find('#' + instanceId + '-count').text(Object.keys(state.toppings).length);
                     }
@@ -593,6 +594,17 @@
        EXPOSE GLOBAL API (same surface as NightPie for Pro compat)
        ════════════════════════════════════════════════════════════════ */
     window.PizzaLayerRP = RP;
+
+    /* PizzaLayerAPI — standard surface consumed by PizzaLayerPro */
+    window.PizzaLayerAPI = window.PizzaLayerAPI || {
+        getState: function (instanceId) {
+            var inst = RP.getInstance(instanceId);
+            return inst ? inst.getState() : null;
+        },
+        getAllInstances: function () {
+            return Object.keys(RP._instances);
+        }
+    };
 
     /* Legacy global functions — delegate to stack API */
     window.ClearPizza = window.ClearPizza || function () {

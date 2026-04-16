@@ -27,7 +27,7 @@ body .pizzalayer-toppings-wrapper.pizzalayer-toppings-wrapper-static{margin:auto
 .pizzalayer-visualizer .pizzalayer-toppings-wrapper div:first-child{margin-top:100%;}
 .pizzalayer-toppings-wrapper div:not(:first-child){margin-top:-100%;}
 
-/* ── Pizza Layer Stack System ───────────────────────────────────────────────
+/* ── PizzaLayer Stack System ───────────────────────────────────────────────
    Base rules for .np-pizza-stage-wrap / .np-pizza-stage / .np-layer-div.
    Required by the static shortcode ([pizza_static]) and the dynamic builder
    scaffold (build_dynamic). Templates can extend or override these rules.
@@ -132,4 +132,36 @@ body .pizzalayer-toppings-wrapper.pizzalayer-toppings-wrapper-static{margin:auto
   animation: bg-spin 10s linear infinite;
   z-index: 0;
   pointer-events: none;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PZTPRO CHECKOUT BAR — SHARED RESPONSIVE RULES
+   These complement the per-template rules in template.css files.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Qty selector: always inline-flex, shrinks gracefully */
+.pztpro-bar-qty {
+    display:     flex;
+    align-items: center;
+    gap:         4px;
+    flex-shrink: 0;
+}
+
+/* Ensure price text doesn't overflow on narrow screens */
+.pztpro-bar-row__price {
+    white-space: nowrap;
+    overflow:    hidden;
+    text-overflow: ellipsis;
+    max-width:   120px;
+}
+
+/* On phones (<= 480px): qty selector takes a fixed row */
+@media (max-width: 480px) {
+    .pztpro-bar-qty {
+        width: 100%;
+        justify-content: center;
+        order: 2;
+    }
+    .pztpro-bar-row__summary { order: 1; width: 100%; }
+    .pztpro-bar-row__btn     { order: 3; width: 100%; justify-content: center; }
 }

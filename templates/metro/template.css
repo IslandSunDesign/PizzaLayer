@@ -1153,8 +1153,8 @@
 	color: var(--mt-text-mid);
 }
 
-/* ── Responsive: side-by-side collapses on small screens ────── */
-@media (max-width: 780px) {
+/* ── Responsive: side-by-side collapses at tablet and smaller (≤ 768px) */
+@media (max-width: 768px) {
 	.mt-root.mt-layout--side-by-side .mt-sidebar {
 		display: none;
 	}
@@ -1576,3 +1576,183 @@
     font-weight:    var(--pzl-btn-fw,   inherit);
 }
 .cb-tab--hidden-step { display: none !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   METRO — TABLET RESPONSIVE (601px – 900px)
+   ══════════════════════════════════════════════════════════════ */
+@media (min-width: 601px) and (max-width: 900px) {
+    :root {
+        --mt-hero-pizza-size: min(290px, 75vw);
+        --mt-card-w:          150px;
+        --mt-card-img-h:      110px;
+    }
+    .mt-hero  { padding: 36px 20px 24px; }
+    .mt-section { padding: 30px 20px 24px; }
+
+    /* Section nav: tighter padding */
+    .mt-section-nav { padding: 0 12px 0 18px; }
+
+    /* Search box: narrower on tablet */
+    .mt-section__search { width: 180px; }
+
+    /* Coverage modal: 3-column grid on tablet */
+    .mt-cov-modal__btns { grid-template-columns: repeat(4, 1fr); }
+
+    /* Sidebar tabs collapse at 850px for sidebar mode */
+    .mt-root.mt-tabs--sidebar .mt-section-nav {
+        width: 160px;
+    }
+}
+
+/* Side-by-side sidebar: visible and compact between 769px–900px only */
+@media (min-width: 769px) and (max-width: 900px) {
+    .mt-root.mt-layout--side-by-side .mt-sidebar {
+        width: 240px;
+        padding: 20px 14px;
+    }
+    .mt-root .mt-sidebar__pizza-wrap {
+        width:  min(200px, 60%);
+        height: min(200px, 60%);
+    }
+}
+
+@media (max-width: 900px) {
+    /* Ensure tray stays usable */
+    .mt-tray__inner { padding: 0 14px; gap: 8px; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   METRO — CHECKOUT BAR RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 540px) {
+    .pztpro-checkout-bar--metro .pztpro-bar-row {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .pztpro-checkout-bar--metro .pztpro-bar-row__summary {
+        width: 100%;
+        flex: none;
+    }
+    .pztpro-checkout-bar--metro .pztpro-bar-row__btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   METRO — ISSUE FIXES & ENHANCEMENTS
+   ══════════════════════════════════════════════════════════════ */
+
+/* 1. Center the coverage modal in viewport (not bottom-sheet) */
+.mt-cov-modal__panel {
+    bottom:        auto !important;
+    top:           50% !important;
+    left:          50% !important;
+    right:         auto !important;
+    transform:     translate(-50%, -50%) !important;
+    border-radius: var(--mt-radius-lg) !important;
+    max-width:     480px !important;
+    width:         calc(100% - 48px) !important;
+    margin:        0 !important;
+    animation:     mt-modal-pop 0.22s cubic-bezier(0.34,1.56,0.64,1) !important;
+}
+
+@keyframes mt-modal-pop {
+    from { opacity: 0; transform: translate(-50%, calc(-50% + 20px)) scale(0.94); }
+    to   { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+}
+
+/* 2. Dashed ring on pizza canvas when no crust selected */
+.mt-hero__canvas::before {
+    content:        '';
+    position:       absolute;
+    inset:          12%;
+    border-radius:  50%;
+    border:         2px dashed var(--mt-accent, #e63946);
+    opacity:        0.22;
+    pointer-events: none;
+    z-index:        1;
+    transition:     opacity 0.4s ease;
+}
+.mt-hero__canvas.mt-has-crust::before {
+    opacity: 0;
+}
+
+/* 3. Collapsible sections in scroll mode */
+.mt-section__header {
+    cursor: pointer;
+    user-select: none;
+}
+.mt-section__header:hover .mt-section__title {
+    color: var(--mt-accent, #e63946);
+}
+.mt-section__collapse-icon {
+    margin-left: auto;
+    color: var(--mt-text-muted, #8a8a82);
+    font-size: 13px;
+    transition: transform 0.22s cubic-bezier(0.4, 0, 0.2, 1);
+    flex-shrink: 0;
+}
+.mt-section.is-collapsed .mt-section__collapse-icon {
+    transform: rotate(-90deg);
+}
+.mt-section__body {
+    overflow: hidden;
+    transition: max-height 0.35s cubic-bezier(0.4, 0, 0.2, 1),
+                opacity    0.25s ease;
+    max-height: 2000px;
+    opacity:    1;
+}
+.mt-section.is-collapsed .mt-section__body {
+    max-height: 0 !important;
+    opacity:    0;
+}
+
+/* Keep step-mode sections non-collapsible */
+.mt-root.is-step-mode .mt-section__header {
+    cursor: default;
+}
+.mt-root.is-step-mode .mt-section__collapse-icon {
+    display: none;
+}
+.mt-root.is-step-mode .mt-section.is-collapsed .mt-section__body {
+    max-height: 2000px !important;
+    opacity:    1 !important;
+}
+
+/* 4. Custom checkout bar — Metro edition: sharp radius, red top border */
+.pztpro-checkout-bar--metro {
+    margin-top: 0;
+    border-radius: 0 0 var(--mt-radius, 14px) var(--mt-radius, 14px);
+}
+
+/* Metro size chips */
+.mt-size-selector__options,
+.mt-size-selector .mt-size-option {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+.mt-size-option {
+    display: inline-flex;
+    align-items: center;
+    padding: 9px 20px;
+    border: 2px solid var(--mt-border, #e4e4e0);
+    border-radius: var(--mt-radius-sm, 8px);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    background: var(--mt-surface, #fff);
+    color: var(--mt-text, #1a1a1a);
+    transition: all 0.16s;
+}
+.mt-size-option input[type="radio"] { display: none; }
+.mt-size-option:hover,
+.mt-size-option.pztpro-size-option--active {
+    border-color: var(--mt-accent, #e63946);
+    background: var(--mt-accent-dim, rgba(230,57,70,0.08));
+    color: var(--mt-accent, #e63946);
+    box-shadow: 0 0 0 1px var(--mt-accent, #e63946);
+}

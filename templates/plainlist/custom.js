@@ -294,7 +294,48 @@
 			plToggleExclusive: plToggleExclusive,
 			plToggleTopping:   plToggleTopping,
 			plReset:           plReset,
-			getState:          function() { return state; }
+			getState:          function() {
+				/* Return both the raw state (for internal use) and a normalised
+				   layers array so PizzaLayerPro frontend-builder.js can read
+				   selections via the standard getTemplateLayersNow() path. */
+				var layers = [];
+				/* Exclusive layers: crust, sauce, cheese, drizzle, cut */
+				Object.keys( state.exclusive ).forEach( function( layerType ) {
+					var e = state.exclusive[ layerType ];
+					if ( e && e.slug ) {
+						layers.push({
+							id:        e.slug,
+							layerId:   e.slug,
+							title:     e.title  || e.slug,
+							layerName: e.title  || e.slug,
+							type:      layerType,
+							layerType: layerType,
+							fraction:  'Whole',
+							coverage:  'whole'
+						});
+					}
+				});
+				/* Toppings */
+				Object.keys( state.toppings ).forEach( function( slug ) {
+					var t = state.toppings[ slug ];
+					layers.push({
+						id:        slug,
+						layerId:   slug,
+						title:     t.title  || slug,
+						layerName: t.title  || slug,
+						type:      'topping',
+						layerType: 'topping',
+						fraction:  t.coverage || 'whole',
+						coverage:  t.coverage || 'whole'
+					});
+				});
+				return {
+					exclusive:    state.exclusive,
+					toppings:     state.toppings,
+					currentStep:  state.currentStep,
+					layers:       layers
+				};
+			}
 		};
 
 		instances[ instanceId ] = api;
@@ -304,5 +345,16 @@
 	// ── Expose namespace ──────────────────────────────────────────────
 	window.PL = window.PL || {};
 	window.PL.createInstance = createInstance;
+
+	/* PizzaLayerAPI — standard surface consumed by PizzaLayerPro */
+	window.PizzaLayerAPI = window.PizzaLayerAPI || {
+		getState: function ( instanceId ) {
+			var inst = instances[ instanceId ];
+			return inst ? inst.getState() : null;
+		},
+		getAllInstances: function () {
+			return Object.keys( instances );
+		}
+	};
 
 }( window, document ) );

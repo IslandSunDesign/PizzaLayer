@@ -62,7 +62,7 @@ function pzt_plainlist_inject_css(): void {
 	--pl-item-gap:      " . $item_gap                            . "px;
 }
 ";
-	echo '<style id="pl-template-vars">' . $css . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput
+	wp_add_inline_style( 'pizzalayer-template-plainlist', $css ); // phpcs:ignore — dynamic CSS vars
 }
 endif;
 

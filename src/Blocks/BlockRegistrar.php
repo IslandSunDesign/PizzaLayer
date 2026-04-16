@@ -38,7 +38,7 @@ class BlockRegistrar {
 			[ 'render_callback' => [ $this, 'render_static' ] ]
 		);
 
-		// Pizza Layer Image — single layer <img>
+		// PizzaLayer Image — single layer <img>
 		register_block_type(
 			$blocks_dir . 'pizza-layer',
 			[ 'render_callback' => [ $this, 'render_layer' ] ]

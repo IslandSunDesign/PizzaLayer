@@ -49,10 +49,7 @@ class AdminBar {
 		// ── Root ─────────────────────────────────────────────────────────
 		$bar->add_menu( [
 			'id'    => 'pizzalayer',
-			'title' => '<span class="ab-icon pzlab-root-icon" aria-hidden="true">'
-			         . '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20" width="18" height="18" fill="currentColor" style="display:inline-block;vertical-align:middle;position:relative;top:-1px">'
-			         . '<path d="M10 2a8 8 0 1 0 0 16A8 8 0 0 0 10 2zm0 1.5a6.5 6.5 0 0 1 6.18 4.52L10 10 3.82 8.02A6.5 6.5 0 0 1 10 3.5zM3.5 10c0-.17.01-.34.03-.5L10 11.5l6.47-2c.02.16.03.33.03.5a6.5 6.5 0 0 1-13 0z"/>'
-			         . '</svg></span>'
+			'title' => '<span class="ab-icon pzlab-root-icon" aria-hidden="true">🍕</span>'
 			         . '<span class="ab-label">PizzaLayer</span>',
 			'href'  => $dashboard,
 			'meta'  => [ 'title' => __( 'PizzaLayer Dashboard', 'pizzalayer' ) ],
@@ -62,7 +59,7 @@ class AdminBar {
 		$bar->add_menu( [
 			'parent' => 'pizzalayer',
 			'id'     => 'pizzalayer-dashboard',
-			'title'  => '<span class="dashicons dashicons-dashboard pzlab-icon"></span> ' . esc_html__( 'Dashboard', 'pizzalayer' ),
+			'title'  => esc_html__( 'Dashboard', 'pizzalayer' ),
 			'href'   => $dashboard,
 			'meta'   => [ 'title' => __( 'PizzaLayer Dashboard', 'pizzalayer' ) ],
 		] );
@@ -86,8 +83,7 @@ class AdminBar {
 			$bar->add_menu( [
 				'parent' => 'pizzalayer',
 				'id'     => 'pizzalayer-cpt-' . $slug,
-				'title'  => '<span class="dashicons ' . esc_attr( $meta['icon'] ) . ' pzlab-icon"></span>'
-				          . esc_html( $meta['label'] ),
+				'title'  => esc_html( $meta['label'] ),
 				'href'   => $list_url,
 				'meta'   => [ 'class' => 'pzlab-cpt-row', 'title' => sprintf( __( 'Manage %s', 'pizzalayer' ), $meta['label'] ) ],
 			] );
@@ -96,7 +92,7 @@ class AdminBar {
 			$bar->add_menu( [
 				'parent' => 'pizzalayer-cpt-' . $slug,
 				'id'     => 'pizzalayer-cpt-' . $slug . '-all',
-				'title'  => '<span class="dashicons dashicons-list-view pzlab-icon"></span> ' . sprintf( esc_html__( 'All %s', 'pizzalayer' ), esc_html( $meta['label'] ) ),
+				'title'  => sprintf( esc_html__( 'All %s', 'pizzalayer' ), esc_html( $meta['label'] ) ),
 				'href'   => $list_url,
 				'meta'   => [ 'title' => sprintf( __( 'View all %s', 'pizzalayer' ), $meta['label'] ) ],
 			] );
@@ -105,7 +101,7 @@ class AdminBar {
 			$bar->add_menu( [
 				'parent' => 'pizzalayer-cpt-' . $slug,
 				'id'     => 'pizzalayer-cpt-' . $slug . '-new',
-				'title'  => '<span class="dashicons dashicons-plus-alt2 pzlab-icon"></span> ' . sprintf( esc_html__( 'Add New %s', 'pizzalayer' ), esc_html( $meta['singular'] ) ),
+				'title'  => sprintf( esc_html__( 'Add New %s', 'pizzalayer' ), esc_html( $meta['singular'] ) ),
 				'href'   => $new_url,
 				'meta'   => [ 'title' => sprintf( __( 'Add a new %s', 'pizzalayer' ), $meta['singular'] ) ],
 			] );
@@ -163,7 +159,7 @@ class AdminBar {
 			$bar->add_menu( [
 				'parent' => 'pizzalayer',
 				'id'     => $tool['id'],
-				'title'  => '<span class="dashicons ' . esc_attr( $tool['icon'] ) . ' pzlab-icon"></span> ' . esc_html( $tool['label'] ),
+				'title'  => esc_html( $tool['label'] ),
 				'href'   => $tool['href'],
 				'meta'   => [ 'title' => $tool['tip'] ],
 			] );
@@ -225,7 +221,7 @@ class AdminBar {
 			$bar->add_menu( [
 				'parent' => 'pizzalayer',
 				'id'     => 'pizzalayer-view-demo',
-				'title'  => '<span class="dashicons dashicons-visibility pzlab-icon"></span> ' . esc_html__( 'View Demo', 'pizzalayer' ),
+				'title'  => esc_html__( 'View Demo', 'pizzalayer' ),
 				'href'   => home_url( '/?pizzalayer_demo=1' ),
 				'meta'   => [ 'target' => '_blank', 'title' => __( 'Open front-end demo in new tab', 'pizzalayer' ) ],
 			] );
@@ -251,26 +247,13 @@ class AdminBar {
 		<style id="pzl-admin-bar-styles">
 		/* ── PizzaLayer Admin Bar ───────────────────────────────────── */
 
-		/* Root icon */
+		/* Root emoji icon */
 		#wpadminbar #wp-admin-bar-pizzalayer > .ab-item .pzlab-root-icon {
-			color: #ff6b35 !important;
-			display: inline-flex !important;
-			align-items: center !important;
-			margin-right: 4px !important;
-		}
-
-		/* Dropdown icons */
-		#wpadminbar .pzlab-icon {
-			font-family: dashicons !important;
-			font-size: 16px !important;
-			width: 16px !important;
-			height: 16px !important;
-			line-height: 1 !important;
 			display: inline-block !important;
+			font-size: 16px !important;
+			line-height: 1 !important;
+			margin-right: 4px !important;
 			vertical-align: middle !important;
-			margin-right: 5px !important;
-			opacity: .85 !important;
-			flex-shrink: 0;
 			position: relative;
 			top: -1px;
 		}
@@ -292,8 +275,14 @@ class AdminBar {
 			text-transform: uppercase !important;
 			color: rgba(240,246,252,.28) !important;
 			padding: 8px 14px 3px !important;
-			border-top: 1px solid rgba(240,246,252,.07) !important;
-			margin-top: 2px !important;
+			border-top: 1px solid rgba(240,246,252,.14) !important;
+			margin-top: 4px !important;
+		}
+
+		/* Spacer lines between submenu items at section boundaries */
+		#wpadminbar #wp-admin-bar-pizzalayer-dashboard > .ab-item {
+			border-bottom: 1px solid rgba(240,246,252,.07) !important;
+			margin-bottom: 2px !important;
 		}
 
 		/* CPT rows — flex so the item label and +New sub-links align */

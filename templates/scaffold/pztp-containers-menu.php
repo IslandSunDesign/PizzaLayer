@@ -54,10 +54,49 @@ if ( ! in_array( $pizza_shape, $valid_shapes, true ) ) { $pizza_shape = 'round';
 $pizza_aspect  = sanitize_text_field( $atts['pizza_aspect']  ?? get_option( 'pizzalayer_setting_pizza_aspect',  '1 / 1' ) );
 $pizza_radius  = sanitize_text_field( $atts['pizza_radius']  ?? get_option( 'pizzalayer_setting_pizza_radius',  '8px'   ) );
 
+
+// ── PizzaLayerPro: inline size selector ──────────────────────────────────────
+if ( ! function_exists( 'pzt_get_pro_sizes' ) ) :
+function pzt_get_pro_sizes(): array {
+	if ( ! function_exists( 'pztpro_get_setting' ) || ! class_exists( 'PizzaLayerPro\\Pro\\PriceGrid\\Grid' ) ) { return []; }
+	$product_id = ( function_exists( 'get_queried_object_id' ) ? (int) get_queried_object_id() : 0 );
+	if ( ! $product_id ) { global $post; if ( $post instanceof \WP_Post ) { $product_id = $post->ID; } }
+	$grid = new \PizzaLayerPro\Pro\PriceGrid\Grid(); return $grid->get_sizes( $product_id );
+}
+endif;
+if ( ! function_exists( 'pzt_render_inline_size_selector' ) ) :
+function pzt_render_inline_size_selector( array $sizes, string $instance_id, string $css_prefix = 'cb' ): void {
+	if ( empty( $sizes ) ) { return; }
+	// Extract numeric suffix from instance_id (handles pztpro-1, pizzabuilder-1, pztpro-1-2, etc)
+	preg_match( '/-(\d+)$/', $instance_id, $_m_suf );
+	$radio_name_raw = ! empty( $_m_suf[1] ) ? $_m_suf[1] : preg_replace( '/[^a-zA-Z0-9_]/', '_', $instance_id );
+	$radio_name = 'pztpro_size_' . $radio_name_raw;
+	$heading = function_exists( 'pztpro_get_setting' ) ? (string) pztpro_get_setting( 'size_selector_label', '' ) : '';
+	if ( '' === $heading ) { $heading = __( 'Choose a Size', 'pizzalayer' ); }
+	?>
+	<div class="<?php echo esc_attr( $css_prefix ); ?>-size-selector pztpro-inline-size-selector" id="<?php echo esc_attr( $instance_id ); ?>-size-selector" role="group" aria-label="<?php echo esc_attr( $heading ); ?>">
+		<p class="<?php echo esc_attr( $css_prefix ); ?>-size-selector__heading"><?php echo esc_html( $heading ); ?></p>
+		<div class="<?php echo esc_attr( $css_prefix ); ?>-size-selector__options">
+			<?php foreach ( $sizes as $i => $size ) :
+				$inp_id = esc_attr( $instance_id ) . '-sz-' . sanitize_html_class( strtolower( $size ) ); ?>
+			<label class="<?php echo esc_attr( $css_prefix ); ?>-size-option pztpro-size-option<?php echo 0 === $i ? ' pztpro-size-option--active' : ''; ?>" for="<?php echo esc_attr( $inp_id ); ?>">
+				<input type="radio" id="<?php echo esc_attr( $inp_id ); ?>" name="<?php echo esc_attr( $radio_name ); ?>" value="<?php echo esc_attr( $size ); ?>" class="pztpro-size-radio" <?php checked( 0, $i ); ?> />
+				<span class="<?php echo esc_attr( $css_prefix ); ?>-size-option__name"><?php echo esc_html( $size ); ?></span>
+			</label>
+			<?php endforeach; ?>
+		</div>
+	</div>
+	<?php
+}
+endif;
+
+$_pro_sizes = pzt_get_pro_sizes();
+$_has_pro   = ! empty( $_pro_sizes );
+
 // ── Visible tabs ──────────────────────────────────────────────────────────────
 $hide_tabs_raw = $atts['hide_tabs'] ?? '';
 $show_tabs_raw = $atts['show_tabs'] ?? '';
-$all_tabs      = [ 'crust', 'sauce', 'cheese', 'toppings', 'drizzle', 'slicing', 'yourpizza' ];
+$all_tabs      = array_merge( $_has_pro ? [ 'size' ] : [], [ 'crust', 'sauce', 'cheese', 'toppings', 'drizzle', 'slicing', 'yourpizza' ] );
 $all_tabs      = (array) apply_filters( 'pizzalayer_tab_order', $all_tabs, $instance_id );
 
 if ( $show_tabs_raw ) {
@@ -280,28 +319,36 @@ do_action( 'pizzalayer_before_builder', $instance_id, $template_slug );
   style="<?php echo esc_attr( $sc_width_css ); ?>"
 >
 
-<!-- ── Inline CSS variables ─────────────────────────────────────────────── -->
-<style>
-#<?php echo esc_attr( $instance_id ); ?> {
-  --sc-accent:      <?php echo esc_attr( $sc_accent_color ); ?>;
-  --sc-bg:          <?php echo esc_attr( $sc_bg_color ); ?>;
-  --sc-text:        <?php echo esc_attr( $sc_text_color ); ?>;
-  --sc-border:      <?php echo esc_attr( $sc_border_color ); ?>;
-  --sc-font:        <?php echo esc_attr( $sc_font_stack ); ?>;
-  --sc-font-size:   <?php echo esc_attr( $sc_base_font_size ); ?>;
-  --sc-card-radius: <?php echo esc_attr( $sc_card_radius ); ?>;
-  --sc-thumb-size:  <?php echo esc_attr( $sc_thumb_size ); ?>;
-  --sc-grid-cols:   <?php echo esc_attr( $sc_grid_cols_css ); ?>;
-  --sc-anim-speed:  <?php echo esc_attr( $sc_anim_speed ); ?>;
+<?php
+// ── Instance CSS custom properties via wp_add_inline_style ─────────────────
+$_sc_instance_css  = '#' . esc_attr( $instance_id ) . ' {' . "\n";
+$_sc_instance_css .= '  --sc-accent:      ' . esc_attr( $sc_accent_color )   . ';' . "\n";
+$_sc_instance_css .= '  --sc-bg:          ' . esc_attr( $sc_bg_color )        . ';' . "\n";
+$_sc_instance_css .= '  --sc-text:        ' . esc_attr( $sc_text_color )      . ';' . "\n";
+$_sc_instance_css .= '  --sc-border:      ' . esc_attr( $sc_border_color )    . ';' . "\n";
+$_sc_instance_css .= '  --sc-font:        ' . esc_attr( $sc_font_stack )      . ';' . "\n";
+$_sc_instance_css .= '  --sc-font-size:   ' . esc_attr( $sc_base_font_size )  . ';' . "\n";
+$_sc_instance_css .= '  --sc-card-radius: ' . esc_attr( $sc_card_radius )     . ';' . "\n";
+$_sc_instance_css .= '  --sc-thumb-size:  ' . esc_attr( $sc_thumb_size )      . ';' . "\n";
+$_sc_instance_css .= '  --sc-grid-cols:   ' . esc_attr( $sc_grid_cols_css )   . ';' . "\n";
+$_sc_instance_css .= '  --sc-anim-speed:  ' . esc_attr( $sc_anim_speed )      . ';' . "\n";
+$_sc_instance_css .= '}' . "\n";
+if ( 'yes' !== $sc_show_labels ) {
+	$_sc_instance_css .= '#' . esc_attr( $instance_id ) . ' .sc-card__label { display:none; }' . "\n";
 }
-<?php if ( 'yes' !== $sc_show_labels ) : ?>
-#<?php echo esc_attr( $instance_id ); ?> .sc-card__label { display:none; }
-<?php endif; ?>
-<?php if ( $sc_custom_css ) : ?>
-/* Custom CSS — Scaffold template */
-<?php echo wp_strip_all_tags( $sc_custom_css ); // phpcs:ignore — template custom CSS ?>
-<?php endif; ?>
-</style>
+if ( $sc_custom_css ) {
+	$_sc_instance_css .= '/* Custom CSS — Scaffold template */' . "\n";
+	$_sc_instance_css .= wp_strip_all_tags( $sc_custom_css ) . "\n"; // phpcs:ignore — user-entered CSS
+}
+// Attach to the template stylesheet handle; falls back to a noop if not yet enqueued
+if ( wp_style_is( 'pizzalayer-template-scaffold', 'enqueued' ) ) {
+	wp_add_inline_style( 'pizzalayer-template-scaffold', $_sc_instance_css );
+} else {
+	// Template CSS not enqueued yet (e.g. REST/block-preview context) — emit a scoped style
+	echo '<style id="pzl-sc-vars-' . esc_attr( $instance_id ) . '">' . $sc_instance_css_safe = esc_html( $_sc_instance_css ) . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput
+}
+unset( $_sc_instance_css );
+?>
 
 <?php do_action( 'pizzalayer_scaffold_before_stage', $instance_id ); ?>
 
@@ -317,14 +364,31 @@ do_action( 'pizzalayer_before_builder', $instance_id, $template_slug );
 
 <!-- ── Category panels ──────────────────────────────────────────────────── -->
 <div class="sc-panels" data-instance="<?php echo esc_attr( $instance_id ); ?>">
-<?php foreach ( $visible_tabs as $tab_slug ) :
+<?php if ( $_has_pro ) : ?>
+<?php do_action( 'pizzalayer_before_tab_size', $instance_id ); ?>
+<div class="sc-panel sc-panel--size sc-panel--active" data-tab="size" id="<?php echo esc_attr( $instance_id ); ?>-panel-size" role="tabpanel">
+	<div class="sc-panel__header">
+		<h2 class="sc-panel__title"><?php esc_html_e( 'Choose Your Size', 'pizzalayer' ); ?></h2>
+		<p class="sc-panel__hint"><?php esc_html_e( 'Select the size of your pizza.', 'pizzalayer' ); ?></p>
+	</div>
+	<?php pzt_render_inline_size_selector( $_pro_sizes, $instance_id, 'sc' ); ?>
+</div>
+<?php do_action( 'pizzalayer_after_tab_size', $instance_id ); ?>
+<?php endif; ?>
+
+<?php
+$_sc_first_panel = true;
+foreach ( $visible_tabs as $tab_slug ) :
     if ( 'yourpizza' === $tab_slug ) { continue; } // rendered separately below
+    if ( 'size' === $tab_slug ) { continue; } // rendered separately above as sc-panel--size
     $panel_html = '';
     $empty_msg  = __( 'No items found.', 'pizzalayer' );
     if ( isset( $_panel_map[ $tab_slug ] ) ) {
         [ $panel_html, $empty_msg ] = $_panel_map[ $tab_slug ];
     }
-    pzt_scaffold_partial( 'category-panel', compact( 'instance_id', 'sc_var', 'tab_slug', 'panel_html', 'empty_msg', 'atts' ), $atts );
+    $sc_is_first = $_sc_first_panel;
+    $_sc_first_panel = false;
+    pzt_scaffold_partial( 'category-panel', compact( 'instance_id', 'sc_var', 'tab_slug', 'panel_html', 'empty_msg', 'atts', 'sc_is_first' ), $atts );
 endforeach; ?>
 
 <!-- ── Summary panel ────────────────────────────────────────────────────── -->
@@ -336,14 +400,14 @@ endif; ?>
 
 <?php do_action( 'pizzalayer_scaffold_after_panels', $instance_id ); ?>
 
-<?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
-
 <?php
 // Pass per-instance config to the enqueued custom.js via data-sc-cfg attribute.
 // wp_add_inline_script can't reference DOM nodes, so we embed JSON on the root el.
 // custom.js reads rootEl.getAttribute('data-sc-cfg') at runtime.
 // (data attributes containing JSON are WP.org compliant — no executable script tag.)
 ?>
+
+	<?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
 
 </div><!-- /.sc-root -->
 

@@ -54,11 +54,11 @@ class TemplateLoader {
 	 * Get the active template slug.
 	 */
 	public function get_active_slug(): string {
-		$slug      = (string) get_option( 'pizzalayer_setting_global_template', 'colorbox' );
+		$slug      = (string) get_option( 'pizzalayer_setting_global_template', 'nightpie' );
 		$templates = $this->get_available_templates();
 		// Fall back to the first available template rather than hard-coding a name
 		if ( ! isset( $templates[ $slug ] ) ) {
-			$slug = array_key_first( $templates ) ?? 'colorbox';
+			$slug = array_key_first( $templates ) ?? 'nightpie';
 		}
 		return $slug;
 	}

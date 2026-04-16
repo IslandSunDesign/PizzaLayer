@@ -1031,47 +1031,6 @@ class TemplateChoice {
 	.ptc-settings-save-btn { display: inline-flex !important; align-items: center; gap: 5px; }
 	.ptc-settings-save-btn .dashicons { font-size: 14px !important; width: 14px !important; height: 14px !important; }
 	</style>
-	<script>
-	document.addEventListener('DOMContentLoaded', function() {
-		// ── Chip preset click handler ──────────────────────────────
-		document.querySelectorAll('.ptc-scheme-chip').forEach(function(chip) {
-			chip.addEventListener('click', function() {
-				var data;
-				try { data = JSON.parse(chip.getAttribute('data-scheme')); } catch(e) { return; }
-				if (Array.isArray(data)) {
-					// Legacy metro positional array
-					var legacyKeys = ['metro_setting_accent_color','metro_setting_background_color','metro_setting_card_bg_color'];
-					data.forEach(function(hex, i) {
-						var inp = document.getElementById('ptc-color-' + legacyKeys[i]);
-						if (inp) { inp.value = hex; inp.dispatchEvent(new Event('change')); }
-					});
-				} else if (data && typeof data === 'object') {
-					Object.keys(data).forEach(function(optKey) {
-						var val = data[optKey];
-						var colorInp = document.getElementById('ptc-color-' + optKey);
-						if (colorInp) {
-							colorInp.value = val;
-							colorInp.dispatchEvent(new Event('change'));
-						} else {
-							var anyInp = document.querySelector('[name="' + optKey + '"]');
-							if (anyInp) { anyInp.value = val; anyInp.dispatchEvent(new Event('change')); }
-						}
-					});
-				}
-				document.querySelectorAll('.ptc-scheme-chip').forEach(function(c) { c.classList.remove('ptc-scheme-chip--active'); });
-				chip.classList.add('ptc-scheme-chip--active');
-			});
-		});
-		// ── Color revert buttons ───────────────────────────────────
-		document.querySelectorAll('.ptc-color-revert').forEach(function(btn) {
-			btn.addEventListener('click', function() {
-				var def = btn.getAttribute('data-default');
-				var tid = btn.getAttribute('data-target');
-				var inp = document.getElementById(tid);
-				if (inp && def) { inp.value = def; inp.dispatchEvent(new Event('change')); }
-			});
-		});
-	});
-	</script>
+	<?php // Chip/revert JS is in assets/js/admin/template-choice.js (enqueued via AssetManager) ?>
 	<?php }
 }

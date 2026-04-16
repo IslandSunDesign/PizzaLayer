@@ -293,3 +293,106 @@
 .sc-summary__reset-btn:hover {
   background: var(--sc-border, #eee);
 }
+
+/* ── Responsive — single-column at tablet and smaller (≤ 768px) ─────── */
+@media (max-width: 768px) {
+  /* Card grid: single column on tablet/mobile */
+  .sc-panel__grid {
+    grid-template-columns: 1fr;
+  }
+}
+
+/* ── Responsive — phone (≤ 600px) ───────────────────────────────────── */
+@media (max-width: 600px) {
+  .sc-root { font-size: 14px; }
+
+  /* Tab bar scrolls horizontally */
+  .sc-tab-bar {
+    flex-wrap: nowrap;
+    overflow-x: auto;
+    scrollbar-width: none;
+    -webkit-overflow-scrolling: touch;
+  }
+  .sc-tab-bar::-webkit-scrollbar { display: none; }
+  .sc-tab-btn { flex-shrink: 0; white-space: nowrap; }
+
+  /* Summary panel full-width */
+  .sc-panel--summary { padding: 12px; }
+  .sc-summary__actions { flex-direction: column; }
+  .sc-summary__reset-btn { width: 100%; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCAFFOLD — TABLET RESPONSIVE (601px – 900px)
+   ══════════════════════════════════════════════════════════════ */
+@media (min-width: 601px) and (max-width: 900px) {
+    /* Tab bar stays scrollable but give more padding */
+    .sc-tab-bar { padding: 4px 2px; gap: 4px; }
+    .sc-tab-btn  { padding: 6px 14px; }
+
+    /* Summary actions horizontal on tablet */
+    .sc-summary__actions { flex-direction: row; }
+    .sc-summary__reset-btn { width: auto; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   SCAFFOLD — CHECKOUT BAR RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 540px) {
+    .pztpro-checkout-bar--scaffold .pztpro-bar-row {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .pztpro-checkout-bar--scaffold .pztpro-bar-row__summary {
+        width: 100%;
+        flex: none;
+    }
+    .pztpro-checkout-bar--scaffold .pztpro-bar-row__btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   SCAFFOLD — ISSUE FIXES & ENHANCEMENTS
+   ══════════════════════════════════════════════════════════════ */
+
+/* 1. Show first section at load — ensure sc-panel--active is visible
+      even before JS fires, and force first non-size panel visible too */
+.sc-panel.sc-panel--active,
+.sc-panel--first-visible {
+    display: block !important;
+}
+.sc-panel[hidden]:not(.sc-panel--first-visible) {
+    display: none !important;
+}
+
+/* 2. Minimal checkout bar — matches Scaffold's token-driven skeleton */
+.pztpro-checkout-bar--scaffold {
+    background: var(--sc-bg, transparent);
+    border: 1px solid var(--sc-border, #cccccc);
+    border-radius: var(--sc-card-radius, 6px);
+    padding: 12px 14px;
+    margin-top: 10px;
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+.pztpro-checkout-bar--scaffold .pztpro-bar-row {
+    width: 100%;
+}
+.pztpro-checkout-bar--scaffold .pztpro-bar-row__price {
+    font-size: 18px;
+    font-weight: 700;
+    color: var(--sc-accent, #333);
+}
+.pztpro-checkout-bar--scaffold .pztpro-bar-row__btn {
+    font-size: 13px;
+    padding: 0 16px;
+    height: 38px;
+    border-radius: var(--sc-card-radius, 4px);
+    background: var(--sc-accent, #333);
+    color: #fff;
+}

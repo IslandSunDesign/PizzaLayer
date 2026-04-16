@@ -118,6 +118,29 @@
     }
 }
 
+/* ── Mobile: force full-width columns ─────────────────────── */
+@media (max-width: 859px) {
+    .rp-pizza-col,
+    .rp-tabs-col {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    .rp-pizza-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .rp-pizza-sticky {
+        width: 100%;
+        align-items: center;
+    }
+    .rp-pizza-sticky__canvas {
+        max-width: 260px;
+        margin: 0 auto;
+    }
+}
+
 /* ── LEFT: Pizza preview column ─────────────────────────────── */
 .rp-pizza-col {
     display:         flex;
@@ -1018,18 +1041,38 @@
 }
 
 @media (max-width: 575px) {
-    .rp-stepnav { padding: 0; }
-    .rp-step    { padding: 10px 8px 8px; min-width: 46px; }
-    .rp-step__label { display: none; }
-    .rp-panel   { padding: 16px 14px; }
+    .rp-root { font-size: 14px; }
 
+    /* Pizza column — full width, centred */
+    .rp-pizza-col { width: 100%; padding: 12px 12px 8px; }
+    .rp-pizza-sticky {
+        flex-direction: column;
+        align-items: center;
+        gap: 10px;
+    }
+    .rp-pizza-canvas { max-width: 210px; margin: 0 auto; }
+    .rp-preview-badge { width: 140px; height: 56px; }
+    .rp-preview-badge__main { font-size: 14px; }
+
+    /* Steps nav */
+    .rp-stepnav { padding: 0; overflow-x: auto; flex-wrap: nowrap; }
+    .rp-step    { padding: 10px 8px 8px; min-width: 46px; flex-shrink: 0; }
+    .rp-step__label { display: none; }
+    .rp-panel   { padding: 14px 10px; }
+
+    /* Cards — two columns */
     .rp-cards-grid--exclusive,
     .rp-cards-grid--toppings { grid-template-columns: 1fr 1fr; }
 
     .rp-yourpizza__layer-name { display: none; }
-    .rp-pizza-canvas { max-width: 190px; }
-    .rp-preview-badge { width: 140px; height: 56px; }
-    .rp-preview-badge__main { font-size: 14px; }
+
+    /* Checkout bar stacks vertically */
+    .rp-checkout-bar__inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .rp-checkout-bar__btn { width: 100%; text-align: center; }
 }
 
 /* ── PizzaLayer Settings — CSS var bridge ──────────────────── */
@@ -1047,4 +1090,111 @@
 }
 .rp-card--selected {
     border-color: var(--pzl-selected, inherit) !important;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RUSTIC — TABLET RESPONSIVE (576px – 859px)
+   ══════════════════════════════════════════════════════════════ */
+@media (min-width: 576px) and (max-width: 859px) {
+    /* Preview column: horizontal row on tablet */
+    .rp-pizza-col { padding: 14px 20px 12px; }
+    .rp-pizza-sticky {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: nowrap;
+    }
+    .rp-pizza-canvas { max-width: 200px; flex-shrink: 0; }
+    .rp-preview-badge { width: 150px; height: 60px; }
+    .rp-pizza-footer { max-width: 200px; }
+
+    /* Three-column card grid on tablet */
+    .rp-cards-grid--exclusive { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    .rp-cards-grid--toppings  { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+
+    /* Step nav: keep labels visible on tablet */
+    .rp-step { padding: 10px 8px 8px; min-width: 50px; }
+
+    /* Panel padding */
+    .rp-panel { padding: 18px 16px; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   RUSTIC — CHECKOUT BAR RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 540px) {
+    .pztpro-checkout-bar--rustic .pztpro-bar-row {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .pztpro-checkout-bar--rustic .pztpro-bar-row__summary {
+        width: 100%;
+        flex: none;
+    }
+    .pztpro-checkout-bar--rustic .pztpro-bar-row__btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   FORNAIA/RUSTIC — ISSUE FIXES & ENHANCEMENTS
+   ══════════════════════════════════════════════════════════════ */
+
+/* 1. Size selection — styled pill chips matching template aesthetics */
+.rp-size-selector__options,
+.rp-size-selector .rp-size-option,
+.rp-panel .pztpro-inline-size-selector .rp-size-option {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+    margin-top: 10px;
+}
+.rp-size-option,
+.rp-panel .pztpro-inline-size-selector label.rp-size-option {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 22px;
+    border: 2px solid var(--rp-border, rgba(101,70,30,0.22));
+    border-radius: var(--rp-radius-sm, 4px);
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    font-family: var(--rp-font-body, Georgia, serif);
+    background: var(--rp-bg-dark, #ede0cc);
+    color: var(--rp-text, #2c1a05);
+    transition: all 0.16s;
+    letter-spacing: 0.04em;
+    text-transform: uppercase;
+}
+.rp-size-option input[type="radio"],
+.rp-panel .pztpro-inline-size-selector input[type="radio"] {
+    display: none !important;
+}
+.rp-size-option:hover,
+.rp-size-option.pztpro-size-option--active,
+.rp-panel .pztpro-inline-size-selector label.rp-size-option:hover,
+.rp-panel .pztpro-inline-size-selector .pztpro-size-option--active {
+    border-color: var(--rp-accent, #b34a00);
+    background: var(--rp-accent-dim, rgba(179,74,0,0.12));
+    color: var(--rp-accent, #b34a00);
+    box-shadow: 0 0 0 1px var(--rp-accent, #b34a00);
+}
+
+/* Target the pztpro-inline-size-selector wrapper with rp prefix */
+.rp-panel .pztpro-inline-size-selector {
+    margin-top: 0;
+}
+.rp-panel .pztpro-inline-size-selector .rp-size-selector__options,
+.rp-panel .pztpro-inline-size-selector .rp-size-selector__options {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
+}
+
+/* 2. Custom checkout bar — Fornaia/Rustic edition */
+.pztpro-checkout-bar--rustic {
+    margin-top: 14px;
 }

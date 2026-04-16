@@ -358,6 +358,7 @@
                 instance._initToppingSearch();
                 instance._initModeToggle();
                 instance._initCoverageModal();
+                instance._initCollapsibleSections();
             },
 
             /* ── Locate / create the pizza stage ── */
@@ -435,6 +436,7 @@
                                 slug: t.slug, title: t.slug, layerImg: t.layerImg,
                                 zindex: t.zindex || 400, coverage: t.coverage || 'whole', thumb: ''
                             };
+                            _markCard($find('.mt-card[data-layer="toppings"][data-slug="' + t.slug + '"]'), true);
                         });
                     }
                 } catch (e) { /* malformed JSON — skip */ }
@@ -459,6 +461,9 @@
 
                 PizzaStack.setLayer($stage, 'layer-' + layerType, layerImg, zMap[layerType] || 200, 'mt-' + layerType);
 
+                // Toggle dashed ring: hide when crust is selected
+                if (layerType === 'crust') { $heroCanvas.addClass('mt-has-crust'); }
+
                 _markCard($card, true);
                 _renderChips();
                 _syncMiniPizzas();
@@ -472,6 +477,9 @@
 
                 state[stateKey] = null;
                 PizzaStack.removeLayer($stage, 'layer-' + layerType);
+
+                // Toggle dashed ring: show when crust is removed
+                if (layerType === 'crust') { $heroCanvas.removeClass('mt-has-crust'); }
 
                 _markCard($card, false);
                 _renderChips();
@@ -685,6 +693,36 @@
                 });
             },
 
+            /* ── Private: collapsible sections (scroll mode only) ── */
+            _initCollapsibleSections: function () {
+                // Wrap each section's non-header content in .mt-section__body
+                $find('.mt-section').each(function () {
+                    var $sec = $(this);
+                    // Add collapse icon to header if not already present
+                    var $hdr = $sec.find('.mt-section__header').first();
+                    if ($hdr.length && !$hdr.find('.mt-section__collapse-icon').length) {
+                        $hdr.append('<span class="mt-section__collapse-icon" aria-hidden="true"><i class="fa fa-chevron-down"></i></span>');
+                    }
+                    // Wrap non-header children in .mt-section__body if not already done
+                    if (!$sec.find('.mt-section__body').length) {
+                        var $nonHeader = $sec.children().not('.mt-section__header');
+                        if ($nonHeader.length) {
+                            $nonHeader.wrapAll('<div class="mt-section__body"></div>');
+                        }
+                    }
+                });
+
+                // Bind click to toggle collapse (scroll mode only)
+                $root.on('click.mt-collapse', '.mt-section__header', function (e) {
+                    // Ignore clicks on inner buttons/links
+                    if ($(e.target).closest('button, a, input, select').length) { return; }
+                    // Don't collapse in step mode
+                    if ($root.hasClass('is-step-mode')) { return; }
+                    var $sec = $(this).closest('.mt-section');
+                    $sec.toggleClass('is-collapsed');
+                });
+            },
+
             /* ── Private: coverage modal ── */
             _initCoverageModal: function () {
                 if (!$covModal.length) { return; }
@@ -766,6 +804,17 @@
     });
 
     window.PizzaLayerMT = MT;
+
+    /* PizzaLayerAPI — standard surface consumed by PizzaLayerPro */
+    window.PizzaLayerAPI = window.PizzaLayerAPI || {
+        getState: function (instanceId) {
+            var inst = MT.getInstance(instanceId);
+            return inst ? inst.getState() : null;
+        },
+        getAllInstances: function () {
+            return Object.keys(MT._instances);
+        }
+    };
 
     /* ════════════════════════════════════════════════════════
        LEGACY GLOBALS (D62 compat — same as NightPie)

@@ -1,5 +1,5 @@
 /**
- * PizzaLayer — Pizza Layer Image Block
+ * PizzaLayer — PizzaLayer Image Block
  *
  * Pure vanilla JS / wp.element / wp.components — no JSX, no NPM required.
  * Renders server-side via BlockRegistrar::render_layer().
@@ -87,12 +87,12 @@
                     block:      'pizzalayer/pizza-layer',
                     attributes: attributes,
                     EmptyResponsePlaceholder: function () {
-                        return el( Placeholder, { icon: 'format-image', label: __( 'Pizza Layer', 'pizzalayer' ) },
+                        return el( Placeholder, { icon: 'format-image', label: __( 'PizzaLayer', 'pizzalayer' ) },
                             el( Spinner )
                         );
                     },
                     ErrorResponsePlaceholder: function ( p ) {
-                        return el( Placeholder, { icon: 'warning', label: __( 'Pizza Layer — Error', 'pizzalayer' ) },
+                        return el( Placeholder, { icon: 'warning', label: __( 'PizzaLayer — Error', 'pizzalayer' ) },
                             el( 'p', null, p.response && p.response.message
                                 ? p.response.message
                                 : __( 'Layer not found. Check the type and slug.', 'pizzalayer' ) )
@@ -104,7 +104,7 @@
                 var typeLabel = ( LAYER_TYPES.find( function ( t ) { return t.value === attributes.layerType; } ) || LAYER_TYPES[0] ).label;
                 preview = el( Placeholder, {
                     icon:  'format-image',
-                    label: __( 'Pizza Layer Image', 'pizzalayer' ),
+                    label: __( 'PizzaLayer Image', 'pizzalayer' ),
                 }, el( 'p', { style: { margin: 0 } },
                     /* translators: %s = layer type e.g. "Crust" */
                     __( 'Enter a %s slug in the settings panel →', 'pizzalayer' ).replace( '%s', typeLabel )

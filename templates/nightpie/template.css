@@ -67,6 +67,29 @@
     }
 }
 
+/* ── Mobile: force full-width columns ─────────────────────── */
+@media (max-width: 899px) {
+    .np-pizza-col,
+    .np-tabs-col {
+        width: 100% !important;
+        flex: 0 0 100% !important;
+        max-width: 100% !important;
+    }
+    .np-pizza-col {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+    }
+    .np-pizza-sticky {
+        width: 100%;
+        align-items: center;
+    }
+    .np-pizza-sticky__canvas {
+        max-width: 260px;
+        margin: 0 auto;
+    }
+}
+
 /* ── LEFT: Pizza preview column ─────────────────────────────── */
 
 /* Always visible — mobile shows it at the top */
@@ -780,3 +803,197 @@
     font-weight:    var(--pzl-btn-fw,   inherit);
 }
 .cb-tab--hidden-step { display: none !important; }
+
+/* ══════════════════════════════════════════════════════════════
+   MOBILE — one-column layout (≤ 599px)
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 599px) {
+    .np-root { font-size: 14px; }
+
+    /* Full-width pizza preview, centred */
+    .np-pizza-col {
+        width: 100%;
+        padding: 12px 12px 8px;
+    }
+    .np-pizza-sticky__canvas { max-width: 210px; margin: 0 auto; }
+    .np-pizza-sticky__footer { max-width: 210px; margin: 0 auto; }
+
+    /* Tabs scroll horizontally; labels shrink */
+    .np-tabnav  { padding: 6px 6px 0; gap: 2px; flex-wrap: nowrap; overflow-x: auto; }
+    .np-tab     { padding: 6px 8px 10px; flex-shrink: 0; }
+    .np-tab__label { font-size: 10px; }
+
+    /* Card grid: two columns on phone */
+    .np-cards-grid--exclusive,
+    .np-cards-grid--toppings { grid-template-columns: 1fr 1fr; }
+
+    /* Panels full-width */
+    .np-panel { padding: 14px 10px; }
+
+    /* Hide layer name in summary on very small screens */
+    .np-yourpizza__layer-name { display: none; }
+
+    /* Checkout bar stacks vertically */
+    .np-checkout-bar__inner {
+        flex-direction: column;
+        align-items: stretch;
+        gap: 8px;
+    }
+    .np-checkout-bar__btn { width: 100%; text-align: center; }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NIGHTPIE — TABLET RESPONSIVE (600px – 899px)
+   ══════════════════════════════════════════════════════════════ */
+@media (min-width: 600px) and (max-width: 899px) {
+    .np-pizza-col { padding: 14px 16px 10px; }
+    .np-pizza-sticky {
+        flex-direction: row;
+        align-items: center;
+        justify-content: center;
+        gap: 20px;
+        flex-wrap: nowrap;
+    }
+    .np-pizza-sticky__canvas { max-width: 180px; flex-shrink: 0; }
+    .np-pizza-sticky__footer { max-width: 180px; }
+
+    /* Card grids: 3 columns on tablet */
+    .np-cards-grid--exclusive { grid-template-columns: repeat(auto-fill, minmax(140px, 1fr)); }
+    .np-cards-grid--toppings  { grid-template-columns: repeat(auto-fill, minmax(150px, 1fr)); }
+}
+
+/* ══════════════════════════════════════════════════════════════
+   NIGHTPIE — CHECKOUT BAR RESPONSIVE
+   ══════════════════════════════════════════════════════════════ */
+@media (max-width: 540px) {
+    .pztpro-checkout-bar--nightpie .pztpro-bar-row {
+        flex-wrap: wrap;
+        gap: 8px;
+    }
+    .pztpro-checkout-bar--nightpie .pztpro-bar-row__summary {
+        width: 100%;
+        flex: none;
+    }
+    .pztpro-checkout-bar--nightpie .pztpro-bar-row__btn {
+        flex: 1 1 auto;
+        justify-content: center;
+    }
+}
+
+
+/* ══════════════════════════════════════════════════════════════
+   NIGHTPIE — ISSUE FIXES & ENHANCEMENTS
+   ══════════════════════════════════════════════════════════════ */
+
+/* 1. Dark mode overhaul — update root to deep dark gradient */
+.np-root {
+    background: linear-gradient(145deg, #0a0a10 0%, #12121a 50%, #0d0d15 100%) !important;
+}
+
+/* 2. Remove white/surface background from full preview area;
+      keep it only on the rounded pizza-sticky container */
+.np-pizza-col {
+    background: transparent !important;
+    border-bottom-color: rgba(255,255,255,0.06) !important;
+    border-right-color: rgba(255,255,255,0.06) !important;
+}
+.np-pizza-sticky {
+    background: linear-gradient(145deg, var(--np-surface, #18181f) 0%, var(--np-surface-2, #22222c) 100%);
+    border-radius: var(--np-radius, 16px);
+    border: 1px solid rgba(255,255,255,0.07);
+    padding: 14px;
+    box-shadow:
+        0 0 0 1px rgba(255,87,34,0.06),
+        0 8px 32px rgba(0,0,0,0.50),
+        inset 0 1px 0 rgba(255,255,255,0.04);
+}
+
+/* 3. Section navigation buttons in left col (tabs col for NightPie) */
+.np-section-nav {
+    display: flex;
+    gap: 8px;
+    padding: 10px 16px 10px;
+    border-top: 1px solid var(--np-border, rgba(255,255,255,0.08));
+    background: var(--np-bg, #0e0e12);
+}
+.np-section-nav__btn {
+    flex: 1;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 5px;
+    padding: 8px 12px;
+    border-radius: var(--np-radius-sm, 10px);
+    border: 1px solid var(--np-border, rgba(255,255,255,0.08));
+    background: var(--np-surface-2, #22222c);
+    color: var(--np-text-muted, #888898);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all 0.18s;
+    font-family: inherit;
+}
+.np-section-nav__btn:hover:not(:disabled) {
+    background: var(--np-accent-dim, rgba(255,87,34,0.15));
+    border-color: var(--np-accent, #ff5722);
+    color: var(--np-accent, #ff5722);
+}
+.np-section-nav__btn:disabled {
+    opacity: 0.28;
+    cursor: default;
+}
+.np-section-nav__btn--next {
+    background: var(--np-accent, #ff5722);
+    color: #fff;
+    border-color: var(--np-accent, #ff5722);
+    box-shadow: 0 0 12px rgba(255,87,34,0.30);
+}
+.np-section-nav__btn--next:hover:not(:disabled) {
+    background: #ff7043;
+    box-shadow: 0 0 20px rgba(255,87,34,0.50);
+}
+
+/* 4. Size selector styled for NightPie dark theme */
+.np-size-selector__options,
+.np-size-selector .np-size-option {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-top: 10px;
+}
+.np-size-option {
+    display: inline-flex;
+    align-items: center;
+    padding: 10px 20px;
+    border: 2px solid var(--np-border, rgba(255,255,255,0.08));
+    border-radius: 999px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 700;
+    background: var(--np-surface-2, #22222c);
+    color: var(--np-text, #f0f0f4);
+    transition: all 0.18s;
+    letter-spacing: 0.03em;
+}
+.np-size-option input[type="radio"] { display: none; }
+.np-size-option:hover,
+.np-size-option.pztpro-size-option--active {
+    border-color: var(--np-accent, #ff5722);
+    background: var(--np-accent-dim, rgba(255,87,34,0.15));
+    color: var(--np-accent, #ff5722);
+    box-shadow: 0 0 0 1px var(--np-accent, #ff5722), 0 0 16px rgba(255,87,34,0.25);
+}
+
+/* 5. Checkout bar reinforcement for NightPie */
+.pztpro-checkout-bar--nightpie {
+    margin-top: 12px;
+}
+
+/* 6. Dark panels background */
+.np-tabs-col,
+.np-builder {
+    background: var(--np-bg, #0e0e12);
+}
+.np-panels {
+    background: var(--np-surface, #18181f);
+}

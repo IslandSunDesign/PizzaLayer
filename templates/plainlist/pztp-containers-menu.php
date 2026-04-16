@@ -49,10 +49,49 @@ $pl_col_class_map = [
 ];
 $pl_col_class = $pl_col_class_map[ $pl_columns ] ?? '';
 
+
+// ── PizzaLayerPro: inline size selector ──────────────────────────────────────
+if ( ! function_exists( 'pzt_get_pro_sizes' ) ) :
+function pzt_get_pro_sizes(): array {
+	if ( ! function_exists( 'pztpro_get_setting' ) || ! class_exists( 'PizzaLayerPro\\Pro\\PriceGrid\\Grid' ) ) { return []; }
+	$product_id = ( function_exists( 'get_queried_object_id' ) ? (int) get_queried_object_id() : 0 );
+	if ( ! $product_id ) { global $post; if ( $post instanceof \WP_Post ) { $product_id = $post->ID; } }
+	$grid = new \PizzaLayerPro\Pro\PriceGrid\Grid(); return $grid->get_sizes( $product_id );
+}
+endif;
+if ( ! function_exists( 'pzt_render_inline_size_selector' ) ) :
+function pzt_render_inline_size_selector( array $sizes, string $instance_id, string $css_prefix = 'cb' ): void {
+	if ( empty( $sizes ) ) { return; }
+	// Extract numeric suffix from instance_id (handles pztpro-1, pizzabuilder-1, pztpro-1-2, etc)
+	preg_match( '/-(\d+)$/', $instance_id, $_m_suf );
+	$radio_name_raw = ! empty( $_m_suf[1] ) ? $_m_suf[1] : preg_replace( '/[^a-zA-Z0-9_]/', '_', $instance_id );
+	$radio_name = 'pztpro_size_' . $radio_name_raw;
+	$heading = function_exists( 'pztpro_get_setting' ) ? (string) pztpro_get_setting( 'size_selector_label', '' ) : '';
+	if ( '' === $heading ) { $heading = __( 'Choose a Size', 'pizzalayer' ); }
+	?>
+	<div class="<?php echo esc_attr( $css_prefix ); ?>-size-selector pztpro-inline-size-selector" id="<?php echo esc_attr( $instance_id ); ?>-size-selector" role="group" aria-label="<?php echo esc_attr( $heading ); ?>">
+		<p class="<?php echo esc_attr( $css_prefix ); ?>-size-selector__heading"><?php echo esc_html( $heading ); ?></p>
+		<div class="<?php echo esc_attr( $css_prefix ); ?>-size-selector__options">
+			<?php foreach ( $sizes as $i => $size ) :
+				$inp_id = esc_attr( $instance_id ) . '-sz-' . sanitize_html_class( strtolower( $size ) ); ?>
+			<label class="<?php echo esc_attr( $css_prefix ); ?>-size-option pztpro-size-option<?php echo 0 === $i ? ' pztpro-size-option--active' : ''; ?>" for="<?php echo esc_attr( $inp_id ); ?>">
+				<input type="radio" id="<?php echo esc_attr( $inp_id ); ?>" name="<?php echo esc_attr( $radio_name ); ?>" value="<?php echo esc_attr( $size ); ?>" class="pztpro-size-radio" <?php checked( 0, $i ); ?> />
+				<span class="<?php echo esc_attr( $css_prefix ); ?>-size-option__name"><?php echo esc_html( $size ); ?></span>
+			</label>
+			<?php endforeach; ?>
+		</div>
+	</div>
+	<?php
+}
+endif;
+
+$_pro_sizes = pzt_get_pro_sizes();
+$_has_pro   = ! empty( $_pro_sizes );
+
 // Visible tabs (respects show_tabs / hide_tabs shortcode attr)
 $hide_tabs_raw = $atts['hide_tabs'] ?? '';
 $show_tabs_raw = $atts['show_tabs'] ?? '';
-$all_tabs      = [ 'crust', 'sauce', 'cheese', 'toppings', 'drizzle', 'slicing' ];
+$all_tabs      = array_merge( $_has_pro ? [ 'size' ] : [], [ 'crust', 'sauce', 'cheese', 'toppings', 'drizzle', 'slicing' ] );
 $all_tabs      = apply_filters( 'pizzalayer_tab_order', $all_tabs, $instance_id );
 
 if ( $show_tabs_raw ) {
@@ -202,6 +241,7 @@ endif;
 $pl_var = 'PL_' . preg_replace( '/[^a-zA-Z0-9_]/', '_', $instance_id );
 
 $section_meta = [
+	'size'     => [ 'fa-ruler-combined', __( 'Size',    'pizzalayer' ) ],
 	'crust'    => [ 'fa-layer-group',    __( 'Crust',    'pizzalayer' ) ],
 	'sauce'    => [ 'fa-droplet',        __( 'Sauce',    'pizzalayer' ) ],
 	'cheese'   => [ 'fa-cheese',         __( 'Cheese',   'pizzalayer' ) ],
@@ -211,6 +251,9 @@ $section_meta = [
 ];
 
 $sections_data = [];
+
+// Size — rendered separately (not as an <li> list) via pzt_render_inline_size_selector
+$sections_data['size'] = '';
 
 // Crusts
 $items_html = '';
@@ -333,16 +376,81 @@ $total_steps = count( $visible_tabs );
 				<?php endif; ?>
 			</div>
 
+			<?php if ( $tab === 'size' ) : ?>
+			<?php
+			// Build size modal trigger + modal (sizes moved out of radio list into a modal)
+			$_pl_size_heading = function_exists( 'pztpro_get_setting' ) ? (string) pztpro_get_setting( 'size_selector_label', '' ) : '';
+			if ( '' === $_pl_size_heading ) { $_pl_size_heading = __( 'Choose a Size', 'pizzalayer' ); }
+			preg_match( '/-(\d+)$/', $instance_id, $_pl_m );
+			$_pl_radio_sfx  = ! empty( $_pl_m[1] ) ? $_pl_m[1] : preg_replace( '/[^a-zA-Z0-9_]/', '_', $instance_id );
+			$_pl_radio_name = 'pztpro_size_' . $_pl_radio_sfx;
+			$_pl_modal_id   = esc_attr( $instance_id ) . '-size-modal';
+			?>
+			<button type="button"
+			        class="pl-size-modal-trigger"
+			        id="<?php echo esc_attr( $instance_id ); ?>-size-modal-trigger"
+			        aria-haspopup="dialog"
+			        aria-controls="<?php echo $_pl_modal_id; ?>"
+			        onclick="document.getElementById('<?php echo $_pl_modal_id; ?>').classList.add('is-open')">
+				<i class="fa fa-ruler-combined"></i>
+				<?php esc_html_e( 'Size:', 'pizzalayer' ); ?>
+				<span class="pl-size-modal-trigger__value" id="<?php echo esc_attr( $instance_id ); ?>-size-display">
+					<?php echo esc_html( ! empty( $_pro_sizes[0] ) ? $_pro_sizes[0] : __( 'Select', 'pizzalayer' ) ); ?>
+				</span>
+				<i class="fa fa-chevron-down" style="font-size:11px;opacity:0.6;"></i>
+			</button>
+
+			<!-- Size modal -->
+			<div class="pl-size-modal" id="<?php echo $_pl_modal_id; ?>" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr( $_pl_size_heading ); ?>">
+				<div class="pl-size-modal__backdrop" onclick="document.getElementById('<?php echo $_pl_modal_id; ?>').classList.remove('is-open')"></div>
+				<div class="pl-size-modal__panel">
+					<div class="pl-size-modal__heading">
+						<span><?php echo esc_html( $_pl_size_heading ); ?></span>
+						<button type="button" class="pl-size-modal__close"
+						        onclick="document.getElementById('<?php echo $_pl_modal_id; ?>').classList.remove('is-open')"
+						        aria-label="<?php esc_attr_e( 'Close', 'pizzalayer' ); ?>">
+							<i class="fa fa-times"></i>
+						</button>
+					</div>
+					<div class="pl-size-modal__options">
+						<?php foreach ( $_pro_sizes as $i => $size ) :
+							$_sz_id = esc_attr( $instance_id ) . '-sz-' . sanitize_html_class( strtolower( $size ) );
+						?>
+						<label class="pl-size-modal__option<?php echo 0 === $i ? ' is-active pztpro-size-option--active' : ''; ?>"
+						       for="<?php echo esc_attr( $_sz_id ); ?>"
+						       onclick="
+						       		var m=document.getElementById('<?php echo $_pl_modal_id; ?>');
+						       		m.classList.remove('is-open');
+						       		var d=document.getElementById('<?php echo esc_attr( $instance_id ); ?>-size-display');
+						       		if(d)d.textContent=this.querySelector('.pl-size-modal__option-name').textContent;
+						       		m.querySelectorAll('.pl-size-modal__option').forEach(function(o){o.classList.remove('is-active','pztpro-size-option--active');});
+						       		this.classList.add('is-active','pztpro-size-option--active');
+						       	">
+							<input type="radio"
+							       id="<?php echo esc_attr( $_sz_id ); ?>"
+							       name="<?php echo esc_attr( $_pl_radio_name ); ?>"
+							       value="<?php echo esc_attr( $size ); ?>"
+							       class="pztpro-size-radio"
+							       <?php checked( 0, $i ); ?> />
+							<span class="pl-size-modal__option-check"></span>
+							<span class="pl-size-modal__option-name"><?php echo esc_html( $size ); ?></span>
+						</label>
+						<?php endforeach; ?>
+					</div>
+				</div>
+			</div>
+			<?php else : ?>
 			<ul class="pl-list<?php echo $pl_col_class ? ' ' . esc_attr( $pl_col_class ) : ''; ?>"
 			    role="<?php echo ( $tab === 'toppings' ) ? 'group' : 'radiogroup'; ?>"
 			    aria-label="<?php echo esc_attr( $label ); ?>">
 				<?php echo $sections_data[ $tab ]; // phpcs:ignore WordPress.Security.EscapeOutput -- built by safe functions above ?>
 			</ul>
+			<?php endif; ?>
 
 			<?php if ( $tab === 'slicing' ) : ?>
 			<!-- Action bar: PizzaLayerPro / WooCommerce hooks here -->
 			<div class="pl-action-bar">
-				<?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
+				<!-- Action bar moved to root level below -->
 			</div>
 			<?php endif; ?>
 
@@ -396,6 +504,8 @@ $total_steps = count( $visible_tabs );
 		<?php endif; ?>
 
 	</div><!-- /.pl-inner -->
+
+	<?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
 
 </div><!-- /#<?php echo esc_html( $instance_id ); ?> .pl-root -->
 

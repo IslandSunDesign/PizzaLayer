@@ -1842,7 +1842,7 @@ class Settings {
 		if ( headers_sent() ) {
 			// Headers already committed — use a JS Blob download as fallback
 			echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Exporting&hellip;</title></head><body>';
-			echo '<script>';
+			echo '<script>'; // phpcs:ignore WordPress.Security.EscapeOutput — headers-already-sent fallback; no WP hooks available
 			printf( 'var d=%s;', $json ); // phpcs:ignore WordPress.Security.EscapeOutput
 			echo 'var b=new Blob([JSON.stringify(d,null,2)],{type:"application/json"});';
 			printf( 'var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=%s;', wp_json_encode( $filename ) );

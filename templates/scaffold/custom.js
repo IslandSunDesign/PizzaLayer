@@ -137,23 +137,40 @@ function initScaffoldInstance( ROOT, cfg ) {
 
   /** Collect current state as a plain object. */
   function getState() {
-    var state = { layers: {}, toppings: [] };
+    var rawLayers = {};
+    var layers    = [];
     ROOT.querySelectorAll( '.sc-card--exclusive.sc-card--selected' ).forEach( function( c ) {
-      state.layers[ c.getAttribute( 'data-layer' ) ] = {
-        slug:  c.getAttribute( 'data-slug' ),
-        title: c.getAttribute( 'data-title' ),
-        img:   c.getAttribute( 'data-layer-img' ),
-      };
+      var layerType = c.getAttribute( 'data-layer' );
+      var slug      = c.getAttribute( 'data-slug' );
+      var title     = c.getAttribute( 'data-title' );
+      rawLayers[ layerType ] = { slug: slug, title: title, img: c.getAttribute( 'data-layer-img' ) };
+      layers.push({
+        id:        slug,
+        layerId:   slug,
+        title:     title || slug,
+        layerName: title || slug,
+        type:      layerType === 'slicing' ? 'cut' : layerType,
+        layerType: layerType === 'slicing' ? 'cut' : layerType,
+        fraction:  'Whole',
+        coverage:  'whole'
+      });
     } );
     ROOT.querySelectorAll( '.sc-card--topping.sc-card--selected' ).forEach( function( c ) {
-      state.toppings.push( {
-        slug:     c.getAttribute( 'data-slug' ),
-        title:    c.getAttribute( 'data-title' ),
-        img:      c.getAttribute( 'data-layer-img' ),
-        coverage: c.getAttribute( 'data-coverage' ) || 'whole',
-      } );
+      var slug     = c.getAttribute( 'data-slug' );
+      var title    = c.getAttribute( 'data-title' );
+      var coverage = c.getAttribute( 'data-coverage' ) || 'whole';
+      layers.push({
+        id:        slug,
+        layerId:   slug,
+        title:     title || slug,
+        layerName: title || slug,
+        type:      'topping',
+        layerType: 'topping',
+        fraction:  coverage,
+        coverage:  coverage
+      });
     } );
-    return state;
+    return { layers: rawLayers, toppings: layers.filter( function(l){ return l.layerType === 'topping'; } ), allLayers: layers };
   }
 
   /** Update the summary panel list. */
@@ -233,12 +250,30 @@ function initScaffoldInstance( ROOT, cfg ) {
 }
 
 /* Boot — initialise every .sc-root[data-sc-cfg] on the page. */
+var _scInstances = {};
 document.querySelectorAll( '.sc-root[data-sc-cfg]' ).forEach( function( rootEl ) {
   try {
     var cfg = JSON.parse( rootEl.getAttribute( 'data-sc-cfg' ) );
     initScaffoldInstance( rootEl, cfg );
+    /* Register instance so PizzaLayerAPI can find it */
+    var instanceId = rootEl.getAttribute( 'id' ) || ( cfg.varName ? cfg.varName : '' );
+    if ( instanceId && window[ cfg.varName ] ) {
+      _scInstances[ instanceId ] = window[ cfg.varName ];
+    }
   } catch(e) {
     // eslint-disable-next-line no-console
     if ( window.console ) { console.warn( 'PizzaLayer Scaffold: config parse error', e ); }
   }
 } );
+
+/* PizzaLayerAPI — standard surface consumed by PizzaLayerPro */
+window.PizzaLayerAPI = window.PizzaLayerAPI || {
+  getState: function ( instanceId ) {
+    /* Try registry first, then window[instanceId] as fallback */
+    var inst = _scInstances[ instanceId ] || window[ instanceId ];
+    return ( inst && typeof inst.getState === 'function' ) ? inst.getState() : null;
+  },
+  getAllInstances: function () {
+    return Object.keys( _scInstances );
+  }
+};

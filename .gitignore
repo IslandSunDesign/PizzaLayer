@@ -1,0 +1,58 @@
+# OS
+.DS_Store
+Thumbs.db
+desktop.ini
+
+# Editor / IDE
+.vscode/
+.idea/
+*.swp
+*.swo
+*~
+
+# Node
+node_modules/
+npm-debug.log*
+yarn-error.log*
+package-lock.json
+yarn.lock
+
+# Build artefacts
+/dist/
+/build/
+*.min.js.map
+*.min.css.map
+
+# Composer
+/vendor/
+composer.lock
+
+# WordPress
+wp-config.php
+wp-content/uploads/
+wp-content/cache/
+wp-content/advanced-cache.php
+wp-content/object-cache.php
+wp-content/upgrade/
+
+# Plugin distribution zips (never commit)
+*.zip
+
+# PHPUnit / testing
+/tests/output/
+/.phpunit.result.cache
+coverage/
+
+# Logs
+*.log
+debug.log
+
+# Environment files
+.env
+.env.*
+!.env.example
+
+# Misc
+*.bak
+*.orig
+.htaccess

@@ -27,7 +27,7 @@
   data-panel="<?php echo esc_attr( $tab_slug ); ?>"
   data-instance="<?php echo esc_attr( $instance_id ); ?>"
   aria-labelledby="<?php echo esc_attr( $instance_id ); ?>-tab-<?php echo esc_attr( $tab_slug ); ?>"
-  hidden
+  <?php if ( empty( $sc_is_first ) ) : ?>hidden<?php endif; ?>
 >
 
   <?php do_action( 'pizzalayer_before_panel_grid', $tab_slug, $instance_id ); ?>

@@ -10,7 +10,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  *  1. Quickstart — 5-step walkthrough + first-launch checklist
  *  2. Managing Content — per-CPT step-by-step guides
  *  3. Layer Types — visual stack reference with z-index, fields, image tips
- *  4. Shortcodes — all three shortcodes, full attribute tables, copy-paste examples
+ *  4. Shortcodes — all four shortcodes, full attribute tables, copy-paste examples
  *  5. Shape & Animation — shape presets, animation modes, accessibility
  *  6. Template System — file structure, CSS custom properties, custom template guide
  *  7. FAQ — 12+ Q&A cards in <details> accordion
@@ -132,7 +132,7 @@ class Help {
 				<div class="plhelp-step__num">3</div>
 				<div class="plhelp-step__body">
 					<h3>Choose your template</h3>
-					<p>Templates control the entire visual design of the builder. PizzaLayer ships with five built-in templates: <strong>NightPie</strong> (dark, modern), <strong>Metro</strong> (clean, card-based), <strong>Colorbox</strong>, <strong>Rustic</strong>, <strong>PocketPie</strong>, and <strong>Scaffold</strong> (bare-bones starting point). You can also create a custom template in your theme (see Template System).</p>
+					<p>Templates control the entire visual design of the builder. PizzaLayer ships with seven built-in templates: <strong>Command Center</strong> (dark navy, step wizard), <strong>NightPie</strong> (dark, modern), <strong>Metro</strong> (clean, card-based), <strong>Fornaia</strong> (warm, rustic), <strong>PocketPie</strong> (mobile-first), <strong>Plainlist</strong> (text-first, accessible), and <strong>Scaffold</strong> (bare-bones developer starter). You can also create a custom template in your theme (see Template System).</p>
 					<a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-template') ); ?>" class="button">Template Settings →</a>
 				</div>
 			</div>
@@ -172,7 +172,7 @@ class Help {
 	// 2. MANAGING CONTENT
 	// ═══════════════════════════════════════════════════════════════════
 	private function section_content(): void { ?>
-		<p class="plhelp-lead">All pizza content lives in the <strong>Content Hub</strong> — a single admin page with a vertical tab rail for each of the 8 layer types. Click any type in the left rail to switch instantly without leaving the page.</p>
+		<p class="plhelp-lead">All pizza content lives in the <strong>Content Hub</strong> — a single admin page with a vertical tab rail for each of the 7 layer types. Click any type in the left rail to switch instantly without leaving the page.</p>
 
 		<div class="plhelp-info-box">
 			<span class="dashicons dashicons-info-outline"></span>
@@ -401,7 +401,7 @@ class Help {
 	// 4. SHORTCODES
 	// ═══════════════════════════════════════════════════════════════════
 	private function section_shortcodes(): void { ?>
-		<p class="plhelp-lead">PizzaLayer provides three shortcodes. Every attribute is optional — defaults come from the global Settings unless overridden at the shortcode level. Use the <a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-shortcodes') ); ?>">Shortcode Generator</a> for a visual builder.</p>
+		<p class="plhelp-lead">PizzaLayer provides four shortcodes. Every attribute is optional — defaults come from the global Settings unless overridden at the shortcode level. Use the <a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-shortcodes') ); ?>">Shortcode Generator</a> for a visual builder.</p>
 
 		<!-- ── [pizza_builder] ─────────────────────────────────────────── -->
 		<div class="plhelp-sc-block">
@@ -501,10 +501,37 @@ class Help {
 ); ?></pre>
 		</div>
 
+		<!-- ── [pizza_layer_info] ─────────────────────────────────────── -->
+		<div class="plhelp-sc-block">
+			<div class="plhelp-sc-block__head">
+				<code class="plhelp-sc-name">[pizza_layer_info]</code>
+				<span class="plhelp-sc-tag plhelp-sc-tag--purple">Field value</span>
+			</div>
+			<p>Outputs the value of any custom field attached to a layer post — useful for displaying allergen info, nutrition data, ingredient notes, or any ACF/SCF field inline in page content.</p>
+
+			<table class="plhelp-attr-table">
+				<thead><tr><th>Attribute</th><th>Values</th><th>Description</th></tr></thead>
+				<tbody>
+					<tr><td><code>type</code></td><td>layer type</td><td>The CPT type: <code>topping</code>, <code>crust</code>, <code>sauce</code>, <code>cheese</code>, <code>drizzle</code>, <code>cut</code>, <code>size</code>.</td></tr>
+					<tr><td><code>slug</code></td><td>layer slug</td><td>The slug of the specific layer post to read from.</td></tr>
+					<tr><td><code>field</code></td><td>field name</td><td>The custom field key to output (e.g. <code>topping_ingredients</code>, <code>size_diameter_in</code>).</td></tr>
+				</tbody>
+			</table>
+
+			<h4>Copy-paste examples</h4>
+			<pre class="plhelp-code"><?php echo esc_html(
+'[pizza_layer_info type="topping" slug="pepperoni" field="topping_ingredients"]
+
+[pizza_layer_info type="size" slug="large-16" field="size_diameter_in"]
+
+[pizza_layer_info type="cheese" slug="mozzarella" field="cheese_melt_factor"]'
+); ?></pre>
+		</div>
+
 		<div class="plhelp-info-box">
 			<span class="dashicons dashicons-editor-code"></span>
 			<div>
-				<strong>Gutenberg Blocks:</strong> All three shortcodes are available as native Gutenberg blocks. The Pizza Builder block includes the same attribute controls in the block sidebar — including per-block shape, animation, and tab visibility overrides. No shortcode syntax required.
+				<strong>Gutenberg Blocks:</strong> The three builder shortcodes (<code>[pizza_builder]</code>, <code>[pizza_static]</code>, <code>[pizza_layer]</code>) are available as native Gutenberg blocks. The Pizza Builder block includes the same attribute controls in the block sidebar — including per-block shape, animation, and tab visibility overrides. No shortcode syntax required.
 			</div>
 		</div>
 	<?php }
@@ -569,7 +596,7 @@ class Help {
 	// 6. TEMPLATE SYSTEM
 	// ═══════════════════════════════════════════════════════════════════
 	private function section_templates(): void { ?>
-		<p class="plhelp-lead">Templates control the complete visual presentation of the pizza builder — layout, colours, fonts, card styles, and responsive behaviour. PizzaLayer ships with five production-ready templates (<strong>NightPie</strong>, <strong>Metro</strong>, <strong>Colorbox</strong>, <strong>Rustic</strong>, <strong>PocketPie</strong>) plus a bare <strong>Scaffold</strong> template for building your own from scratch.</p>
+		<p class="plhelp-lead">Templates control the complete visual presentation of the pizza builder — layout, colours, fonts, card styles, and responsive behaviour. PizzaLayer ships with seven production-ready templates (<strong>Command Center</strong>, <strong>NightPie</strong>, <strong>Metro</strong>, <strong>Fornaia</strong>, <strong>PocketPie</strong>, <strong>Plainlist</strong>, <strong>Scaffold</strong>) plus a bare <strong>Scaffold</strong> template for building your own from scratch.</p>
 
 		<h3>How templates work</h3>
 		<p>A template is a directory containing at minimum:</p>
@@ -685,7 +712,7 @@ class Help {
 				<tr>
 					<td><code>pizzalayer_cpt_registered</code></td>
 					<td>—</td>
-					<td>Fires after all 8 CPTs have been registered. Use to add taxonomies, modify CPT args, or register dependent functionality.</td>
+					<td>Fires after all 7 CPTs have been registered. Use to add taxonomies, modify CPT args, or register dependent functionality.</td>
 				</tr>
 				<tr>
 					<td><code>pizzalayer_before_builder</code></td>
@@ -846,22 +873,48 @@ window.PizzaLayerAPI.renderStatic(\'#my-container\', stateObject);'
 		<!-- Namespace & Meta Keys ──────────────────────────────────────── -->
 		<h3>PHP Namespace &amp; Class Map</h3>
 		<pre class="plhelp-code"><?php echo esc_html(
-'PizzaLayer\Admin\AdminMenu        — admin menu + submenu registration
-PizzaLayer\Admin\AdminBar         — WP admin bar items
-PizzaLayer\Admin\AdminHome        — dashboard home page
-PizzaLayer\Admin\ContentHub       — unified content management (AJAX tab switcher)
-PizzaLayer\Admin\Settings         — settings page (all options)
-PizzaLayer\Admin\Help             — this help page
-PizzaLayer\Admin\SetupGuide       — onboarding checklist
+'// Core
+PizzaLayer\Plugin                  — main plugin bootstrap and dependency wiring
+
+// Admin
+PizzaLayer\Admin\AdminMenu         — admin menu + submenu registration
+PizzaLayer\Admin\AdminBar          — WP admin bar items
+PizzaLayer\Admin\AdminHome         — dashboard home page
+PizzaLayer\Admin\ContentHub        — unified content management (tab rail + list tables)
+PizzaLayer\Admin\Settings          — full settings page (all option tabs)
+PizzaLayer\Admin\SettingsWizard    — guided step-by-step settings wizard
+PizzaLayer\Admin\Help              — help & reference documentation page
+PizzaLayer\Admin\SetupGuide        — onboarding checklist
 PizzaLayer\Admin\ShortcodeGenerator — visual shortcode builder
-PizzaLayer\Admin\TemplateChoice   — template picker UI
-PizzaLayer\PostTypes\PostTypeRegistrar — all 8 CPT registrations
-PizzaLayer\Shortcodes\BuilderShortcode — [pizza_builder]
-PizzaLayer\Shortcodes\StaticShortcode  — [pizza_static]
+PizzaLayer\Admin\TemplateChoice    — template picker UI
+PizzaLayer\Admin\LayerBuilderWizard — step-by-step wizard for adding ingredients
+PizzaLayer\Admin\LayerImageMaker   — in-admin layer image generation tool
+PizzaLayer\Admin\LayerImageMetaBox — layer image custom field meta box
+PizzaLayer\Admin\PriceGrid         — pricing grid display for Pro integration
+
+// Post Types
+PizzaLayer\PostTypes\PostTypeRegistrar — all 7 CPT registrations
+
+// Shortcodes
+PizzaLayer\Shortcodes\BuilderShortcode    — [pizza_builder]
+PizzaLayer\Shortcodes\StaticShortcode     — [pizza_static]
 PizzaLayer\Shortcodes\LayerImageShortcode — [pizza_layer]
-PizzaLayer\Template\TemplateLoader — template path resolution
-PizzaLayer\API\RestApi            — REST route registration
-PizzaLayer\Blocks\BlockRegistrar  — Gutenberg block registration'
+PizzaLayer\Shortcodes\LayerInfoShortcode  — [pizza_layer_info]
+
+// Template
+PizzaLayer\Template\TemplateLoader — template path resolution + file loading
+PizzaLayer\Template\TemplateAPI    — public template query helpers
+
+// Builder
+PizzaLayer\Builder\PizzaBuilder    — builder HTML output + state management
+PizzaLayer\Builder\LayerRenderer   — single layer image rendering
+PizzaLayer\Builder\LayerDTO        — layer data transfer object
+
+// API & Assets
+PizzaLayer\Api\PizzaRestApi        — REST route registration (/pizzalayer/v1/)
+PizzaLayer\Assets\AssetManager     — script + style enqueue management
+PizzaLayer\Frontend\FrontendSettings — frontend JS config injection
+PizzaLayer\Blocks\BlockRegistrar   — Gutenberg block registration'
 ); ?></pre>
 
 		<h3>CPT Meta Keys</h3>

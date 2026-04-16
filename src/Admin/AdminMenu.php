@@ -47,13 +47,13 @@ class AdminMenu {
 	];
 
 	private function get_icon(): string {
-		// Pizza with two topping dots — clean at 20px sidebar size
+		// Pizza with two topping dots — separate paths for correct SVG rendering
 		$svg = '<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 20 20">'
-			. '<path fill="black" d="M10 1C5.03 1 1 5.03 1 10s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9z'
-			. 'M10 2.6c3.37 0 6.27 2.08 7.52 5.06L10 10.1 2.48 7.66C3.73 4.68 6.63 2.6 10 2.6z'
-			. 'M2.6 10c0-.38.03-.75.09-1.11L10 11.7l7.31-2.81c.06.36.09.73.09 1.11 0 4.08-3.32 7.4-7.4 7.4S2.6 14.08 2.6 10z'
-			. 'M7.2 11.8a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z'
-			. 'M12.4 12.6a1.1 1.1 0 1 0 0 2.2 1.1 1.1 0 0 0 0-2.2z"/>'
+			. '<path fill="black" d="M10 1C5.03 1 1 5.03 1 10s4.03 9 9 9 9-4.03 9-9-4.03-9-9-9z"/>'
+			. '<path fill="black" d="M10 2.6c3.37 0 6.27 2.08 7.52 5.06L10 10.1 2.48 7.66C3.73 4.68 6.63 2.6 10 2.6z"/>'
+			. '<path fill="black" d="M2.6 10c0-.38.03-.75.09-1.11L10 11.7l7.31-2.81c.06.36.09.73.09 1.11 0 4.08-3.32 7.4-7.4 7.4S2.6 14.08 2.6 10z"/>'
+			. '<circle fill="black" cx="7.2" cy="12.9" r="1.1"/>'
+			. '<circle fill="black" cx="12.4" cy="13.7" r="1.1"/>'
 			. '</svg>';
 		return 'data:image/svg+xml;base64,' . base64_encode( $svg );
 	}
@@ -68,7 +68,7 @@ class AdminMenu {
 			'pizzalayer',
 			[ $this, 'render_home' ],
 			$this->get_icon(),
-			30
+			56
 		);
 
 		// Dashboard — same slug as parent makes it the landing page
@@ -153,9 +153,11 @@ class AdminMenu {
 				'(prefers-color-scheme: dark)'
 			);
 			// Also add the body class swap so our CSS selectors fire
-			add_action( 'admin_head', function() {
-				echo '<script>if(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches){document.body.classList.add("pzl-admin-dark");}</script>' . "\n";
-			} );
+			wp_add_inline_script(
+				'pizzalayer-admin-js',
+				'if(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches){document.body.classList.add("pzl-admin-dark");}',
+				'before'
+			);
 		}
 	}
 

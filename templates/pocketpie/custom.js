@@ -551,13 +551,18 @@
                     // Apply crust/sauce/cheese/drizzle/cut
                     ['crust','sauce','cheese','drizzle','cut'].forEach(function (k) {
                         if (newState[k]) {
-                            self.swapBase(k, newState[k].slug, newState[k].title, newState[k].layerImg, null);
+                            var slug = newState[k].slug || '';
+                            var img  = newState[k].layerImg || self.$root.find('.pp-chip[data-layer="' + k + '"][data-slug="' + slug + '"]').data('layer-img') || '';
+                            self.swapBase(k, slug, newState[k].title || slug, img, null);
                         }
                     });
                     // Apply toppings
                     if (newState.toppings) {
                         $.each(newState.toppings, function (slug, t) {
-                            self.addTopping(t.zindex||400, slug, t.layerImg, t.title, 'pizzalayer-topping-'+slug, 'pizzalayer-topping-'+slug, null);
+                            // Resolve layerImg from DOM chip if not supplied (e.g. Pro default-layer path)
+                            var img = t.layerImg || self.$root.find('.pp-chip[data-layer="toppings"][data-slug="' + slug + '"]').data('layer-img') || '';
+                            var title = t.title || slug;
+                            self.addTopping(t.zindex||400, slug, img, title, 'pizzalayer-topping-'+slug, 'pizzalayer-topping-'+slug, null);
                             if (t.coverage) { self.setCoverage(slug, t.coverage, null); }
                         });
                     }

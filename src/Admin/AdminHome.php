@@ -570,19 +570,20 @@ class AdminHome {
 		/* ── Pro CTA ──────────────────────────────────────────────────── */
 		.plh-pro-cta {
 			display: flex; align-items: center; gap: 12px;
-			background: rgba(255,255,255,.07); border: 1px solid rgba(255,255,255,.12); border-radius: 8px;
-			padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: #e2e8f0;
+			background: linear-gradient(135deg, #7a2e00 0%, #5c1f00 100%);
+			border: 1px solid #c84b00; border-radius: 8px;
+			padding: 12px 16px; margin-bottom: 16px; font-size: 13px; color: #ffd9b8;
 		}
 		.plh-pro-cta__icon { font-size: 18px; }
 		.plh-pro-cta__text { flex: 1; }
 		.plh-pro-cta__text strong { color: #fff; }
-		.plh-pro-cta__text a { font-weight: 600; color: #ff8c42; }
-		.plh-pro-cta__text a:hover { color: #ffad73; }
+		.plh-pro-cta__text a { font-weight: 600; color: #ffad73; }
+		.plh-pro-cta__text a:hover { color: #ffd0a8; }
 		.plh-pro-cta__dismiss {
-			color: #718096; text-decoration: none; font-size: 14px;
+			color: #ffad73; text-decoration: none; font-size: 14px;
 			padding: 2px 6px; border-radius: 3px; transition: background .15s;
 		}
-		.plh-pro-cta__dismiss:hover { background: rgba(255,255,255,.1); color: #fff; }
+		.plh-pro-cta__dismiss:hover { background: rgba(255,107,53,.25); color: #fff; }
 
 		/* ── Setup nag ────────────────────────────────────────────────── */
 		.plh-nag {
