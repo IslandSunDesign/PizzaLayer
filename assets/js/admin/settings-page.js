@@ -1,5 +1,65 @@
 /* PizzaLayer Settings Page — admin UI interactions */
 /* eslint-disable no-var */
+
+/* ── Simple / Advanced description mode ──────────────────────
+   Wired up immediately (not inside DOMContentLoaded) so it's
+   resilient to third-party admin scripts (e.g. SCF/ACF) that
+   may throw during the ready phase and abort later bindings.
+   Uses delegated events on document so it works even if the
+   DOM isn't parsed yet at script-run time. */
+(function() {
+	var modeKey = 'pset_user_mode';
+
+	function applyMode(mode) {
+		var wrap = document.querySelector('.pset-wrap');
+		if (!wrap) { return; }
+		if (mode === 'simple') {
+			wrap.classList.add('pset-mode-simple');
+		} else {
+			wrap.classList.remove('pset-mode-simple');
+		}
+		var btns = document.querySelectorAll('.pset-mode-btn');
+		for (var i = 0; i < btns.length; i++) {
+			var b = btns[i];
+			var isActive = b.getAttribute('data-pset-mode') === mode;
+			if (isActive) { b.classList.add('pset-mode-btn--active'); }
+			else          { b.classList.remove('pset-mode-btn--active'); }
+			b.setAttribute('aria-pressed', isActive ? 'true' : 'false');
+		}
+	}
+
+	function init() {
+		var stored = 'advanced';
+		try { stored = localStorage.getItem(modeKey) || 'advanced'; } catch(e) {}
+		applyMode(stored);
+	}
+
+	/* Delegated click — works regardless of when the buttons render
+	   or whether another script errored before this ran. */
+	document.addEventListener('click', function(e) {
+		var target = e.target;
+		while (target && target !== document) {
+			if (target.classList && target.classList.contains('pset-mode-btn')) {
+				var mode = target.getAttribute('data-pset-mode');
+				if (mode === 'simple' || mode === 'advanced') {
+					e.preventDefault();
+					e.stopPropagation();
+					applyMode(mode);
+					try { localStorage.setItem(modeKey, mode); } catch(err) {}
+				}
+				return;
+			}
+			target = target.parentNode;
+		}
+	}, true); /* capture phase — beats other delegated listeners */
+
+	if (document.readyState === 'loading') {
+		document.addEventListener('DOMContentLoaded', init);
+	} else {
+		init();
+	}
+}());
+
 document.addEventListener('DOMContentLoaded', function() {
 	/** Escape a string for safe injection into innerHTML. */
 	function escHtml(s) {

@@ -55,7 +55,7 @@ class AdminHome {
 			'toppings' => [
 				'label' => __( 'Toppings', 'pizzalayer' ),
 				'icon'  => 'dashicons-star-filled',
-				'desc'  => __( 'Toppings are where the action is. Every topping has its own layer image, price data, and coverage options (whole, half, quarters). The visualizer renders each selected topping in real time as your customer builds.', 'pizzalayer' ),
+				'desc'  => __( 'Toppings are where the action is. Every topping has its own layer image and coverage options (whole, half, quarters). The visualizer renders each selected topping in real time as your customer builds.', 'pizzalayer' ),
 				'tip'   => __( '💡 Use consistent transparent PNGs — 500×500 px works great across all templates.', 'pizzalayer' ),
 				'cpt'   => 'toppings',
 				'count' => $stats['toppings'],
@@ -103,8 +103,8 @@ class AdminHome {
 			'sizes' => [
 				'label' => __( 'Sizes', 'pizzalayer' ),
 				'icon'  => 'dashicons-image-rotate',
-				'desc'  => __( 'Size options define the available pizza dimensions — small, medium, large, party. Each size carries dimension metadata, weight, area, and base price for pricing integrations.', 'pizzalayer' ),
-				'tip'   => __( '💡 Set size_area_sqin for accurate topping price-per-area calculations in PizzaLayerPro.', 'pizzalayer' ),
+				'desc'  => __( 'Size options define the available pizza dimensions — small, medium, large, party. Each size carries dimension metadata, weight, and area used by templates and the PizzaLayerPro pricing engine.', 'pizzalayer' ),
+				'tip'   => __( '💡 Set size_area_sqin for accurate per-area calculations in PizzaLayerPro.', 'pizzalayer' ),
 				'cpt'   => 'sizes',
 				'count' => $stats['sizes'],
 			],
@@ -162,6 +162,12 @@ class AdminHome {
 				'href'  => admin_url( 'edit.php?post_type=pizzalayer_presets' ),
 				'color' => '#e8692a',
 			],
+			[
+				'icon'  => 'dashicons-migrate',
+				'label' => __( 'Site Migration', 'pizzalayer' ),
+				'href'  => admin_url( 'admin.php?page=pizzalayer-migration' ),
+				'color' => '#0073aa',
+			],
 		];
 
 		// ── Tips rotator ─────────────────────────────────────────────────
@@ -173,7 +179,7 @@ class AdminHome {
 			/* translators: [pizza_layer] is a shortcode tag, keep as-is */
 			__( 'Use the <code>[pizza_layer]</code> shortcode to embed a single ingredient image anywhere on your menu pages.', 'pizzalayer' ),
 			__( 'Cache thumbnails and preload your first visible layer set for a snappier first paint on slower connections.', 'pizzalayer' ),
-			__( 'Document your price grid rules in the product notes field — your future self will thank you.', 'pizzalayer' ),
+			__( 'Document your menu structure and ingredient choices in the product notes field — your future self will thank you.', 'pizzalayer' ),
 		];
 
 		?>

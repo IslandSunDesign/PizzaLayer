@@ -45,7 +45,6 @@ class FrontendSettings {
 		$base_size    = self::g( 'pizzalayer_setting_typo_base_size',    '15px' );
 		$heading_fw   = self::g( 'pizzalayer_setting_typo_heading_fw',   '700' );
 		$label_size   = self::g( 'pizzalayer_setting_typo_label_size',   '13px' );
-		$price_size   = self::g( 'pizzalayer_setting_typo_price_size',   '14px' );
 		$btn_fw       = self::g( 'pizzalayer_setting_typo_btn_fw',       '600' );
 		$letter_sp    = self::g( 'pizzalayer_setting_typo_letter_sp',    '0' );
 		$text_tx      = self::g( 'pizzalayer_setting_typo_text_transform','none' );
@@ -113,7 +112,6 @@ class FrontendSettings {
 		if ( $base_size )                    { $vars['--pzl-font-size']      = esc_attr( $base_size ); }
 		if ( $heading_fw )                   { $vars['--pzl-heading-fw']     = esc_attr( $heading_fw ); }
 		if ( $label_size )                   { $vars['--pzl-label-size']     = esc_attr( $label_size ); }
-		if ( $price_size )                   { $vars['--pzl-price-size']     = esc_attr( $price_size ); }
 		if ( $btn_fw )                       { $vars['--pzl-btn-fw']         = esc_attr( $btn_fw ); }
 		if ( $letter_sp && $letter_sp !== '0' ) { $vars['--pzl-letter-sp']  = esc_attr( $letter_sp ); }
 		if ( $text_tx && $text_tx !== 'none' )  { $vars['--pzl-text-tx']    = esc_attr( $text_tx ); }
@@ -529,8 +527,6 @@ class FrontendSettings {
 			'showSpecialInstr'  => self::gb( 'pizzalayer_setting_cx_special_instructions' ) ? 'yes' : 'no',
 			'specialInstrPlaceholder' => self::g( 'pizzalayer_setting_cx_special_instr_placeholder', 'Any special requests? (optional)' ),
 			'specialInstrMaxLen'=> self::gi( 'pizzalayer_setting_cx_special_instr_max', 300 ),
-			// Pricing (display)
-			'priceDisplayMode'  => self::g( 'pizzalayer_setting_price_display_mode', 'total' ),
 			// Cart/WooCommerce — defaults here, filterable so PizzaLayerPro can override.
 			// Pro hooks into 'pizzalayer_js_cart_data' to supply live values.
 			'addToCartLabel'    => (string) apply_filters( 'pizzalayer_cart_btn_text',       'Add to Cart' ),
@@ -627,16 +623,6 @@ class FrontendSettings {
 			case 'alpha_desc':
 				$args['orderby'] = 'title';
 				$args['order']   = 'DESC';
-				break;
-			case 'price_asc':
-				$args['meta_key'] = 'topping_price'; // phpcs:ignore WordPress.DB.SlowDBQuery
-				$args['orderby']  = 'meta_value_num';
-				$args['order']    = 'ASC';
-				break;
-			case 'price_desc':
-				$args['meta_key'] = 'topping_price'; // phpcs:ignore WordPress.DB.SlowDBQuery
-				$args['orderby']  = 'meta_value_num';
-				$args['order']    = 'DESC';
 				break;
 			default: // 'menu' = WordPress menu_order
 				$args['orderby'] = 'menu_order title';

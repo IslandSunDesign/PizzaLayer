@@ -4,7 +4,7 @@ Tags: pizza, restaurant, woocommerce, customizer, builder
 Requires at least: 6.2
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.1.6
+Stable tag: 1.4.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -194,6 +194,50 @@ Visit [pizzalayer.com/support](https://pizzalayer.com/support) or use the WordPr
 10. Setup Guide — step-by-step guided walkthrough
 
 == Changelog ==
+
+= 1.4.0 =
+* New: **Site Migration** tool under PizzaLayer → Site Migration. Exports a complete site setup as a single JSON file: every plugin setting, all eight content types (toppings, crusts, sauces, cheeses, drizzles, cuts, sizes, presets) with their full custom fields, the Ingredient Groups taxonomy tree, and (if PizzaLayerPro is active) Pro data via the `pizzalayer_export_payload` filter.
+* New: Layer images are exported as **URL references** (URL + filename + alt + caption), not packaged binaries — keeps export files small. The destination site sideloads each image into its own media library on import.
+* New: Imports are **create-only by slug** — any post or taxonomy term whose slug already exists on the destination is skipped. Re-running an import is idempotent and never destructive (settings always overwrite, but posts/terms never do).
+* New: Two extension hooks — `pizzalayer_export_payload` filter (Pro and other add-ons contribute their data to the export) and `pizzalayer_import_payload` action (consume the full payload on the way in). Documented in Help → Site Migration.
+* New: Site Migration card on the Dashboard quick-nav row.
+* New: Help → Site Migration section with full how-to plus developer extension example.
+* Public API: `PizzaLayer\Admin\Settings::get_option_keys()` — read-only accessor for the canonical option-key list, used by Site Migration and available to extensions.
+* Docs: Help class map + `pizzalayer_cpt_registered` hook description corrected from "7 CPTs" to "8 CPTs (7 layer types + Presets)" — the Presets CPT was always there but was undercounted.
+
+= 1.3.0 =
+* New: Command Center, NightPie, and Colorbox templates now expose configurable settings on the Templates page (colors, typography, geometry, behavioural toggles). Previously these three templates rendered an empty "no customizable settings" panel; they now ship with full settings-driven CSS-variable injection like Metro and Plainlist.
+* New: Colorbox per-category tile colors are now individually configurable (Sizes, Crust, Sauce, Cheese, Toppings, Drizzle, Cuts), plus a master "Colorful Category Tiles" toggle.
+* New: NightPie sticky preview can now be toggled off for a static side-by-side desktop layout.
+* New: Command Center exposes step-number visibility, summary-sidebar visibility, and accent-glow toggles.
+* Fix: Templates page — stray PHP escape (`template\'s`) inside HTML output replaced with proper `&rsquo;`.
+* Docs: Help → Quickstart now lists all seven user-facing templates including Colorbox (was missing) and adds a Settings Wizard primary entry point.
+* Docs: Help → Managing Content now leads with a Layer Builder Wizard fast-path callout.
+* Docs: Help → Template System CSS variable reference rewritten with correct values for NightPie (previous values were wrong) and a new section for Command Center; new "Per-template settings" intro pointing users at the Templates page UI.
+* Docs: Help → Developer Reference class map adds `Core\Loader`, `Core\Activator`, `Core\Deactivator`, and `Admin\Customizer`.
+
+= 1.2.1 =
+* Fix: Layer Builder Wizard now saves correctly — nonce action now matches between client and server (was `pizzalayer_layer_builder` vs `pizzalayer_wizard_save`)
+* Fix: Layer Builder Wizard JS no longer ships with literal `<?php …?>` strings; all UI labels and alerts are now delivered via wp_localize_script with English fallbacks
+* Fix: Layer Image Meta Box JS rewritten to remove leftover PHP and a stray `</script>` literal; multiple meta boxes on the same screen no longer collide
+* Fix: Settings import now preserves Custom CSS and Custom JS (no longer mangled by wp_kses_post on import — matches the live save path)
+* Fix: Settings import hardened — requires a real HTTP upload, checks for upload errors, caps file size at 1 MB, requires a `.json` extension
+* Fix: Template activation now validates the posted slug against available templates before writing the option
+* Fix: Layer Builder Wizard verifies the supplied image_id is an actual image attachment before associating it with the new layer post
+* Fix: Help page "Shortcodes" section icon — the malformed `</>` glyph is now `⌨`
+* Security: Template settings save (TemplateChoice and Settings) now namespace-guards keys so a malicious template-options.php cannot overwrite core options like `siteurl`
+
+= 1.2.0 =
+* **Breaking:** All pricing logic, fields, and settings consolidated into PizzaLayerPro. The free plugin now focuses purely on ingredients, layouts, and visualization; install PizzaLayerPro for prices, cart integration, and checkout.
+* Remove: "Price Modifier" field from Layer Builder Wizard (and its `_pizzalayer_price` post meta save).
+* Remove: "Pricing Grid (CSV)" meta box (`PriceGrid` admin class) — was unused dead code; PizzaLayerPro provides the actual pricing grid.
+* Remove: Settings → Pricing & Cart section (Price Display Mode, Base Price, Currency Symbol Position, Price Update Animation) — these settings are now in PizzaLayerPro → Pro Settings. Replaced with a notice pointing admins to the right place.
+* Remove: Settings → Typography → Price Font Size field and the matching `--pzl-price-size` CSS variable (Pro provides its own price typography).
+* Remove: `priceDisplayMode` from frontend localized config.
+* Remove: Topping Sort → "Price (low to high)" / "Price (high to low)" options (referenced an unused meta key).
+* Remove: Help → Class Reference entry for the deleted `PriceGrid` class.
+* Update: AdminHome and SetupGuide descriptions softened — references to "price data" and "price grid rows" replaced with neutral language; toppings setup now points to PizzaLayerPro for pricing.
+* Update: Uninstall now also clears legacy `_pizzalayer_price` and `*_cost_csv` post meta from older versions.
 
 = 1.1.6 =
 * Remove: Colorbox template removed; Command Center is now the seventh template

@@ -28,7 +28,8 @@ $pl_check_style  = sanitize_key( get_option( 'plainlist_setting_check_style',   
 $pl_columns      = sanitize_key( get_option( 'plainlist_setting_columns',           '1'           ) );
 $pl_show_dividers  = get_option( 'plainlist_setting_show_dividers',  'yes' ) === 'yes';
 $pl_show_icons     = get_option( 'plainlist_setting_show_section_icons', 'yes' ) === 'yes';
-$pl_show_prices    = get_option( 'plainlist_setting_show_prices',    'no'  ) === 'yes';
+// NOTE: pricing is provided by PizzaLayerPro; the legacy
+// 'plainlist_setting_show_prices' option is no longer read here.
 $pl_show_count     = get_option( 'plainlist_setting_show_item_count','no'  ) === 'yes';
 $pl_show_summary   = get_option( 'plainlist_setting_show_summary',   'yes' ) === 'yes';
 $pl_show_reset     = get_option( 'plainlist_setting_show_reset',     'yes' ) === 'yes';
@@ -131,17 +132,12 @@ $cuts     = apply_filters( 'pizzalayer_query_args_cuts',     get_posts( array_me
  * Build the <li> for an exclusive item (crust/sauce/cheese/drizzle/cut).
  */
 if ( ! function_exists( 'pzt_plainlist_exclusive_item' ) ) :
-function pzt_plainlist_exclusive_item( $post, string $layer_type, bool $show_price, string $pl_var ): string {
+function pzt_plainlist_exclusive_item( $post, string $layer_type, string $pl_var ): string {
 	if ( ! ( $post instanceof \WP_Post ) ) { return ''; }
 	$id     = $post->ID;
 	$title  = get_the_title( $post );
 	$slug   = sanitize_title( $title );
 	$input_id = 'pl-' . esc_attr( $layer_type ) . '-' . esc_attr( $slug );
-
-	$price_raw = '';
-	if ( $show_price ) {
-		$price_raw = get_field( $layer_type . '_price', $id ) ?: get_post_meta( $id, $layer_type . '_price', true );
-	}
 
 	// JS: reuse the same API as other templates for compatibility
 	$layer_url = get_field( $layer_type . '_layer_image', $id ) ?: '';
@@ -169,9 +165,6 @@ function pzt_plainlist_exclusive_item( $post, string $layer_type, bool $show_pri
 		       tabindex="-1">
 		<label class="pl-item__label" for="<?php echo esc_attr( $input_id ); ?>" onclick="return false;">
 			<?php echo esc_html( $title ); ?>
-			<?php if ( $price_raw ) : ?>
-			<span class="pl-item__price"><?php echo esc_html( $price_raw ); ?></span>
-			<?php endif; ?>
 		</label>
 	</li>
 	<?php
@@ -184,18 +177,13 @@ endif;
  * Build the <li> for a topping item (multi-select).
  */
 if ( ! function_exists( 'pzt_plainlist_topping_item' ) ) :
-function pzt_plainlist_topping_item( $post, bool $show_price, int $zindex, string $pl_var ): string {
+function pzt_plainlist_topping_item( $post, int $zindex, string $pl_var ): string {
 	if ( ! ( $post instanceof \WP_Post ) ) { return ''; }
 	$id       = $post->ID;
 	$title    = get_the_title( $post );
 	$slug     = sanitize_title( $title );
 	$layer_id = 'pizzalayer-topping-' . $slug;
 	$input_id = 'pl-topping-' . $slug;
-
-	$price_raw = '';
-	if ( $show_price ) {
-		$price_raw = get_field( 'topping_price', $id ) ?: get_post_meta( $id, 'topping_price', true );
-	}
 
 	$layer_url = get_field( 'topping_layer_image', $id ) ?: '';
 	$thumb_url = get_field( 'topping_image', $id ) ?: $layer_url;
@@ -226,9 +214,6 @@ function pzt_plainlist_topping_item( $post, bool $show_price, int $zindex, strin
 		       tabindex="-1">
 		<label class="pl-item__label" for="<?php echo esc_attr( $input_id ); ?>" onclick="return false;">
 			<?php echo esc_html( $title ); ?>
-			<?php if ( $price_raw ) : ?>
-			<span class="pl-item__price"><?php echo esc_html( $price_raw ); ?></span>
-			<?php endif; ?>
 		</label>
 	</li>
 	<?php
@@ -257,36 +242,36 @@ $sections_data['size'] = '';
 
 // Crusts
 $items_html = '';
-foreach ( $crusts as $post ) { $items_html .= pzt_plainlist_exclusive_item( $post, 'crust', $pl_show_prices, $pl_var ); }
+foreach ( $crusts as $post ) { $items_html .= pzt_plainlist_exclusive_item( $post, 'crust', $pl_var ); }
 $sections_data['crust'] = $items_html ?: '<li class="pl-empty">' . esc_html__( 'No crusts found.', 'pizzalayer' ) . '</li>';
 
 // Sauces
 $items_html = '';
-foreach ( $sauces as $post ) { $items_html .= pzt_plainlist_exclusive_item( $post, 'sauce', $pl_show_prices, $pl_var ); }
+foreach ( $sauces as $post ) { $items_html .= pzt_plainlist_exclusive_item( $post, 'sauce', $pl_var ); }
 $sections_data['sauce'] = $items_html ?: '<li class="pl-empty">' . esc_html__( 'No sauces found.', 'pizzalayer' ) . '</li>';
 
 // Cheeses
 $items_html = '';
-foreach ( $cheeses as $post ) { $items_html .= pzt_plainlist_exclusive_item( $post, 'cheese', $pl_show_prices, $pl_var ); }
+foreach ( $cheeses as $post ) { $items_html .= pzt_plainlist_exclusive_item( $post, 'cheese', $pl_var ); }
 $sections_data['cheese'] = $items_html ?: '<li class="pl-empty">' . esc_html__( 'No cheeses found.', 'pizzalayer' ) . '</li>';
 
 // Drizzles
 $items_html = '';
-foreach ( $drizzles as $post ) { $items_html .= pzt_plainlist_exclusive_item( $post, 'drizzle', $pl_show_prices, $pl_var ); }
+foreach ( $drizzles as $post ) { $items_html .= pzt_plainlist_exclusive_item( $post, 'drizzle', $pl_var ); }
 $sections_data['drizzle'] = $items_html ?: '<li class="pl-empty">' . esc_html__( 'No drizzles found.', 'pizzalayer' ) . '</li>';
 
 // Toppings
 $items_html = '';
 $t_z = 400;
 foreach ( $toppings as $post ) {
-	$items_html .= pzt_plainlist_topping_item( $post, $pl_show_prices, $t_z, $pl_var );
+	$items_html .= pzt_plainlist_topping_item( $post, $t_z, $pl_var );
 	$t_z += 10;
 }
 $sections_data['toppings'] = $items_html ?: '<li class="pl-empty">' . esc_html__( 'No toppings found.', 'pizzalayer' ) . '</li>';
 
 // Cuts / Slicing
 $items_html = '';
-foreach ( $cuts as $post ) { $items_html .= pzt_plainlist_exclusive_item( $post, 'cut', $pl_show_prices, $pl_var ); }
+foreach ( $cuts as $post ) { $items_html .= pzt_plainlist_exclusive_item( $post, 'cut', $pl_var ); }
 $sections_data['slicing'] = $items_html ?: '<li class="pl-empty">' . esc_html__( 'No cut styles found.', 'pizzalayer' ) . '</li>';
 
 // ── Item counts ───────────────────────────────────────────────────────────────

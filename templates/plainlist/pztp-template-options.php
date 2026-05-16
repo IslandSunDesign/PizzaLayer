@@ -212,14 +212,6 @@ return [
 		'toggle_label' => 'Show icons',
 	],
 	[
-		'key'          => 'plainlist_setting_show_prices',
-		'type'         => 'toggle',
-		'label'        => 'Show Prices',
-		'desc'         => 'Show the price of each ingredient inline with its label.',
-		'default'      => 'no',
-		'toggle_label' => 'Show ingredient prices',
-	],
-	[
 		'key'          => 'plainlist_setting_show_item_count',
 		'type'         => 'toggle',
 		'label'        => 'Show Item Count in Section Heading',

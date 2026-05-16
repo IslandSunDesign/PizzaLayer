@@ -1025,19 +1025,8 @@
 	letter-spacing: -0.01em;
 }
 
-/* ── Ingredient card price ──────────────────────────────────── */
-/* Hidden by default; shown when metro_setting_show_ingredient_prices = yes */
-.mt-root .mt-card__price {
-	display:     none; /* overridden by pztp-template-custom.php */
-	font-size:   12px;
-	font-weight: 600;
-	color:       var(--mt-accent);
-	background:  var(--mt-accent-dim);
-	padding:     1px 7px;
-	border-radius: var(--mt-radius-pill);
-	white-space: nowrap;
-	flex-shrink: 0;
-}
+/* Ingredient card price styling removed in PizzaLayer 1.2.0 — pricing is
+   provided by PizzaLayerPro and rendered in its own elements. */
 .mt-root .mt-card__footer-row--title {
 	display:     flex;
 	align-items: center;

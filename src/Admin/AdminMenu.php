@@ -100,6 +100,7 @@ class AdminMenu {
 		add_submenu_page( 'pizzalayer', __( 'Layer Image Maker',   'pizzalayer' ), __( 'Layer Image Maker',   'pizzalayer' ), 'manage_options', 'pizzalayer-layer-maker',[ $this, 'render_layer_maker'] );
 		add_submenu_page( 'pizzalayer', __( 'Layer Builder Wizard','pizzalayer' ), __( '✦ Layer Builder',      'pizzalayer' ), 'manage_options', 'pizzalayer-layer-wizard',[ $this, 'render_layer_wizard'] );
 		add_submenu_page( 'pizzalayer', __( 'Setup Guide',         'pizzalayer' ), __( 'Setup Guide',         'pizzalayer' ), 'manage_options', 'pizzalayer-setup',      [ $this, 'render_setup'      ] );
+		add_submenu_page( 'pizzalayer', __( 'Site Migration',      'pizzalayer' ), __( 'Site Migration',      'pizzalayer' ), 'manage_options', 'pizzalayer-migration',  [ $this, 'render_migration' ] );
 		add_submenu_page( 'pizzalayer', __( 'Shortcode Generator', 'pizzalayer' ), __( 'Shortcode Generator', 'pizzalayer' ), 'manage_options', 'pizzalayer-shortcodes', [ $this, 'render_shortcodes' ] );
 		add_submenu_page( 'pizzalayer', __( 'Template',            'pizzalayer' ), __( 'Template',            'pizzalayer' ), 'manage_options', 'pizzalayer-template',   [ $this, 'render_template'   ] );
 		add_submenu_page( 'pizzalayer', __( 'Settings',            'pizzalayer' ), __( 'Settings',            'pizzalayer' ), 'manage_options', 'pizzalayer-settings',   [ $this, 'render_settings'   ] );
@@ -297,6 +298,7 @@ class AdminMenu {
 	public function render_home():       void { ( new AdminHome() )->render(); }
 	public function render_content():    void { ( new ContentHub() )->render(); }
 	public function render_setup():      void { ( new SetupGuide() )->render(); }
+	public function render_migration():  void { ( new SiteMigration() )->render(); }
 	public function render_shortcodes(): void { ( new ShortcodeGenerator() )->render(); }
 	public function render_template():   void { ( new TemplateChoice() )->render(); }
 	public function render_settings():   void { ( new Settings() )->render(); }

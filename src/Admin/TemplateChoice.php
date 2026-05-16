@@ -19,8 +19,15 @@ class TemplateChoice {
 		if ( isset( $_POST['pizzalayer_activate_template'], $_POST['_wpnonce'] )
 		     && wp_verify_nonce( sanitize_key( $_POST['_wpnonce'] ), 'pizzalayer_activate_template' ) ) {
 			$slug = sanitize_key( $_POST['pizzalayer_activate_template'] );
-			update_option( 'pizzalayer_setting_global_template', $slug );
-			echo '<div class="notice notice-success is-dismissible"><p>' . sprintf( esc_html__( 'Template %s activated.', 'pizzalayer' ), '<strong>' . esc_html( $slug ) . '</strong>' ) . '</p></div>';
+			// Validate the slug against actually available templates before writing.
+			$loader            = new \PizzaLayer\Template\TemplateLoader();
+			$available_slugs   = array_keys( (array) $loader->get_available_templates() );
+			if ( $slug && in_array( $slug, $available_slugs, true ) ) {
+				update_option( 'pizzalayer_setting_global_template', $slug );
+				echo '<div class="notice notice-success is-dismissible"><p>' . sprintf( esc_html__( 'Template %s activated.', 'pizzalayer' ), '<strong>' . esc_html( $slug ) . '</strong>' ) . '</p></div>';
+			} else {
+				echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Invalid template.', 'pizzalayer' ) . '</p></div>';
+			}
 		}
 
 		$active = (string) get_option( 'pizzalayer_setting_global_template', 'nightpie' );
@@ -388,7 +395,7 @@ class TemplateChoice {
 						<?php echo esc_html( ucwords( str_replace( '-', ' ', $active ) ) ); ?> Template Settings
 						<span class="ptc-settings-card__badge"><?php esc_html_e( 'Active Template', 'pizzalayer' ); ?></span>
 					</h2>
-					<p>These settings apply only to the <strong><?php echo esc_html( ucwords( str_replace( '-', ' ', $active ) ) ); ?></strong> template. Switching templates shows that template\'s settings instead.</p>
+					<p>These settings apply only to the <strong><?php echo esc_html( ucwords( str_replace( '-', ' ', $active ) ) ); ?></strong> template. Switching templates shows that template&rsquo;s settings instead.</p>
 				</div>
 			</div>
 			<form method="post" action="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-template' ) ); ?>#template-settings" class="ptc-settings-form">
@@ -540,7 +547,11 @@ class TemplateChoice {
 		}
 		foreach ( $fields as $field ) {
 			if ( empty( $field['key'] ) || empty( $field['type'] ) ) { continue; }
-			$key = $field['key'];
+			$key = sanitize_key( (string) $field['key'] );
+			// Guard: only allow writing options that look like template/plugin settings.
+			// This prevents a malicious template-options.php from overwriting core options
+			// like `siteurl`, `admin_email`, etc.
+			if ( $key === '' || strpos( $key, '_setting_' ) === false ) { continue; }
 			$raw = $_POST[ $key ] ?? null;
 			if ( $field['type'] === 'toggle' ) {
 				// Hidden input sends 'no', checkbox overwrites with 'yes' if checked

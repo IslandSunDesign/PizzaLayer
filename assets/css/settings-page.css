@@ -310,3 +310,55 @@
 .pset-info-card--tip p { margin:0; font-size:12px; color:#3c434a; }
 /* sticky save bar */
 .pset-save-card { position:sticky; top:32px; z-index:10; }
+
+/* ── Simple / Advanced mode toggle ─────────────────────────────
+   A segmented pill in the page header that lets users swap between
+   the current (advanced) descriptions and plain-English versions.
+   State is held on .pset-wrap as the class `pset-mode-simple`.
+   Advanced is the default — absence of the class shows the normal
+   descriptions, so existing users see no change. */
+.pset-mode-toggle {
+	display: inline-flex;
+	background: rgba(255,255,255,.08);
+	border: 1px solid rgba(255,255,255,.22);
+	border-radius: 999px;
+	padding: 3px;
+	flex-shrink: 0;
+}
+.pset-mode-btn {
+	display: inline-flex;
+	align-items: center;
+	gap: 5px;
+	padding: 5px 12px;
+	background: transparent;
+	color: rgba(255,255,255,.75);
+	border: 0;
+	border-radius: 999px;
+	font: inherit;
+	font-size: 12px;
+	font-weight: 600;
+	cursor: pointer;
+	transition: background .15s, color .15s;
+	white-space: nowrap;
+}
+.pset-mode-btn:hover { color: #fff; }
+.pset-mode-btn .dashicons {
+	font-size: 14px !important;
+	width: 14px !important;
+	height: 14px !important;
+}
+.pset-mode-btn--active {
+	background: #ff6b35;
+	color: #fff;
+	box-shadow: 0 1px 2px rgba(0,0,0,.3);
+}
+.pset-mode-btn--active:hover { color: #fff; }
+
+/* Mode-based description swapping.
+   - `.pset-desc--simple` elements are authored for simple mode only.
+   - `.pset-desc--adv`    elements are the technical version we hide
+                          when simple mode is on.
+   - Plain `.pset-desc` with neither modifier shows in both modes. */
+.pset-desc--simple { display: none; }
+.pset-wrap.pset-mode-simple .pset-desc--adv { display: none; }
+.pset-wrap.pset-mode-simple .pset-desc--simple { display: block; }

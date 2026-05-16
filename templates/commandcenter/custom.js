@@ -17,15 +17,35 @@
        ════════════════════════════════════════════════════════════ */
     var PizzaStack = {
 
-        getStage: function ($root) {
-            var $stage = $root.find('.cc-pizza-stage');
-            if (!$stage.length) {
-                var $canvas = $root.find('#' + $root.attr('id') + '-canvas');
-                if (!$canvas.length) { $canvas = $root.find('.cc-canvas').first(); }
-                if (!$canvas.length) { return $(); }
-                $stage = $('<div class="cc-pizza-stage cb-pizza-stage"></div>');
-                $canvas.append($stage);
+        /* $root here is the .cc-canvas element itself (see $stage() below).
+           We try to reuse the stage node PizzaBuilder::build_dynamic() already
+           rendered (.np-pizza-stage) — adding the cc-/cb- classes so the CSS
+           layer-positioning rules apply — rather than creating a second empty
+           stage that competes with it. */
+        getStage: function ($canvas) {
+            if (!$canvas || !$canvas.length) { return $(); }
+
+            /* 1) A stage we (or a prior call) already tagged. */
+            var $stage = $canvas.find('.cc-pizza-stage').first();
+            if ($stage.length) { return $stage; }
+
+            /* 2) The PHP-rendered .np-pizza-stage — adopt it. */
+            $stage = $canvas.find('.np-pizza-stage').first();
+            if ($stage.length) {
+                $stage.addClass('cc-pizza-stage cb-pizza-stage');
+                return $stage;
             }
+
+            /* 3) Any other known stage class rendered by a different path. */
+            $stage = $canvas.find('.cb-pizza-stage, .pzl-pizza-stage').first();
+            if ($stage.length) {
+                $stage.addClass('cc-pizza-stage');
+                return $stage;
+            }
+
+            /* 4) Nothing there — create one. */
+            $stage = $('<div class="cc-pizza-stage cb-pizza-stage"></div>');
+            $canvas.append($stage);
             return $stage;
         },
 

@@ -76,9 +76,10 @@ class Help {
 			'quickstart' => [ 'icon' => '🚀', 'title' => __( 'Quickstart', 'pizzalayer' )           ],
 			'content'    => [ 'icon' => '📦', 'title' => __( 'Managing Content', 'pizzalayer' )      ],
 			'layers'     => [ 'icon' => '📚', 'title' => __( 'Layer Type Reference', 'pizzalayer' )  ],
-			'shortcodes' => [ 'icon' => '</>', 'title' => __( 'Shortcodes', 'pizzalayer' )            ],
+			'shortcodes' => [ 'icon' => '⌨', 'title' => __( 'Shortcodes', 'pizzalayer' )            ],
 			'shapes'     => [ 'icon' => '◉',  'title' => __( 'Shape & Animation', 'pizzalayer' )     ],
 			'templates'  => [ 'icon' => '🎨', 'title' => __( 'Template System', 'pizzalayer' )       ],
+			'migration'  => [ 'icon' => '↗',  'title' => __( 'Site Migration', 'pizzalayer' )        ],
 			'faq'        => [ 'icon' => '❓', 'title' => __( 'FAQ', 'pizzalayer' )                   ],
 			'developer'  => [ 'icon' => '⚙',  'title' => __( 'Developer Reference', 'pizzalayer' )   ],
 		];
@@ -119,12 +120,14 @@ class Help {
 				<div class="plhelp-step__body">
 					<h3>Set global defaults in Settings</h3>
 					<p>In Settings, configure which crust/sauce/cheese loads by default when the builder first appears. Also set your pizza shape, layer animation style, max toppings, and branding.</p>
+					<p class="plhelp-tip-inline">⚡ <strong>First time?</strong> The <strong>Settings Wizard</strong> walks you through the most common settings — template, defaults, fractions, colours, layout — in a guided sequence. Use it for first-run configuration; come back to the full Settings page later for fine-tuning.</p>
 					<div class="plhelp-checklist">
 						<label><input type="checkbox"> Set a Default Crust, Sauce, and Cheese</label>
 						<label><input type="checkbox"> Set Max Toppings (0 = unlimited)</label>
 						<label><input type="checkbox"> Choose a Pizza Shape and Layer Animation</label>
 					</div>
-					<a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-settings') ); ?>" class="button">Settings →</a>
+					<a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-wizard') ); ?>" class="button button-primary">✦ Settings Wizard →</a>
+					<a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-settings') ); ?>" class="button">Full Settings →</a>
 				</div>
 			</div>
 
@@ -132,7 +135,7 @@ class Help {
 				<div class="plhelp-step__num">3</div>
 				<div class="plhelp-step__body">
 					<h3>Choose your template</h3>
-					<p>Templates control the entire visual design of the builder. PizzaLayer ships with seven built-in templates: <strong>Command Center</strong> (dark navy, step wizard), <strong>NightPie</strong> (dark, modern), <strong>Metro</strong> (clean, card-based), <strong>Fornaia</strong> (warm, rustic), <strong>PocketPie</strong> (mobile-first), <strong>Plainlist</strong> (text-first, accessible), and <strong>Scaffold</strong> (bare-bones developer starter). You can also create a custom template in your theme (see Template System).</p>
+					<p>Templates control the entire visual design of the builder. PizzaLayer ships with seven user-facing templates — <strong>Command Center</strong> (dark navy, step wizard), <strong>NightPie</strong> (dark, modern), <strong>Metro</strong> (clean, card-based), <strong>Colorbox</strong> (bright, colorful tiles), <strong>Fornaia</strong> (warm, rustic), <strong>PocketPie</strong> (mobile-first), and <strong>Plainlist</strong> (text-first, accessible) — plus <strong>Scaffold</strong>, a bare-bones developer starter for building your own. You can also create a custom template in your theme (see Template System).</p>
 					<a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-template') ); ?>" class="button">Template Settings →</a>
 				</div>
 			</div>
@@ -182,6 +185,15 @@ class Help {
 		</div>
 
 		<h3>Adding a new layer item (any type)</h3>
+
+		<div class="plhelp-info-box">
+			<span class="dashicons dashicons-superhero"></span>
+			<div>
+				<strong>Fast path: Layer Builder Wizard.</strong> The <a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-layer-wizard' ) ); ?>">Layer Builder Wizard</a> bundles image upload, title, slug, layer type, and meta fields into a single guided form and publishes the post for you. It's the fastest way to add toppings and ingredients in bulk. The manual flow below still works for advanced cases (custom taxonomy assignments, scheduled publishing, etc.).
+			</div>
+		</div>
+
+		<p><strong>Manual flow:</strong></p>
 		<ol class="plhelp-list plhelp-list--numbered">
 			<li>In the Content Hub, click the layer type in the left rail (e.g. Toppings).</li>
 			<li>Click <strong>Add New Topping</strong> (or the <strong>+</strong> icon beside the type in the rail).</li>
@@ -596,7 +608,7 @@ class Help {
 	// 6. TEMPLATE SYSTEM
 	// ═══════════════════════════════════════════════════════════════════
 	private function section_templates(): void { ?>
-		<p class="plhelp-lead">Templates control the complete visual presentation of the pizza builder — layout, colours, fonts, card styles, and responsive behaviour. PizzaLayer ships with seven production-ready templates (<strong>Command Center</strong>, <strong>NightPie</strong>, <strong>Metro</strong>, <strong>Fornaia</strong>, <strong>PocketPie</strong>, <strong>Plainlist</strong>, <strong>Scaffold</strong>) plus a bare <strong>Scaffold</strong> template for building your own from scratch.</p>
+		<p class="plhelp-lead">Templates control the complete visual presentation of the pizza builder — layout, colours, fonts, card styles, and responsive behaviour. PizzaLayer ships with seven production-ready user-facing templates (<strong>Command Center</strong>, <strong>NightPie</strong>, <strong>Metro</strong>, <strong>Colorbox</strong>, <strong>Fornaia</strong>, <strong>PocketPie</strong>, <strong>Plainlist</strong>) plus a bare <strong>Scaffold</strong> template for building your own from scratch.</p>
 
 		<h3>How templates work</h3>
 		<p>A template is a directory containing at minimum:</p>
@@ -623,22 +635,53 @@ class Help {
 			<li>Go to <a href="<?php echo esc_url( admin_url('admin.php?page=pizzalayer-template') ); ?>">Settings → Template</a> and switch to your new template.</li>
 		</ol>
 
-		<h3>NightPie CSS custom properties</h3>
+		<h3>Per-template settings (Templates page)</h3>
+		<p>Most templates expose customizable settings — colors, fonts, geometry, layout toggles — directly on the <a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-template' ) ); ?>">Templates page</a>. When you activate a template, its settings panel appears below the picker. Changes save to the WordPress options table and are injected as CSS custom property overrides on the front end, so you don't need to edit <code>template.css</code> for routine theming. Each template namespaces its option keys with a <code>{slug}_setting_</code> prefix (e.g. <code>nightpie_setting_*</code>, <code>commandcenter_setting_*</code>).</p>
+
+		<h3>CSS custom properties — direct overrides</h3>
+		<p>If you want to override tokens outside the Templates UI (e.g. in your theme stylesheet, a child template, or a custom <code>:root</code> block), each template defines its variables on its scoped root selector. Below are the actual variables shipped by two of the templates.</p>
+
+		<h4>NightPie (<code>:root</code>)</h4>
 		<pre class="plhelp-code">/* Colours */
---np-accent:       #ff6b35   /* primary action colour */
---np-accent-hover: #e05a28   /* hover state */
---np-bg:           #1a1e23   /* outer dark background */
---np-surface:      #252a31   /* card / panel surfaces */
---np-border:       #2d3748   /* border colour */
---np-text:         #e2e8f0   /* primary text */
---np-text-muted:   #8d97a5   /* secondary / hint text */
+--np-accent:        #ff5722   /* primary action colour */
+--np-accent-dim:    rgba(255,87,34,0.15)
+--np-bg:            #0e0e12   /* outer dark background */
+--np-surface:       #18181f   /* card / panel surfaces */
+--np-surface-2:     #22222c
+--np-surface-3:     #2c2c38
+--np-border:        rgba(255,255,255,0.08)
+--np-border-hover:  rgba(255,255,255,0.18)
+--np-text:          #f0f0f4
+--np-text-muted:    #888898
+--np-text-faint:    #444456
 
 /* Geometry */
---np-radius:       10px      /* card corner radius */
---np-radius-pill:  999px     /* pill buttons */
+--np-radius-sm:     10px
+--np-radius:        16px
+--np-radius-lg:     24px
+--np-radius-pill:   999px
 
 /* Change the accent colour only: */
-:root { --np-accent: #e63946; --np-accent-hover: #c1121f; }</pre>
+:root { --np-accent: #e63946; --np-accent-dim: rgba(230,57,70,0.15); }</pre>
+
+		<h4>Command Center (<code>.cc-root</code>)</h4>
+		<pre class="plhelp-code">/* Colours */
+--cc-accent:        #e94560   /* red accent */
+--cc-accent-hover:  #ff5572
+--cc-step-done:     #3dd68c   /* completed wizard step */
+--cc-bg:            #0b1120   /* deep navy background */
+--cc-surface:       #16213e   /* cards, sidebar, header */
+--cc-surface-2:     #1e2d4f
+--cc-text:          #e8eaf6
+--cc-text-muted:    #8892b0
+
+/* Geometry */
+--cc-radius-sm:     8px
+--cc-radius:        12px
+--cc-radius-lg:     16px
+
+/* Override accent in a child theme: */
+.cc-root { --cc-accent: #2563eb; --cc-accent-hover: #3b82f6; }</pre>
 
 		<div class="plhelp-info-box plhelp-info-box--warn">
 			<span class="dashicons dashicons-warning"></span>
@@ -649,7 +692,86 @@ class Help {
 	<?php }
 
 	// ═══════════════════════════════════════════════════════════════════
-	// 7. FAQ
+	// 7. SITE MIGRATION
+	// ═══════════════════════════════════════════════════════════════════
+	private function section_migration(): void { ?>
+		<p class="plhelp-lead">Move an entire PizzaLayer setup — settings, ingredients, custom fields, taxonomy, and Pro data — to another WordPress installation. Site Migration produces a single JSON file you can carry between sites.</p>
+
+		<h3>What gets exported</h3>
+		<ul class="plhelp-list">
+			<li><strong>Plugin settings.</strong> Every <code>pizzalayer_setting_*</code> option, the active template, custom CSS / custom JS, and Settings-page configuration.</li>
+			<li><strong>All eight content types</strong> — Toppings, Crusts, Sauces, Cheeses, Drizzles, Cuts, Sizes, Presets — with full title, slug, content, excerpt, status, and menu order.</li>
+			<li><strong>All custom fields (post meta)</strong> per item, including any user-added meta keys (allergens, ingredient lists, melt factors, etc.).</li>
+			<li><strong>The Ingredient Groups taxonomy tree</strong> with parent/child relationships, plus per-post term assignments.</li>
+			<li><strong>Layer image references</strong> — URL, filename, alt text, and caption — instead of packaged binary files. The destination site sideloads each image into its own media library by URL on import.</li>
+			<li><strong>PizzaLayerPro data</strong>, when Pro is installed and active. Pro contributes its own settings, pricing grids, and Pro-specific post meta via the <code>pizzalayer_export_payload</code> filter.</li>
+		</ul>
+
+		<h3>How to migrate a site</h3>
+		<ol class="plhelp-list plhelp-list--numbered">
+			<li>On the source site, go to <strong>PizzaLayer → Site Migration</strong> and click <strong>Download Full Export</strong>. You'll get a <code>pizzalayer-site-{date}.json</code> file.</li>
+			<li>On the destination WordPress installation, install and activate PizzaLayer (and PizzaLayerPro, if you used it on the source).</li>
+			<li>Go to <strong>PizzaLayer → Site Migration</strong> on the destination site, choose which sections to restore, upload the JSON, and click <strong>Run Import</strong>.</li>
+			<li>Wait for the sideload — each layer image is downloaded from its original URL into the destination media library. The source site must be reachable over HTTP for this step to succeed.</li>
+		</ol>
+
+		<div class="plhelp-info-box plhelp-info-box--warn">
+			<span class="dashicons dashicons-warning"></span>
+			<div>
+				<strong>Settings overwrite, posts don't.</strong> Importing settings will replace this site's current PizzaLayer settings — back them up first. Posts and taxonomy terms are <strong>create-only by slug</strong>: any item with a slug that already exists on the destination is skipped, never overwritten. Re-running the same import is safe.
+			</div>
+		</div>
+
+		<h3>Image handling</h3>
+		<p>Layer images travel as URL references. This keeps export files small (typically a few hundred KB even for stores with hundreds of layer items) and avoids the complexity of bundling binary attachments. Each reference includes the original URL, the file name, the alt text, and any caption — so the imported attachment lands in the destination media library with its metadata intact.</p>
+		<p>If the source site goes offline before you import, the JSON still imports cleanly — you just won't get the images. You can swap in replacement images per post afterwards via the standard <strong>Layer Image</strong> meta box.</p>
+
+		<h3>For developers — extending the export</h3>
+		<p>PizzaLayerPro and other add-ons hook into two filters / actions:</p>
+		<table class="plhelp-attr-table">
+			<thead><tr><th>Hook</th><th>Type</th><th>Args</th><th>Description</th></tr></thead>
+			<tbody>
+				<tr>
+					<td><code>pizzalayer_export_payload</code></td>
+					<td>filter</td>
+					<td><code>$payload</code></td>
+					<td>Add your data to the export array before serialization. Standard convention: contribute under the <code>pro</code> key (Pro) or a clearly namespaced top-level key (other add-ons).</td>
+				</tr>
+				<tr>
+					<td><code>pizzalayer_import_payload</code></td>
+					<td>action</td>
+					<td><code>$payload, $results</code></td>
+					<td>Fires after the free-plugin import sections have run. Read your section out of <code>$payload</code> and apply it. Honour create-only-by-slug semantics for anything user-facing.</td>
+				</tr>
+			</tbody>
+		</table>
+
+		<h4>Example: Pro contributes its data</h4>
+		<pre class="plhelp-code"><?php echo esc_html(
+'add_filter( \'pizzalayer_export_payload\', function( $payload ) {
+    $payload[\'pro\'] = [
+        \'settings\' => [
+            \'pro_setting_currency\'   => get_option( \'pro_setting_currency\' ),
+            \'pro_setting_price_grid\' => get_option( \'pro_setting_price_grid\' ),
+        ],
+        // Per-post Pro meta is already exported under each post\'s `meta`
+        // key, so you usually don\'t need to duplicate it here.
+    ];
+    return $payload;
+} );
+
+add_action( \'pizzalayer_import_payload\', function( $payload, $results ) {
+    if ( empty( $payload[\'pro\'] ) ) { return; }
+    foreach ( $payload[\'pro\'][\'settings\'] ?? [] as $key => $value ) {
+        if ( strpos( $key, \'pro_setting_\' ) !== 0 ) { continue; }
+        update_option( sanitize_key( $key ), $value );
+    }
+}, 10, 2 );'
+); ?></pre>
+	<?php }
+
+	// ═══════════════════════════════════════════════════════════════════
+	// 8. FAQ
 	// ═══════════════════════════════════════════════════════════════════
 	private function section_faq(): void {
 		$faqs = [
@@ -712,7 +834,7 @@ class Help {
 				<tr>
 					<td><code>pizzalayer_cpt_registered</code></td>
 					<td>—</td>
-					<td>Fires after all 7 CPTs have been registered. Use to add taxonomies, modify CPT args, or register dependent functionality.</td>
+					<td>Fires after all 8 CPTs have been registered (7 layer types plus the Presets CPT). Use to add taxonomies, modify CPT args, or register dependent functionality.</td>
 				</tr>
 				<tr>
 					<td><code>pizzalayer_before_builder</code></td>
@@ -738,6 +860,11 @@ class Help {
 					<td><code>pizzalayer_admin_home_cards</code></td>
 					<td>—</td>
 					<td>Inject full-width cards below the feature row on the Dashboard.</td>
+				</tr>
+				<tr>
+					<td><code>pizzalayer_import_payload</code></td>
+					<td><code>$payload, $results</code></td>
+					<td>Fires after the free-plugin import has run on Site Migration. Pro and other add-ons hook here to consume their own section of the JSON payload. See the Site Migration section for an example.</td>
 				</tr>
 			</tbody>
 		</table>
@@ -770,6 +897,12 @@ class Help {
 					<td><code>$path, $slug</code></td>
 					<td><code>$path</code></td>
 					<td>Override the resolved filesystem path for a template file — useful for plugin-to-plugin template sharing or testing.</td>
+				</tr>
+				<tr>
+					<td><code>pizzalayer_export_payload</code></td>
+					<td><code>$payload</code></td>
+					<td><code>$payload</code></td>
+					<td>Add data to the Site Migration export JSON before serialization. Pro hooks here to contribute its settings, pricing grids, and Pro-only meta under the <code>pro</code> key.</td>
 				</tr>
 			</tbody>
 		</table>
@@ -875,25 +1008,29 @@ window.PizzaLayerAPI.renderStatic(\'#my-container\', stateObject);'
 		<pre class="plhelp-code"><?php echo esc_html(
 '// Core
 PizzaLayer\Plugin                  — main plugin bootstrap and dependency wiring
+PizzaLayer\Core\Loader             — action/filter registration aggregator
+PizzaLayer\Core\Activator          — runs on plugin activation (rewrite flush, defaults)
+PizzaLayer\Core\Deactivator        — runs on plugin deactivation (cleanup)
 
 // Admin
 PizzaLayer\Admin\AdminMenu         — admin menu + submenu registration
 PizzaLayer\Admin\AdminBar          — WP admin bar items
 PizzaLayer\Admin\AdminHome         — dashboard home page
 PizzaLayer\Admin\ContentHub        — unified content management (tab rail + list tables)
+PizzaLayer\Admin\Customizer        — WordPress Customizer integration
 PizzaLayer\Admin\Settings          — full settings page (all option tabs)
 PizzaLayer\Admin\SettingsWizard    — guided step-by-step settings wizard
 PizzaLayer\Admin\Help              — help & reference documentation page
 PizzaLayer\Admin\SetupGuide        — onboarding checklist
 PizzaLayer\Admin\ShortcodeGenerator — visual shortcode builder
-PizzaLayer\Admin\TemplateChoice    — template picker UI
+PizzaLayer\Admin\TemplateChoice    — template picker UI + per-template settings panel
 PizzaLayer\Admin\LayerBuilderWizard — step-by-step wizard for adding ingredients
 PizzaLayer\Admin\LayerImageMaker   — in-admin layer image generation tool
 PizzaLayer\Admin\LayerImageMetaBox — layer image custom field meta box
-PizzaLayer\Admin\PriceGrid         — pricing grid display for Pro integration
+PizzaLayer\Admin\SiteMigration     — full-site export/import (settings + CPTs + meta + Pro hook)
 
 // Post Types
-PizzaLayer\PostTypes\PostTypeRegistrar — all 7 CPT registrations
+PizzaLayer\PostTypes\PostTypeRegistrar — all 8 CPT registrations (7 layer types + Presets)
 
 // Shortcodes
 PizzaLayer\Shortcodes\BuilderShortcode    — [pizza_builder]

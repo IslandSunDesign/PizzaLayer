@@ -240,13 +240,8 @@
 	font-weight: 600;
 }
 
-.pl-item__price {
-	font-size: calc( var(--pl-base-size) * 0.9 );
-	color: var(--pl-accent);
-	opacity: 0.75;
-	margin-left: 4px;
-	white-space: nowrap;
-}
+/* Item price styling removed in PizzaLayer 1.2.0 — pricing is provided
+   by PizzaLayerPro. */
 
 /* ── Step mode ───────────────────────────────────────────────────── */
 .pl-step-wrapper {

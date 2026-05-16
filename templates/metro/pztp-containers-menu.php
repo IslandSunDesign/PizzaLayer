@@ -35,7 +35,8 @@ $mt_var = 'MT_' . preg_replace( '/[^a-zA-Z0-9_]/', '_', $instance_id );
 $mt_layout       = sanitize_key( get_option( 'metro_setting_layout_mode',             'centered' ) );
 $mt_show_tray    =               get_option( 'metro_setting_show_summary_bar',         'yes' ) === 'yes';
 $mt_show_count   =               get_option( 'metro_setting_show_ingredient_count',    'yes' ) === 'yes';
-$mt_show_prices  =               get_option( 'metro_setting_show_ingredient_prices',   'no'  ) === 'yes';
+// NOTE: pricing is provided by PizzaLayerPro; the legacy
+// 'metro_setting_show_ingredient_prices' option is no longer read here.
 $mt_sticky_viz   =               get_option( 'metro_setting_sticky_visualizer',        'no'  ) === 'yes';
 $mt_hero_tagline = sanitize_text_field( get_option( 'metro_setting_hero_tagline',     '' ) );
 $mt_footer_note  = wp_kses_post( get_option( 'metro_setting_footer_note',             '' ) );
@@ -201,12 +202,7 @@ function pzt_metro_exclusive_card( $post, string $layer_type, string $mt_var, in
 		<div class="mt-card__footer">
 			<div class="mt-card__footer-row mt-card__footer-row--title">
 				<span class="mt-card__name"><?php echo esc_html( $title ); ?></span>
-				<?php
-				// Price: read from ACF price field if available
-				$price_raw = get_field( $layer_type . '_price', $id ) ?: get_post_meta( $id, $layer_type . '_price', true );
-				if ( $price_raw ) : ?>
-				<span class="mt-card__price"><?php echo esc_html( $price_raw ); ?></span>
-				<?php endif; ?>
+				<?php /* Pricing is provided by PizzaLayerPro; no inline price here. */ ?>
 			</div>
 			<div class="mt-card__footer-row mt-card__footer-row--actions">
 				<button type="button" class="mt-card__btn mt-card__btn--add" onclick="<?php echo esc_attr( $js_add ); ?>">
@@ -267,11 +263,7 @@ function pzt_metro_topping_card( $post, string $mt_var, int $zindex ): string {
 		<div class="mt-card__footer">
 			<div class="mt-card__footer-row mt-card__footer-row--title">
 				<span class="mt-card__name"><?php echo esc_html( $title ); ?></span>
-				<?php
-				$price_raw = get_field( 'topping_price', $id ) ?: get_post_meta( $id, 'topping_price', true );
-				if ( $price_raw ) : ?>
-				<span class="mt-card__price"><?php echo esc_html( $price_raw ); ?></span>
-				<?php endif; ?>
+				<?php /* Pricing is provided by PizzaLayerPro; no inline price here. */ ?>
 			</div>
 			<div class="mt-card__footer-row mt-card__footer-row--actions">
 				<button type="button" class="mt-card__btn mt-card__btn--add" onclick="<?php echo esc_attr( $js_add ); ?>">
@@ -359,7 +351,6 @@ $section_meta = [
      data-layer-anim-speed="<?php echo esc_attr( (string) $layer_anim_speed ); ?>"
      data-layer-offsets='<?php echo esc_attr( $offsets_json ); ?>'
      data-layout="<?php echo esc_attr( $mt_layout ); ?>"
-     data-show-prices="<?php echo $mt_show_prices ? 'yes' : 'no'; ?>"
      data-show-count="<?php echo $mt_show_count ? 'yes' : 'no'; ?>">
 
 	<!-- ── Hero: centered pizza stage ───────────────────────── -->

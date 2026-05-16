@@ -1227,9 +1227,7 @@
 .cb-card__name {
     font-size:      var(--pzl-label-size, inherit);
 }
-.cb-card__price {
-    font-size:      var(--pzl-price-size, inherit);
-}
+/* .cb-card__price removed in PizzaLayer 1.2.0 — pricing now provided by PizzaLayerPro. */
 .cb-btn {
     font-weight:    var(--pzl-btn-fw, 600);
 }

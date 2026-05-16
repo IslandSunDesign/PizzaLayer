@@ -239,21 +239,32 @@
     flex-shrink: 0;
 }
 
-/* Layer positioning inside canvas */
+/* Layer positioning inside canvas
+   Selectors cover every stage/layer classname variant that can appear here:
+   - .cb-*  / .pzl-*           legacy Colorbox + shared PizzaLayer classes
+   - .np-*                     emitted by PizzaBuilder::build_dynamic (initial scaffold)
+   - .cc-pizza-stage / .cc-layer-div  created at runtime by Command Center custom.js
+   Without the .cc-* and .np-* rules below, JS-created layers have no box and
+   don't paint, which is the "selected layers not adding to live preview" bug. */
 .cc-canvas .cb-pizza-stage-wrap,
-.cc-canvas .pzl-pizza-stage-wrap {
+.cc-canvas .pzl-pizza-stage-wrap,
+.cc-canvas .np-pizza-stage-wrap {
     position: absolute; inset: 0; width: 100%; height: 100%;
 }
 .cc-canvas .cb-pizza-stage,
-.cc-canvas .pzl-pizza-stage {
+.cc-canvas .pzl-pizza-stage,
+.cc-canvas .np-pizza-stage,
+.cc-canvas .cc-pizza-stage {
     position: absolute; inset: 0; width: 100%; height: 100%; background: transparent;
 }
 .cc-canvas .cb-layer-div,
-.cc-canvas .pzl-layer-div {
+.cc-canvas .pzl-layer-div,
+.cc-canvas .cc-layer-div {
     position: absolute; inset: 0; pointer-events: none;
 }
 .cc-canvas .cb-layer-div img,
-.cc-canvas .pzl-layer-div img {
+.cc-canvas .pzl-layer-div img,
+.cc-canvas .cc-layer-div img {
     position: absolute; inset: 0; width: 100%; height: 100%;
     object-fit: contain; display: block;
     transition: opacity 0.3s ease, clip-path 0.25s ease;

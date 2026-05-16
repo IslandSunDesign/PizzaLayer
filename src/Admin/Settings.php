@@ -72,25 +72,23 @@ class Settings {
 		'pizzalayer_setting_layout_hide_empty',
 		'pizzalayer_setting_layout_keyboard_nav',
 		'pizzalayer_setting_layout_sticky_header',
-		// Pricing & Cart
-		'pizzalayer_setting_price_display_mode',
-		'pizzalayer_setting_price_base',
-		'pizzalayer_setting_price_currency_pos',
-		'pizzalayer_setting_price_update_anim',
-		// WooCommerce cart options moved to PizzaLayerPro
-		// 'pizzalayer_setting_price_show_cart_btn'  → pztpro_get_setting('show_cart_btn')
-		// 'pizzalayer_setting_price_cart_btn_text'  → pztpro_get_setting('cart_btn_text')
-		// 'pizzalayer_setting_price_require_crust'  → pztpro_get_setting('require_crust')
-		// 'pizzalayer_setting_price_require_sauce'  → pztpro_get_setting('require_sauce')
-		// 'pizzalayer_setting_price_min_order'      → pztpro_get_setting('min_order')
-		// 'pizzalayer_setting_price_tax_display'    → pztpro_get_setting('tax_display')
+		// Pricing & Cart settings moved to PizzaLayerPro:
+		//   pizzalayer_setting_price_display_mode → pztpro_get_setting('price_display_mode')
+		//   pizzalayer_setting_price_base         → pztpro_get_setting('price_base')
+		//   pizzalayer_setting_price_currency_pos → pztpro_get_setting('price_currency_pos')
+		//   pizzalayer_setting_price_update_anim  → pztpro_get_setting('price_update_anim')
+		//   pizzalayer_setting_price_show_cart_btn  → pztpro_get_setting('show_cart_btn')
+		//   pizzalayer_setting_price_cart_btn_text  → pztpro_get_setting('cart_btn_text')
+		//   pizzalayer_setting_price_require_crust  → pztpro_get_setting('require_crust')
+		//   pizzalayer_setting_price_require_sauce  → pztpro_get_setting('require_sauce')
+		//   pizzalayer_setting_price_min_order      → pztpro_get_setting('min_order')
+		//   pizzalayer_setting_price_tax_display    → pztpro_get_setting('tax_display')
 		// Typography
 		'pizzalayer_setting_typo_font_family',
 		'pizzalayer_setting_typo_google_font',
 		'pizzalayer_setting_typo_base_size',
 		'pizzalayer_setting_typo_heading_fw',
 		'pizzalayer_setting_typo_label_size',
-		'pizzalayer_setting_typo_price_size',
 		'pizzalayer_setting_typo_btn_fw',
 		'pizzalayer_setting_typo_letter_sp',
 		'pizzalayer_setting_typo_text_transform',
@@ -182,7 +180,6 @@ class Settings {
 		'plainlist_setting_columns',
 		'plainlist_setting_show_dividers',
 		'plainlist_setting_show_section_icons',
-		'plainlist_setting_show_prices',
 		'plainlist_setting_show_item_count',
 		'plainlist_setting_show_summary',
 		'plainlist_setting_show_reset',
@@ -197,6 +194,18 @@ class Settings {
 		// Active template — stored separately from Settings page but exported/imported here
 		'pizzalayer_setting_global_template',
 	];
+
+	/**
+	 * Public accessor for the full list of option keys this plugin manages.
+	 *
+	 * Used by the Site Migration tool to walk every persisted setting.
+	 * Returns the canonical key list — callers should treat this as read-only.
+	 *
+	 * @return string[]
+	 */
+	public static function get_option_keys(): array {
+		return self::OPTIONS;
+	}
 
 	public function render(): void {
 		if ( ! current_user_can( 'manage_options' ) ) { return; }
@@ -261,10 +270,28 @@ class Settings {
 					<p class="pset-header__sub"><?php esc_html_e( 'All plugin settings in one place. New to PizzaLayer? Try the Settings Wizard for a plain-English guided walk-through.', 'pizzalayer' ); ?></p>
 				</div>
 			</div>
-			<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-wizard' ) ); ?>" class="button" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff;white-space:nowrap;">
-				<span class="dashicons dashicons-welcome-learn-more" style="margin-top:3px;margin-right:4px;"></span>
-				<?php esc_html_e( '✦ Settings Wizard', 'pizzalayer' ); ?>
-			</a>
+			<div style="display:flex;align-items:center;gap:10px;flex-wrap:wrap;">
+				<!-- ── Simple / Advanced mode toggle ─────────────────────────
+				     Purely client-side — state lives in localStorage under
+				     'pset_user_mode'. Adds `pset-mode-simple` to .pset-wrap
+				     when active; CSS then swaps technical descriptions for
+				     plain-English siblings. Default is 'advanced' so the
+				     current UI is unchanged for existing users. -->
+				<div class="pset-mode-toggle" role="group" aria-label="<?php esc_attr_e( 'Description style', 'pizzalayer' ); ?>">
+					<button type="button" class="pset-mode-btn" data-pset-mode="simple" aria-pressed="false">
+						<span class="dashicons dashicons-visibility"></span>
+						<?php esc_html_e( 'Simple', 'pizzalayer' ); ?>
+					</button>
+					<button type="button" class="pset-mode-btn pset-mode-btn--active" data-pset-mode="advanced" aria-pressed="true">
+						<span class="dashicons dashicons-editor-code"></span>
+						<?php esc_html_e( 'Advanced', 'pizzalayer' ); ?>
+					</button>
+				</div>
+				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-wizard' ) ); ?>" class="button" style="background:rgba(255,255,255,.15);border-color:rgba(255,255,255,.3);color:#fff;white-space:nowrap;">
+					<span class="dashicons dashicons-welcome-learn-more" style="margin-top:3px;margin-right:4px;"></span>
+					<?php esc_html_e( '✦ Settings Wizard', 'pizzalayer' ); ?>
+				</a>
+			</div>
 		</div>
 
 		<!-- ── Quick-jump pill nav ─────────────────────────────────────── -->
@@ -436,19 +463,22 @@ class Settings {
 				<div class="pset-grid">
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Max Size', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">Max size (px or %). Include unit — e.g. <code>500px</code> or <code>100%</code>.</p>
+						<p class="pset-desc pset-desc--adv">Max size (px or %). Include unit — e.g. <code>500px</code> or <code>100%</code>.</p>
+						<p class="pset-desc pset-desc--simple">The largest the pizza picture will ever get. Try a number like <code>500px</code> for a fixed size, or <code>100%</code> to fill the space it's in.</p>
 						<input type="text" name="pizzalayer_setting_pizza_size_max"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_pizza_size_max') ); ?>" class="pset-input" placeholder="500px">
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Min Size', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'Min size (px or %). Include unit.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--adv"><?php esc_html_e( 'Min size (px or %). Include unit.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--simple"><?php esc_html_e( 'The smallest the pizza picture will shrink down to on narrow screens. Add the unit — px for pixels, % for percent.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_pizza_size_min"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_pizza_size_min') ); ?>" class="pset-input" placeholder="200px">
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Border Width', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">Any valid CSS width, e.g. <code>2px</code>.</p>
+						<p class="pset-desc pset-desc--adv">Any valid CSS width, e.g. <code>2px</code>.</p>
+						<p class="pset-desc pset-desc--simple">How thick the line around the pizza is. Something like <code>2px</code> means 2 pixels thick.</p>
 						<input type="text" name="pizzalayer_setting_pizza_border"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_pizza_border') ); ?>" class="pset-input" placeholder="2px">
 					</div>
@@ -513,13 +543,15 @@ class Settings {
 					</div>
 					<div class="pset-field pset-shape-custom">
 						<label>Aspect Ratio <span class="pset-hint">(rectangle &amp; custom)</span></label>
-						<p class="pset-desc">CSS <code>aspect-ratio</code> value, e.g. <code>4 / 3</code>, <code>16 / 9</code>, <code>3 / 4</code>.</p>
+						<p class="pset-desc pset-desc--adv">CSS <code>aspect-ratio</code> value, e.g. <code>4 / 3</code>, <code>16 / 9</code>, <code>3 / 4</code>.</p>
+						<p class="pset-desc pset-desc--simple">How stretched or squashed the pizza area is. Write it as two numbers separated by a slash — <code>4 / 3</code> is a little wider than tall, <code>1 / 1</code> is a perfect square.</p>
 						<input type="text" name="pizzalayer_setting_pizza_aspect"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_pizza_aspect', '4 / 3') ); ?>" class="pset-input" placeholder="4 / 3">
 					</div>
 					<div class="pset-field pset-shape-custom">
 						<label>Border Radius <span class="pset-hint">(custom shape only)</span></label>
-						<p class="pset-desc">CSS <code>border-radius</code>, e.g. <code>8px</code>, <code>50%</code>, <code>12px 40px</code>.</p>
+						<p class="pset-desc pset-desc--adv">CSS <code>border-radius</code>, e.g. <code>8px</code>, <code>50%</code>, <code>12px 40px</code>.</p>
+						<p class="pset-desc pset-desc--simple">How rounded the corners are. <code>8px</code> is slightly rounded, <code>50%</code> makes it a full circle. Leave blank for the shape's default.</p>
 						<input type="text" name="pizzalayer_setting_pizza_radius"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_pizza_radius', '8px') ); ?>" class="pset-input" placeholder="8px">
 					</div>
@@ -609,7 +641,8 @@ class Settings {
 						<label>Crust Padding
 							<span class="pset-hint" id="pset-spc-crust_padding-lbl">(<?php echo esc_html( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_crust_padding','0')) ); ?>px)</span>
 						</label>
-						<p class="pset-desc"><?php esc_html_e( 'Inset padding applied to the crust layer image.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--adv"><?php esc_html_e( 'Inset padding applied to the crust layer image.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--simple"><?php esc_html_e( 'How much space to leave around the crust so it sits nicely inside the pizza circle. Bigger numbers mean the crust shows up smaller.', 'pizzalayer' ); ?></p>
 						<div class="pset-range__wrap">
 							<input type="range" id="pset-spc-crust_padding-range" min="0" max="80" step="1"
 							       value="<?php echo esc_attr( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_setting_crust_padding','0')) ); ?>"
@@ -658,7 +691,8 @@ class Settings {
 						<label>Cheese Distance from Edge
 							<span class="pset-hint" id="pset-spc-cheese_dist-lbl">(<?php echo esc_html( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_cheese_setting_cheesedistance','0')) ); ?>px)</span>
 						</label>
-						<p class="pset-desc"><?php esc_html_e( 'How far inset the cheese layer is.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--adv"><?php esc_html_e( 'How far inset the cheese layer is.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--simple"><?php esc_html_e( 'How far in from the edge the cheese appears. Bigger numbers make the cheese cover less of the pizza.', 'pizzalayer' ); ?></p>
 						<div class="pset-range__wrap">
 							<input type="range" id="pset-spc-cheese_dist-range" min="0" max="80" step="1"
 							       value="<?php echo esc_attr( (string)(int)preg_replace('/[^0-9]/','', $g('pizzalayer_cheese_setting_cheesedistance','0')) ); ?>"
@@ -788,21 +822,24 @@ class Settings {
 
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Logo Display Width', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">CSS width for the logo image, e.g. <code>120px</code> or <code>auto</code>.</p>
+						<p class="pset-desc pset-desc--adv">CSS width for the logo image, e.g. <code>120px</code> or <code>auto</code>.</p>
+						<p class="pset-desc pset-desc--simple">How wide the logo should be. Try something like <code>120px</code> for a set width, or type <code>auto</code> to let the logo size itself.</p>
 						<input type="text" name="pizzalayer_setting_branding_logo_width"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_logo_width') ); ?>" class="pset-input" placeholder="120px">
 					</div>
 
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Logo Display Height', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">CSS height for the logo image, e.g. <code>40px</code> or <code>auto</code>.</p>
+						<p class="pset-desc pset-desc--adv">CSS height for the logo image, e.g. <code>40px</code> or <code>auto</code>.</p>
+						<p class="pset-desc pset-desc--simple">How tall the logo should be. Try <code>40px</code> for a set height, or <code>auto</code> to let it size itself.</p>
 						<input type="text" name="pizzalayer_setting_branding_logo_height"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_logo_height') ); ?>" class="pset-input" placeholder="40px">
 					</div>
 
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Logo Alt Text', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'Accessibility alt text for the logo image.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--adv"><?php esc_html_e( 'Accessibility alt text for the logo image.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--simple"><?php esc_html_e( 'A short description of what the logo shows — this is read aloud to visitors using screen readers and shown if the image fails to load.', 'pizzalayer' ); ?></p>
 						<input type="text" name="pizzalayer_setting_branding_logo_alt"
 						       value="<?php echo esc_attr( $g('pizzalayer_setting_branding_logo_alt') ); ?>" class="pset-input" placeholder="Your restaurant name">
 					</div>
@@ -851,7 +888,8 @@ class Settings {
 
 					<div class="pset-field pset-field--full">
 						<label><?php esc_html_e( 'Header Custom Content', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'Custom HTML for the branding area in the builder header (logo area, above the tabs). Use Text tab for raw HTML with image tags etc.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--adv"><?php esc_html_e( 'Custom HTML for the branding area in the builder header (logo area, above the tabs). Use Text tab for raw HTML with image tags etc.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--simple"><?php esc_html_e( 'Anything you want to appear in the header area of the builder, above the steps (like a logo or a short welcome message). Switch to the Text tab if you want to paste in HTML directly.', 'pizzalayer' ); ?></p>
 						<?php wp_editor( $g('pizzalayer_setting_branding_header_custom_content'), 'pzl_editor_header_content', [ 'textarea_name' => 'pizzalayer_setting_branding_header_custom_content', 'media_buttons' => true, 'teeny' => true, 'textarea_rows' => 4, 'tinymce' => [ 'toolbar1' => 'bold,italic,underline,link,unlink,image,removeformat,code' ], 'quicktags' => [ 'buttons' => 'strong,em,link,img,code,close' ] ] ); ?>
 					</div>
 
@@ -914,7 +952,8 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Builder Width', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">Maximum width of the builder container, e.g. <code>900px</code> or <code>100%</code>.</p>
+						<p class="pset-desc pset-desc--adv">Maximum width of the builder container, e.g. <code>900px</code> or <code>100%</code>.</p>
+						<p class="pset-desc pset-desc--simple">The widest the whole builder area will ever get. <code>900px</code> is a fixed size, <code>100%</code> lets it fill the page.</p>
 						<input type="text" name="pizzalayer_setting_layout_builder_width"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_layout_builder_width','')); ?>"
 						       class="pset-input" placeholder="100%">
@@ -958,7 +997,8 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Tab Order', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">Comma-separated list of tabs in display order. E.g. <code>crust, sauce, cheese, toppings, drizzle, slicing</code>.</p>
+						<p class="pset-desc pset-desc--adv">Comma-separated list of tabs in display order. E.g. <code>crust, sauce, cheese, toppings, drizzle, slicing</code>.</p>
+						<p class="pset-desc pset-desc--simple">The order the customer builds their pizza in. Type the step names in the order you want them, separated by commas — for example: <code>crust, sauce, cheese, toppings, drizzle, slicing</code>.</p>
 						<input type="text" name="pizzalayer_setting_layout_tab_order"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_layout_tab_order','')); ?>"
 						       class="pset-input" placeholder="crust, sauce, cheese, toppings, drizzle, slicing">
@@ -997,61 +1037,28 @@ class Settings {
 			</div>
 		</div>
 
-		<!-- ══ Section: Pricing & Cart ════════════════════════════════════════ -->
+		<!-- ══ Section: Cart Integration ═════════════════════════════════════════
+		     Pricing logic, price displays, and cart options all live in
+		     PizzaLayerPro. The base plugin handles ingredients, layouts, and
+		     visualisation only; this section just points admins to the right
+		     place when Pro is or isn't installed. -->
 		<div class="pset-card">
 			<div class="pset-card__head pset-card__head--collapsible" data-pset-toggle="pricing-cart">
 				<div>
-					<h2><span class="dashicons dashicons-cart"></span> <?php esc_html_e( 'Pricing &amp; Cart', 'pizzalayer' ); ?></h2>
-					<p>How prices are calculated, displayed, and passed to the cart.</p>
+					<h2><span class="dashicons dashicons-cart"></span> <?php esc_html_e( 'Cart Integration', 'pizzalayer' ); ?></h2>
+					<p><?php esc_html_e( 'Pricing and cart features are provided by PizzaLayerPro.', 'pizzalayer' ); ?></p>
 				</div>
 				<button type="button" class="pset-collapse-btn" aria-expanded="true" aria-controls="pset-body-pricing-cart"><span class="dashicons dashicons-arrow-up-alt2"></span></button>
 			</div>
 			<div class="pset-card__body" id="pset-body-pricing-cart">
 				<div class="pset-grid">
-					<div class="pset-field">
-						<label><?php esc_html_e( 'Price Display Mode', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'How prices are shown to customers in the builder UI.', 'pizzalayer' ); ?></p>
-						<?php $v = (string) get_option('pizzalayer_setting_price_display_mode','total'); ?>
-						<select name="pizzalayer_setting_price_display_mode" class="pset-select">
-							<?php foreach(['total'=>'Show total only','per-item'=>'Show per-item prices','per-item-total'=>'Show per-item + running total','hidden'=>'Hide all prices'] as $ov=>$ol):?>
-							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
-							<?php endforeach;?>
-						</select>
-					</div>
-					<div class="pset-field">
-						<label><?php esc_html_e( 'Base Price', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'Default starting price before any layer selections.', 'pizzalayer' ); ?></p>
-						<input type="text" name="pizzalayer_setting_price_base"
-						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_price_base','')); ?>"
-						       class="pset-input" placeholder="0.00">
-					</div>
-					<div class="pset-field">
-						<label><?php esc_html_e( 'Currency Symbol Position', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'Where the currency symbol appears relative to the amount.', 'pizzalayer' ); ?></p>
-						<?php $v = (string) get_option('pizzalayer_setting_price_currency_pos','before'); ?>
-						<select name="pizzalayer_setting_price_currency_pos" class="pset-select">
-							<?php foreach(['before'=>'Before (e.g. $10.00)','after'=>'After (e.g. 10.00€)'] as $ov=>$ol):?>
-							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
-							<?php endforeach;?>
-						</select>
-					</div>
-					<div class="pset-field">
-						<label><?php esc_html_e( 'Price Update Animation', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'Visual effect when the running total changes.', 'pizzalayer' ); ?></p>
-						<?php $v = (string) get_option('pizzalayer_setting_price_update_anim','fade'); ?>
-						<select name="pizzalayer_setting_price_update_anim" class="pset-select">
-							<?php foreach(['fade'=>'Fade','countup'=>'Count-up','flash'=>'Flash highlight','none'=>'None'] as $ov=>$ol):?>
-							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
-							<?php endforeach;?>
-						</select>
-					</div>
 					<?php if ( ! class_exists( 'PizzaLayerPro\\Pro\\Plugin' ) ) : ?>
 					<div class="pset-field pset-field--full">
 						<div class="pset-pro-notice">
 							<span class="dashicons dashicons-cart"></span>
 							<div>
-								<strong><?php esc_html_e( 'WooCommerce Cart Settings', 'pizzalayer' ); ?></strong>
-								<p><?php esc_html_e( 'Cart button visibility, button text, require crust/sauce, minimum order, and tax display are managed in PizzaLayerPro → Pro Settings.', 'pizzalayer' ); ?>
+								<strong><?php esc_html_e( 'Pricing &amp; WooCommerce Cart', 'pizzalayer' ); ?></strong>
+								<p><?php esc_html_e( 'Per-layer pricing grids, base price, currency display, cart buttons, checkout flow, and order/email integration are all handled by PizzaLayerPro.', 'pizzalayer' ); ?>
 								<a href="https://pizzalayer.com/pro" target="_blank" rel="noopener"><?php esc_html_e( 'Learn more →', 'pizzalayer' ); ?></a></p>
 							</div>
 						</div>
@@ -1061,8 +1068,8 @@ class Settings {
 						<div class="pset-pro-notice pset-pro-notice--active">
 							<span class="dashicons dashicons-yes-alt"></span>
 							<div>
-								<strong><?php esc_html_e( 'WooCommerce Cart Settings', 'pizzalayer' ); ?></strong>
-								<p><?php esc_html_e( 'Cart integration settings are managed in ', 'pizzalayer' ); ?>
+								<strong><?php esc_html_e( 'Pricing &amp; Cart Settings', 'pizzalayer' ); ?></strong>
+								<p><?php esc_html_e( 'Configure pricing grids, cart buttons, and checkout in ', 'pizzalayer' ); ?>
 								<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayerpro-settings' ) ); ?>"><?php esc_html_e( 'PizzaLayerPro → Pro Settings', 'pizzalayer' ); ?></a>.</p>
 							</div>
 						</div>
@@ -1095,14 +1102,16 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Custom Google Font Name', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">e.g. <code>Roboto</code>, <code>Lato</code>, <code>Playfair Display</code></p>
+						<p class="pset-desc pset-desc--adv">e.g. <code>Roboto</code>, <code>Lato</code>, <code>Playfair Display</code></p>
+						<p class="pset-desc pset-desc--simple">The name of the font you want to use. Examples: Roboto, Lato, Playfair Display. Leave blank to use your theme's default.</p>
 						<input type="text" name="pizzalayer_setting_typo_google_font"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_google_font','')); ?>"
 						       class="pset-input" placeholder="Roboto">
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Base Font Size', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">Root font size for the builder, e.g. <code>15px</code> or <code>1rem</code>.</p>
+						<p class="pset-desc pset-desc--adv">Root font size for the builder, e.g. <code>15px</code> or <code>1rem</code>.</p>
+						<p class="pset-desc pset-desc--simple">The main text size for everything in the builder. A common choice is <code>15px</code> or <code>16px</code> — bigger numbers mean bigger text.</p>
 						<input type="text" name="pizzalayer_setting_typo_base_size"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_base_size','')); ?>"
 						       class="pset-input" placeholder="15px">
@@ -1125,13 +1134,6 @@ class Settings {
 						       class="pset-input" placeholder="13px">
 					</div>
 					<div class="pset-field">
-						<label><?php esc_html_e( 'Price Font Size', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'Size of price figures in the builder.', 'pizzalayer' ); ?></p>
-						<input type="text" name="pizzalayer_setting_typo_price_size"
-						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_price_size','')); ?>"
-						       class="pset-input" placeholder="14px">
-					</div>
-					<div class="pset-field">
 						<label><?php esc_html_e( 'Button Font Weight', 'pizzalayer' ); ?></label>
 						<p class="pset-desc"><?php esc_html_e( 'Weight for text inside action buttons.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_typo_btn_fw','600'); ?>
@@ -1143,7 +1145,8 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Letter Spacing (headings)', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">CSS letter-spacing for section headings, e.g. <code>0.05em</code>.</p>
+						<p class="pset-desc pset-desc--adv">CSS letter-spacing for section headings, e.g. <code>0.05em</code>.</p>
+						<p class="pset-desc pset-desc--simple">How much space to leave between letters in section headings. A small number like <code>0.05em</code> adds just a touch of space.</p>
 						<input type="text" name="pizzalayer_setting_typo_letter_sp"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_typo_letter_sp','')); ?>"
 						       class="pset-input" placeholder="0">
@@ -1367,7 +1370,8 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Custom Thumbnail Size', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">Used when "Custom" is selected above, e.g. <code>80px</code>.</p>
+						<p class="pset-desc pset-desc--adv">Used when "Custom" is selected above, e.g. <code>80px</code>.</p>
+						<p class="pset-desc pset-desc--simple">Only used if you picked "Custom" above. Enter a size like <code>80px</code>.</p>
 						<input type="text" name="pizzalayer_setting_topping_thumb_custom"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_topping_thumb_custom','')); ?>"
 						       class="pset-input" placeholder="72px">
@@ -1443,7 +1447,7 @@ class Settings {
 						<p class="pset-desc"><?php esc_html_e( 'How toppings are sorted in the menu grid.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_topping_sort','menu'); ?>
 						<select name="pizzalayer_setting_topping_sort" class="pset-select">
-							<?php foreach(['menu'=>'Manual (WordPress menu order)','alpha_asc'=>'Alphabetical (A–Z)','alpha_desc'=>'Alphabetical (Z–A)','price_asc'=>'Price (low to high)','price_desc'=>'Price (high to low)'] as $ov=>$ol):?>
+							<?php foreach(['menu'=>'Manual (WordPress menu order)','alpha_asc'=>'Alphabetical (A–Z)','alpha_desc'=>'Alphabetical (Z–A)'] as $ov=>$ol):?>
 							<option value="<?php echo esc_attr($ov);?>"<?php selected($v,$ov);?>><?php echo esc_html($ol);?></option>
 							<?php endforeach;?>
 						</select>
@@ -1495,7 +1499,8 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'ARIA Labels Language', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'Language used for auto-generated ARIA accessibility labels.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--adv"><?php esc_html_e( 'Language used for auto-generated ARIA accessibility labels.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--simple"><?php esc_html_e( 'The language used for the hidden labels that screen readers announce to visually-impaired visitors.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_a11y_aria_lang','inherit'); ?>
 						<select name="pizzalayer_setting_a11y_aria_lang" class="pset-select">
 							<?php foreach(['inherit'=>'Inherit from WordPress','en'=>'English','es'=>'Spanish','fr'=>'French','de'=>'German','it'=>'Italian','pt'=>'Portuguese'] as $ov=>$ol):?>
@@ -1515,7 +1520,8 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Preload Builder Assets', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">Add <code>&lt;link rel="preload"&gt;</code> hints for critical builder assets.</p>
+						<p class="pset-desc pset-desc--adv">Add <code>&lt;link rel="preload"&gt;</code> hints for critical builder assets.</p>
+						<p class="pset-desc pset-desc--simple">Tell the browser to start downloading the pizza images early so the builder appears faster. Recommended to leave on.</p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_perf_preload_assets" value="no">
 							<input type="checkbox" name="pizzalayer_setting_perf_preload_assets" value="yes"<?php checked((string)get_option('pizzalayer_setting_perf_preload_assets','no'),'yes');?>>
@@ -1535,7 +1541,8 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Client-Side Caching', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'Cache layer data in the browser for faster repeat visits.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--adv"><?php esc_html_e( 'Cache layer data in the browser for faster repeat visits.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--simple"><?php esc_html_e( 'Let the browser remember pizza layer info so returning customers see the builder load faster. Recommended to leave on.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_perf_cache','session'); ?>
 						<select name="pizzalayer_setting_perf_cache" class="pset-select">
 							<?php foreach(['session'=>'Session only','1d'=>'24 hours','7d'=>'7 days','off'=>'Disabled'] as $ov=>$ol):?>
@@ -1678,17 +1685,20 @@ class Settings {
 				<div class="pset-grid pset-grid--wide">
 					<div class="pset-field pset-field--full">
 						<label><?php esc_html_e( 'Custom CSS (injected into builder pages)', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">CSS added inside a <code>&lt;style&gt;</code> tag on every page containing a PizzaLayer builder. Use with care.</p>
+						<p class="pset-desc pset-desc--adv">CSS added inside a <code>&lt;style&gt;</code> tag on every page containing a PizzaLayer builder. Use with care.</p>
+						<p class="pset-desc pset-desc--simple">Advanced — for fine-tuning the look. Any styling you type here gets added to every page that shows a pizza builder. Leave blank unless you're comfortable with CSS.</p>
 						<textarea name="pizzalayer_setting_adv_custom_css" class="pset-textarea pset-textarea--code" rows="6" placeholder="/* Your custom CSS here */"><?php echo esc_textarea((string)get_option('pizzalayer_setting_adv_custom_css','')); ?></textarea>
 					</div>
 					<div class="pset-field pset-field--full">
 						<label><?php esc_html_e( 'Custom JS (runs after builder initialises)', 'pizzalayer' ); ?></label>
-						<p class="pset-desc">JavaScript run after the builder initialises. Useful for custom tracking or integrations. Outputs in <code>&lt;wp_footer&gt;</code>.</p>
+						<p class="pset-desc pset-desc--adv">JavaScript run after the builder initialises. Useful for custom tracking or integrations. Outputs in <code>&lt;wp_footer&gt;</code>.</p>
+						<p class="pset-desc pset-desc--simple">Advanced — for developers. Any JavaScript you type here runs after the builder loads (useful for things like adding analytics tracking). Leave blank unless you know what you're doing.</p>
 						<textarea name="pizzalayer_setting_adv_custom_js" class="pset-textarea pset-textarea--code" rows="6" placeholder="// Your custom JS here"><?php echo esc_textarea((string)get_option('pizzalayer_setting_adv_custom_js','')); ?></textarea>
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Debug Mode', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'Log builder events and state changes to the browser console.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--adv"><?php esc_html_e( 'Log builder events and state changes to the browser console.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--simple"><?php esc_html_e( 'Show behind-the-scenes activity in the browser\'s developer console. For troubleshooting — leave off during normal use.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_adv_debug_mode" value="no">
 							<input type="checkbox" name="pizzalayer_setting_adv_debug_mode" value="yes"<?php checked((string)get_option('pizzalayer_setting_adv_debug_mode','no'),'yes');?>>
@@ -1708,7 +1718,8 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Enable REST API', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'Enables the PizzaLayer REST API endpoints (used by developers and headless setups). Not needed for normal shortcode/block usage — leave off unless you specifically need it.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--adv"><?php esc_html_e( 'Enables the PizzaLayer REST API endpoints (used by developers and headless setups). Not needed for normal shortcode/block usage — leave off unless you specifically need it.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--simple"><?php esc_html_e( 'Advanced — for developers building custom apps that talk to PizzaLayer from the outside. You almost certainly do not need this. Leave it off.', 'pizzalayer' ); ?></p>
 						<label class="pset-toggle">
 							<input type="hidden" name="pizzalayer_setting_adv_rest_api_enabled" value="no">
 							<input type="checkbox" name="pizzalayer_setting_adv_rest_api_enabled" value="yes"<?php checked((string)get_option('pizzalayer_setting_adv_rest_api_enabled','no'),'yes');?>>
@@ -1718,14 +1729,16 @@ class Settings {
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'REST API Cache TTL (seconds)', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'How long to cache REST API responses server-side. 0 = no cache. Only applies when REST API is enabled above.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--adv"><?php esc_html_e( 'How long to cache REST API responses server-side. 0 = no cache. Only applies when REST API is enabled above.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--simple"><?php esc_html_e( 'How long (in seconds) to remember API answers so the server does not have to rebuild them every time. Only matters if the setting above is turned on. Set to 0 for no caching.', 'pizzalayer' ); ?></p>
 						<input type="number" name="pizzalayer_setting_adv_rest_cache_ttl"
 						       value="<?php echo esc_attr((string)get_option('pizzalayer_setting_adv_rest_cache_ttl','300')); ?>"
 						       class="pset-input" placeholder="300">
 					</div>
 					<div class="pset-field">
 						<label><?php esc_html_e( 'Server Log Level', 'pizzalayer' ); ?></label>
-						<p class="pset-desc"><?php esc_html_e( 'Verbosity of server-side logging to the WordPress debug log.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--adv"><?php esc_html_e( 'Verbosity of server-side logging to the WordPress debug log.', 'pizzalayer' ); ?></p>
+						<p class="pset-desc pset-desc--simple"><?php esc_html_e( 'How much detail to write into WordPress\' behind-the-scenes log. For developers troubleshooting issues — most people can ignore this.', 'pizzalayer' ); ?></p>
 						<?php $v = (string) get_option('pizzalayer_setting_adv_log_level','off'); ?>
 						<select name="pizzalayer_setting_adv_log_level" class="pset-select">
 							<?php foreach(['off'=>'Off','errors'=>'Errors only','warnings'=>'Warnings + Errors','all'=>'All (verbose)'] as $ov=>$ol):?>
@@ -1867,8 +1880,34 @@ class Settings {
 			return '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__( 'Import failed:', 'pizzalayer' ) . '</strong> ' . esc_html__( 'no file received.', 'pizzalayer' ) . '</p></div>';
 		}
 
-		$tmp  = $_FILES['pizzalayer_import_file']['tmp_name']; // phpcs:ignore
-		$raw  = file_get_contents( $tmp ); // phpcs:ignore WordPress.WP.AlternativeFunctions
+		$file = $_FILES['pizzalayer_import_file']; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput
+
+		// Check for upload errors
+		if ( ! empty( $file['error'] ) && (int) $file['error'] !== UPLOAD_ERR_OK ) {
+			return '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__( 'Import failed:', 'pizzalayer' ) . '</strong> ' . esc_html__( 'upload error.', 'pizzalayer' ) . '</p></div>';
+		}
+
+		$tmp = isset( $file['tmp_name'] ) ? (string) $file['tmp_name'] : '';
+
+		// Confirm the file came in via a real HTTP upload (not a path injection)
+		if ( ! $tmp || ! is_uploaded_file( $tmp ) ) {
+			return '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__( 'Import failed:', 'pizzalayer' ) . '</strong> ' . esc_html__( 'invalid upload.', 'pizzalayer' ) . '</p></div>';
+		}
+
+		// Cap size at 1 MB — settings JSON is tiny
+		$max_bytes = 1024 * 1024;
+		$size      = isset( $file['size'] ) ? (int) $file['size'] : 0;
+		if ( $size > $max_bytes ) {
+			return '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__( 'Import failed:', 'pizzalayer' ) . '</strong> ' . esc_html__( 'file too large.', 'pizzalayer' ) . '</p></div>';
+		}
+
+		// Restrict to .json filenames
+		$orig_name = isset( $file['name'] ) ? sanitize_file_name( (string) $file['name'] ) : '';
+		if ( $orig_name === '' || strtolower( pathinfo( $orig_name, PATHINFO_EXTENSION ) ) !== 'json' ) {
+			return '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__( 'Import failed:', 'pizzalayer' ) . '</strong> ' . esc_html__( 'expected a .json file.', 'pizzalayer' ) . '</p></div>';
+		}
+
+		$raw = file_get_contents( $tmp ); // phpcs:ignore WordPress.WP.AlternativeFunctions
 		if ( ! $raw ) {
 			return '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__( 'Import failed:', 'pizzalayer' ) . '</strong> ' . esc_html__( 'could not read file.', 'pizzalayer' ) . '</p></div>';
 		}
@@ -1879,19 +1918,28 @@ class Settings {
 		}
 
 		$allowed = array_flip( self::OPTIONS );
-		// pizzalayer_setting_global_template is now part of OPTIONS — no manual addition needed.
-		$count = 0;
+		$count   = 0;
 
 		// Keys that are stored as arrays — must not be cast to string
 		$array_options = [
 			'pizzalayer_setting_topping_fractions',
 		];
 
+		// Capability-gated raw fields — DO NOT pass through wp_kses_post.
+		// These match the live save path (see save_settings()) where the same
+		// keys are persisted unsanitized, gated by manage_options. Round-trip
+		// would otherwise mangle stored CSS/JS.
+		$raw_options = [
+			'pizzalayer_setting_adv_custom_css',
+			'pizzalayer_setting_adv_custom_js',
+		];
+
 		foreach ( $data as $key => $value ) {
 			if ( ! isset( $allowed[ $key ] ) ) { continue; }
+			$key_safe = sanitize_key( $key );
 
 			if ( in_array( $key, $array_options, true ) ) {
-				// Sanitise as an array of keys
+				// Sanitise as an array of fraction keys
 				$allowed_fractions = [ 'whole', 'half-left', 'half-right', 'quarter-top-left', 'quarter-top-right', 'quarter-bottom-left', 'quarter-bottom-right' ];
 				$sanitised         = is_array( $value )
 					? array_values( array_intersect( array_map( 'sanitize_key', $value ), $allowed_fractions ) )
@@ -1899,10 +1947,13 @@ class Settings {
 				if ( ! in_array( 'whole', $sanitised, true ) ) {
 					array_unshift( $sanitised, 'whole' );
 				}
-				update_option( sanitize_key( $key ), $sanitised );
+				update_option( $key_safe, $sanitised );
+			} elseif ( in_array( $key, $raw_options, true ) ) {
+				// Custom CSS / Custom JS — store raw (matches live save path)
+				update_option( $key_safe, (string) $value );
 			} else {
 				// All other options treated as sanitised text/HTML
-				update_option( sanitize_key( $key ), wp_kses_post( (string) $value ) );
+				update_option( $key_safe, wp_kses_post( (string) $value ) );
 			}
 			$count++;
 		}
@@ -1941,7 +1992,6 @@ class Settings {
 			'pizzalayer_setting_typo_google_font',
 			'pizzalayer_setting_typo_base_size',
 			'pizzalayer_setting_typo_label_size',
-			'pizzalayer_setting_typo_price_size',
 			'pizzalayer_setting_typo_letter_sp',
 			// Spacing
 			'pizzalayer_setting_spacing_outer_pad',
@@ -1977,10 +2027,7 @@ class Settings {
 			// Builder Layout
 			'pizzalayer_setting_layout_mode',
 			'pizzalayer_setting_layout_mobile',
-			// Pricing
-			'pizzalayer_setting_price_display_mode',
-			'pizzalayer_setting_price_currency_pos',
-			'pizzalayer_setting_price_update_anim',
+			// Pricing options moved to PizzaLayerPro
 			// Typography
 			'pizzalayer_setting_typo_font_family',
 			'pizzalayer_setting_typo_heading_fw',
@@ -2083,10 +2130,8 @@ class Settings {
 			'pizzalayer_setting_branding_header_custom_content',
 			'pizzalayer_setting_branding_footer_text',
 		];
-		// Price base is a decimal string
-		$decimal_options = [
-			'pizzalayer_setting_price_base',
-		];
+		// Note: pizzalayer_setting_price_base (decimal) was removed in 1.2.0;
+		// pricing options now live in PizzaLayerPro.
 
 		foreach ( $text_options as $key ) {
 			if ( isset( $_POST[ $key ] ) ) {
@@ -2140,11 +2185,6 @@ class Settings {
 				update_option( $key, wp_kses_post( wp_unslash( $_POST[ $key ] ) ) );
 			}
 		}
-		foreach ( $decimal_options as $key ) {
-			if ( isset( $_POST[ $key ] ) ) {
-				update_option( $key, (string) round( (float) sanitize_text_field( wp_unslash( $_POST[ $key ] ) ), 4 ) );
-			}
-		}
 
 		// Save template-specific settings dynamically
 		$active_template = (string) get_option( 'pizzalayer_setting_global_template', '' );
@@ -2160,7 +2200,9 @@ class Settings {
 					if ( is_array( $tpl_settings ) ) {
 						foreach ( $tpl_settings as $field ) {
 							if ( empty( $field['key'] ) || empty( $field['type'] ) ) { continue; }
-							$key = $field['key'];
+							$key = sanitize_key( (string) $field['key'] );
+							// Namespace guard: only allow writing to recognised setting keys.
+							if ( $key === '' || strpos( $key, '_setting_' ) === false ) { continue; }
 							if ( ! isset( $_POST[ $key ] ) && $field['type'] === 'toggle' ) {
 								update_option( $key, 'no' );
 								continue;

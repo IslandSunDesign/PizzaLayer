@@ -130,14 +130,6 @@ return [
 
 	// ── Features ─────────────────────────────────────────────────────
 	[
-		'key'          => 'metro_setting_show_ingredient_prices',
-		'type'         => 'toggle',
-		'label'        => 'Show Ingredient Prices',
-		'desc'         => 'Display the price of each ingredient on its selection card.',
-		'default'      => 'no',
-		'toggle_label' => 'Show prices on cards',
-	],
-	[
 		'key'          => 'metro_setting_show_summary_bar',
 		'type'         => 'toggle',
 		'label'        => 'Show Running Summary Bar',

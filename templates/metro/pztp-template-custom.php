@@ -45,7 +45,6 @@ $mt_font_size      = (int)               get_option( 'metro_setting_base_font_si
 $mt_layout         = sanitize_key(       get_option( 'metro_setting_layout_mode',             'centered') );
 $mt_columns        = sanitize_key(       get_option( 'metro_setting_card_columns',            '3'       ) );
 $mt_viz_size       = (int)               get_option( 'metro_setting_visualizer_size',          0         );
-$mt_show_prices    =                     get_option( 'metro_setting_show_ingredient_prices',   'no'      ) === 'yes';
 $mt_show_tray      =                     get_option( 'metro_setting_show_summary_bar',         'yes'     ) === 'yes';
 $mt_sticky_viz     =                     get_option( 'metro_setting_sticky_visualizer',        'no'      ) === 'yes';
 $mt_show_count     =                     get_option( 'metro_setting_show_ingredient_count',    'yes'     ) === 'yes';
@@ -128,7 +127,7 @@ add_action( 'wp_head', function() use (
 	$mt_font_stack, $mt_font_size,
 	$mt_hero_size, $mt_card_min_w, $mt_card_radius,
 	$mt_section_gap,
-	$mt_show_tray, $mt_sticky_viz, $mt_show_count, $mt_show_prices,
+	$mt_show_tray, $mt_sticky_viz, $mt_show_count,
 	$mt_layout, $mt_card_style, $mt_tab_style
 ) {
 	// CSS variable overrides
@@ -182,12 +181,8 @@ add_action( 'wp_head', function() use (
 		echo "}\n";
 	}
 
-	// Show ingredient prices (unhide the price span)
-	if ( $mt_show_prices ) {
-		echo ".mt-root .mt-card__price { display: block; }\n";
-	} else {
-		echo ".mt-root .mt-card__price { display: none; }\n";
-	}
+	// Note: ingredient price display removed in PizzaLayer 1.2.0 — pricing
+	// is now provided by PizzaLayerPro and rendered separately by Pro.
 
 	// Layout mode classes
 	if ( $mt_layout === 'side-by-side' ) {

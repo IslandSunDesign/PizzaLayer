@@ -8,7 +8,7 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  *
  * A fully guided, step-by-step admin page that walks the user through:
  *   Step 1 — Choose layer type (topping, crust, sauce, cheese, drizzle, cut, size)
- *   Step 2 — Enter details (name, description, price, attributes specific to type)
+ *   Step 2 — Enter details (name, description, attributes specific to type)
  *   Step 3 — Upload / pick a layer image
  *   Step 4 — Review & save → creates the CPT post and returns the shortcode
  *
@@ -94,7 +94,7 @@ class LayerBuilderWizard {
 	public function render(): void {
 		if ( ! current_user_can( 'manage_options' ) ) { return; }
 		wp_enqueue_media();
-		$nonce = wp_create_nonce( 'pizzalayer_wizard_save' );
+		// Nonce for AJAX save is delivered via wp_localize_script (see AssetManager::enqueue_admin)
 		?>
 		<div class="wrap plbw-wrap">
 		<?php $this->render_styles(); ?>
@@ -185,12 +185,6 @@ class LayerBuilderWizard {
 				<div class="plbw-field-row">
 					<label for="plbw-description" class="plbw-label"><?php esc_html_e( 'Description', 'pizzalayer' ); ?></label>
 					<textarea id="plbw-description" class="plbw-input plbw-textarea" rows="3" placeholder="<?php esc_attr_e( 'Optional short description shown in the builder…', 'pizzalayer' ); ?>" maxlength="500"></textarea>
-				</div>
-
-				<div class="plbw-field-row">
-					<label for="plbw-price" class="plbw-label"><?php esc_html_e( 'Price Modifier', 'pizzalayer' ); ?></label>
-					<input type="number" id="plbw-price" class="small-text plbw-input" step="0.01" min="0" value="0.00" placeholder="0.00">
-					<p class="plbw-help"><?php esc_html_e( 'Additional cost for this layer (used by PizzaLayer Pro). Enter 0 for no extra charge.', 'pizzalayer' ); ?></p>
 				</div>
 
 				<!-- Dynamic extra fields (shown based on type) -->
@@ -369,7 +363,6 @@ class LayerBuilderWizard {
 		$name     = isset( $_POST['name'] )  ? sanitize_text_field( wp_unslash( $_POST['name'] ) ) : '';
 		$slug     = isset( $_POST['slug'] )  ? sanitize_title( wp_unslash( $_POST['slug'] ) )  : '';
 		$desc     = isset( $_POST['desc'] )  ? sanitize_textarea_field( wp_unslash( $_POST['desc'] ) ) : '';
-		$price    = isset( $_POST['price'] ) ? (float) $_POST['price']                         : 0.0;
 		$image_id = isset( $_POST['image_id'] ) ? absint( $_POST['image_id'] )                 : 0;
 		$meta_raw = isset( $_POST['meta'] )  ? sanitize_text_field( wp_unslash( $_POST['meta'] ) ) : '{}';
 
@@ -399,15 +392,14 @@ class LayerBuilderWizard {
 			wp_send_json_error( [ 'message' => $post_id->get_error_message() ] );
 		}
 
-		// Save price
-		if ( $price > 0 ) {
-			update_post_meta( $post_id, '_pizzalayer_price', $price );
-		}
-
 		// Save image
 		if ( $image_id ) {
-			update_post_meta( $post_id, '_pizzalayer_layer_image_id', $image_id );
-			set_post_thumbnail( $post_id, $image_id );
+			// Validate the attachment exists and is an image before associating it
+			$att_post = get_post( $image_id );
+			if ( $att_post && $att_post->post_type === 'attachment' && strpos( (string) get_post_mime_type( $image_id ), 'image/' ) === 0 ) {
+				update_post_meta( $post_id, '_pizzalayer_layer_image_id', $image_id );
+				set_post_thumbnail( $post_id, $image_id );
+			}
 		}
 
 		// Save meta fields

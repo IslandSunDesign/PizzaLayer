@@ -370,3 +370,18 @@ $wpdb->query(
 	 WHERE option_name LIKE '_transient_pizzalayer_%'
 	    OR option_name LIKE '_transient_timeout_pizzalayer_%'"
 );
+
+// ── Clean up legacy pricing post meta (1.1.x and earlier) ─────────────
+// The 1.2.0 release moved all pricing into PizzaLayerPro. These keys
+// are no longer written, but may exist on layer CPT posts if the site
+// previously used the old free-plugin Price Modifier field or the
+// dead "Pricing Grid (CSV)" meta box. The CPT delete loop above
+// removes them along with their parent posts on a clean uninstall,
+// but in case those posts were preserved by other code paths we
+// also nuke the keys directly.
+// phpcs:disable WordPress.DB.DirectDatabaseQuery
+$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key = '_pizzalayer_price'" );
+$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key IN (
+	'topping_cost_csv','crust_cost_csv','sauce_cost_csv','cheese_cost_csv','drizzle_cost_csv'
+)" );
+// phpcs:enable WordPress.DB.DirectDatabaseQuery

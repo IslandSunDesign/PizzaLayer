@@ -92,6 +92,11 @@ final class Plugin {
 			$settings = new Admin\Settings();
 			$this->loader->add_action( 'admin_post_pizzalayer_export_settings', $settings, 'handle_export' );
 
+			// Site Migration — full export (settings + CPTs + meta + Pro hook).
+			// Export handler must run before any HTML output, like Settings::handle_export.
+			$site_migration = new Admin\SiteMigration();
+			$this->loader->add_action( 'admin_post_pizzalayer_site_export', $site_migration, 'handle_export' );
+
 			// AJAX: template switcher
 			$this->loader->add_action( 'wp_ajax_pizzalayer_set_template', $this, 'ajax_set_template' );
 
