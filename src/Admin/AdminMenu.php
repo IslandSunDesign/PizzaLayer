@@ -74,16 +74,30 @@ class AdminMenu {
 		// Dashboard — same slug as parent makes it the landing page
 		add_submenu_page( 'pizzalayer', __( 'Dashboard', 'pizzalayer' ), __( 'Dashboard', 'pizzalayer' ), 'manage_options', 'pizzalayer', [ $this, 'render_home' ] );
 
+		// ── BASICS group header ──────────────────────────────────────────
+		add_submenu_page( 'pizzalayer', '', '<span class="pzl-menu-group-header">' . esc_html__( 'Basics', 'pizzalayer' ) . '</span>', 'manage_options', 'pizzalayer-group-basics', '__return_null' );
+
+		// ── Basics pages (everyday essentials) ───────────────────────────
+		add_submenu_page( 'pizzalayer', __( 'Template',            'pizzalayer' ), __( 'Template',            'pizzalayer' ), 'manage_options', 'pizzalayer-template',   [ $this, 'render_template'   ] );
+		add_submenu_page( 'pizzalayer', __( 'Settings',            'pizzalayer' ), __( 'Settings',            'pizzalayer' ), 'manage_options', 'pizzalayer-settings',   [ $this, 'render_settings'   ] );
+		add_submenu_page( 'pizzalayer', __( 'Help',                'pizzalayer' ), __( 'Help',                'pizzalayer' ), 'manage_options', 'pizzalayer-help',       [ $this, 'render_help'       ] );
+		add_submenu_page( 'pizzalayer', __( 'Shortcode Generator', 'pizzalayer' ), __( 'Shortcode Generator', 'pizzalayer' ), 'manage_options', 'pizzalayer-shortcodes', [ $this, 'render_shortcodes' ] );
+
 		// ── CONTENT group header (non-clickable separator) ───────────────
 		// Registered as a submenu with a unique slug; styled to be non-interactive via CSS.
 		add_submenu_page( 'pizzalayer', '', '<span class="pzl-menu-group-header">' . esc_html__( 'Content', 'pizzalayer' ) . '</span>', 'manage_options', 'pizzalayer-group-content', '__return_null' );
 
-		// ── CPT items — each links directly into the ContentHub ──────────
+		// ── CPT items — link into the ContentHub, or straight to the WP list
+		//    when the Content Hub has been disabled in Settings. ────────────
 		// WordPress accepts full http URLs as menu slugs since WP 3.0.
-		$hub = admin_url( 'admin.php?page=pizzalayer-content' );
+		$hub_disabled = ( get_option( 'pizzalayer_setting_disable_content_hub', 'no' ) === 'yes' );
+		$hub          = admin_url( 'admin.php?page=pizzalayer-content' );
 
 		foreach ( self::CPTS as $slug => $meta ) {
-			$url   = esc_url( add_query_arg( 'pl_cpt', $slug, $hub ) );
+			$target = $hub_disabled
+				? admin_url( 'edit.php?post_type=pizzalayer_' . $slug )
+				: add_query_arg( 'pl_cpt', $slug, $hub );
+			$url    = esc_url( $target );
 			$label = '<span class="pzl-cpt-item">'
 			       . '<span class="pzl-cpt-icon">' . $meta['icon'] . '</span>'
 			       . '<span class="pzl-cpt-label">' . esc_html( $meta['label'] ) . '</span>'
@@ -101,65 +115,13 @@ class AdminMenu {
 		add_submenu_page( 'pizzalayer', __( 'Layer Builder Wizard','pizzalayer' ), __( '✦ Layer Builder',      'pizzalayer' ), 'manage_options', 'pizzalayer-layer-wizard',[ $this, 'render_layer_wizard'] );
 		add_submenu_page( 'pizzalayer', __( 'Setup Guide',         'pizzalayer' ), __( 'Setup Guide',         'pizzalayer' ), 'manage_options', 'pizzalayer-setup',      [ $this, 'render_setup'      ] );
 		add_submenu_page( 'pizzalayer', __( 'Site Migration',      'pizzalayer' ), __( 'Site Migration',      'pizzalayer' ), 'manage_options', 'pizzalayer-migration',  [ $this, 'render_migration' ] );
-		add_submenu_page( 'pizzalayer', __( 'Shortcode Generator', 'pizzalayer' ), __( 'Shortcode Generator', 'pizzalayer' ), 'manage_options', 'pizzalayer-shortcodes', [ $this, 'render_shortcodes' ] );
-		add_submenu_page( 'pizzalayer', __( 'Template',            'pizzalayer' ), __( 'Template',            'pizzalayer' ), 'manage_options', 'pizzalayer-template',   [ $this, 'render_template'   ] );
-		add_submenu_page( 'pizzalayer', __( 'Settings',            'pizzalayer' ), __( 'Settings',            'pizzalayer' ), 'manage_options', 'pizzalayer-settings',   [ $this, 'render_settings'   ] );
 		add_submenu_page( 'pizzalayer', __( 'Settings Wizard',     'pizzalayer' ), __( '✦ Settings Wizard',   'pizzalayer' ), 'manage_options', 'pizzalayer-wizard',     [ $this, 'render_wizard'     ] );
-		add_submenu_page( 'pizzalayer', __( 'Help',                'pizzalayer' ), __( 'Help',                'pizzalayer' ), 'manage_options', 'pizzalayer-help',       [ $this, 'render_help'       ] );
 
 		// Register Content Hub page (still needs to exist as a real page)
 		add_submenu_page( 'pizzalayer', __( 'Content Hub', 'pizzalayer' ), '', 'manage_options', 'pizzalayer-content', [ $this, 'render_content' ] );
 
 		// Enqueue sidebar CSS
 		add_action( 'admin_head', [ $this, 'render_menu_styles' ] );
-
-		// Dark mode: add body class + enqueue CSS when setting is 'dark'
-		add_filter( 'admin_body_class', [ $this, 'maybe_add_dark_body_class' ] );
-		add_action( 'admin_enqueue_scripts', [ $this, 'enqueue_admin_dark_css' ] );
-	}
-
-	/** Append pzl-admin-dark to <body> when the dark mode option is set. */
-	public function maybe_add_dark_body_class( string $classes ): string {
-		$mode = (string) get_option( 'pizzalayer_setting_dark_mode', 'auto' );
-		if ( $mode === 'dark' ) {
-			$classes .= ' pzl-admin-dark';
-		} elseif ( $mode === 'auto' ) {
-			// We can't detect OS preference server-side; add a JS-toggled class instead
-			$classes .= ' pzl-admin-dark-auto';
-		}
-		return $classes;
-	}
-
-	/** Enqueue dark mode stylesheet on all PizzaLayer admin pages. */
-	public function enqueue_admin_dark_css(): void {
-		$screen = get_current_screen();
-		if ( ! $screen ) { return; }
-		// Only on our pages
-		if ( strpos( $screen->id, 'pizzalayer' ) === false ) { return; }
-		$mode = (string) get_option( 'pizzalayer_setting_dark_mode', 'auto' );
-		if ( $mode === 'dark' ) {
-			wp_enqueue_style(
-				'pizzalayer-admin-dark',
-				PIZZALAYER_PLUGIN_URL . 'assets/css/admin-dark.css',
-				[],
-				PIZZALAYER_VERSION
-			);
-		} elseif ( $mode === 'auto' ) {
-			// Enqueue with a prefers-color-scheme media query via inline override
-			wp_enqueue_style(
-				'pizzalayer-admin-dark',
-				PIZZALAYER_PLUGIN_URL . 'assets/css/admin-dark.css',
-				[],
-				PIZZALAYER_VERSION,
-				'(prefers-color-scheme: dark)'
-			);
-			// Also add the body class swap so our CSS selectors fire
-			wp_add_inline_script(
-				'pizzalayer-admin-js',
-				'if(window.matchMedia&&window.matchMedia("(prefers-color-scheme: dark)").matches){document.body.classList.add("pzl-admin-dark");}',
-				'before'
-			);
-		}
 	}
 
 	public function render_menu_styles(): void {
@@ -293,6 +255,28 @@ class AdminMenu {
 	}
 
 	// ── Page renderers ────────────────────────────────────────────────
+
+	/**
+	 * When the Content Hub is disabled in Settings, redirect any direct hit on
+	 * admin.php?page=pizzalayer-content to the corresponding WP list screen so
+	 * stale bookmarks / links don't land on a page that's meant to be off.
+	 * Hooked on admin_init (before output).
+	 */
+	public function maybe_redirect_disabled_hub(): void {
+		if ( ! is_admin() ) { return; }
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended
+		if ( ! isset( $_GET['page'] ) || $_GET['page'] !== 'pizzalayer-content' ) { return; }
+		if ( get_option( 'pizzalayer_setting_disable_content_hub', 'no' ) !== 'yes' ) { return; }
+
+		$slug  = isset( $_GET['pl_cpt'] ) ? sanitize_key( wp_unslash( $_GET['pl_cpt'] ) ) : 'toppings';
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
+		$valid = [ 'toppings', 'crusts', 'sauces', 'cheeses', 'drizzles', 'cuts', 'sizes', 'presets' ];
+		if ( ! in_array( $slug, $valid, true ) ) { $slug = 'toppings'; }
+
+		wp_safe_redirect( admin_url( 'edit.php?post_type=pizzalayer_' . $slug ) );
+		exit;
+	}
+
 	public function render_layer_maker():   void { ( new LayerImageMaker() )->render(); }
 	public function render_layer_wizard():  void { ( new LayerBuilderWizard() )->render(); }
 	public function render_home():       void { ( new AdminHome() )->render(); }

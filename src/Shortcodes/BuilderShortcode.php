@@ -33,6 +33,13 @@ class BuilderShortcode {
 	private static int $counter = 0;
 
 	public function render( $atts ): string {
+		// Record that the builder has rendered live at least once (front-end only),
+		// so the Setup Guide can auto-complete its "view your builder" step. Guarded
+		// by a get_option check so it only ever writes once.
+		if ( ! is_admin() && ! get_option( 'pizzalayer_builder_viewed' ) ) {
+			update_option( 'pizzalayer_builder_viewed', '1' );
+		}
+
 		$atts = apply_filters( 'pizzalayer_builder_atts', shortcode_atts( [
 			'id'               => '',
 			'template'         => '',
@@ -60,6 +67,26 @@ class BuilderShortcode {
 		}
 		$instance_id = sanitize_html_class( $atts['id'] );
 
+		// ── Resolve global-setting fallbacks ─────────────────────────────
+		// shortcode_atts() defaults these attributes to '' (never null), so
+		// the templates' `$atts['pizza_shape'] ?? get_option(...)` null
+		// coalescing could never reach the global option — the saved Pizza
+		// Shape settings silently never applied. Resolve them here instead,
+		// in one place, so every template (and the Gutenberg block, which
+		// routes through this class) receives the saved global values.
+		if ( $atts['pizza_shape'] === '' ) {
+			$atts['pizza_shape'] = sanitize_key( (string) get_option( 'pizzalayer_setting_pizza_shape', 'round' ) );
+		}
+		if ( $atts['pizza_aspect'] === '' ) {
+			$atts['pizza_aspect'] = sanitize_text_field( (string) get_option( 'pizzalayer_setting_pizza_aspect', '' ) );
+		}
+		if ( $atts['pizza_radius'] === '' ) {
+			$atts['pizza_radius'] = sanitize_text_field( (string) get_option( 'pizzalayer_setting_pizza_radius', '' ) );
+		}
+		if ( $atts['layer_anim'] === '' ) {
+			$atts['layer_anim'] = sanitize_key( (string) get_option( 'pizzalayer_setting_layer_anim', 'fade' ) );
+		}
+
 		// Resolve template
 		$loader = new \PizzaLayer\Template\TemplateLoader();
 		$template_slug = $atts['template'] ? sanitize_key( $atts['template'] ) : $loader->get_active_slug();
@@ -82,7 +109,51 @@ class BuilderShortcode {
 
 		do_action( 'pizzalayer_after_builder', $instance_id, $atts );
 
-		return $html;
+		// Wrap with global chrome (announcement bar + help panel) — these are
+		// driven by the "Plugin Settings" section and must work on every
+		// template, so they're applied here rather than inside each template.
+		return $this->wrap_global_chrome( $html );
+	}
+
+	/**
+	 * Prepend the Demo/Announcement bar and append the Help panel around the
+	 * rendered builder HTML. Both come from the Settings → Plugin Settings
+	 * section and apply identically to all templates. The announcement bar is
+	 * rendered once per page even when multiple builders are present.
+	 *
+	 * @param string $html Rendered builder markup.
+	 * @return string
+	 */
+	private function wrap_global_chrome( string $html ): string {
+		static $announce_rendered = false;
+
+		$notice = trim( (string) get_option( 'pizzalayer_setting_settings_demonotice', '' ) );
+		$help   = trim( (string) get_option( 'pizzalayer_setting_global_help_content', '' ) );
+
+		$before = '';
+		if ( $notice !== '' && ! $announce_rendered ) {
+			$announce_rendered = true;
+			$before = '<div class="pzl-announce" role="status">'
+				. '<span class="pzl-announce__icon" aria-hidden="true">📣</span> '
+				. esc_html( $notice )
+				. '</div>';
+		}
+
+		$after = '';
+		if ( $help !== '' ) {
+			$after = '<details class="pzl-help">'
+				. '<summary class="pzl-help__summary">'
+				. '<span class="pzl-help__icon" aria-hidden="true">?</span> '
+				. esc_html__( 'Need help?', 'pizzalayer' )
+				. '</summary>'
+				. '<div class="pzl-help__body">' . wp_kses_post( wpautop( $help ) ) . '</div>'
+				. '</details>';
+		}
+
+		if ( $before === '' && $after === '' ) {
+			return $html;
+		}
+		return $before . $html . $after;
 	}
 
 	/**

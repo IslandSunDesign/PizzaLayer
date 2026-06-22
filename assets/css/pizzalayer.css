@@ -165,3 +165,72 @@ body .pizzalayer-toppings-wrapper.pizzalayer-toppings-wrapper-static{margin:auto
     .pztpro-bar-row__summary { order: 1; width: 100%; }
     .pztpro-bar-row__btn     { order: 3; width: 100%; justify-content: center; }
 }
+
+/* ══════════════════════════════════════════════════════════════
+   GLOBAL CHROME — Announcement bar + Help panel
+   Driven by Settings → Plugin Settings; rendered by
+   BuilderShortcode::wrap_global_chrome() for every template.
+   ══════════════════════════════════════════════════════════════ */
+
+.pzl-announce {
+    display:       flex;
+    align-items:   center;
+    gap:           10px;
+    margin:        0 0 16px;
+    padding:       12px 18px;
+    border-radius: 8px;
+    background:    linear-gradient(135deg, #ff8c42, #ff6b35);
+    color:         #fff;
+    font-size:     14px;
+    font-weight:   600;
+    line-height:   1.45;
+    box-shadow:    0 2px 10px rgba(255, 107, 53, 0.28);
+}
+.pzl-announce__icon {
+    flex-shrink: 0;
+    font-size:   16px;
+    line-height: 1;
+}
+
+.pzl-help {
+    margin:        18px 0 0;
+    border:        1px solid #e0e3e7;
+    border-radius: 8px;
+    background:    #fafbfc;
+    overflow:      hidden;
+}
+.pzl-help__summary {
+    display:     flex;
+    align-items: center;
+    gap:         9px;
+    padding:     11px 16px;
+    cursor:      pointer;
+    font-size:   13px;
+    font-weight: 600;
+    color:       #3c434a;
+    list-style:  none;
+    user-select: none;
+}
+.pzl-help__summary::-webkit-details-marker { display: none; }
+.pzl-help__summary:hover { background: #f0f2f4; }
+.pzl-help__icon {
+    display:         inline-flex;
+    align-items:     center;
+    justify-content: center;
+    width:           20px;
+    height:          20px;
+    border-radius:   50%;
+    background:      #ff6b35;
+    color:           #fff;
+    font-size:       12px;
+    font-weight:     700;
+    flex-shrink:     0;
+}
+.pzl-help__body {
+    padding:    4px 16px 14px;
+    font-size:  13px;
+    line-height: 1.6;
+    color:      #50575e;
+    border-top: 1px solid #eceef0;
+}
+.pzl-help__body p { margin: 8px 0; }

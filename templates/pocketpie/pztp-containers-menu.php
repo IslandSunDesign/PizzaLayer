@@ -28,10 +28,31 @@ $max_toppings = isset( $atts['max_toppings'] ) && (int) $atts['max_toppings'] > 
 if ( $max_toppings < 1 ) { $max_toppings = 99; }
 $max_toppings = (int) apply_filters( 'pizzalayer_max_toppings', $max_toppings, $instance_id );
 
-// Resolve layout mode
+// Resolve layout mode — shortcode attr wins, then the Default Layout Mode
+// template setting, then the built-in corner-quad fallback.
 $valid_layouts = [ 'corner-quad', 'layer-deck', 'slide-drawer', 'stack-panel' ];
-$layout = sanitize_key( $atts['layout'] ?? 'corner-quad' );
+$layout = sanitize_key( $atts['layout'] ?? '' );
+if ( $layout === '' ) {
+    $layout = sanitize_key( (string) get_option( 'pocketpie_setting_default_layout', 'corner-quad' ) );
+}
 if ( ! in_array( $layout, $valid_layouts, true ) ) { $layout = 'corner-quad'; }
+
+// ── Template settings consumed by this markup ──────────────────────
+$pp_show_reset   = get_option( 'pocketpie_setting_show_reset',      'yes' ) !== 'no';
+$pp_show_review  = get_option( 'pocketpie_setting_show_review_btn', 'yes' ) !== 'no';
+$pp_review_label = sanitize_text_field( (string) get_option( 'pocketpie_setting_review_btn_label', '' ) );
+if ( $pp_review_label === '' ) { $pp_review_label = __( 'Review', 'pizzalayer' ); }
+$pp_summary_title = sanitize_text_field( (string) get_option( 'pocketpie_setting_summary_title', '' ) );
+if ( $pp_summary_title === '' ) { $pp_summary_title = __( 'Your Pizza', 'pizzalayer' ); }
+$pp_close_on_backdrop = get_option( 'pocketpie_setting_close_on_backdrop', 'yes' ) !== 'no';
+$pp_swipe_close_sd    = get_option( 'pocketpie_setting_sd_swipe_close', 'yes' ) !== 'no';
+$pp_swipe_close_sp    = get_option( 'pocketpie_setting_sp_swipe_close', 'yes' ) !== 'no';
+$pp_modal_anim        = sanitize_key( (string) get_option( 'pocketpie_setting_modal_anim', 'scale-fade' ) );
+if ( ! in_array( $pp_modal_anim, [ 'scale-fade', 'slide-up', 'fade', 'instant' ], true ) ) { $pp_modal_anim = 'scale-fade'; }
+$pp_sd_pill_pos = sanitize_key( (string) get_option( 'pocketpie_setting_sd_pill_position', 'bottom-overlay' ) );
+if ( ! in_array( $pp_sd_pill_pos, [ 'bottom-overlay', 'below-pizza', 'top-overlay' ], true ) ) { $pp_sd_pill_pos = 'bottom-overlay'; }
+$pp_sd_pill_style = sanitize_key( (string) get_option( 'pocketpie_setting_sd_pill_style', 'pill' ) );
+if ( ! in_array( $pp_sd_pill_style, [ 'pill', 'square', 'icon', 'text' ], true ) ) { $pp_sd_pill_style = 'pill'; }
 
 // Pizza shape
 $valid_shapes  = [ 'round', 'square', 'rectangle', 'custom' ];
@@ -274,6 +295,28 @@ $tab_meta = [
 // Corner assignments for corner-quad layout (skip yourpizza)
 $corner_tabs   = array_filter( $visible_tabs, fn($t) => $t !== 'yourpizza' );
 $corner_tabs   = array_values( $corner_tabs );
+
+// Honour the Corner Quad corner-category settings: order the first four
+// corners as TL → TR → BL → BR per the saved options (only categories that
+// are actually visible count), then append any remaining visible tabs.
+$pp_corner_prefs = [
+    sanitize_key( (string) get_option( 'pocketpie_setting_cq_corner_tl', 'crust' ) ),
+    sanitize_key( (string) get_option( 'pocketpie_setting_cq_corner_tr', 'sauce' ) ),
+    sanitize_key( (string) get_option( 'pocketpie_setting_cq_corner_bl', 'cheese' ) ),
+    sanitize_key( (string) get_option( 'pocketpie_setting_cq_corner_br', 'toppings' ) ),
+];
+$pp_ordered = [];
+foreach ( $pp_corner_prefs as $pp_pref ) {
+    if ( in_array( $pp_pref, $corner_tabs, true ) && ! in_array( $pp_pref, $pp_ordered, true ) ) {
+        $pp_ordered[] = $pp_pref;
+    }
+}
+foreach ( $corner_tabs as $pp_t ) {
+    if ( ! in_array( $pp_t, $pp_ordered, true ) ) { $pp_ordered[] = $pp_t; }
+}
+$corner_tabs = $pp_ordered;
+unset( $pp_corner_prefs, $pp_ordered, $pp_pref, $pp_t );
+
 $corners       = [ 'tl', 'tr', 'bl', 'br' ];
 
 $ii = esc_attr( $instance_id );
@@ -297,10 +340,12 @@ $summary_rows = [
      Layout: <?php echo esc_html( $layout ); ?>
 ═══════════════════════════════════════════════════ -->
 <div id="<?php echo $ii; ?>"
-     class="pp-root pp-layout--<?php echo esc_attr( $layout ); ?>"
+     class="pp-root pp-layout--<?php echo esc_attr( $layout ); ?> pp-modal-anim--<?php echo esc_attr( $pp_modal_anim ); ?> pp-sd-pills-pos--<?php echo esc_attr( $pp_sd_pill_pos ); ?> pp-sd-pill-style--<?php echo esc_attr( $pp_sd_pill_style ); ?>"
      data-instance="<?php echo $ii; ?>"
      data-pp-var="<?php echo esc_attr( $pp_var ); ?>"
      data-layout="<?php echo esc_attr( $layout ); ?>"
+     data-swipe-close-sd="<?php echo $pp_swipe_close_sd ? 'yes' : 'no'; ?>"
+     data-swipe-close-sp="<?php echo $pp_swipe_close_sp ? 'yes' : 'no'; ?>"
      data-max-toppings="<?php echo esc_attr( (string) $max_toppings ); ?>"
      data-pizza-shape="<?php echo esc_attr( $pizza_shape ); ?>"
      data-pizza-aspect="<?php echo esc_attr( $pizza_aspect ); ?>"
@@ -413,12 +458,16 @@ $summary_rows = [
                 <?php echo $initial_pizza; // phpcs:ignore ?>
             </div>
             <div class="pp-cq-pizza__controls">
+                <?php if ( $pp_show_reset ) : ?>
                 <button type="button" class="pp-cq-reset"
                         onclick="ClearPizza();window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].resetAll();"
                         title="<?php esc_attr_e( 'Reset', 'pizzalayer' ); ?>">&#8635;</button>
+                <?php endif; ?>
+                <?php if ( $pp_show_review ) : ?>
                 <button type="button" class="pp-cq-summary-btn"
                         onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','yourpizza')"
-                        title="<?php esc_attr_e( 'View summary', 'pizzalayer' ); ?>">&#128203;</button>
+                        title="<?php echo esc_attr( $pp_review_label ); ?>">&#128203;</button>
+                <?php endif; ?>
             </div>
                 <!-- Action bar moved to root level below -->
         </div>
@@ -460,11 +509,13 @@ $summary_rows = [
                 <span class="pp-ld-deck-thumb__sel" id="<?php echo $ii; ?>-ld-sel-<?php echo esc_attr( $tab ); ?>"></span>
             </button>
             <?php endforeach; ?>
+            <?php if ( $pp_show_review ) : ?>
             <button type="button" class="pp-ld-deck-thumb pp-ld-deck-thumb--summary"
                     onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','yourpizza')">
                 <span class="pp-ld-deck-thumb__icon">&#128203;</span>
-                <span class="pp-ld-deck-thumb__label"><?php esc_html_e( 'Review', 'pizzalayer' ); ?></span>
+                <span class="pp-ld-deck-thumb__label"><?php echo esc_html( $pp_review_label ); ?></span>
             </button>
+            <?php endif; ?>
         </div>
 
         <!-- Expanded selection card (fills box, shows selected layer image big) -->
@@ -498,10 +549,12 @@ $summary_rows = [
 
         <!-- Reset bar -->
         <div class="pp-ld-controls">
+            <?php if ( $pp_show_reset ) : ?>
             <button type="button" class="pp-btn pp-btn--ghost pp-btn--sm"
                     onclick="ClearPizza();window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].resetAll();">
                 &#8635; <?php esc_html_e( 'Reset', 'pizzalayer' ); ?>
             </button>
+            <?php endif; ?>
                 <!-- Action bar moved to root level below -->
         </div>
 
@@ -533,22 +586,26 @@ $summary_rows = [
                         data-tab="<?php echo esc_attr( $tab ); ?>"
                         id="<?php echo $ii; ?>-sd-pill-<?php echo esc_attr( $tab ); ?>"
                         onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].sdOpen('<?php echo $ii; ?>','<?php echo esc_js( $tab ); ?>')">
-                    <?php echo $icon; // phpcs:ignore ?>
-                    <span><?php echo esc_html( $label ); ?></span>
+                    <span class="pp-sd-pill__icon"><?php echo $icon; // phpcs:ignore ?></span>
+                    <span class="pp-sd-pill__text"><?php echo esc_html( $label ); ?></span>
                     <span class="pp-sd-pill__dot" id="<?php echo $ii; ?>-sd-dot-<?php echo esc_attr( $tab ); ?>"></span>
                 </button>
                 <?php endforeach; ?>
+                <?php if ( $pp_show_review ) : ?>
                 <button type="button" class="pp-sd-pill pp-sd-pill--summary"
                         onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','yourpizza')">
-                    &#128203; <?php esc_html_e( 'Review', 'pizzalayer' ); ?>
+                    &#128203; <?php echo esc_html( $pp_review_label ); ?>
                 </button>
+                <?php endif; ?>
             </div>
             <div class="pp-sd-pizza-controls">
                 <span class="pp-sd-count" id="<?php echo $ii; ?>-sd-count-wrap">
                     &#127807; <span id="<?php echo $ii; ?>-sd-count">0</span>/<?php echo esc_html( (string) $max_toppings ); ?>
                 </span>
+                <?php if ( $pp_show_reset ) : ?>
                 <button type="button" class="pp-sd-reset"
                         onclick="ClearPizza();window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].resetAll();">&#8635;</button>
+                <?php endif; ?>
             </div>
         </div>
 
@@ -620,11 +677,13 @@ $summary_rows = [
                 <span class="pp-sp-step__dot" id="<?php echo $ii; ?>-sp-step-dot-<?php echo esc_attr( $tab ); ?>"></span>
             </button>
             <?php endforeach; ?>
+            <?php if ( $pp_show_review ) : ?>
             <button type="button" class="pp-sp-step pp-sp-step--summary"
                     onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','yourpizza')">
                 <span class="pp-sp-step__icon">&#128203;</span>
-                <span class="pp-sp-step__label"><?php esc_html_e( 'Review', 'pizzalayer' ); ?></span>
+                <span class="pp-sp-step__label"><?php echo esc_html( $pp_review_label ); ?></span>
             </button>
+            <?php endif; ?>
         </div>
 
         <!-- Bottom sheet panel -->
@@ -653,10 +712,12 @@ $summary_rows = [
             </div>
             <?php endforeach; ?>
             <div class="pp-sp-sheet__actions">
+                <?php if ( $pp_show_reset ) : ?>
                 <button type="button" class="pp-btn pp-btn--ghost pp-btn--sm"
                         onclick="ClearPizza();window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].resetAll();">
                     &#8635; <?php esc_html_e( 'Reset', 'pizzalayer' ); ?>
                 </button>
+                <?php endif; ?>
                 <!-- Action bar moved to root level below -->
             </div>
         </div>
@@ -668,11 +729,12 @@ $summary_rows = [
          SHARED: Summary Modal (all layouts)
          ═══════════════════════════════════════ -->
     <div class="pp-modal-overlay" id="<?php echo $ii; ?>-modal-overlay" aria-hidden="true"
-         onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].closeModal('<?php echo $ii; ?>')">
+         <?php if ( $pp_close_on_backdrop ) : ?>onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].closeModal('<?php echo $ii; ?>')"<?php endif; ?>>
     </div>
     <div class="pp-modal" id="<?php echo $ii; ?>-modal" role="dialog" aria-hidden="true">
         <div class="pp-modal__header">
-            <span class="pp-modal__title" id="<?php echo $ii; ?>-modal-title"><?php esc_html_e( 'Your Pizza', 'pizzalayer' ); ?></span>
+            <span class="pp-modal__title" id="<?php echo $ii; ?>-modal-title"
+                  data-default="<?php echo esc_attr( $pp_summary_title ); ?>"><?php echo esc_html( $pp_summary_title ); ?></span>
             <button type="button" class="pp-modal__close"
                     onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].closeModal('<?php echo $ii; ?>')">&#10005;</button>
         </div>

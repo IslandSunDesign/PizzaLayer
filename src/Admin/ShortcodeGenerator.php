@@ -193,13 +193,13 @@ class ShortcodeGenerator {
 					<p class="pscg-desc">Renders a non-interactive pizza image. Specify layers individually, or pick a saved preset.</p>
 					<div class="pscg-grid">
 						<div class="pscg-field">
-							<label>Preset <span class="pscg-hint">Load a saved pizza preset by slug</span></label>
+							<label>Preset <span class="pscg-hint">Outputs <code>[pizza_preset]</code> — renders the full saved pizza incl. toppings (requires PizzaLayerPro)</span></label>
 							<select class="pscg-select" id="s-preset">
 								<option value="">— none (specify layers below) —</option>
 								<?php
 								$presets = get_posts( array_merge( $q_args, [ 'post_type' => 'pizzalayer_presets' ] ) );
-								foreach ( $presets as $p ) : $sl = sanitize_title( $p->post_title ); ?>
-								<option value="<?php echo esc_attr( $sl ); ?>"><?php echo esc_html( $p->post_title ); ?></option>
+								foreach ( $presets as $p ) : ?>
+								<option value="<?php echo esc_attr( (string) $p->ID ); ?>"><?php echo esc_html( $p->post_title ); ?></option>
 								<?php endforeach; ?>
 							</select>
 						</div>

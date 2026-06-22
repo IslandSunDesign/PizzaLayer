@@ -48,6 +48,11 @@ class SetupGuide {
 		$has_template = get_option( 'pizzalayer_setting_global_template', '' ) !== '';
 		$has_defaults = get_option( 'pizzalayer_setting_crust_defaultcrust', '' ) !== '';
 
+		// ── Extra auto-detection signals ────────────────────────────────
+		$has_layer_images = $this->any_layer_image_exists();          // images step
+		$builder_embedded = $this->builder_is_embedded();             // shortcode step
+		$builder_viewed   = (bool) get_option( 'pizzalayer_builder_viewed', false ); // test step
+
 		// ── Checklist definition ─────────────────────────────────────────
 		$checklist = [
 			[
@@ -61,8 +66,10 @@ class SetupGuide {
 			[
 				'key'        => 'images',
 				'label'      => __( 'Prepare your layer images', 'pizzalayer' ),
-				'desc'       => __( 'Each ingredient needs a transparent PNG layer image (800×800 px). Use PizzaLayer → Layer Image Maker to crop, adjust, and export your images — or create them when adding each item.', 'pizzalayer' ),
-				'auto_done'  => isset( $done['images'] ),
+				'desc'       => __( 'Each ingredient needs a transparent PNG layer image (800×800 px). Use PizzaLayer → Layer Image Maker to crop, adjust, and export your images — or create them when adding each item. Auto-completes once any layer has an image.', 'pizzalayer' ),
+				'detected'   => $has_layer_images,
+				'auto_done'  => $has_layer_images || isset( $done['images'] ),
+				'manual'     => true,
 				'link'       => admin_url( 'admin.php?page=pizzalayer-layer-maker' ),
 				'link_label' => __( 'Layer Image Maker', 'pizzalayer' ),
 			],
@@ -107,7 +114,9 @@ class SetupGuide {
 				'label'      => __( 'Add Drizzles <em>(optional)</em>', 'pizzalayer' ),
 				'desc'       => __( 'Finishing touch layers — hot honey, balsamic, ranch. Optional but delightful.', 'pizzalayer' ),
 				'auto_done'  => $stats['drizzles'] > 0 || isset( $done['drizzles'] ),
+				'detected'   => $stats['drizzles'] > 0,
 				'optional'   => true,
+				'manual'     => true,
 				'link'       => admin_url( 'post-new.php?post_type=pizzalayer_drizzles' ),
 				'link_label' => __( 'Add Drizzle', 'pizzalayer' ),
 				'count'      => $stats['drizzles'],
@@ -117,7 +126,9 @@ class SetupGuide {
 				'label'      => __( 'Add Cut styles <em>(optional)</em>', 'pizzalayer' ),
 				'desc'       => __( 'Slice overlay layers — triangle, square, party, whole. Optional.', 'pizzalayer' ),
 				'auto_done'  => $stats['cuts'] > 0 || isset( $done['cuts'] ),
+				'detected'   => $stats['cuts'] > 0,
 				'optional'   => true,
+				'manual'     => true,
 				'link'       => admin_url( 'post-new.php?post_type=pizzalayer_cuts' ),
 				'link_label' => __( 'Add Cut Style', 'pizzalayer' ),
 				'count'      => $stats['cuts'],
@@ -141,16 +152,20 @@ class SetupGuide {
 			[
 				'key'        => 'shortcode',
 				'label'      => __( 'Embed the Builder on a page', 'pizzalayer' ),
-				'desc'       => __( 'Use the Shortcode Generator to get your <code>[pizza_builder]</code> shortcode, then add it to any page.', 'pizzalayer' ),
-				'auto_done'  => isset( $done['shortcode'] ),
+				'desc'       => __( 'Use the Shortcode Generator to get your <code>[pizza_builder]</code> shortcode, then add it to any page. Auto-completes once the shortcode is found in published content.', 'pizzalayer' ),
+				'detected'   => $builder_embedded,
+				'auto_done'  => $builder_embedded || isset( $done['shortcode'] ),
+				'manual'     => true,
 				'link'       => admin_url( 'admin.php?page=pizzalayer-shortcodes' ),
 				'link_label' => __( 'Shortcode Generator', 'pizzalayer' ),
 			],
 			[
 				'key'        => 'test',
-				'label'      => __( 'Place a test order end-to-end', 'pizzalayer' ),
-				'desc'       => __( 'Visit your builder page as a customer and confirm layers display correctly.', 'pizzalayer' ),
-				'auto_done'  => isset( $done['test'] ),
+				'label'      => __( 'View your builder on the front end', 'pizzalayer' ),
+				'desc'       => __( 'Visit your builder page as a customer and confirm the layers display correctly. Auto-completes the first time the builder renders on your live site.', 'pizzalayer' ),
+				'detected'   => $builder_viewed,
+				'auto_done'  => $builder_viewed || isset( $done['test'] ),
+				'manual'     => true,
 				'link'       => home_url( '/' ),
 				'link_label' => __( 'View Site', 'pizzalayer' ),
 			],
@@ -159,166 +174,6 @@ class SetupGuide {
 		$done_count  = count( array_filter( $checklist, fn( $i ) => $i['auto_done'] ?? false ) );
 		$total_count = count( $checklist );
 		$pct         = (int) round( $done_count / $total_count * 100 );
-
-		// ── Layer guide tabs ─────────────────────────────────────────────
-		$layer_tabs = [
-			'layermaker' => [
-				'label' => 'Layer Image Maker',
-				'icon'  => 'dashicons-format-image',
-				'intro' => 'Layer Image Maker is a built-in browser tool that lets you prepare any image as a pizza layer PNG — crop, adjust, and export without leaving WordPress. You can also send images directly to your Media Library and attach them to ingredients in one step.',
-				'steps' => [
-					'Go to <strong>PizzaLayer → Layer Image Maker</strong> in the admin sidebar.',
-					'Upload a source image by dropping it onto the upload zone, clicking to browse, or choosing from your <strong>Media Library</strong>.',
-					'Select an <strong>Aspect Ratio</strong> — use <em>1:1 Square</em> for standard pizza layers (800×800 px), or match your pizza shape setting.',
-					'Toggle <strong>Show pizza outline guide</strong> to see the circular pizza mask overlay. Your pizza art should fill roughly 90–95% of the circle. Toppings should spread across the <em>entire</em> canvas.',
-					'Use the <strong>Adjustments</strong> panel: Brightness, Contrast, Saturation, Hue Shift, Blur, Sharpen, and Opacity. For cut overlays, drop Opacity to 20–40%. For sauces, a small softening helps blend edges.',
-					'Use <strong>Remove background (threshold)</strong> if your image has a plain solid background — drag the threshold slider to erase it and create transparency.',
-					'Click <strong>Download PNG</strong> to save the result locally, then upload it to the ingredient post field. Or click <strong>Send to Media Library</strong> to save it directly to WordPress — then attach it without leaving the ingredient editor.',
-					'Repeat for each ingredient layer type (crust, sauce, cheese, topping, drizzle, cut). Each should be a separate PNG on a consistent canvas size.',
-				],
-				'tip'   => 'Workflow tip: open the Layer Image Maker in one browser tab and the ingredient editor (e.g. Add New Topping) in another. Process and send each image to the Media Library, then attach it in the editor without going back and forth.',
-				'cpt'   => null,
-				'page_link' => 'pizzalayer-layer-maker',
-			],
-			'crusts' => [
-				'label' => 'Crusts',
-				'icon'  => 'dashicons-tag',
-				'intro' => 'Crusts are the foundation of every pizza in the builder. Add at least one crust before testing the visualizer.',
-				'steps' => [
-					'Go to <strong>PizzaLayer → Crusts</strong> and click <strong>Add New</strong>.',
-					'Enter a clear title — e.g. <code>Thin Crust</code>, <code>Stuffed Crust</code>, <code>Gluten Free</code>.',
-					'<strong>Prepare your layer image</strong> — use <strong>PizzaLayer → Layer Image Maker</strong> to upload, crop, adjust brightness/contrast/opacity, and export a transparent PNG ready for upload. Aim for an 800×800 px square canvas with the pizza crust filling roughly 90–95% of the circle area.',
-					'Upload the <strong>Crust Layer Image</strong> (<code>crust_layer_image</code>) — the transparent PNG that stacks on the visualizer. Use <strong>PizzaLayer → Layer Image Maker</strong> to crop and export your image before uploading.',
-					'Optionally upload a <strong>Crust Image</strong> (<code>crust_image</code>) for the selection card thumbnail.',
-					'Fill in the <strong>Price Grid</strong> with size and pricing rows if you need per-crust pricing.',
-					'Click <strong>Publish</strong>. Repeat for each crust option.',
-				],
-				'tip'   => 'Use transparent PNGs on a consistent 800×800 px square canvas for the cleanest layer stacking. Name files descriptively — e.g. <code>crust-thin.png</code>.',
-				'cpt'   => 'crusts',
-			],
-			'sauces' => [
-				'label' => 'Sauces',
-				'icon'  => 'dashicons-admin-generic',
-				'intro' => 'Sauces render as a layer directly on top of the crust. Add at least one to enable sauce selection in the builder.',
-				'steps' => [
-					'Go to <strong>PizzaLayer → Sauces</strong> and click <strong>Add New</strong>.',
-					'Enter a title — e.g. <code>Classic Tomato</code>, <code>Garlic White</code>, <code>BBQ</code>.',
-					'Prepare your layer image using <strong>PizzaLayer → Layer Image Maker</strong>: upload your sauce photo, adjust opacity and saturation for a natural look, and export a transparent PNG. Upload this as <strong>Sauce Layer Image</strong> (<code>sauce_layer_image</code>).',
-					'Optionally add a <strong>Sauce Image</strong> (<code>sauce_image</code>) for the selection card thumbnail.',
-					'Set pricing in the <strong>Price Grid</strong> if sauces have an upcharge.',
-					'Click <strong>Publish</strong>.',
-				],
-				'tip'   => 'Semi-transparent layer images with soft edges look most natural when layered on top of a crust.',
-				'cpt'   => 'sauces',
-			],
-			'cheeses' => [
-				'label' => 'Cheeses',
-				'icon'  => 'dashicons-category',
-				'intro' => 'Cheeses are a separate layer type that sits between the sauce and toppings — great for offering Mozzarella, Vegan, Provolone, and more.',
-				'steps' => [
-					'Go to <strong>PizzaLayer → Cheeses</strong> and click <strong>Add New</strong>.',
-					'Give it a clear name — e.g. <code>Mozzarella</code>, <code>Provolone</code>, <code>Dairy Free</code>.',
-					'Prepare your image in <strong>Layer Image Maker</strong>: crop to 800×800 px, adjust brightness and contrast, then export. Upload as <strong>Cheese Layer Image</strong> (<code>cheese_layer_image</code>).',
-					'Optionally add a card thumbnail (<code>cheese_image</code>).',
-					'Click <strong>Publish</strong>.',
-				],
-				'tip'   => 'A subtle melt pattern with a golden edge makes cheese images look convincingly realistic.',
-				'cpt'   => 'cheeses',
-			],
-			'toppings' => [
-				'label' => 'Toppings',
-				'icon'  => 'dashicons-star-filled',
-				'intro' => 'Toppings are the heart of the builder. Each one gets its own layer image and supports whole / half / quarter coverage placement.',
-				'steps' => [
-					'Go to <strong>PizzaLayer → Toppings</strong> and click <strong>Add New</strong>.',
-					'Enter a name — e.g. <code>Pepperoni</code>, <code>Mushrooms</code>, <code>Jalapeños</code>.',
-					'Prepare your layer image using <strong>PizzaLayer → Layer Image Maker</strong>: upload your topping art, use the rule-of-thirds guide to check coverage across the full 800×800 px canvas, adjust colors, and export a transparent PNG. Important: topping art must cover the <em>entire</em> canvas — PizzaLayer clips it per coverage selection (whole, half, quarter).',
-					'Upload the exported PNG as <strong>Topping Layer Image</strong> (<code>topping_layer_image</code>). You can do this directly from Layer Image Maker using the <em>Send to Media Library</em> button, then attach it here.',
-					'Optionally add a <strong>Topping Image</strong> (<code>topping_image</code>) for the card thumbnail.',
-					'Set a <strong>Max Toppings</strong> limit in <em>PizzaLayer → Settings</em> if desired.',
-					'Click <strong>Publish</strong>. Repeat for each topping.',
-					'<em>Pricing:</em> install <strong>PizzaLayerPro</strong> to configure per-topping price grids and WooCommerce checkout.',
-				],
-				'tip'   => 'Spread topping art across the <em>entire</em> 800×800 px canvas — do not centre or crop to one half. PizzaLayer clips the image automatically for half/quarter portions.',
-				'cpt'   => 'toppings',
-			],
-			'drizzles' => [
-				'label' => 'Drizzles',
-				'icon'  => 'dashicons-admin-customizer',
-				'intro' => 'Drizzles are optional finishing layers that appear on top of everything — balsamic glaze, hot honey, ranch swirl, etc.',
-				'steps' => [
-					'Go to <strong>PizzaLayer → Drizzles</strong> and click <strong>Add New</strong>.',
-					'Enter a name — e.g. <code>Hot Honey</code>, <code>Balsamic</code>.',
-					'Prepare your layer image in <strong>Layer Image Maker</strong>: use the opacity slider to create a semi-transparent drizzle look, then export. Upload as <strong>Drizzle Layer Image</strong> (<code>drizzle_layer_image</code>).',
-					'Add a card thumbnail (<code>drizzle_image</code>).',
-					'Click <strong>Publish</strong>.',
-				],
-				'tip'   => 'Asymmetric, flowing drizzle patterns look more handcrafted and appetizing than perfectly symmetrical ones.',
-				'cpt'   => 'drizzles',
-			],
-			'cuts' => [
-				'label' => 'Cuts',
-				'icon'  => 'dashicons-editor-table',
-				'intro' => 'Cut styles render as an overlay on the final pizza — triangle slices, square cuts, party-style, or whole.',
-				'steps' => [
-					'Go to <strong>PizzaLayer → Cuts</strong> and click <strong>Add New</strong>.',
-					'Enter a name — e.g. <code>8 Slices</code>, <code>Square Cut</code>, <code>Party Style</code>.',
-					'Prepare your cut overlay in <strong>Layer Image Maker</strong>: use the opacity slider (typically 20–40%) to keep the cut lines subtle, then export. Upload as <strong>Cut Layer Image</strong> (<code>cut_layer_image</code>).',
-					'Click <strong>Publish</strong>.',
-				],
-				'tip'   => 'Keep cut line images subtle — a low-opacity thin line lets the toppings beneath remain the star.',
-				'cpt'   => 'cuts',
-			],
-			'imageprep' => [
-				'label' => 'Image Prep',
-				'icon'  => 'dashicons-format-image',
-				'intro' => 'Getting your layer images right is the single most important step for a polished result. Use <strong>PizzaLayer → Layer Image Maker</strong> to upload, crop, adjust, and export each image in one step — no external editor required.',
-				'steps' => [
-					'<strong>Use Layer Image Maker:</strong> Go to <strong>PizzaLayer → Layer Image Maker</strong>. Upload or choose from your Media Library. Use the pizza outline guide to check placement, adjust brightness / contrast / saturation / opacity with the sliders, then click <strong>Download PNG</strong> — or <em>Send to Media Library</em> to save it directly to WordPress and attach it to your ingredient post.',
-					'<strong>Format:</strong> Always use <strong>PNG with transparency</strong> (PNG-24 or PNG-32). JPEG has no transparency support — never use it for layer images.',
-					'<strong>Canvas size:</strong> Use a <strong>square canvas — 800×800 px recommended</strong> for all layer types (crusts, sauces, cheeses, toppings, drizzles, cuts). Consistent canvas sizes ensure all layers stack with pixel-perfect alignment.',
-					'<strong>Pizza circle placement:</strong> Centre your pizza art so the pizza circle fills roughly <strong>90–95% of the canvas width</strong>, with a small transparent gutter around the edge. This prevents clipping at different display sizes.',
-					'<strong>Toppings — spread the full canvas:</strong> Topping images must cover the <em>entire</em> 800×800 px area naturally. PizzaLayer applies CSS <code>clip-path</code> to mask the image to the selected portion (whole, half-left, half-right, quarter). If you centre the art on just half the canvas, the other half will be blank.',
-					'<strong>Sauce &amp; cheese — soft edges:</strong> Use a soft brush or feathered edge where the sauce/cheese meets the transparent border. Hard edges look artificial at round pizza shapes.',
-					'<strong>Drizzles — asymmetric is better:</strong> Irregular, flowing drizzle patterns look more handcrafted and appetising than perfectly symmetrical ones.',
-					'<strong>Cut overlays — keep them subtle:</strong> Cut line images should use low opacity (20–40%) thin lines. The toppings beneath should remain the visual star.',
-					'<strong>File naming:</strong> Use descriptive, lowercase, hyphenated filenames — e.g. <code>crust-thin.png</code>, <code>topping-pepperoni.png</code>. Avoid spaces and special characters.',
-					'<strong>File size:</strong> Compress PNGs before uploading. Target under 200 KB per image. Use tools like <a href="https://tinypng.com" target="_blank" rel="noopener">TinyPNG</a> or <a href="https://squoosh.app" target="_blank" rel="noopener">Squoosh</a> without visibly reducing quality.',
-					'<strong>Two image types per ingredient:</strong> (1) <strong>Layer Image</strong> (<code>*_layer_image</code>) — the transparent PNG that stacks on the visualizer pizza. Must be square, transparent background, consistent canvas size. (2) <strong>Card Image</strong> (<code>*_image</code>) — the thumbnail shown on the selection card in the builder UI. Can be JPEG or PNG, ideally a square crop at 200×200 px. You can use the same file for both, but having a tighter-cropped card image gives a cleaner UI.',
-				],
-				'tip'   => 'Do a quick "stack test" after adding each new layer: open your builder page and confirm the new layer aligns correctly with existing ones before publishing. Catching canvas size mismatches early saves time.',
-				'cpt'   => null,
-			],
-			'settings' => [
-				'label' => 'Settings',
-				'icon'  => 'dashicons-admin-settings',
-				'intro' => 'Fine-tune PizzaLayer\'s behavior: set defaults, max toppings, template, and display options.',
-				'steps' => [
-					'Open <strong>PizzaLayer → Settings</strong>.',
-					'Set your <strong>Default Crust</strong>, <strong>Default Sauce</strong>, and <strong>Default Cheese</strong> — these pre-load in the builder.',
-					'Set <strong>Max Toppings</strong> to limit how many toppings a customer can add.',
-					'Configure <strong>Pizza display size</strong>, border, and topping fraction options.',
-					'Set a <strong>Demo Notice</strong> or custom <strong>Help Screen</strong> content if needed.',
-					'Save all settings.',
-				],
-				'tip'   => 'Setting sensible defaults (pre-selected crust and sauce) reduces friction and helps customers start building faster.',
-				'cpt'   => null,
-			],
-			'shortcode' => [
-				'label' => 'Embed',
-				'icon'  => 'dashicons-editor-code',
-				'intro' => 'Once your content is populated, embed the builder on any page using a shortcode.',
-				'steps' => [
-					'Go to <strong>PizzaLayer → Shortcode Generator</strong>.',
-					'Configure your builder options — template, max toppings, default layers, visible tabs.',
-					'Copy the generated <code>[pizza_builder]</code> shortcode.',
-					'Paste it into any WordPress page or post using the Block Editor or Classic Editor.',
-					'Preview the page to confirm layers load and the visualizer responds to selections.',
-				],
-				'tip'   => 'You can place multiple builders on the same page by giving each a unique <code>id</code> attribute: <code>[pizza_builder id="pizza-1"]</code>.',
-				'cpt'   => null,
-			],
-		];
 
 		?>
 		<div class="wrap psg-wrap">
@@ -363,9 +218,13 @@ class SetupGuide {
 				<?php wp_nonce_field( 'pizzalayer_setup_checklist' ); ?>
 				<ol class="psg-checklist">
 				<?php foreach ( $checklist as $idx => $item ) :
-					$is_done = $item['auto_done'] ?? false;
+					$is_done  = $item['auto_done'] ?? false;
 					$optional = $item['optional'] ?? false;
-					$auto     = ( $item['auto_done'] ?? false ) && $item['key'] !== 'test' && $item['key'] !== 'shortcode';
+					$manual   = ! empty( $item['manual'] );           // step supports a manual fallback toggle
+					$detected = ! empty( $item['detected'] );          // real auto-signal fired (independent of manual mark)
+					// "Undo" only makes sense when the step is done purely because it
+					// was hand-marked — never when an auto-signal is holding it true.
+					$manual_only_done = $is_done && $manual && ! $detected;
 				?>
 					<li class="psg-checklist__item<?php echo $is_done ? ' psg-checklist__item--done' : ''; ?><?php echo $optional ? ' psg-checklist__item--optional' : ''; ?>">
 						<div class="psg-cl-status">
@@ -388,20 +247,20 @@ class SetupGuide {
 							<div class="psg-cl-desc"><?php echo wp_kses_post( $item['desc'] ); ?></div>
 						</div>
 						<div class="psg-cl-actions">
-							<?php if ( $item['link'] && ! $auto ) : ?>
+							<?php if ( ! empty( $item['link'] ) && ! $is_done ) : ?>
 							<a href="<?php echo esc_url( $item['link'] ); ?>" class="button button-small">
 								<?php echo esc_html( $item['link_label'] ?? __( 'Go', 'pizzalayer' ) ); ?> →
 							</a>
-							<?php elseif ( $item['link'] ) : ?>
+							<?php elseif ( ! empty( $item['link'] ) ) : ?>
 							<a href="<?php echo esc_url( $item['link'] ); ?>" class="button button-small button-secondary">
 								<?php echo esc_html( $item['link_label'] ?? __( 'View', 'pizzalayer' ) ); ?>
 							</a>
 							<?php endif; ?>
-							<?php if ( ! $auto && ! $is_done ) : ?>
+							<?php if ( $manual && ! $is_done ) : ?>
 							<button type="submit" name="pizzalayer_setup_done" value="<?php echo esc_attr( $item['key'] ); ?>" class="button button-small psg-mark-done">
-								<input type="hidden" name="checked" value="1"><?php esc_html_e( 'Mark done', 'pizzalayer' ); ?>
+								<input type="hidden" name="checked" value="1"><?php echo $optional ? esc_html__( 'Skip / mark done', 'pizzalayer' ) : esc_html__( 'Mark done', 'pizzalayer' ); ?>
 							</button>
-							<?php elseif ( ! $auto && $is_done ) : ?>
+							<?php elseif ( $manual_only_done ) : ?>
 							<button type="submit" name="pizzalayer_setup_done" value="<?php echo esc_attr( $item['key'] ); ?>" class="button button-small psg-mark-undone">
 								<input type="hidden" name="checked" value="0"><?php esc_html_e( 'Undo', 'pizzalayer' ); ?>
 							</button>
@@ -411,72 +270,6 @@ class SetupGuide {
 				<?php endforeach; ?>
 				</ol>
 			</form>
-		</div>
-
-		<!-- ══ Layer-by-layer guide tabs ══════════════════════════════ -->
-		<div class="psg-card psg-card--tabs">
-			<div class="psg-card__head">
-				<h2><span class="dashicons dashicons-category"></span> <?php esc_html_e( 'Layer-by-Layer Setup Guide', 'pizzalayer' ); ?></h2>
-				<p><?php esc_html_e( 'Select a section to see step-by-step instructions for setting it up.', 'pizzalayer' ); ?></p>
-			</div>
-
-			<nav class="psg-tabnav" role="tablist">
-				<?php $first = true; foreach ( $layer_tabs as $slug => $tab ) : ?>
-				<button class="psg-tab<?php echo $first ? ' psg-tab--active' : ''; ?>"
-				        data-tab="<?php echo esc_attr( $slug ); ?>"
-				        role="tab" aria-selected="<?php echo $first ? 'true' : 'false'; ?>"
-				        aria-controls="psg-panel-<?php echo esc_attr( $slug ); ?>">
-					<span class="dashicons <?php echo esc_attr( $tab['icon'] ); ?>"></span>
-					<?php echo esc_html( $tab['label'] ); ?>
-				</button>
-				<?php $first = false; endforeach; ?>
-			</nav>
-
-			<div class="psg-panels">
-				<?php $first = true; foreach ( $layer_tabs as $slug => $tab ) : ?>
-				<div class="psg-panel<?php echo $first ? ' psg-panel--active' : ''; ?>"
-				     id="psg-panel-<?php echo esc_attr( $slug ); ?>" role="tabpanel">
-					<p class="psg-panel__intro"><?php echo esc_html( $tab['intro'] ); ?></p>
-					<ol class="psg-steps">
-						<?php foreach ( $tab['steps'] as $step ) : ?>
-						<li class="psg-steps__item"><?php echo wp_kses_post( $step ); ?></li>
-						<?php endforeach; ?>
-					</ol>
-					<div class="psg-panel__tip">
-						<span class="dashicons dashicons-lightbulb"></span>
-						<?php echo esc_html( $tab['tip'] ); ?>
-					</div>
-					<?php if ( $tab['cpt'] ) : ?>
-					<div class="psg-panel__actions">
-						<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pizzalayer_' . $tab['cpt'] ) ); ?>" class="button">
-							<span class="dashicons dashicons-list-view"></span> View All <?php echo esc_html( $tab['label'] ); ?>
-						</a>
-						<a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=pizzalayer_' . $tab['cpt'] ) ); ?>" class="button button-primary">
-							<span class="dashicons dashicons-plus-alt2"></span> Add New <?php echo esc_html( rtrim( $tab['label'], 's' ) ); ?>
-						</a>
-					</div>
-					<?php elseif ( ! empty( $tab['page_link'] ) ) : ?>
-				<div class="psg-panel__actions">
-					<a href="<?php echo esc_url( admin_url( 'admin.php?page=' . esc_attr( $tab['page_link'] ) ) ); ?>" class="button button-primary">
-						<span class="dashicons dashicons-format-image"></span> Open Layer Image Maker
-					</a>
-				</div>
-				<?php elseif ( $slug === 'settings' ) : ?>
-					<div class="psg-panel__actions">
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-settings' ) ); ?>" class="button button-primary">
-							<span class="dashicons dashicons-admin-settings"></span> Open Settings
-						</a>
-					</div>
-					<?php elseif ( $slug === 'shortcode' ) : ?>
-					<div class="psg-panel__actions">
-						<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-shortcodes' ) ); ?>" class="button button-primary">
-							<span class="dashicons dashicons-editor-code"></span> Open Shortcode Generator
-						</a>
-					</div>
-					<?php endif; ?>
-				</div>
-				<?php $first = false; endforeach; ?>
-			</div>
 		</div>
 
 		<!-- ══ Quickstart CTA ══════════════════════════════════════════ -->
@@ -512,6 +305,57 @@ class SetupGuide {
 		</div><!-- /.wrap -->
 
 		<?php
+	}
+
+	/**
+	 * Whether any published layer post already has an image — either a native
+	 * "{type}_layer_image" meta value or a featured image. Works with or without
+	 * SCF/ACF. One bounded query; the Setup Guide is loaded infrequently.
+	 */
+	private function any_layer_image_exists(): bool {
+		global $wpdb;
+
+		$post_types = "'pizzalayer_crusts','pizzalayer_sauces','pizzalayer_cheeses','pizzalayer_toppings','pizzalayer_drizzles','pizzalayer_cuts'";
+		$meta_keys  = "'crust_layer_image','sauce_layer_image','cheese_layer_image','topping_layer_image','drizzle_layer_image','cut_layer_image'";
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL
+		$found = $wpdb->get_var(
+			"SELECT pm.post_id
+			   FROM {$wpdb->postmeta} pm
+			   INNER JOIN {$wpdb->posts} p ON p.ID = pm.post_id
+			  WHERE p.post_status = 'publish'
+			    AND p.post_type IN ( {$post_types} )
+			    AND (
+			        ( pm.meta_key IN ( {$meta_keys} ) AND pm.meta_value <> '' AND pm.meta_value <> '0' )
+			        OR pm.meta_key = '_thumbnail_id'
+			    )
+			  LIMIT 1"
+		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL
+
+		return ! empty( $found );
+	}
+
+	/**
+	 * Whether the [pizza_builder] shortcode appears in any published content.
+	 */
+	private function builder_is_embedded(): bool {
+		global $wpdb;
+		$like = '%' . $wpdb->esc_like( '[pizza_builder' ) . '%';
+
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery
+		$found = $wpdb->get_var(
+			$wpdb->prepare(
+				"SELECT ID FROM {$wpdb->posts}
+				  WHERE post_status = 'publish'
+				    AND post_content LIKE %s
+				  LIMIT 1",
+				$like
+			)
+		);
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery
+
+		return ! empty( $found );
 	}
 
 	private function render_styles(): void { ?>

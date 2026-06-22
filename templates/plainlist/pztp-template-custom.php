@@ -66,6 +66,11 @@ function pzt_plainlist_inject_css(): void {
 }
 endif;
 
-add_action( 'wp_head', 'pzt_plainlist_inject_css', 99 );
+// Must run on wp_enqueue_scripts (not wp_head): wp_add_inline_style() only
+// works before styles are printed, and styles print at wp_head priority 8 —
+// hooking later in wp_head silently discarded all of this CSS.
+// This file is included during wp_enqueue_scripts:10 (TemplateLoader), so
+// registering at priority 99 on the same hook still fires.
+add_action( 'wp_enqueue_scripts', 'pzt_plainlist_inject_css', 99 );
 
 do_action( 'pizzalayer_file_pztp-template-custom_end' );

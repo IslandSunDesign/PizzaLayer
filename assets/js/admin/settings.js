@@ -40,61 +40,6 @@
 	if ( radiusInput )  { radiusInput.addEventListener( 'input',  updateShapePreview ); }
 	updateShapePreview();
 
-	// Animation preview
-	var animations = {
-		'fade':     function ( el ) {
-			el.style.transition = 'none'; el.style.opacity = 0; el.style.transform = '';
-			rAF( function () { rAF( function () {
-				el.style.transition = 'opacity 0.35s ease'; el.style.opacity = 1;
-			} ); } );
-		},
-		'scale-in': function ( el ) {
-			el.style.transition = 'none'; el.style.opacity = 0; el.style.transform = 'scale(0.4)';
-			rAF( function () { rAF( function () {
-				el.style.transition = 'opacity 0.4s ease,transform 0.4s cubic-bezier(0.34,1.56,0.64,1)';
-				el.style.opacity = 1; el.style.transform = 'scale(1)';
-			} ); } );
-		},
-		'slide-up': function ( el ) {
-			el.style.transition = 'none'; el.style.opacity = 0; el.style.transform = 'translateY(40%)';
-			rAF( function () { rAF( function () {
-				el.style.transition = 'opacity 0.35s ease,transform 0.35s cubic-bezier(0.22,1,0.36,1)';
-				el.style.opacity = 1; el.style.transform = 'translateY(0)';
-			} ); } );
-		},
-		'flip-in':  function ( el ) {
-			el.style.transition = 'none'; el.style.opacity = 0; el.style.transform = 'rotateY(90deg) scale(0.8)';
-			rAF( function () { rAF( function () {
-				el.style.transition = 'opacity 0.4s ease,transform 0.4s cubic-bezier(0.34,1.2,0.64,1)';
-				el.style.opacity = 1; el.style.transform = 'rotateY(0) scale(1)';
-			} ); } );
-		},
-		'drop-in':  function ( el ) {
-			el.style.transition = 'none'; el.style.opacity = 0; el.style.transform = 'translateY(-40%) scale(1.1)';
-			rAF( function () { rAF( function () {
-				el.style.transition = 'opacity 0.35s ease,transform 0.35s cubic-bezier(0.22,1,0.36,1)';
-				el.style.opacity = 1; el.style.transform = 'translateY(0) scale(1)';
-			} ); } );
-		},
-		'instant':  function ( el ) {
-			el.style.transition = 'none'; el.style.opacity = 1; el.style.transform = '';
-		}
-	};
-
-	function rAF( fn ) { requestAnimationFrame( fn ); }
-
-	var animPreviewBtn = document.getElementById( 'pset-anim-preview-btn' );
-	var animSelect     = document.getElementById( 'pset-layer-anim' );
-	var animDemo       = document.getElementById( 'pset-anim-demo' );
-
-	if ( animPreviewBtn && animSelect && animDemo ) {
-		animPreviewBtn.addEventListener( 'click', function () {
-			var mode = animSelect.value;
-			( animations[ mode ] || animations[ 'fade' ] )( animDemo );
-		} );
-	}
-
-
 	// ── Export: detached form to avoid nested-form HTML restriction ──
 	var $exportBtn = document.getElementById( 'pset-export-btn' );
 	if ( $exportBtn ) {

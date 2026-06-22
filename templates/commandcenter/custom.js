@@ -480,6 +480,42 @@
             }
 
             /**
+             * Programmatically set selection state (PizzaLayer JS API).
+             * Consumed by PizzaLayerPro to apply "Default Layers".
+             *
+             * @param {Object} newState { crust|sauce|cheese|drizzle|cut: slug|{slug},
+             *                            toppings: { slug: {…} } }
+             */
+            function setState(newState) {
+                resetAll();
+                if (!newState || typeof newState !== 'object') { return; }
+
+                var baseTypes = ['crust', 'sauce', 'cheese', 'drizzle', 'cut'];
+                baseTypes.forEach(function (type) {
+                    var sel = newState[type];
+                    if (!sel) { return; }
+                    var slug = (typeof sel === 'object') ? sel.slug : sel;
+                    if (!slug) { return; }
+                    var $card = $root.find('.cc-card--exclusive[data-layer="' + type + '"][data-slug="' + slug + '"]');
+                    if (!$card.length && type === 'cut') {
+                        $card = $root.find('.cc-card--exclusive[data-layer="slicing"][data-slug="' + slug + '"]');
+                    }
+                    if ($card.length && !$card.hasClass('cc-card--selected')) {
+                        $card.find('.cc-btn--add').first().trigger('click');
+                    }
+                });
+
+                if (newState.toppings && typeof newState.toppings === 'object') {
+                    Object.keys(newState.toppings).forEach(function (slug) {
+                        var $card = $root.find('.cc-card--topping[data-slug="' + slug + '"]');
+                        if ($card.length && !$card.hasClass('cc-card--selected')) {
+                            $card.find('.cc-btn--add').first().trigger('click');
+                        }
+                    });
+                }
+            }
+
+            /**
              * Get current state (for Pro / external use).
              */
             function getState() {
@@ -569,6 +605,7 @@
                 setCoverage:  setCoverage,
                 resetAll:     resetAll,
                 getState:     getState,
+                setState:     setState,
                 /* Legacy compat aliases */
                 navNext: function () {
                     /* Find next tab after active */
@@ -602,6 +639,15 @@
                 registerInstance: function (id, inst) { _instances[id] = inst; },
                 getInstance:      function (id) { return _instances[id] || null; },
                 getInstances:     function () { return _instances; },
+                getAllInstances:  function () { return Object.keys(_instances); },
+                getState:         function (id) {
+                    var inst = _instances[id];
+                    return (inst && typeof inst.getState === 'function') ? inst.getState() : null;
+                },
+                setState:         function (id, newState) {
+                    var inst = _instances[id];
+                    if (inst && typeof inst.setState === 'function') { inst.setState(newState); }
+                },
             };
         }());
     }

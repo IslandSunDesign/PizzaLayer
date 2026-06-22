@@ -226,55 +226,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		if (e.key === 'Escape' && modal && modal.style.display !== 'none') closeModal();
 	});
 
-	// ── Color scheme presets ─────────────────────────────────────
-	document.querySelectorAll('.pset-scheme-chip').forEach(function(chip) {
-		chip.addEventListener('click', function() {
-			var data;
-			try { data = JSON.parse(chip.getAttribute('data-scheme')); } catch(e) { return; }
-			// data can be:
-			//   array  [hex, hex, hex]  — legacy metro format (positional)
-			//   object { option_key: hex, ... } — new per-template format
-			if (Array.isArray(data)) {
-				// Legacy: metro positional array
-				var legacyKeys = [
-					'metro_setting_accent_color',
-					'metro_setting_background_color',
-					'metro_setting_card_bg_color'
-				];
-				data.forEach(function(hex, i) {
-					var input = document.getElementById('pset-color-' + legacyKeys[i]);
-					if (input) {
-						input.value = hex;
-						input.dispatchEvent(new Event('input'));
-						input.dispatchEvent(new Event('change'));
-					}
-				});
-			} else if (data && typeof data === 'object') {
-				// New format: { option_key: value }
-				Object.keys(data).forEach(function(optKey) {
-					var val = data[optKey];
-					// Try color input first, then select, then text
-					var colorInput = document.getElementById('pset-color-' + optKey);
-					if (colorInput) {
-						colorInput.value = val;
-						colorInput.dispatchEvent(new Event('input'));
-						colorInput.dispatchEvent(new Event('change'));
-					} else {
-						var anyInput = document.querySelector('[name="' + optKey + '"]');
-						if (anyInput) {
-							anyInput.value = val;
-							anyInput.dispatchEvent(new Event('input'));
-							anyInput.dispatchEvent(new Event('change'));
-						}
-					}
-				});
-			}
-			document.querySelectorAll('.pset-scheme-chip').forEach(function(c) {
-				c.classList.remove('pset-scheme-chip--active');
-			});
-			chip.classList.add('pset-scheme-chip--active');
-		});
-	});
 	// ── Quick-jump pills ─────────────────────────────────────────
 	(function() {
 		var pills = document.querySelectorAll('.pset-quickjump__pill');
@@ -320,64 +271,6 @@ document.addEventListener('DOMContentLoaded', function() {
 		}
 	})();
 
-	// ── Global Colour Palette presets (with confirmation modal) ─────
-	(function() {
-		var modal      = document.getElementById('pset-palette-modal');
-		var modalName  = document.getElementById('pset-palette-modal-name');
-		var modalSwatches = document.getElementById('pset-palette-modal-swatches');
-		var applyBtn   = document.getElementById('pset-palette-modal-apply');
-		var cancelBtn  = document.getElementById('pset-palette-modal-cancel');
-		var cancelBtn2 = document.getElementById('pset-palette-modal-cancel2');
-		if (!modal) return;
-		var pendingPalette = null;
-
-		function closePaletteModal() {
-			modal.style.display = 'none';
-			document.body.style.overflow = '';
-			pendingPalette = null;
-		}
-		function applyPalette(values) {
-			Object.keys(values).forEach(function(key) {
-				var input = document.querySelector('.pset-palette-color[data-palette-key="' + key + '"]');
-				if (input) {
-					input.value = values[key];
-					input.dispatchEvent(new Event('input'));
-					input.dispatchEvent(new Event('change'));
-				}
-			});
-		}
-		document.querySelectorAll('.pset-palette-chip').forEach(function(chip) {
-			chip.addEventListener('click', function() {
-				var values;
-				try { values = JSON.parse(chip.getAttribute('data-palette')); } catch(e) { return; }
-				var name = chip.getAttribute('data-name') || 'Preset';
-				pendingPalette = values;
-				modalName.textContent = name;
-				// Build swatch preview
-				modalSwatches.innerHTML = '';
-				var swatchKeys = ['pizzalayer_setting_color_bg','pizzalayer_setting_color_btn_bg','pizzalayer_setting_color_tab_active','pizzalayer_setting_color_card_bg','pizzalayer_setting_color_body_text'];
-				swatchKeys.forEach(function(k) {
-					if (!values[k]) return;
-					var s = document.createElement('span');
-					s.style.cssText = 'display:inline-block;width:28px;height:28px;border-radius:6px;background:'+values[k]+';border:1px solid rgba(0,0,0,.15);';
-					s.title = k.replace('pizzalayer_setting_color_','').replace(/_/g,' ') + ': ' + values[k];
-					modalSwatches.appendChild(s);
-				});
-				modal.style.display = 'flex';
-				document.body.style.overflow = 'hidden';
-			});
-		});
-		if (applyBtn) applyBtn.addEventListener('click', function() {
-			if (pendingPalette) applyPalette(pendingPalette);
-			closePaletteModal();
-		});
-		if (cancelBtn)  cancelBtn.addEventListener('click',  closePaletteModal);
-		if (cancelBtn2) cancelBtn2.addEventListener('click', closePaletteModal);
-		modal.querySelector('.pset-modal__backdrop').addEventListener('click', closePaletteModal);
-		document.addEventListener('keydown', function(e) {
-			if (e.key === 'Escape' && modal.style.display !== 'none') closePaletteModal();
-		});
-	})();
 	(function() {
 		var fileInput  = document.getElementById('pset-import-file');
 		var importBtn  = document.getElementById('pset-import-btn');

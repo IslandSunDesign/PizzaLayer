@@ -25,8 +25,54 @@ class TemplateAPI {
 			'orderby'        => 'menu_order title',
 			'order'          => 'ASC',
 		];
-		$args = apply_filters( "pizzalayer_query_args_{$type}", array_merge( $defaults, $extra_args ), $type );
-		return get_posts( $args );
+		$args  = apply_filters( "pizzalayer_query_args_{$type}", array_merge( $defaults, $extra_args ), $type );
+		$posts = get_posts( $args );
+
+		// Optionally drop layers whose custom data is too incomplete to render or
+		// price safely, so a half-configured item can't break the builder. The
+		// same filtered list feeds calculations (PizzaLayerPro reads it too).
+		if ( get_option( 'pizzalayer_setting_require_complete_data', 'no' ) === 'yes' ) {
+			$posts = array_values( array_filter( $posts, function ( $post ) use ( $type ) {
+				return self::layer_has_sufficient_data( $post, $type );
+			} ) );
+		}
+
+		return $posts;
+	}
+
+	/**
+	 * Whether a layer post carries enough custom data to be safely usable in the
+	 * builder and in price calculations.
+	 *
+	 * Rules (overridable via the `pizzalayer_layer_is_usable` filter):
+	 *  - Image-bearing types (toppings, crusts, sauces, cheeses, drizzles, cuts)
+	 *    must resolve to a non-empty layer image — without it the stack can't render.
+	 *  - Sizes must have a positive `diameter_inches` (needed for area / pricing).
+	 *  - Everything else passes.
+	 */
+	public static function layer_has_sufficient_data( \WP_Post $post, string $type ): bool {
+		$post_id = (int) $post->ID;
+		$ok      = true;
+
+		$image_types = [ 'toppings', 'crusts', 'sauces', 'cheeses', 'drizzles', 'cuts' ];
+		if ( in_array( $type, $image_types, true ) ) {
+			$ok = ( self::get_layer_image( $post_id, rtrim( $type, 's' ) ) !== '' );
+		} elseif ( $type === 'sizes' ) {
+			$diameter = get_post_meta( $post_id, '_pizzalayer_diameter_inches', true );
+			if ( $diameter === '' || $diameter === false ) {
+				$diameter = get_post_meta( $post_id, 'diameter_inches', true );
+			}
+			$ok = ( (float) $diameter > 0 );
+		}
+
+		/**
+		 * Filter the usability verdict for a single layer.
+		 *
+		 * @param bool     $ok    Whether the layer is considered complete enough to use.
+		 * @param \WP_Post $post  The layer post.
+		 * @param string   $type  CPT suffix (e.g. 'toppings').
+		 */
+		return (bool) apply_filters( 'pizzalayer_layer_is_usable', $ok, $post, $type );
 	}
 
 	/**

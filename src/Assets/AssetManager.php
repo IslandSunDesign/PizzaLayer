@@ -97,8 +97,8 @@ class AssetManager {
 			);
 		}
 
-		// Setup Guide
-		if ( false !== strpos( $hook, 'pizzalayer-setup' ) ) {
+		// Setup Guide tab JS — also used by the Layer-by-Layer Setup section on the Help page
+		if ( false !== strpos( $hook, 'pizzalayer-setup' ) || false !== strpos( $hook, 'pizzalayer-help' ) ) {
 			wp_enqueue_script(
 				'pizzalayer-setup-guide',
 				$base . 'setup-guide.js',
@@ -118,8 +118,21 @@ class AssetManager {
 				true
 			);
 
-			// Build CPT data array for the JS
-			$cpt_slugs = [ 'toppings', 'crusts', 'sauces', 'cheeses', 'drizzles', 'cuts', 'sizes' ];
+			// Custom list-table column widths. Attached to the already-enqueued
+			// admin stylesheet via wp_add_inline_style (runs on
+			// admin_enqueue_scripts, before <head> is printed) rather than an
+			// inline <style> echoed during page render.
+			wp_add_inline_style(
+				'pizzalayer-admin-tabs',
+				'.column-pzl_thumb{width:52px;}'
+				. '.column-pzl_sort_order,.column-pzl_id{width:64px;}'
+				. '.column-pzl_dietary{width:130px;}'
+				. '.column-pzl_diameter_inches,.column-pzl_spice_level,.column-pzl_thickness,.column-pzl_calories{width:90px;}'
+			);
+
+			// Build CPT data array for the JS. Keep this list in sync with
+			// ContentHub::CPTS so AJAX tab switches can update the header.
+			$cpt_slugs = [ 'toppings', 'crusts', 'sauces', 'cheeses', 'drizzles', 'cuts', 'sizes', 'presets' ];
 			$cpt_meta  = [
 				'toppings' => [ 'label' => 'Toppings', 'singular' => 'Topping',  'icon' => 'dashicons-carrot',          'color' => '#f0b849', 'desc' => 'Layer images placed on top of cheese.' ],
 				'crusts'   => [ 'label' => 'Crusts',   'singular' => 'Crust',    'icon' => 'dashicons-admin-generic',    'color' => '#c8956c', 'desc' => 'The base canvas for the pizza stack.' ],
@@ -128,18 +141,20 @@ class AssetManager {
 				'drizzles' => [ 'label' => 'Drizzles', 'singular' => 'Drizzle',  'icon' => 'dashicons-admin-customizer', 'color' => '#00a32a', 'desc' => 'Finishing touches above toppings.' ],
 				'cuts'     => [ 'label' => 'Cuts',     'singular' => 'Cut',      'icon' => 'dashicons-editor-table',     'color' => '#2271b1', 'desc' => 'Slicing overlays.' ],
 				'sizes'    => [ 'label' => 'Sizes',    'singular' => 'Size',     'icon' => 'dashicons-image-rotate',     'color' => '#8c5af8', 'desc' => 'Dimension options with pricing metadata.' ],
+				'presets'  => [ 'label' => 'Presets',  'singular' => 'Preset',   'icon' => 'dashicons-food',             'color' => '#e8692a', 'desc' => 'Pre-configured pizza combinations customers can start from.' ],
 			];
 
 			$js_cpt_data = [];
 			foreach ( $cpt_slugs as $s ) {
 				$m = $cpt_meta[ $s ];
 				$js_cpt_data[ $s ] = [
-					'label'    => $m['label'],
-					'singular' => $m['singular'],
-					'icon'     => $m['icon'],
-					'color'    => $m['color'],
-					'desc'     => $m['desc'],
-					'addUrl'   => admin_url( 'post-new.php?post_type=pizzalayer_' . $s ),
+					'label'     => $m['label'],
+					'singular'  => $m['singular'],
+					'icon'      => $m['icon'],
+					'color'     => $m['color'],
+					'desc'      => $m['desc'],
+					'addUrl'    => admin_url( 'post-new.php?post_type=pizzalayer_' . $s ),
+					'wpListUrl' => admin_url( 'edit.php?post_type=pizzalayer_' . $s ),
 				];
 			}
 
@@ -147,6 +162,11 @@ class AssetManager {
 			if ( ! array_key_exists( $active_slug, $js_cpt_data ) ) {
 				$active_slug = 'toppings';
 			}
+
+			// Resolve the persisted view mode so the JS starts in sync with the
+			// server-rendered panel (otherwise the List/Grid toggle can no-op).
+			$hub_view = (string) get_user_meta( get_current_user_id(), 'pizzalayer_hub_view', true );
+			$hub_view = ( $hub_view === 'grid' ) ? 'grid' : 'list';
 
 			wp_localize_script(
 				'pizzalayer-content-hub',
@@ -156,6 +176,7 @@ class AssetManager {
 					'ajaxUrl' => admin_url( 'admin-ajax.php' ),
 					'cptData' => $js_cpt_data,
 					'active'  => $active_slug,
+					'view'    => $hub_view,
 				]
 			);
 		}

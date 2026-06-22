@@ -118,15 +118,15 @@ class SiteMigration {
 
 		// Mirror the headers-already-sent fallback used by Settings::export_settings.
 		if ( headers_sent() ) {
-			echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>Exporting&hellip;</title></head><body>';
-			echo '<script>'; // phpcs:ignore WordPress.Security.EscapeOutput
-			printf( 'var d=%s;', $json ); // phpcs:ignore WordPress.Security.EscapeOutput
-			echo 'var b=new Blob([JSON.stringify(d,null,2)],{type:"application/json"});';
-			printf( 'var a=document.createElement("a");a.href=URL.createObjectURL(b);a.download=%s;', wp_json_encode( $filename ) );
-			echo 'document.body.appendChild(a);a.click();';
-			echo 'setTimeout(function(){history.back();},1200);';
-			echo '</script>';
-			echo '<p style="font-family:sans-serif;padding:20px;">Downloading <strong>' . esc_html( $filename ) . '</strong>&hellip; <a href="javascript:history.back()">Go back</a></p>';
+			// Headers already committed before this admin_post handler ran, so
+			// a file download can't be sent. Fall back to a no-JavaScript page
+			// presenting the export JSON in a read-only textarea to copy/save.
+			$back = esc_url( wp_get_referer() ?: admin_url( 'admin.php?page=pizzalayer-migration' ) );
+			echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' . esc_html__( 'PizzaLayer Site Export', 'pizzalayer' ) . '</title></head><body style="font-family:sans-serif;padding:24px;max-width:820px;margin:0 auto;">';
+			echo '<h1 style="font-size:18px;">' . esc_html__( 'Site export', 'pizzalayer' ) . '</h1>';
+			echo '<p>' . esc_html__( 'Automatic download was unavailable on this server. Copy the text below and save it with this file name:', 'pizzalayer' ) . ' <code>' . esc_html( $filename ) . '</code></p>';
+			echo '<textarea readonly rows="20" style="width:100%;box-sizing:border-box;font-family:monospace;font-size:12px;">' . esc_textarea( $json ) . '</textarea>';
+			echo '<p><a href="' . $back . '">' . esc_html__( 'Back', 'pizzalayer' ) . '</a></p>';
 			echo '</body></html>';
 			exit;
 		}
@@ -501,6 +501,11 @@ class SiteMigration {
 				}
 				update_option( $key_safe, $sanitised );
 			} elseif ( in_array( $key, $raw_options, true ) ) {
+				// Custom CSS / Custom JS are stored raw and emitted verbatim on
+				// the front end, so importing them requires unfiltered_html
+				// (matches Settings::save_settings). Skip silently for users
+				// who lack the capability — e.g. multisite site admins.
+				if ( ! current_user_can( 'unfiltered_html' ) ) { continue; }
 				update_option( $key_safe, (string) $value );
 			} else {
 				update_option( $key_safe, wp_kses_post( (string) $value ) );

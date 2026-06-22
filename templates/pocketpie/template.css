@@ -61,6 +61,7 @@
 
 .pp-root[data-pizza-shape="square"]    .pp-pizza-stage-wrap { border-radius: var(--pp-radius); }
 .pp-root[data-pizza-shape="rectangle"] .pp-pizza-stage-wrap { border-radius: var(--pp-radius); aspect-ratio: 4/3 !important; }
+.pp-root[data-pizza-shape="custom"]    .pp-pizza-stage-wrap { border-radius: var(--pp-radius); }
 
 .pp-pizza-stage {
     position: absolute;

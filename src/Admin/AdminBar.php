@@ -182,10 +182,11 @@ class AdminBar {
 
 		// ── Settings sub-links ───────────────────────────────────────────
 		$settings_sections = [
-			[ 'label' => __( 'Default Layers', 'pizzalayer' ),  'id' => 'defaults' ],
-			[ 'label' => __( 'Pizza Shape', 'pizzalayer' ),     'id' => 'shape'    ],
-			[ 'label' => __( 'Layer Animation', 'pizzalayer' ), 'id' => 'animation'],
-			[ 'label' => __( 'Branding', 'pizzalayer' ),        'id' => 'branding' ],
+			[ 'label' => __( 'Default Layers', 'pizzalayer' ),  'id' => 'pset-body-default-layers' ],
+			[ 'label' => __( 'Pizza Shape', 'pizzalayer' ),     'id' => 'pset-body-pizza-shape'    ],
+			[ 'label' => __( 'Crust', 'pizzalayer' ),           'id' => 'pset-body-crust-options'  ],
+			[ 'label' => __( 'Sauce & Cheese', 'pizzalayer' ),  'id' => 'pset-body-sauce-cheese'   ],
+			[ 'label' => __( 'Plugin Settings', 'pizzalayer' ), 'id' => 'pset-body-plugin-settings'],
 		];
 		foreach ( $settings_sections as $sec ) {
 			$bar->add_menu( [

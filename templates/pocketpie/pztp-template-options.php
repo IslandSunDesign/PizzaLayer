@@ -576,54 +576,9 @@ return [
         'placeholder' => 'Your Pizza',
     ],
 
-    [
-        'key'          => 'pocketpie_setting_show_summary_pizza',
-        'type'         => 'toggle',
-        'label'        => 'Show Pizza Preview in Summary Modal',
-        'desc'         => 'Display a small pizza visualizer at the top of the summary modal.',
-        'default'      => 'no',
-        'toggle_label' => 'Show mini pizza in summary',
-    ],
 
-    [
-        'key'          => 'pocketpie_setting_summary_show_empty_rows',
-        'type'         => 'toggle',
-        'label'        => 'Show Empty Rows in Summary',
-        'desc'         => 'Display all layer rows in the summary even when nothing has been selected for that layer.',
-        'default'      => 'yes',
-        'toggle_label' => 'Always show all layer rows',
-    ],
 
-    /* ═══════════════════════════════════════════════════════════
-       GROUP: Toppings Coverage Picker
-       ═══════════════════════════════════════════════════════════ */
 
-    [
-        'key'     => 'pocketpie_setting_coverage_style',
-        'type'    => 'select',
-        'label'   => 'Coverage Picker Style',
-        'desc'    => 'How pizza-fraction coverage buttons are displayed on topping chips.',
-        'default' => 'compact-buttons',
-        'options' => [
-            'compact-buttons' => 'Compact icon buttons (default)',
-            'mini-icons'      => 'Mini pizza-shape icons',
-            'text-only'       => 'Text labels only (Whole, Half L, etc.)',
-            'hidden'          => 'Hidden — whole pizza only',
-        ],
-    ],
-
-    [
-        'key'     => 'pocketpie_setting_coverage_reveal',
-        'type'    => 'select',
-        'label'   => 'Coverage Picker — When to Reveal',
-        'desc'    => 'When the fraction picker becomes visible on a topping chip.',
-        'default' => 'on-select',
-        'options' => [
-            'on-select' => 'After topping is selected (default)',
-            'always'    => 'Always visible on topping chips',
-            'on-hover'  => 'On hover / tap',
-        ],
-    ],
 
     /* ═══════════════════════════════════════════════════════════
        GROUP: Controls & Buttons
@@ -683,14 +638,6 @@ return [
         'toggle_label' => 'Enable hover lift on chips',
     ],
 
-    [
-        'key'          => 'pocketpie_setting_grain_overlay',
-        'type'         => 'toggle',
-        'label'        => 'Grain / Texture Overlay',
-        'desc'         => 'Add a subtle noise grain texture over the widget for a tactile, handcrafted aesthetic.',
-        'default'      => 'yes',
-        'toggle_label' => 'Enable grain overlay',
-    ],
 
     /* ═══════════════════════════════════════════════════════════
        GROUP: Custom CSS Override

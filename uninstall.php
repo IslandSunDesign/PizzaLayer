@@ -61,6 +61,8 @@ $options = [
 	// Plugin settings
 	'pizzalayer_setting_settings_demonotice',
 	'pizzalayer_setting_global_help_content',
+	'pizzalayer_setting_disable_content_hub',
+	'pizzalayer_setting_require_complete_data',
 	// Builder Layout & Behaviour
 	'pizzalayer_setting_layout_mode',
 	'pizzalayer_setting_layout_builder_width',
@@ -330,6 +332,7 @@ $options = [
 
 	// ── Plugin state / UI flags ────────────────────────────────────
 	'pizzalayer_setup_done',
+	'pizzalayer_builder_viewed',
 	'pizzalayer_setting_dark_mode',
 	'pizzalayer_wizard_done',
 ];
@@ -383,5 +386,11 @@ $wpdb->query(
 $wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key = '_pizzalayer_price'" );
 $wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key IN (
 	'topping_cost_csv','crust_cost_csv','sauce_cost_csv','cheese_cost_csv','drizzle_cost_csv'
+)" );
+// Nutrition & ingredients meta written by the Nutrition meta box / Layer Builder Wizard.
+$wpdb->query( "DELETE FROM {$wpdb->postmeta} WHERE meta_key IN (
+	'_pizzalayer_ingredients','_pizzalayer_serving_size','_pizzalayer_calories',
+	'_pizzalayer_spice_level','_pizzalayer_thickness','_pizzalayer_diameter_inches',
+	'_pizzalayer_is_vegetarian','_pizzalayer_is_vegan','_pizzalayer_is_gluten_free','_pizzalayer_is_dairy_free'
 )" );
 // phpcs:enable WordPress.DB.DirectDatabaseQuery

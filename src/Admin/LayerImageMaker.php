@@ -250,10 +250,8 @@ class LayerImageMaker {
 		</div><!-- /.wrap -->
 
 		<?php
-		// Config passed to JS via wp_localize_script( 'pizzalayer-layer-image-maker', 'plimConfig', [...] )
-		?>
-		// JS enqueued via wp_enqueue_script( 'pizzalayer-layer-image-maker' )
-		<?php
+		// Config passed to JS via wp_localize_script( 'pizzalayer-layer-image-maker', 'plimConfig', [...] ).
+		// JS enqueued via wp_enqueue_script( 'pizzalayer-layer-image-maker' ) in AssetManager::enqueue_admin().
 	}
 
 	// ── AJAX: receive base64 PNG, save to media library ──────────────────────

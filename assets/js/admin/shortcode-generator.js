@@ -57,7 +57,7 @@
 			sc = '[pizza_builder' + ( attrs.length ? ' ' + attrs.join( ' ' ) : '' ) + ']';
 
 		} else if ( type === 'static' ) {
-			var preset = val( 's-preset' ); if ( preset ) { attrs.push( 'preset="' + preset + '"' ); }
+			var preset = val( 's-preset' );
 			var c  = val( 's-crust' );   if ( c )  { attrs.push( 'crust="' + c + '"' ); }
 			var s  = val( 's-sauce' );   if ( s )  { attrs.push( 'sauce="' + s + '"' ); }
 			var ch = val( 's-cheese' );  if ( ch ) { attrs.push( 'cheese="' + ch + '"' ); }
@@ -65,7 +65,13 @@
 			var cu = val( 's-cut' );     if ( cu ) { attrs.push( 'cut="' + cu + '"' ); }
 			var tops = multiVal( 's-toppings' );
 			if ( tops.length ) { attrs.push( 'toppings="' + tops.join( ',' ) + '"' ); }
-			sc = '[pizza_static' + ( attrs.length ? ' ' + attrs.join( ' ' ) : '' ) + ']';
+			if ( preset ) {
+				// A preset defines the entire pizza (incl. toppings) and renders via the
+				// [pizza_preset] shortcode (PizzaLayerPro), keyed by the preset's post ID.
+				sc = '[pizza_preset id="' + preset + '"]';
+			} else {
+				sc = '[pizza_static' + ( attrs.length ? ' ' + attrs.join( ' ' ) : '' ) + ']';
+			}
 
 		} else if ( type === 'layer' ) {
 			var lt  = val( 'l-type' );  if ( lt )                     { attrs.push( 'type="' + lt + '"' ); }
@@ -119,6 +125,26 @@
 		} );
 		// Populate on load with initial type
 		populateLayerSlugSelect( lTypeEl.value );
+	}
+
+	// When a preset is selected it defines the whole pizza, so the individual
+	// static layer fields are superseded — disable and dim them for clarity.
+	var presetEl       = document.getElementById( 's-preset' );
+	var staticLayerIds = [ 's-crust', 's-sauce', 's-cheese', 's-drizzle', 's-cut', 's-toppings' ];
+	function syncStaticFields() {
+		if ( ! presetEl ) { return; }
+		var locked = presetEl.value !== '';
+		staticLayerIds.forEach( function ( fid ) {
+			var f = document.getElementById( fid );
+			if ( ! f ) { return; }
+			f.disabled = locked;
+			var wrap = f.closest( '.pscg-field' );
+			if ( wrap ) { wrap.style.opacity = locked ? '0.45' : ''; }
+		} );
+	}
+	if ( presetEl ) {
+		presetEl.addEventListener( 'change', syncStaticFields );
+		syncStaticFields();
 	}
 
 	document.querySelectorAll( '.pscg-input, .pscg-select, .pscg-cb-tab, #b-pizza-shape, #b-pizza-aspect, #b-pizza-radius, #b-layer-anim, #b-layer-anim-speed' ).forEach( function ( el ) {

@@ -212,6 +212,45 @@ function initScaffoldInstance( ROOT, cfg ) {
     ROOT.dispatchEvent( new CustomEvent( 'pizzalayer:reset', { bubbles: true } ) );
   }
 
+  /**
+   * Programmatically set selection state (PizzaLayer JS API).
+   * Consumed by PizzaLayerPro to apply "Default Layers".
+   *
+   * @param {Object} newState { crust|sauce|cheese|drizzle|cut: slug|{slug},
+   *                            toppings: { slug: {…} } }
+   */
+  function setState( newState ) {
+    resetAll();
+    if ( ! newState || typeof newState !== 'object' ) { return; }
+
+    var baseTypes = [ 'crust', 'sauce', 'cheese', 'drizzle', 'cut' ];
+    baseTypes.forEach( function( type ) {
+      var sel = newState[ type ];
+      if ( ! sel ) { return; }
+      var slug = ( typeof sel === 'object' ) ? sel.slug : sel;
+      if ( ! slug ) { return; }
+      // Cuts render under data-layer="slicing" in this template.
+      var card = ROOT.querySelector( '.sc-card--exclusive[data-layer="' + type + '"][data-slug="' + slug + '"]' );
+      if ( ! card && type === 'cut' ) {
+        card = ROOT.querySelector( '.sc-card--exclusive[data-layer="slicing"][data-slug="' + slug + '"]' );
+      }
+      if ( card ) {
+        var selectBtn = card.querySelector( '.sc-card__btn--select' );
+        if ( selectBtn ) { selectBtn.click(); }
+      }
+    } );
+
+    if ( newState.toppings && typeof newState.toppings === 'object' ) {
+      Object.keys( newState.toppings ).forEach( function( slug ) {
+        var card = ROOT.querySelector( '.sc-card--topping[data-slug="' + slug + '"]' );
+        if ( card && ! card.classList.contains( 'sc-card--selected' ) ) {
+          var addBtn = card.querySelector( '.sc-card__btn--add' );
+          if ( addBtn ) { addBtn.click(); }
+        }
+      } );
+    }
+  }
+
   // ── Public API ──────────────────────────────────────────────────────────────
   window[ VAR ] = {
     activateTab:   activateTab,
@@ -221,6 +260,7 @@ function initScaffoldInstance( ROOT, cfg ) {
     removeTopping: removeTopping,
     setCoverage:   setCoverage,
     getState:      getState,
+    setState:      setState,
     resetAll:      resetAll,
   };
 
@@ -275,5 +315,9 @@ window.PizzaLayerAPI = window.PizzaLayerAPI || {
   },
   getAllInstances: function () {
     return Object.keys( _scInstances );
+  },
+  setState: function ( instanceId, newState ) {
+    var inst = _scInstances[ instanceId ] || window[ instanceId ];
+    if ( inst && typeof inst.setState === 'function' ) { inst.setState( newState ); }
   }
 };

@@ -87,6 +87,8 @@ final class Plugin {
 		if ( is_admin() ) {
 			$admin_menu = new Admin\AdminMenu();
 			$this->loader->add_action( 'admin_menu', $admin_menu, 'register' );
+			// Redirect the Content Hub to WP lists when it's disabled in Settings.
+			$this->loader->add_action( 'admin_init', $admin_menu, 'maybe_redirect_disabled_hub' );
 
 			// Settings export — must run before any HTML output
 			$settings = new Admin\Settings();
@@ -104,6 +106,12 @@ final class Plugin {
 			$content_hub = new Admin\ContentHub();
 			$this->loader->add_action( 'wp_ajax_pizzalayer_content_panel', $content_hub, 'ajax_panel' );
 
+			// Content Hub bulk actions (trash / restore / delete) — must run on
+			// admin_init, before any output, so the post-action redirect fires
+			// cleanly. Without this the bulk POST falls through to WordPress's
+			// page-hook resolution and dies with "Cannot load pizzalayer-content."
+			$this->loader->add_action( 'admin_init', $content_hub, 'maybe_handle_bulk' );
+
 			// Layer Image Maker — upload result to media library
 			$layer_maker = new Admin\LayerImageMaker();
 			$this->loader->add_action( 'wp_ajax_pizzalayer_upload_layer_image', $layer_maker, 'ajax_upload_layer_image' );
@@ -111,6 +119,10 @@ final class Plugin {
 			// Layer Image Maker meta box — on CPT edit/new screens
 			$layer_meta_box = new Admin\LayerImageMetaBox();
 			$layer_meta_box->register_hooks();
+
+			// Nutrition & Ingredients meta box — on edible-layer CPT edit/new screens
+			$nutrition_meta_box = new Admin\NutritionMetaBox();
+			$nutrition_meta_box->register_hooks();
 
 			// Layer Builder Wizard — save new layer post via AJAX
 			$layer_wizard = new Admin\LayerBuilderWizard();

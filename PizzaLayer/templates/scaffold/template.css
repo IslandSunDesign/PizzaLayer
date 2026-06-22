@@ -1,0 +1,295 @@
+/*
+ * Scaffold Template — template.css
+ * ─────────────────────────────────────────────────────────────────────────────
+ * This stylesheet is intentionally bare-bones.
+ * It provides structure and layout plumbing only — no decorative colours,
+ * no shadows, no rounded corners, no animations beyond a transition hook.
+ *
+ * All CSS custom properties are set per-instance by the PHP template via an
+ * inline <style> block so they can vary per shortcode.
+ *
+ * CUSTOM PROPERTIES (set per instance in pztp-containers-menu.php):
+ *   --sc-accent        Primary highlight / selection colour
+ *   --sc-bg            Builder background
+ *   --sc-text          Main text colour
+ *   --sc-border        Border / divider colour
+ *   --sc-font          Font family stack
+ *   --sc-font-size     Root font size (applied to .sc-root)
+ *   --sc-card-radius   Card corner rounding
+ *   --sc-thumb-size    Item thumbnail width/height
+ *   --sc-grid-cols     Card grid column template
+ *   --sc-anim-speed    Transition duration
+ *
+ * HOW TO CUSTOMISE:
+ *   1. Duplicate this file, rename it, and register the new name via the
+ *      'pizzalayer_scaffold_partial' filter or by overriding pztp-template-css.php.
+ *   2. Or enqueue a child-theme stylesheet that targets .sc-root and its children.
+ *   3. Or use the "Custom CSS" field in the Scaffold template settings box.
+ * ─────────────────────────────────────────────────────────────────────────────
+ */
+
+/* ── Root container ─────────────────────────────────────────────────────── */
+.sc-root {
+  box-sizing: border-box;
+  font-family: var(--sc-font, inherit);
+  font-size:   var(--sc-font-size, 14px);
+  color:       var(--sc-text, inherit);
+  background:  var(--sc-bg, transparent);
+  width: 100%;
+}
+.sc-root *,
+.sc-root *::before,
+.sc-root *::after {
+  box-sizing: inherit;
+}
+
+/* ── Pizza stage ─────────────────────────────────────────────────────────── */
+.sc-pizza-stage {
+  position: relative;
+  overflow: hidden;
+  width: 100%;
+  /* aspect-ratio and border-radius are applied inline per instance */
+}
+
+/* Layer images — absolutely stacked */
+.sc-layer {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: contain;
+  pointer-events: none;
+  display: block;
+}
+
+/* ── Tab bar ─────────────────────────────────────────────────────────────── */
+.sc-tab-bar {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 4px;
+  padding: 4px 0;
+  border-bottom: 1px solid var(--sc-border, currentColor);
+}
+
+.sc-tab-btn {
+  cursor: pointer;
+  background: none;
+  border: none;
+  padding: 6px 12px;
+  font: inherit;
+  font-size: 0.875em;
+  color: var(--sc-text, inherit);
+  transition: color var(--sc-anim-speed, 200ms), border-color var(--sc-anim-speed, 200ms);
+}
+
+/* Underline style (default) */
+.sc-tab-style--underline .sc-tab-btn {
+  border-bottom: 2px solid transparent;
+  margin-bottom: -1px;
+}
+.sc-tab-style--underline .sc-tab-btn--active,
+.sc-tab-style--underline .sc-tab-btn:focus-visible {
+  color: var(--sc-accent, currentColor);
+  border-bottom-color: var(--sc-accent, currentColor);
+  outline: none;
+}
+
+/* Pill style */
+.sc-tab-style--pill .sc-tab-btn {
+  border-radius: 99px;
+  border: 1px solid var(--sc-border, currentColor);
+}
+.sc-tab-style--pill .sc-tab-btn--active {
+  background: var(--sc-accent, currentColor);
+  border-color: var(--sc-accent, currentColor);
+  color: #fff;
+}
+
+/* Box / chip style */
+.sc-tab-style--box .sc-tab-btn {
+  border: 1px solid var(--sc-border, currentColor);
+}
+.sc-tab-style--box .sc-tab-btn--active {
+  border-color: var(--sc-accent, currentColor);
+  color: var(--sc-accent, currentColor);
+}
+
+/* ── Panels ──────────────────────────────────────────────────────────────── */
+.sc-panel {
+  padding: 8px 0;
+}
+.sc-panel[hidden] {
+  display: none;
+}
+
+.sc-panel__grid {
+  display: grid;
+  grid-template-columns: var(--sc-grid-cols, repeat(3, 1fr));
+  gap: 8px;
+}
+
+.sc-panel__empty {
+  color: var(--sc-text, inherit);
+  opacity: 0.5;
+  font-style: italic;
+  margin: 0;
+  padding: 8px 0;
+}
+
+/* ── Item card ───────────────────────────────────────────────────────────── */
+.sc-card {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 4px;
+  padding: 6px;
+  border: 1px solid var(--sc-border, transparent);
+  border-radius: var(--sc-card-radius, 4px);
+  cursor: pointer;
+  transition: border-color var(--sc-anim-speed, 200ms);
+}
+
+.sc-card--selected {
+  border-color: var(--sc-accent, currentColor);
+}
+
+.sc-card__thumb {
+  width:  var(--sc-thumb-size, 56px);
+  height: var(--sc-thumb-size, 56px);
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  overflow: hidden;
+  flex-shrink: 0;
+}
+.sc-card__thumb img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  display: block;
+}
+.sc-card__thumb--no-image {
+  width: 100%;
+  height: 100%;
+  background: var(--sc-border, #eee);
+}
+
+.sc-card__label {
+  font-size: 0.8em;
+  text-align: center;
+  word-break: break-word;
+  line-height: 1.2;
+}
+
+.sc-card__selected-mark {
+  display: none;
+  position: absolute;
+  top: 4px;
+  right: 4px;
+  font-size: 0.8em;
+  color: var(--sc-accent, currentColor);
+  line-height: 1;
+}
+.sc-card--selected .sc-card__selected-mark {
+  display: block;
+}
+
+.sc-card__btn {
+  font: inherit;
+  font-size: 0.75em;
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--sc-border, currentColor);
+  padding: 2px 8px;
+  border-radius: 4px;
+  transition: background var(--sc-anim-speed, 200ms), color var(--sc-anim-speed, 200ms);
+}
+.sc-card__btn:hover {
+  background: var(--sc-accent, currentColor);
+  color: #fff;
+  border-color: var(--sc-accent, currentColor);
+}
+
+/* ── Coverage picker ─────────────────────────────────────────────────────── */
+.sc-coverage {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 2px;
+  justify-content: center;
+}
+.sc-cov-btn {
+  font: inherit;
+  font-size: 0.65em;
+  padding: 2px 4px;
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--sc-border, currentColor);
+  border-radius: 3px;
+  transition: background var(--sc-anim-speed, 200ms);
+}
+.sc-cov-btn--active,
+.sc-cov-btn:focus-visible {
+  background: var(--sc-accent, currentColor);
+  color: #fff;
+  border-color: var(--sc-accent, currentColor);
+  outline: none;
+}
+
+/* ── Summary panel ───────────────────────────────────────────────────────── */
+.sc-panel--summary {
+  padding: 8px 0;
+}
+.sc-summary__heading {
+  margin: 0 0 8px;
+  font-size: 1em;
+  font-weight: 600;
+}
+.sc-summary__list {
+  list-style: none;
+  padding: 0;
+  margin: 0 0 8px;
+}
+.sc-summary__row {
+  display: flex;
+  gap: 6px;
+  align-items: baseline;
+  padding: 3px 0;
+  border-bottom: 1px solid var(--sc-border, transparent);
+  font-size: 0.875em;
+}
+.sc-summary__layer-type {
+  font-weight: 600;
+  text-transform: capitalize;
+  min-width: 5em;
+  flex-shrink: 0;
+}
+.sc-summary__coverage {
+  opacity: 0.6;
+  font-size: 0.85em;
+  margin-left: auto;
+}
+.sc-summary__empty {
+  opacity: 0.5;
+  font-style: italic;
+  font-size: 0.875em;
+  margin: 0 0 8px;
+}
+.sc-summary__actions {
+  display: flex;
+  gap: 8px;
+  flex-wrap: wrap;
+}
+.sc-summary__reset-btn {
+  font: inherit;
+  cursor: pointer;
+  background: none;
+  border: 1px solid var(--sc-border, currentColor);
+  padding: 4px 12px;
+  font-size: 0.8em;
+  border-radius: 4px;
+  transition: background var(--sc-anim-speed, 200ms);
+}
+.sc-summary__reset-btn:hover {
+  background: var(--sc-border, #eee);
+}

@@ -77,14 +77,16 @@ $mt_font_stack = $mt_font_stacks[ $mt_heading_font ] ?? $mt_font_stacks['system'
 /* ── Enqueue Google Font if needed ───────────────────────────────── */
 
 if ( isset( $mt_google_fonts[ $mt_heading_font ] ) ) {
-	add_action( 'wp_enqueue_scripts', function() use ( $mt_heading_font, $mt_google_fonts ) {
-		wp_enqueue_style(
-			'mt-google-font-' . $mt_heading_font,
-			$mt_google_fonts[ $mt_heading_font ],
-			[],
-			null
-		);
-	} );
+	// This file is included during wp_enqueue_scripts:10 (TemplateLoader).
+	// A nested add_action('wp_enqueue_scripts', …, 10) registered while that
+	// same priority is executing never fires (WP_Hook iterates a copy), so
+	// the font silently failed to load — enqueue it directly instead.
+	wp_enqueue_style(
+		'mt-google-font-' . $mt_heading_font,
+		$mt_google_fonts[ $mt_heading_font ],
+		[],
+		null // phpcs:ignore WordPress.WP.EnqueuedResourceParameters
+	);
 }
 
 /* ── Derive dependent colour values ─────────────────────────────── */
@@ -120,8 +122,18 @@ $mt_hero_size = $mt_viz_size > 0
 	: 'min(340px, 80vw)';
 
 /* ── Output scoped CSS variable overrides ────────────────────────── */
-
-add_action( 'wp_head', function() use (
+/*
+ * Previously this was hooked to wp_head, which had two fatal problems:
+ *  1. Several rules were echo'd raw into <head> with no <style> wrapper,
+ *     so they appeared as garbage text instead of applying.
+ *  2. wp_add_inline_style() ran after styles were already printed
+ *     (wp_print_styles fires at wp_head:8), so the CSS-vars block was
+ *     silently discarded.
+ * Everything is now built into one string and attached on
+ * wp_enqueue_scripts:99 — this file loads during wp_enqueue_scripts:10,
+ * and later priorities registered mid-hook still fire.
+ */
+add_action( 'wp_enqueue_scripts', function() use (
 	$mt_accent, $mt_accent_hover, $mt_accent_dim,
 	$mt_bg, $mt_card_bg,
 	$mt_font_stack, $mt_font_size,
@@ -162,23 +174,23 @@ add_action( 'wp_head', function() use (
 
 	// Hide tray if disabled
 	if ( ! $mt_show_tray ) {
-		echo ".mt-root { padding-bottom: 0 !important; }\n";
-		echo ".mt-root .mt-tray { display: none !important; }\n";
+		$_mt_css .= ".mt-root { padding-bottom: 0 !important; }\n";
+		$_mt_css .= ".mt-root .mt-tray { display: none !important; }\n";
 	}
 
 	// Hide topping count badge if disabled
 	if ( ! $mt_show_count ) {
-		echo ".mt-root .mt-hero__meta { display: none !important; }\n";
-		echo ".mt-root .mt-section__badge--toppings { display: none !important; }\n";
-		echo ".mt-root .mt-orb__count { display: none !important; }\n";
+		$_mt_css .= ".mt-root .mt-hero__meta { display: none !important; }\n";
+		$_mt_css .= ".mt-root .mt-section__badge--toppings { display: none !important; }\n";
+		$_mt_css .= ".mt-root .mt-orb__count { display: none !important; }\n";
 	}
 
 	// Sticky visualizer
 	if ( $mt_sticky_viz ) {
-		echo ".mt-root.mt-layout--centered .mt-hero__pizza-wrap,\n";
-		echo ".mt-root.mt-layout--side-by-side .mt-sidebar__pizza-wrap {\n";
-		echo "  position: sticky; top: 16px;\n";
-		echo "}\n";
+		$_mt_css .= ".mt-root.mt-layout--centered .mt-hero__pizza-wrap,\n";
+		$_mt_css .= ".mt-root.mt-layout--side-by-side .mt-sidebar__pizza-wrap {\n";
+		$_mt_css .= "  position: sticky; top: 16px;\n";
+		$_mt_css .= "}\n";
 	}
 
 	// Note: ingredient price display removed in PizzaLayer 1.2.0 — pricing
@@ -186,24 +198,24 @@ add_action( 'wp_head', function() use (
 
 	// Layout mode classes
 	if ( $mt_layout === 'side-by-side' ) {
-		echo ".mt-root.mt-layout--side-by-side .mt-hero { display: none; }\n";
-		echo ".mt-root.mt-layout--side-by-side .mt-builder-wrap {\n";
-		echo "  display: flex; flex-direction: row; align-items: flex-start; gap: 0;\n";
-		echo "}\n";
-		echo ".mt-root.mt-layout--side-by-side .mt-sidebar {\n";
-		echo "  display: flex; flex-direction: column; align-items: center;\n";
-		echo "  width: 340px; flex-shrink: 0;\n";
-		echo "  padding: 24px 20px;\n";
-		echo "  background: var(--mt-surface);\n";
-		echo "  border-right: 1px solid var(--mt-border);\n";
-		echo "  position: sticky; top: 0; align-self: flex-start;\n";
-		echo "  max-height: 100vh; overflow-y: auto;\n";
-		echo "}\n";
-		echo ".mt-root.mt-layout--side-by-side .mt-builder { flex: 1; min-width: 0; }\n";
+		$_mt_css .= ".mt-root.mt-layout--side-by-side .mt-hero { display: none; }\n";
+		$_mt_css .= ".mt-root.mt-layout--side-by-side .mt-builder-wrap {\n";
+		$_mt_css .= "  display: flex; flex-direction: row; align-items: flex-start; gap: 0;\n";
+		$_mt_css .= "}\n";
+		$_mt_css .= ".mt-root.mt-layout--side-by-side .mt-sidebar {\n";
+		$_mt_css .= "  display: flex; flex-direction: column; align-items: center;\n";
+		$_mt_css .= "  width: 340px; flex-shrink: 0;\n";
+		$_mt_css .= "  padding: 24px 20px;\n";
+		$_mt_css .= "  background: var(--mt-surface);\n";
+		$_mt_css .= "  border-right: 1px solid var(--mt-border);\n";
+		$_mt_css .= "  position: sticky; top: 0; align-self: flex-start;\n";
+		$_mt_css .= "  max-height: 100vh; overflow-y: auto;\n";
+		$_mt_css .= "}\n";
+		$_mt_css .= ".mt-root.mt-layout--side-by-side .mt-builder { flex: 1; min-width: 0; }\n";
 	} elseif ( $mt_layout === 'fullwidth' ) {
-		echo ".mt-root.mt-layout--fullwidth .mt-hero { position: sticky; top: 0; z-index: 100; }\n";
-		echo ".mt-root.mt-layout--fullwidth .mt-hero__pizza-wrap { width: min(200px,40vw); height: min(200px,40vw); }\n";
-		echo ".mt-root.mt-layout--fullwidth .mt-hero__inner { flex-direction: row; justify-content: center; max-width: 100%; }\n";
+		$_mt_css .= ".mt-root.mt-layout--fullwidth .mt-hero { position: sticky; top: 0; z-index: 100; }\n";
+		$_mt_css .= ".mt-root.mt-layout--fullwidth .mt-hero__pizza-wrap { width: min(200px,40vw); height: min(200px,40vw); }\n";
+		$_mt_css .= ".mt-root.mt-layout--fullwidth .mt-hero__inner { flex-direction: row; justify-content: center; max-width: 100%; }\n";
 	}
 
 	// Card style modifier class
@@ -212,6 +224,6 @@ add_action( 'wp_head', function() use (
 	$_mt_css .= ".mt-root { --mt-card-style: '{$card_style_esc}'; --mt-tab-style: '{$tab_style_esc}'; }\n";
 
 	wp_add_inline_style( 'pizzalayer-template-metro', $_mt_css );
-}, 20 );
+}, 99 );
 
 do_action( 'pizzalayer_file_pztp-template-custom_end' );

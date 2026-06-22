@@ -148,6 +148,13 @@
                     var touchY  = null;
                     var $sheet  = self.$root.find('.pp-sd-drawer, .pp-sp-sheet');
 
+                    // Per-layout opt-out via template settings (rendered as
+                    // data attributes on .pp-root by pztp-containers-menu.php)
+                    var sdSwipe = (self.$root.attr('data-swipe-close-sd') || 'yes') !== 'no';
+                    var spSwipe = (self.$root.attr('data-swipe-close-sp') || 'yes') !== 'no';
+                    if (self.layout === 'slide-drawer' && !sdSwipe) { return; }
+                    if (self.layout === 'stack-panel'  && !spSwipe) { return; }
+
                     $sheet.on('touchstart', function (e) {
                         touchY = e.originalEvent.touches[0].clientY;
                     });
@@ -514,7 +521,7 @@
                     $body.empty();
 
                     if (tab === 'yourpizza') {
-                        $title.text('Your Pizza');
+                        $title.text($title.attr('data-default') || 'Your Pizza');
                         self._updateAllSummaryRows();
                         $summ.show();
                     } else {

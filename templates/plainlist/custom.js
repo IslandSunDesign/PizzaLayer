@@ -175,7 +175,34 @@
 			refreshStepNext();
 		}
 
-		// ── Summary ───────────────────────────────────────────────────
+		/**
+		 * Programmatically set selection state (PizzaLayer JS API).
+		 * Consumed by PizzaLayerPro to apply "Default Layers".
+		 *
+		 * @param {Object} newState { crust|sauce|cheese|drizzle|cut: slug|{slug},
+		 *                            toppings: { slug: {…} } }
+		 */
+		function plSetState( newState ) {
+			plReset();
+			if ( ! newState || typeof newState !== 'object' ) { return; }
+
+			var baseTypes = [ 'crust', 'sauce', 'cheese', 'drizzle', 'cut' ];
+			baseTypes.forEach( function( type ) {
+				var sel = newState[ type ];
+				if ( ! sel ) { return; }
+				var slug = ( typeof sel === 'object' ) ? sel.slug : sel;
+				if ( ! slug ) { return; }
+				var item = root.querySelector( '.pl-item--exclusive[data-layer="' + type + '"][data-slug="' + slug + '"]' );
+				if ( item && ! item.classList.contains( 'pl-item--selected' ) ) { item.click(); }
+			} );
+
+			if ( newState.toppings && typeof newState.toppings === 'object' ) {
+				Object.keys( newState.toppings ).forEach( function( slug ) {
+					var item = root.querySelector( '.pl-item[data-layer="toppings"][data-slug="' + slug + '"]' );
+					if ( item && ! item.classList.contains( 'pl-item--selected' ) ) { item.click(); }
+				} );
+			}
+		}
 
 		function refreshSummary() {
 			if ( ! cfg.showSummary || ! summaryList ) { return; }
@@ -294,6 +321,7 @@
 			plToggleExclusive: plToggleExclusive,
 			plToggleTopping:   plToggleTopping,
 			plReset:           plReset,
+			setState:          plSetState,
 			getState:          function() {
 				/* Return both the raw state (for internal use) and a normalised
 				   layers array so PizzaLayerPro frontend-builder.js can read
@@ -354,6 +382,10 @@
 		},
 		getAllInstances: function () {
 			return Object.keys( instances );
+		},
+		setState: function ( instanceId, newState ) {
+			var inst = instances[ instanceId ];
+			if ( inst && typeof inst.setState === 'function' ) { inst.setState( newState ); }
 		}
 	};
 

@@ -8,12 +8,11 @@ if ( ! defined( 'ABSPATH' ) ) { exit; }
  *
  * Includes:
  *  - Header bar with version + action buttons
- *  - Live layer stats strip
+ *  - Live layer stats strip (each box links to its CPT in the Content Hub)
  *  - Setup nag for missing/empty CPTs
- *  - Layer Manager tabbed section (description + tips + links per type)
- *  - Quick-access icon nav
- *  - Tips rotator
- *  - Extend / developer card
+ *  - Quick-access icon nav (Help surfaced as a featured item)
+ *  - Hero intro
+ *  - Shortcode reference + Extend / developer cards
  *  - Pro upsell CTA (dismissable per-user, hidden when Pro active)
  */
 class AdminHome {
@@ -50,73 +49,6 @@ class AdminHome {
 		$essential = [ 'crusts', 'sauces', 'cheeses', 'toppings' ];
 		$missing   = array_filter( $essential, fn( $k ) => $stats[ $k ] === 0 );
 
-		// ── Layer tab definitions ────────────────────────────────────────
-		$layer_tabs = [
-			'toppings' => [
-				'label' => __( 'Toppings', 'pizzalayer' ),
-				'icon'  => 'dashicons-star-filled',
-				'desc'  => __( 'Toppings are where the action is. Every topping has its own layer image and coverage options (whole, half, quarters). The visualizer renders each selected topping in real time as your customer builds.', 'pizzalayer' ),
-				'tip'   => __( '💡 Use consistent transparent PNGs — 500×500 px works great across all templates.', 'pizzalayer' ),
-				'cpt'   => 'toppings',
-				'count' => $stats['toppings'],
-			],
-			'crusts' => [
-				'label' => __( 'Crusts', 'pizzalayer' ),
-				'icon'  => 'dashicons-tag',
-				'desc'  => __( 'Your crust is the canvas. Define every base your pizza can be built on — from thin & crispy to thick & pillowy. Each crust item gets its own layer image that stacks in the live visualizer.', 'pizzalayer' ),
-				'tip'   => __( '💡 Use a transparent PNG against a consistent circular canvas for the crispest stacking results.', 'pizzalayer' ),
-				'cpt'   => 'crusts',
-				'count' => $stats['crusts'],
-			],
-			'sauces' => [
-				'label' => __( 'Sauces', 'pizzalayer' ),
-				'icon'  => 'dashicons-admin-generic',
-				'desc'  => __( 'The sauce defines the flavor direction. Whether it\'s a bold marinara, a smoky BBQ, or a creamy garlic white — each sauce is a distinct layer image that sits on top of the crust in the visualizer.', 'pizzalayer' ),
-				'tip'   => __( '💡 Keep sauce layer images semi-transparent around the edges for a natural blending effect.', 'pizzalayer' ),
-				'cpt'   => 'sauces',
-				'count' => $stats['sauces'],
-			],
-			'cheeses' => [
-				'label' => __( 'Cheeses', 'pizzalayer' ),
-				'icon'  => 'dashicons-category',
-				'desc'  => __( 'Cheese sits between sauce and toppings in your stack. Offer mozzarella, provolone, dairy-free alternatives — each with its own visual layer image.', 'pizzalayer' ),
-				'tip'   => __( '💡 A subtle melt texture with a slight golden edge makes cheese layers look mouth-wateringly real.', 'pizzalayer' ),
-				'cpt'   => 'cheeses',
-				'count' => $stats['cheeses'],
-			],
-			'drizzles' => [
-				'label' => __( 'Drizzles', 'pizzalayer' ),
-				'icon'  => 'dashicons-admin-customizer',
-				'desc'  => __( 'Drizzles are the finishing touch — balsamic glaze, hot honey, ranch swirl. They layer above toppings in the visualizer and give your menu a premium feel with minimal setup.', 'pizzalayer' ),
-				'tip'   => __( '💡 Drizzle images look best with a flowing, asymmetric pattern that feels handcrafted.', 'pizzalayer' ),
-				'cpt'   => 'drizzles',
-				'count' => $stats['drizzles'],
-			],
-			'cuts' => [
-				'label' => __( 'Cuts', 'pizzalayer' ),
-				'icon'  => 'dashicons-editor-table',
-				'desc'  => __( 'Define how a finished pizza gets sliced. Square cuts, classic triangles, party-style, or left whole — each cut style gets its own overlay layer that drops on top of the finished pizza.', 'pizzalayer' ),
-				'tip'   => __( '💡 Cut overlay PNGs should use a thin line weight with slight transparency so toppings show through.', 'pizzalayer' ),
-				'cpt'   => 'cuts',
-				'count' => $stats['cuts'],
-			],
-			'sizes' => [
-				'label' => __( 'Sizes', 'pizzalayer' ),
-				'icon'  => 'dashicons-image-rotate',
-				'desc'  => __( 'Size options define the available pizza dimensions — small, medium, large, party. Each size carries dimension metadata, weight, and area used by templates and the PizzaLayerPro pricing engine.', 'pizzalayer' ),
-				'tip'   => __( '💡 Set size_area_sqin for accurate per-area calculations in PizzaLayerPro.', 'pizzalayer' ),
-				'cpt'   => 'sizes',
-				'count' => $stats['sizes'],
-			],
-			'presets' => [
-				'label' => __( 'Presets', 'pizzalayer' ),
-				'icon'  => 'dashicons-food',
-				'desc'  => __( 'Pre-configured pizza combinations that customers can start from. Each preset stores a full layer configuration (crust, sauce, cheese, toppings, drizzle, cut) managed via PizzaLayerPro\'s visual builder.', 'pizzalayer' ),
-				'tip'   => __( '💡 Use presets to showcase your most popular pizzas — customers can customise further after selecting one.', 'pizzalayer' ),
-				'cpt'   => 'presets',
-				'count' => $stats['presets'],
-			],
-		];
 
 		// ── Quick-access icon nav items ──────────────────────────────────
 		$quick_nav = [
@@ -125,6 +57,13 @@ class AdminHome {
 				'label' => __( 'Setup Guide', 'pizzalayer' ),
 				'href'  => admin_url( 'admin.php?page=pizzalayer-setup' ),
 				'color' => '#2271b1',
+			],
+			[
+				'icon'     => 'dashicons-sos',
+				'label'    => __( 'Help', 'pizzalayer' ),
+				'href'     => admin_url( 'admin.php?page=pizzalayer-help' ),
+				'color'    => '#d63638',
+				'featured' => true,
 			],
 			[
 				'icon'  => 'dashicons-editor-code',
@@ -142,19 +81,13 @@ class AdminHome {
 				'icon'  => 'dashicons-admin-generic',
 				'label' => __( 'Customizer', 'pizzalayer' ),
 				'href'  => admin_url( 'admin.php?page=pizzalayer-settings' ),
-				'color' => '#d63638',
+				'color' => '#9b51e0',
 			],
 			[
 				'icon'  => 'dashicons-star-filled',
 				'label' => __( 'Toppings', 'pizzalayer' ),
 				'href'  => admin_url( 'edit.php?post_type=pizzalayer_toppings' ),
 				'color' => '#f0b849',
-			],
-			[
-				'icon'  => 'dashicons-media-document',
-				'label' => __( 'Help', 'pizzalayer' ),
-				'href'  => admin_url( 'admin.php?page=pizzalayer-help' ),
-				'color' => '#646970',
 			],
 			[
 				'icon'  => 'dashicons-food',
@@ -170,17 +103,6 @@ class AdminHome {
 			],
 		];
 
-		// ── Tips rotator ─────────────────────────────────────────────────
-		$tips = [
-			__( 'Keep layer images lean — use WebP or transparent PNG at a consistent canvas size for crisp, predictable stacking.', 'pizzalayer' ),
-			/* translators: HTML code element, do not translate <code>pepperoni</code> etc. */
-			__( 'Name CPT slugs cleanly (e.g. <code>pepperoni</code>, <code>thin-crust</code>) — they feed directly into CSS classes and JS data keys.', 'pizzalayer' ),
-			__( 'Offer half and quarter topping coverage to boost average order value without overwhelming the decision.', 'pizzalayer' ),
-			/* translators: [pizza_layer] is a shortcode tag, keep as-is */
-			__( 'Use the <code>[pizza_layer]</code> shortcode to embed a single ingredient image anywhere on your menu pages.', 'pizzalayer' ),
-			__( 'Cache thumbnails and preload your first visible layer set for a snappier first paint on slower connections.', 'pizzalayer' ),
-			__( 'Document your menu structure and ingredient choices in the product notes field — your future self will thank you.', 'pizzalayer' ),
-		];
 
 		?>
 		<div class="wrap plh-wrap">
@@ -209,31 +131,6 @@ class AdminHome {
 					<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-shortcodes' ) ); ?>" class="button">
 						<span class="dashicons dashicons-editor-code"></span> <?php esc_html_e( 'Shortcodes', 'pizzalayer' ); ?>
 					</a>
-					<?php
-					// ── Dark mode detection toggle ─────────────────────────────
-					$dark_mode = (string) get_option( 'pizzalayer_setting_dark_mode', 'auto' );
-					if ( isset( $_POST['pizzalayer_dark_mode_save'], $_POST['_wpnonce_dark_mode'] )
-					     && wp_verify_nonce( sanitize_key( $_POST['_wpnonce_dark_mode'] ), 'pizzalayer_dark_mode_save' ) ) {
-						$dark_mode = sanitize_key( wp_unslash( $_POST['pizzalayer_dark_mode'] ?? 'auto' ) );
-						if ( ! in_array( $dark_mode, [ 'auto', 'light', 'dark' ], true ) ) { $dark_mode = 'auto'; }
-						update_option( 'pizzalayer_setting_dark_mode', $dark_mode );
-					}
-					$dm_icons  = [ 'auto' => 'dashicons-smartphone', 'light' => 'dashicons-sun', 'dark' => 'dashicons-moon' ];
-					$dm_labels = [ 'auto' => 'Auto', 'light' => 'Light', 'dark' => 'Dark' ];
-					?>
-					<div class="plh-dm-toggle" title="Dark mode detection for the pizza builder">
-						<?php foreach ( $dm_icons as $val => $icon ) : ?>
-						<form method="post" style="display:inline;">
-							<?php wp_nonce_field( 'pizzalayer_dark_mode_save', '_wpnonce_dark_mode' ); ?>
-							<input type="hidden" name="pizzalayer_dark_mode_save" value="1">
-							<input type="hidden" name="pizzalayer_dark_mode" value="<?php echo esc_attr( $val ); ?>">
-							<button type="submit" class="plh-dm-btn<?php echo $dark_mode === $val ? ' plh-dm-btn--active' : ''; ?>" title="<?php echo esc_attr( ucfirst( $val ) ); ?> mode">
-								<span class="dashicons <?php echo esc_attr( $icon ); ?>"></span>
-								<span class="plh-dm-label"><?php echo esc_html( $dm_labels[ $val ] ); ?></span>
-							</button>
-						</form>
-						<?php endforeach; ?>
-					</div>
 				</div>
 			</div>
 
@@ -271,11 +168,16 @@ class AdminHome {
 			<?php endif; ?>
 
 			<!-- ══ Stats strip ════════════════════════════════════════════ -->
+			<?php
+			$hub_disabled = ( get_option( 'pizzalayer_setting_disable_content_hub', 'no' ) === 'yes' );
+			$hub_url      = admin_url( 'admin.php?page=pizzalayer-content' );
+			$total_url    = $hub_disabled ? admin_url( 'edit.php?post_type=pizzalayer_toppings' ) : $hub_url;
+			?>
 			<div class="plh-stats-row">
-				<div class="plh-stat plh-stat--total">
+				<a class="plh-stat plh-stat--total" href="<?php echo esc_url( $total_url ); ?>">
 					<span class="plh-stat__number"><?php echo esc_html( $total ); ?></span>
 					<span class="plh-stat__label"><?php esc_html_e( 'Total Layers', 'pizzalayer' ); ?></span>
-				</div>
+				</a>
 				<?php
 				$stat_display = [
 					'toppings' => __( 'Toppings', 'pizzalayer' ),
@@ -286,26 +188,32 @@ class AdminHome {
 					'cuts'     => __( 'Cuts', 'pizzalayer' ),
 				];
 				foreach ( $stat_display as $k => $label ) :
-					$warn = $stats[ $k ] === 0 && in_array( $k, $essential, true );
+					$warn     = $stats[ $k ] === 0 && in_array( $k, $essential, true );
+					$stat_url = $hub_disabled
+						? admin_url( 'edit.php?post_type=pizzalayer_' . $k )
+						: add_query_arg( 'pl_cpt', $k, $hub_url );
 				?>
-				<div class="plh-stat<?php echo $warn ? ' plh-stat--warn' : ''; ?>">
+				<a class="plh-stat<?php echo $warn ? ' plh-stat--warn' : ''; ?>" href="<?php echo esc_url( $stat_url ); ?>">
 					<span class="plh-stat__number"><?php echo esc_html( $stats[ $k ] ); ?></span>
 					<span class="plh-stat__label"><?php echo esc_html( $label ); ?></span>
 					<?php if ( $warn ) : ?>
 					<span class="plh-stat__warn-badge"><?php esc_html_e( 'Needs content', 'pizzalayer' ); ?></span>
 					<?php endif; ?>
-				</div>
+				</a>
 				<?php endforeach; ?>
-				<div class="plh-stat plh-stat--template">
+				<a class="plh-stat plh-stat--template" href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-template' ) ); ?>">
 					<span class="plh-stat__number plh-stat__number--sm"><?php echo esc_html( ucwords( str_replace( '-', ' ', $active_template ) ) ); ?></span>
 					<span class="plh-stat__label"><?php esc_html_e( 'Active Template', 'pizzalayer' ); ?></span>
-				</div>
+				</a>
 			</div>
 
 			<!-- ══ Quick-access icon nav ══════════════════════════════════ -->
 			<div class="plh-quicknav">
-				<?php foreach ( $quick_nav as $item ) : ?>
-				<a href="<?php echo esc_url( $item['href'] ); ?>" class="plh-quicknav__item">
+				<?php foreach ( $quick_nav as $item ) :
+					$is_featured = ! empty( $item['featured'] );
+					$item_class  = 'plh-quicknav__item' . ( $is_featured ? ' plh-quicknav__item--featured' : '' );
+				?>
+				<a href="<?php echo esc_url( $item['href'] ); ?>" class="<?php echo esc_attr( $item_class ); ?>"<?php echo $is_featured ? ' style="--pzl-qn-accent:' . esc_attr( $item['color'] ) . '"' : ''; ?>>
 					<span class="plh-quicknav__icon" style="background:<?php echo esc_attr( $item['color'] ); ?>20;color:<?php echo esc_attr( $item['color'] ); ?>">
 						<span class="dashicons <?php echo esc_attr( $item['icon'] ); ?>"></span>
 					</span>
@@ -379,92 +287,8 @@ class AdminHome {
 				</div>
 			</div>
 
-			<!-- ══ Layer Manager ══════════════════════════════════════════════ -->
-			<div class="plh-card plh-card--tabs">
-				<div class="plh-card__head">
-					<h2 class="plh-card__title">
-						<span class="dashicons dashicons-category"></span> <?php esc_html_e( 'Layer Manager', 'pizzalayer' ); ?>
-					</h2>
-					<p class="plh-card__subtitle"><?php esc_html_e( 'Select a layer type to learn about it and jump directly to its content.', 'pizzalayer' ); ?></p>
-				</div>
-
-				<nav class="plh-tabnav" id="plh-layer-tabs" role="tablist">
-					<?php $first = true; foreach ( $layer_tabs as $slug => $tab ) : ?>
-					<button class="plh-tab<?php echo $first ? ' plh-tab--active' : ''; ?>"
-					        data-tab="<?php echo esc_attr( $slug ); ?>"
-					        role="tab"
-					        aria-selected="<?php echo $first ? 'true' : 'false'; ?>"
-					        aria-controls="plh-panel-<?php echo esc_attr( $slug ); ?>">
-						<span class="dashicons <?php echo esc_attr( $tab['icon'] ); ?>"></span>
-						<?php echo esc_html( $tab['label'] ); ?>
-						<span class="plh-tab__count<?php echo $tab['count'] === 0 ? ' plh-tab__count--zero' : ''; ?>">
-							<?php echo esc_html( $tab['count'] ); ?>
-						</span>
-					</button>
-					<?php $first = false; endforeach; ?>
-				</nav>
-
-				<div class="plh-panels">
-					<?php $first = true; foreach ( $layer_tabs as $slug => $tab ) : ?>
-					<div class="plh-panel<?php echo $first ? ' plh-panel--active' : ''; ?>"
-					     id="plh-panel-<?php echo esc_attr( $slug ); ?>"
-					     role="tabpanel">
-						<div class="plh-panel__body">
-							<div class="plh-panel__text">
-								<p><?php echo wp_kses_post( $tab['desc'] ); ?></p>
-								<p class="plh-panel__tip"><?php echo wp_kses_post( $tab['tip'] ); ?></p>
-							</div>
-							<div class="plh-panel__actions">
-								<a href="<?php echo esc_url( admin_url( 'edit.php?post_type=pizzalayer_' . $tab['cpt'] ) ); ?>" class="button">
-									<span class="dashicons dashicons-list-view"></span>
-									<?php
-									/* translators: %s = layer type label e.g. Toppings */
-									printf( esc_html__( 'View All %s', 'pizzalayer' ), esc_html( $tab['label'] ) );
-									?>
-									<?php if ( $tab['count'] > 0 ) : ?>
-									<span class="plh-count-badge"><?php echo esc_html( $tab['count'] ); ?></span>
-									<?php endif; ?>
-								</a>
-								<a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=pizzalayer_' . $tab['cpt'] ) ); ?>" class="button button-primary">
-									<span class="dashicons dashicons-plus-alt2"></span>
-									<?php
-									/* translators: %s = layer type singular e.g. Topping */
-									printf( esc_html__( 'Add New %s', 'pizzalayer' ), esc_html( rtrim( $tab['label'], 's' ) ) );
-									?>
-								</a>
-							</div>
-						</div>
-					</div>
-					<?php $first = false; endforeach; ?>
-				</div>
-			</div>
-
-			<!-- ══ Bottom three-column cards ════════════════════════════ -->
+			<!-- ══ Bottom feature cards ═════════════════════════════════ -->
 			<div class="plh-features-row">
-
-				<!-- Tips rotator -->
-				<div class="plh-card plh-card--feature">
-					<div class="plh-card__icon-header">
-						<span class="dashicons dashicons-admin-tools"></span>
-						<h3><?php esc_html_e( 'Tips &amp; Tricks', 'pizzalayer' ); ?></h3>
-					</div>
-					<div class="plh-card__content">
-						<div class="plh-rotator-wrap">
-							<div class="pizzalayer-rotator" data-interval="6000">
-								<?php foreach ( $tips as $i => $text ) : ?>
-								<div class="pz-rotator-slide<?php echo $i === 0 ? ' is-active' : ''; ?>">
-									<?php echo wp_kses_post( $text ); ?>
-								</div>
-								<?php endforeach; ?>
-							</div>
-							<div class="plh-rotator-dots" aria-hidden="true">
-								<?php for ( $i = 0; $i < count( $tips ); $i++ ) : ?>
-								<span class="plh-rotator-dot<?php echo $i === 0 ? ' is-active' : ''; ?>"></span>
-								<?php endfor; ?>
-							</div>
-						</div>
-					</div>
-				</div>
 
 				<!-- Shortcode reference -->
 				<div class="plh-card plh-card--feature">
@@ -555,24 +379,6 @@ class AdminHome {
 		.plh-header__actions .button { display: inline-flex; align-items: center; gap: 5px; }
 		.plh-header__actions .dashicons { font-size: 15px !important; width: 15px !important; height: 15px !important; margin: 0; }
 
-		/* ── Dark mode toggle ─────────────────────────────────────────── */
-		.plh-dm-toggle {
-			display: flex; align-items: center; gap: 2px;
-			background: rgba(255,255,255,.08); border: 1px solid rgba(255,255,255,.14);
-			border-radius: 7px; padding: 3px; margin-left: 4px;
-		}
-		.plh-dm-btn {
-			display: inline-flex; align-items: center; gap: 4px;
-			background: transparent; border: none; border-radius: 5px;
-			color: #a0aec0; cursor: pointer; padding: 5px 9px;
-			font-size: 12px; font-weight: 500; transition: background .15s, color .15s;
-		}
-		.plh-dm-btn:hover { background: rgba(255,255,255,.1); color: #fff; }
-		.plh-dm-btn--active { background: rgba(255,255,255,.18) !important; color: #fff !important; font-weight: 600; }
-		.plh-dm-btn .dashicons { font-size: 13px !important; width: 13px !important; height: 13px !important; margin: 0; }
-		.plh-dm-label { font-size: 11px; }
-		@media (max-width: 900px) { .plh-dm-label { display: none; } }
-
 		/* ── Pro CTA ──────────────────────────────────────────────────── */
 		.plh-pro-cta {
 			display: flex; align-items: center; gap: 12px;
@@ -611,11 +417,19 @@ class AdminHome {
 		.plh-stat {
 			flex: 1 1 90px; background: #fff; border: 1px solid #e0e3e7;
 			border-radius: 8px; padding: 14px 16px; text-align: center;
-			position: relative;
+			position: relative; display: block; text-decoration: none; color: inherit;
+			transition: border-color .15s, box-shadow .15s, transform .15s;
 		}
+		a.plh-stat:hover {
+			border-color: #2271b1; box-shadow: 0 2px 8px rgba(0,0,0,.1);
+			transform: translateY(-2px);
+		}
+		a.plh-stat:focus { outline: 2px solid #2271b1; outline-offset: 1px; }
 		.plh-stat--total {
 			background: #1a1e23; border-color: #1a1e23;
 		}
+		a.plh-stat--total:hover { border-color: #3a4452; box-shadow: 0 2px 10px rgba(0,0,0,.25); }
+		a.plh-stat--warn:hover { border-color: #e0a020; }
 		.plh-stat--total .plh-stat__number { color: #fff; }
 		.plh-stat--total .plh-stat__label  { color: #8d97a5; }
 		.plh-stat--warn { border-color: #f0b849; background: #fffdf0; }
@@ -653,6 +467,19 @@ class AdminHome {
 			font-size: 22px !important; width: 22px !important; height: 22px !important;
 		}
 		.plh-quicknav__label { line-height: 1.2; }
+		.plh-quicknav__item--featured {
+			border-color: var(--pzl-qn-accent, #2271b1);
+			background: #fff8f8;
+			box-shadow: 0 0 0 1px var(--pzl-qn-accent, #2271b1) inset;
+		}
+		.plh-quicknav__item--featured .plh-quicknav__label {
+			color: var(--pzl-qn-accent, #2271b1); font-weight: 700;
+		}
+		.plh-quicknav__item--featured:hover {
+			border-color: var(--pzl-qn-accent, #2271b1);
+			color: var(--pzl-qn-accent, #2271b1);
+			box-shadow: 0 2px 10px rgba(214,54,56,.22), 0 0 0 1px var(--pzl-qn-accent, #2271b1) inset;
+		}
 
 		/* ── Generic card ─────────────────────────────────────────────── */
 		.plh-card {
@@ -666,54 +493,6 @@ class AdminHome {
 		}
 		.plh-card__title .dashicons { color: #646970; font-size: 18px !important; width: 18px !important; height: 18px !important; }
 		.plh-card__subtitle { margin: 0 0 0; color: #646970; font-size: 13px; padding-bottom: 4px; }
-
-		/* ── Tab nav ──────────────────────────────────────────────────── */
-		.plh-tabnav {
-			display: flex; overflow-x: auto; border-bottom: 2px solid #e0e3e7;
-			padding: 0 16px; background: #f8f9fa; gap: 0;
-		}
-		.plh-tab {
-			display: inline-flex; align-items: center; gap: 6px;
-			padding: 8px 14px; border: none; border-bottom: 2px solid transparent;
-			background: transparent; cursor: pointer; font-size: 13px; font-weight: 500;
-			color: #646970; white-space: nowrap; margin-bottom: -2px; line-height: 1;
-			transition: color .15s, border-color .15s;
-		}
-		.plh-tab:hover { color: #1d2023; }
-		.plh-tab--active { color: #2271b1; border-bottom-color: #2271b1; font-weight: 600; }
-		.plh-tab .dashicons {
-			font-size: 14px !important; width: 14px !important; height: 14px !important;
-			line-height: 1 !important; vertical-align: middle; flex-shrink: 0;
-		}
-		.plh-tab__count {
-			background: #e0e3e7; color: #646970; border-radius: 999px;
-			font-size: 10px; font-weight: 700; padding: 1px 6px; min-width: 16px; text-align: center;
-		}
-		.plh-tab--active .plh-tab__count { background: #dce8f7; color: #2271b1; }
-		.plh-tab__count--zero { background: #fce8e8; color: #d63638; }
-
-		/* ── Panels ───────────────────────────────────────────────────── */
-		.plh-panels { padding: 0; }
-		.plh-panel { display: none; }
-		.plh-panel--active { display: block; }
-		.plh-panel__body {
-			display: flex; align-items: flex-start; justify-content: space-between;
-			gap: 24px; flex-wrap: wrap; padding: 20px 24px;
-		}
-		.plh-panel__text { flex: 1 1 300px; font-size: 13px; }
-		.plh-panel__text p { margin: 0 0 10px; }
-		.plh-panel__tip {
-			background: #f6f7f7; border-left: 3px solid #f0b849;
-			padding: 10px 14px; border-radius: 0 6px 6px 0;
-			font-size: 13px; color: #3c434a; margin: 0;
-		}
-		.plh-panel__actions { display: flex; flex-direction: column; gap: 8px; flex-shrink: 0; }
-		.plh-panel__actions .button { display: inline-flex; align-items: center; gap: 6px; white-space: nowrap; }
-		.plh-panel__actions .dashicons { font-size: 14px !important; width: 14px !important; height: 14px !important; }
-		.plh-count-badge {
-			background: #fff; border: 1px solid #ccd0d4; border-radius: 999px;
-			font-size: 11px; font-weight: 600; padding: 0 7px;
-		}
 
 		/* ── Bottom feature cards ─────────────────────────────────────── */
 		.plh-features-row {
@@ -733,16 +512,6 @@ class AdminHome {
 		.plh-card__content p:last-child { margin-bottom: 0; }
 		.plh-card__content code { background: #f0f0f1; padding: 1px 5px; border-radius: 3px; font-size: 11.5px; }
 		.plh-sc-desc { color: #787c82; font-size: 12px; }
-
-		/* Rotator */
-		.plh-rotator-wrap { position: relative; min-height: 72px; }
-		.pizzalayer-rotator { position: relative; }
-		.pz-rotator-slide { display: none; font-size: 13px; line-height: 1.65; }
-		.pz-rotator-slide.is-active { display: block; }
-		.pz-rotator-slide code { background: #f0f0f1; padding: 1px 5px; border-radius: 3px; font-size: 12px; }
-		.plh-rotator-dots { display: flex; gap: 5px; margin-top: 14px; }
-		.plh-rotator-dot { width: 6px; height: 6px; border-radius: 50%; background: #ddd; transition: background .2s; }
-		.plh-rotator-dot.is-active { background: #2271b1; }
 
 		/* ── Credits ──────────────────────────────────────────────────── */
 		.plh-credits { padding: 8px 0 24px; font-size: 12px; color: #aaa; }

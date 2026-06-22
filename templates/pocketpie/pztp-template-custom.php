@@ -20,7 +20,7 @@ function pzt_pocketpie_menu_func( $atts = [] ) {
 
     $atts = shortcode_atts( [
         'id'             => 'pizzabuilder-1',
-        'layout'         => 'corner-quad',   // corner-quad | layer-deck | slide-drawer | stack-panel
+        'layout'         => '',   // corner-quad | layer-deck | slide-drawer | stack-panel — empty falls back to the Default Layout Mode setting
         'max_toppings'   => '',
         'pizza_shape'    => '',
         'pizza_aspect'   => '',
