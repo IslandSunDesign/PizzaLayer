@@ -251,6 +251,24 @@
     };
 
     /* ════════════════════════════════════════════════════════════════
+       COVERAGE LABELS / SWATCH CLASSES
+       Mirror the PHP maps in pztp-containers-menu.php so the chip can be
+       updated client-side. CSS swatches: --whole, --left, --right, --q1..q4.
+       ════════════════════════════════════════════════════════════════ */
+    var _COV_ICON = {
+        'whole': 'whole', 'half-left': 'left', 'half-right': 'right',
+        'quarter-top-left': 'q1', 'quarter-top-right': 'q2',
+        'quarter-bottom-left': 'q3', 'quarter-bottom-right': 'q4'
+    };
+    var _COV_LABEL = {
+        'whole': 'Whole', 'half-left': 'Left Half', 'half-right': 'Right Half',
+        'quarter-top-left': 'Top Left', 'quarter-top-right': 'Top Right',
+        'quarter-bottom-left': 'Bottom Left', 'quarter-bottom-right': 'Bottom Right'
+    };
+    function CB_COV_ICON(f)  { return _COV_ICON[f]  || 'whole'; }
+    function CB_COV_LABEL(f) { return _COV_LABEL[f] || 'Whole'; }
+
+    /* ════════════════════════════════════════════════════════════════
        INSTANCE FACTORY
        ════════════════════════════════════════════════════════════════ */
 
@@ -273,6 +291,9 @@
 
         /* ── Lazy stage reference ── */
         var _$stage = null;
+
+        /* ── Coverage modal: slug currently being edited ── */
+        var activeCoverageSlug = null;
         function getStage() {
             if (!_$stage || !_$stage.length) {
                 _$stage = PizzaStack.getStage($root);
@@ -297,6 +318,7 @@
                 this._initStage();
                 this._bindTabs();
                 this._bindMobileToggle();
+                this._bindCoverageModal();
                 this._applyStartOverLabel();
                 this.goTab('crust');
                 this._updateCounter();
@@ -489,7 +511,7 @@
                 $card.find('.cb-btn--add').hide();
                 $card.find('.cb-btn--remove').show();
                 $card.find('.cb-coverage').show();
-                $card.find('.cb-cov-btn[data-fraction="whole"]').addClass('active');
+                instance._updateCoverageChip(slug, 'whole');
 
                 state.toppings[slug] = {
                     slug: slug, title: title, thumb: thumb,
@@ -523,7 +545,7 @@
                 $card.find('.cb-btn--add').show();
                 $card.find('.cb-btn--remove').hide();
                 $card.find('.cb-coverage').hide();
-                $card.find('.cb-cov-btn').removeClass('active');
+                instance._updateCoverageChip(slug, 'whole');
 
                 delete state.toppings[slug];
 
@@ -545,14 +567,27 @@
                 if ( settings.debugMode === 'yes' ) { window.console && console.log('[PizzaLayer] removeTopping:', slug); }
             },
 
+            /* ── Close the coverage modal on Escape ── */
+            _bindCoverageModal: function () {
+                $(document).on('keydown.cbcov-' + instanceId, function (e) {
+                    if (e.key === 'Escape' || e.keyCode === 27) {
+                        if ($find('.cb-cov-modal').hasClass('cb-cov-modal--open')) {
+                            instance.closeCoverage();
+                        }
+                    }
+                });
+            },
+
+            /* ── Native Add to Cart bar ──────────────────────────────────
+               (removed) The base plugin's Add to Cart / checkout bar is
+               provided by PizzaLayerPro via the pizzalayer_builder_action_bar
+               hook in pztp-containers-menu.php, so the template renders no
+               native bar of its own. ── */
+
             /* ── Set coverage (clip-path on topping layer) ── */
             setCoverage: function (slug, fraction, triggerEl) {
                 if (!state.toppings[slug]) { return; }
                 state.toppings[slug].coverage = fraction;
-
-                var $card = $(triggerEl).closest('.cb-card');
-                $card.find('.cb-cov-btn').removeClass('active');
-                $(triggerEl).addClass('active');
 
                 // Update clip-path on the pizza stack layer
                 var $layer = getStage().find('[data-layer-id="layer-topping-' + slug + '"]');
@@ -560,7 +595,45 @@
                     $layer.find('img').css('clip-path', PizzaStack.getCoverageClip(fraction));
                 }
 
+                instance._updateCoverageChip(slug, fraction);
                 instance._updateSummaryRow('toppings');
+            },
+
+            /* ── Coverage chip helpers ── */
+            _updateCoverageChip: function (slug, fraction) {
+                var $chip = $find('.cb-card--topping[data-slug="' + slug + '"] .cb-coverage__current');
+                if (!$chip.length) { return; }
+                $chip.attr('data-fraction', fraction);
+                $chip.find('.cb-cov-ico')
+                    .attr('class', 'cb-cov-ico cb-cov-ico--' + CB_COV_ICON(fraction));
+                $chip.find('.cb-coverage__current-label').text(CB_COV_LABEL(fraction));
+            },
+
+            /* ── Coverage modal: open / close / choose ── */
+            openCoverage: function (slug) {
+                if (!state.toppings[slug]) { return; }
+                activeCoverageSlug = slug;
+                var current = state.toppings[slug].coverage || 'whole';
+
+                var $modal = $find('.cb-cov-modal');
+                if (!$modal.length) { return; }
+                // Mark the current option active
+                $modal.find('.cb-cov-opt').removeClass('active').each(function () {
+                    if ($(this).data('fraction') === current) { $(this).addClass('active'); }
+                });
+                $modal.addClass('cb-cov-modal--open').attr('aria-hidden', 'false');
+            },
+
+            closeCoverage: function () {
+                activeCoverageSlug = null;
+                $find('.cb-cov-modal').removeClass('cb-cov-modal--open').attr('aria-hidden', 'true');
+            },
+
+            chooseCoverage: function (fraction) {
+                if (activeCoverageSlug) {
+                    instance.setCoverage(activeCoverageSlug, fraction);
+                }
+                instance.closeCoverage();
             },
 
             /* ── Reset all layers ── */
@@ -571,7 +644,11 @@
                 $find('.cb-btn--add').show();
                 $find('.cb-btn--remove').hide();
                 $find('.cb-coverage').hide();
-                $find('.cb-cov-btn').removeClass('active');
+                $find('.cb-coverage__current').each(function () {
+                    var s = $(this).data('slug');
+                    if (s) { instance._updateCoverageChip(s, 'whole'); }
+                });
+                instance.closeCoverage();
                 $find('.cb-tab').removeClass('cb-tab--done');
 
                 // Clear pizza stage
@@ -601,6 +678,9 @@
                         var $card = $find('.cb-card[data-layer="toppings"][data-slug="' + slug + '"]');
                         if ($card.length) {
                             $card.find('.cb-btn--add').trigger('click');
+                            if (t.coverage && t.coverage !== 'whole') {
+                                instance.setCoverage(slug, t.coverage);
+                            }
                         } else {
                             // Headless add (no UI card)
                             state.toppings[slug] = t;

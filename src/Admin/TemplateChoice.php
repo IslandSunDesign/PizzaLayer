@@ -44,8 +44,8 @@ class TemplateChoice {
 		// ── Scan template directories ───────────────────────────────
 		$plugin_dir = PIZZALAYER_TEMPLATES_DIR;
 		$plugin_url = PIZZALAYER_TEMPLATES_URL;
-		$theme_dir  = trailingslashit( get_stylesheet_directory() ) . 'pizzalayer/';
-		$theme_url  = trailingslashit( get_stylesheet_directory_uri() ) . 'pizzalayer/';
+		$theme_dir  = trailingslashit( get_stylesheet_directory() ) . 'pzttemplates/';
+		$theme_url  = trailingslashit( get_stylesheet_directory_uri() ) . 'pzttemplates/';
 
 		$templates = [];
 		foreach ( [ [ $plugin_dir, $plugin_url, 'plugin' ], [ $theme_dir, $theme_url, 'theme' ] ] as [ $dir, $url, $source ] ) {
@@ -127,6 +127,24 @@ class TemplateChoice {
 		// Active template preview URL (no override needed — just the raw page)
 		$active_preview_url = $preview_urls[ $active ] ?? $preview_page_url;
 		$active_name        = $templates[ $active ]['info']['name'] ?? ucwords( str_replace( '-', ' ', $active ) );
+
+		// ── Per-browser preview override ────────────────────────────
+		// $active above is the SAVED site-wide default. A theme or plugin may
+		// additionally apply a per-visitor preview (e.g. the demo theme's
+		// template switcher, which swaps templates per browser without changing
+		// the saved default). Such tools supply the active slug through this
+		// filter, so the base plugin stays fully decoupled from any specific
+		// preview mechanism (no cookie names hardcoded here).
+		$available_slugs   = array_keys( $templates );
+		$user_preview      = sanitize_key( (string) apply_filters( 'pizzalayer_active_user_template', '', $available_slugs ) );
+		if ( $user_preview !== '' && ! in_array( $user_preview, $available_slugs, true ) ) {
+			$user_preview = '';
+		}
+		// Only treat it as a distinct preview when it actually differs from the default.
+		$has_user_preview  = ( $user_preview !== '' && $user_preview !== $active );
+		$user_preview_name = $has_user_preview
+			? ( $templates[ $user_preview ]['info']['name'] ?? ucwords( str_replace( '-', ' ', $user_preview ) ) )
+			: '';
 
 		?>
 		<div class="wrap ptc-wrap">
@@ -215,10 +233,20 @@ class TemplateChoice {
 				<div class="ptc-hero__pill">
 					<span class="dashicons dashicons-yes-alt ptc-hero__pill-icon ptc-hero__pill-icon--green"></span>
 					<div>
-						<span class="ptc-hero__pill-label"><?php esc_html_e( 'Currently Active', 'pizzalayer' ); ?></span>
+						<span class="ptc-hero__pill-label"><?php echo $has_user_preview ? esc_html__( 'Saved Default', 'pizzalayer' ) : esc_html__( 'Currently Active', 'pizzalayer' ); ?></span>
 						<span class="ptc-hero__pill-val"><?php echo esc_html( $active_name ); ?></span>
 					</div>
 				</div>
+				<?php if ( $has_user_preview ) : ?>
+				<div class="ptc-hero__pill ptc-hero__pill--preview">
+					<span class="dashicons dashicons-visibility ptc-hero__pill-icon ptc-hero__pill-icon--blue"></span>
+					<div>
+						<span class="ptc-hero__pill-label"><?php esc_html_e( 'Previewing (this browser)', 'pizzalayer' ); ?></span>
+						<span class="ptc-hero__pill-val"><?php echo esc_html( $user_preview_name ); ?></span>
+						<span class="ptc-hero__pill-note"><?php esc_html_e( 'A per-browser preview is active. It does not change the saved default above.', 'pizzalayer' ); ?></span>
+					</div>
+				</div>
+				<?php endif; ?>
 				<div class="ptc-hero__pill">
 					<span class="dashicons dashicons-welcome-learn-more ptc-hero__pill-icon"></span>
 					<div>
@@ -242,11 +270,12 @@ class TemplateChoice {
 			<!-- Left: template list -->
 			<div class="ptc-list" id="ptc-list">
 				<?php foreach ( $templates as $slug => $tpl ) :
-					$info      = $tpl['info'];
-					$is_active = $slug === $active;
-					$purl      = $preview_urls[ $slug ] ?? $preview_page_url;
+					$info       = $tpl['info'];
+					$is_active  = $slug === $active;                          // saved site default
+					$is_preview = $has_user_preview && $slug === $user_preview; // per-browser preview
+					$purl       = $preview_urls[ $slug ] ?? $preview_page_url;
 				?>
-				<div class="ptc-item<?php echo $is_active ? ' ptc-item--active' : ''; ?>"
+				<div class="ptc-item<?php echo $is_active ? ' ptc-item--active' : ''; ?><?php echo $is_preview ? ' ptc-item--browser-preview' : ''; ?>"
 				     id="ptc-item-<?php echo esc_attr( $slug ); ?>"
 				     data-slug="<?php echo esc_attr( $slug ); ?>"
 				     data-preview-url="<?php echo esc_attr( $purl ); ?>"
@@ -264,6 +293,8 @@ class TemplateChoice {
 						<?php endif; ?>
 						<?php if ( $is_active ) : ?>
 						<span class="ptc-item__active-dot" title="Active"></span>
+						<?php elseif ( $is_preview ) : ?>
+						<span class="ptc-item__active-dot ptc-item__active-dot--preview" title="Previewing in this browser"></span>
 						<?php endif; ?>
 					</div>
 
@@ -273,6 +304,9 @@ class TemplateChoice {
 							<?php echo esc_html( $info['name'] ?? ucwords( str_replace( '-', ' ', $slug ) ) ); ?>
 							<?php if ( $is_active ) : ?>
 							<span class="ptc-item__active-badge"><?php esc_html_e( 'Active', 'pizzalayer' ); ?></span>
+							<?php endif; ?>
+							<?php if ( $is_preview ) : ?>
+							<span class="ptc-item__active-badge ptc-item__active-badge--preview"><?php esc_html_e( 'Previewing', 'pizzalayer' ); ?></span>
 							<?php endif; ?>
 						</div>
 						<?php if ( ! empty( $info['description'] ) ) : ?>
@@ -315,7 +349,7 @@ class TemplateChoice {
 					<span class="dashicons dashicons-admin-plugins"></span>
 					<div>
 						<strong>Custom templates</strong> — add a folder at
-						<code><?php echo esc_html( get_stylesheet_directory() ); ?>/pizzalayer/your-slug/</code>
+						<code><?php echo esc_html( get_stylesheet_directory() ); ?>/pzttemplates/your-slug/</code>
 					</div>
 				</div>
 			</div>
@@ -446,7 +480,7 @@ class TemplateChoice {
 					$flabel = $field['label'] ?? $field['key'];
 					$fdesc  = $field['desc']  ?? '';
 				?>
-				<div class="ptc-field<?php echo ( $field['type'] === 'textarea' || $field['type'] === 'text_wide' ) ? ' ptc-field--full' : ''; ?><?php echo ( $field['type'] === 'radio' ) ? ' ptc-field--full' : ''; ?>">
+				<div class="ptc-field<?php echo ( $field['type'] === 'textarea' || $field['type'] === 'text_wide' || $field['type'] === 'image' ) ? ' ptc-field--full' : ''; ?><?php echo ( $field['type'] === 'radio' ) ? ' ptc-field--full' : ''; ?>">
 					<label class="ptc-field__label"><?php echo esc_html( $flabel ); ?></label>
 					<?php if ( $fdesc ) : ?>
 					<p class="ptc-field__desc"><?php echo esc_html( $fdesc ); ?></p>
@@ -468,6 +502,28 @@ class TemplateChoice {
 							</button>
 							<span class="ptc-color-swatch" style="background:<?php echo esc_attr( $field['default'] ); ?>;" title="Default: <?php echo esc_attr( $field['default'] ); ?>"></span>
 							<?php endif; ?>
+						</div>
+					<?php elseif ( $field['type'] === 'image' ) : ?>
+						<div class="ptc-image-wrap">
+							<div class="ptc-image__row">
+								<input type="text" name="<?php echo $fkey; ?>" id="ptc-image-<?php echo $fkey; ?>"
+								       value="<?php echo esc_attr( $fval ); ?>"
+								       class="ptc-field__input ptc-image__url"
+								       placeholder="<?php echo esc_attr( $field['placeholder'] ?? '' ); ?>">
+								<button type="button" class="button ptc-image-choose"
+								        data-target="ptc-image-<?php echo $fkey; ?>"
+								        data-preview="ptc-image-preview-<?php echo $fkey; ?>">
+									<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'Choose Image', 'pizzalayer' ); ?>
+								</button>
+								<button type="button" class="button ptc-image-remove"
+								        data-target="ptc-image-<?php echo $fkey; ?>"
+								        data-preview="ptc-image-preview-<?php echo $fkey; ?>"<?php echo $fval ? '' : ' style="display:none;"'; ?>>
+									<?php esc_html_e( 'Remove', 'pizzalayer' ); ?>
+								</button>
+							</div>
+							<div class="ptc-image__preview" id="ptc-image-preview-<?php echo $fkey; ?>"<?php echo $fval ? '' : ' style="display:none;"'; ?>>
+								<img src="<?php echo esc_url( $fval ); ?>" alt="" />
+							</div>
 						</div>
 					<?php elseif ( $field['type'] === 'select' ) : ?>
 						<select name="<?php echo $fkey; ?>" class="ptc-field__select">
@@ -561,6 +617,8 @@ class TemplateChoice {
 				update_option( $key, $val === 'yes' ? 'yes' : 'no' );
 			} elseif ( $field['type'] === 'color' ) {
 				if ( $raw !== null ) { update_option( $key, sanitize_hex_color( (string) $raw ) ?: '' ); }
+			} elseif ( $field['type'] === 'image' ) {
+				if ( $raw !== null ) { update_option( $key, esc_url_raw( trim( wp_unslash( (string) $raw ) ) ) ); }
 			} elseif ( $field['type'] === 'textarea' ) {
 				if ( $raw !== null ) { update_option( $key, wp_kses_post( wp_unslash( (string) $raw ) ) ); }
 			} elseif ( $field['type'] === 'number' || $field['type'] === 'range' ) {
@@ -579,16 +637,16 @@ class TemplateChoice {
 
 	private function get_metro_color_schemes(): array {
 		return [
-			[ 'name' => 'Tomato',      'colors' => ['#e63946','#f7f7f5','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#e63946','metro_setting_background_color'=>'#f7f7f5','metro_setting_card_bg_color'=>'#ffffff'] ],
-			[ 'name' => 'Night Blue',  'colors' => ['#2563eb','#0f1729','#1e2d4a'], 'keys' => ['metro_setting_accent_color'=>'#2563eb','metro_setting_background_color'=>'#0f1729','metro_setting_card_bg_color'=>'#1e2d4a'] ],
-			[ 'name' => 'Garden',      'colors' => ['#2d6a4f','#f4f1e8','#fffef9'], 'keys' => ['metro_setting_accent_color'=>'#2d6a4f','metro_setting_background_color'=>'#f4f1e8','metro_setting_card_bg_color'=>'#fffef9'] ],
-			[ 'name' => 'Ember',       'colors' => ['#c2410c','#fdf4ec','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#c2410c','metro_setting_background_color'=>'#fdf4ec','metro_setting_card_bg_color'=>'#ffffff'] ],
-			[ 'name' => 'Slate Dark',  'colors' => ['#475569','#1e293b','#293548'], 'keys' => ['metro_setting_accent_color'=>'#475569','metro_setting_background_color'=>'#1e293b','metro_setting_card_bg_color'=>'#293548'] ],
-			[ 'name' => 'Rose',        'colors' => ['#be185d','#fff0f6','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#be185d','metro_setting_background_color'=>'#fff0f6','metro_setting_card_bg_color'=>'#ffffff'] ],
-			[ 'name' => 'Golden Hour', 'colors' => ['#b45309','#fffbeb','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#b45309','metro_setting_background_color'=>'#fffbeb','metro_setting_card_bg_color'=>'#ffffff'] ],
-			[ 'name' => 'Violet Night','colors' => ['#7c3aed','#1a0533','#2a1045'], 'keys' => ['metro_setting_accent_color'=>'#7c3aed','metro_setting_background_color'=>'#1a0533','metro_setting_card_bg_color'=>'#2a1045'] ],
-			[ 'name' => 'Sea Breeze',  'colors' => ['#0891b2','#f0f9ff','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#0891b2','metro_setting_background_color'=>'#f0f9ff','metro_setting_card_bg_color'=>'#ffffff'] ],
-			[ 'name' => 'Monochrome',  'colors' => ['#18181b','#f4f4f5','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#18181b','metro_setting_background_color'=>'#f4f4f5','metro_setting_card_bg_color'=>'#ffffff'] ],
+			[ 'name' => 'Tomato',      'colors' => ['#e63946','#f7f7f5','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#e63946','metro_setting_background_color'=>'#f7f7f5','metro_setting_ui_bg_color'=>'#f7f7f5','metro_setting_card_bg_color'=>'#ffffff'] ],
+			[ 'name' => 'Night Blue',  'colors' => ['#2563eb','#0f1729','#1e2d4a'], 'keys' => ['metro_setting_accent_color'=>'#2563eb','metro_setting_background_color'=>'#0f1729','metro_setting_ui_bg_color'=>'#0f1729','metro_setting_card_bg_color'=>'#1e2d4a','metro_setting_card_text_color'=>'#f0f0f4','metro_setting_title_color'=>'#f0f0f4'] ],
+			[ 'name' => 'Garden',      'colors' => ['#2d6a4f','#f4f1e8','#fffef9'], 'keys' => ['metro_setting_accent_color'=>'#2d6a4f','metro_setting_background_color'=>'#f4f1e8','metro_setting_ui_bg_color'=>'#f4f1e8','metro_setting_card_bg_color'=>'#fffef9'] ],
+			[ 'name' => 'Ember',       'colors' => ['#c2410c','#fdf4ec','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#c2410c','metro_setting_background_color'=>'#fdf4ec','metro_setting_ui_bg_color'=>'#fdf4ec','metro_setting_card_bg_color'=>'#ffffff'] ],
+			[ 'name' => 'Slate Dark',  'colors' => ['#475569','#1e293b','#293548'], 'keys' => ['metro_setting_accent_color'=>'#475569','metro_setting_background_color'=>'#1e293b','metro_setting_ui_bg_color'=>'#1e293b','metro_setting_card_bg_color'=>'#293548','metro_setting_card_text_color'=>'#f0f0f4','metro_setting_title_color'=>'#f0f0f4'] ],
+			[ 'name' => 'Rose',        'colors' => ['#be185d','#fff0f6','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#be185d','metro_setting_background_color'=>'#fff0f6','metro_setting_ui_bg_color'=>'#fff0f6','metro_setting_card_bg_color'=>'#ffffff'] ],
+			[ 'name' => 'Golden Hour', 'colors' => ['#b45309','#fffbeb','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#b45309','metro_setting_background_color'=>'#fffbeb','metro_setting_ui_bg_color'=>'#fffbeb','metro_setting_card_bg_color'=>'#ffffff'] ],
+			[ 'name' => 'Violet Night','colors' => ['#7c3aed','#1a0533','#2a1045'], 'keys' => ['metro_setting_accent_color'=>'#7c3aed','metro_setting_background_color'=>'#1a0533','metro_setting_ui_bg_color'=>'#1a0533','metro_setting_card_bg_color'=>'#2a1045','metro_setting_card_text_color'=>'#f0f0f4','metro_setting_title_color'=>'#f0f0f4'] ],
+			[ 'name' => 'Sea Breeze',  'colors' => ['#0891b2','#f0f9ff','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#0891b2','metro_setting_background_color'=>'#f0f9ff','metro_setting_ui_bg_color'=>'#f0f9ff','metro_setting_card_bg_color'=>'#ffffff'] ],
+			[ 'name' => 'Monochrome',  'colors' => ['#18181b','#f4f4f5','#ffffff'], 'keys' => ['metro_setting_accent_color'=>'#18181b','metro_setting_background_color'=>'#f4f4f5','metro_setting_ui_bg_color'=>'#f4f4f5','metro_setting_card_bg_color'=>'#ffffff'] ],
 		];
 	}
 
@@ -665,9 +723,12 @@ class TemplateChoice {
 	}
 	.ptc-hero__pill-icon { font-size:20px !important; width:20px !important; height:20px !important; color: #718096; flex-shrink:0; }
 	.ptc-hero__pill-icon--green { color: #48bb78; }
+	.ptc-hero__pill-icon--blue { color: #60a5fa; }
+	.ptc-hero__pill--preview { background: rgba(96,165,250,.12); box-shadow: inset 0 0 0 1px rgba(96,165,250,.35); }
 	.ptc-hero__pill-label { display: block; font-size: 10px; font-weight: 600; text-transform: uppercase; letter-spacing: .06em; color: #718096; margin-bottom: 2px; }
 	.ptc-hero__pill-val { display: block; font-size: 15px; font-weight: 700; color: #fff; }
 	.ptc-hero__pill-val--sm { font-size: 12px; font-weight: 500; color: #a0aec0; line-height: 1.4; }
+	.ptc-hero__pill-note { display: block; font-size: 10px; font-weight: 500; color: #93c5fd; line-height: 1.45; margin-top: 4px; }
 
 	/* ══ Preview URL bar ══════════════════════════════════════════ */
 	.ptc-preview-url-bar {
@@ -765,6 +826,20 @@ class TemplateChoice {
 		background: #00a32a;
 		border: 1.5px solid #fff;
 	}
+	.ptc-item__active-dot--preview { background: #2563eb; }
+
+	/* Per-browser preview marker (distinct from the saved-default --active state
+	   and the JS iframe-hover --previewing state). */
+	.ptc-item--browser-preview { background: #eff5ff; }
+	.ptc-item--browser-preview::before {
+		content: '';
+		position: absolute;
+		left: 0; top: 0; bottom: 0;
+		width: 3px;
+		background: #2563eb;
+		border-radius: 0 2px 2px 0;
+	}
+	.ptc-item--browser-preview .ptc-item__thumb { border-color: #2563eb; }
 
 	/* Info column */
 	.ptc-item__info { min-width: 0; }
@@ -779,6 +854,7 @@ class TemplateChoice {
 		border-radius: 3px; padding: 1px 5px;
 		flex-shrink: 0;
 	}
+	.ptc-item__active-badge--preview { background: #dbeafe; color: #2563eb; }
 	.ptc-item__desc {
 		font-size: 11px; color: #646970; margin: 2px 0 4px;
 		overflow: hidden;
@@ -1003,6 +1079,23 @@ class TemplateChoice {
 	.ptc-color-revert:hover { background: #f0f0f0; }
 	.ptc-color-revert .dashicons { font-size: 14px !important; width: 14px !important; height: 14px !important; }
 	.ptc-color-swatch { width: 16px; height: 16px; border-radius: 3px; border: 1px solid rgba(0,0,0,.15); flex-shrink: 0; }
+
+	/* Image picker */
+	.ptc-image-wrap { display: flex; flex-direction: column; gap: 10px; }
+	.ptc-image__row { display: flex; align-items: center; gap: 8px; flex-wrap: wrap; }
+	.ptc-image__url { flex: 1 1 280px; max-width: 100%; }
+	.ptc-image-choose .dashicons { margin-top: 4px; }
+	.ptc-image__preview {
+		max-width: 320px; border: 1px solid #dcdcde; border-radius: 6px;
+		overflow: hidden; background: #f6f7f7;
+		background-image: linear-gradient(45deg, #e9e9ea 25%, transparent 25%),
+		                  linear-gradient(-45deg, #e9e9ea 25%, transparent 25%),
+		                  linear-gradient(45deg, transparent 75%, #e9e9ea 75%),
+		                  linear-gradient(-45deg, transparent 75%, #e9e9ea 75%);
+		background-size: 16px 16px;
+		background-position: 0 0, 0 8px, 8px -8px, -8px 0;
+	}
+	.ptc-image__preview img { display: block; width: 100%; height: auto; max-height: 180px; object-fit: cover; }
 
 	/* Toggle */
 	.ptc-toggle { display: inline-flex; align-items: center; gap: 10px; cursor: pointer; user-select: none; }

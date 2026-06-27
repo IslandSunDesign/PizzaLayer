@@ -44,6 +44,15 @@ function pzt_plainlist_inject_css(): void {
 	$section_gap     = max( 8, min( 80, (int) $g( 'plainlist_setting_section_gap',     '32' ) ) );
 	$item_gap        = max( 2, min( 32, (int) $g( 'plainlist_setting_item_gap',        '10' ) ) );
 
+	// List-style additions
+	$row_padding     = max( 0, min( 20, (int) $g( 'plainlist_setting_row_padding',     '4' ) ) );
+	$label_weight    = (int) $g( 'plainlist_setting_label_weight',   '400' );
+
+	// Add-to-Cart button (PizzaLayerPro checkout bar)
+	$cart_bg         = $g( 'plainlist_setting_cart_btn_bg',          '#1a1a1a' );
+	$cart_fg         = $g( 'plainlist_setting_cart_btn_text_color',  '#ffffff' );
+	$cart_radius     = max( 0, min( 32, (int) $g( 'plainlist_setting_cart_btn_radius', '4' ) ) );
+
 	$css = "
 .pl-root {
 	--pl-accent:        " . sanitize_hex_color( $accent )        . ";
@@ -60,6 +69,11 @@ function pzt_plainlist_inject_css(): void {
 	--pl-max-width:     " . esc_attr( $max_width )               . ";
 	--pl-section-gap:   " . $section_gap                         . "px;
 	--pl-item-gap:      " . $item_gap                            . "px;
+	--pl-row-pad:       " . $row_padding                         . "px;
+	--pl-label-weight:  " . ( $label_weight ?: 400 )             . ";
+	--pl-cart-bg:       " . sanitize_hex_color( $cart_bg )       . ";
+	--pl-cart-fg:       " . sanitize_hex_color( $cart_fg )       . ";
+	--pl-cart-radius:   " . $cart_radius                         . "px;
 }
 ";
 	wp_add_inline_style( 'pizzalayer-template-plainlist', $css ); // phpcs:ignore — dynamic CSS vars

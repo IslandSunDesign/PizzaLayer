@@ -183,8 +183,8 @@ function pzt_scaffold_render_item_card( \WP_Post $post, string $layer_type, stri
     $slug       = sanitize_title( $title );
     $img_field  = $layer_type . '_image';
     $lyr_field  = $layer_type . '_layer_image';
-    $thumb_url  = (string) ( get_field( $img_field, $id ) ?: get_field( $lyr_field, $id ) ?: get_the_post_thumbnail_url( $id, 'thumbnail' ) );
-    $layer_url  = (string) ( get_field( $lyr_field, $id ) ?: $thumb_url );
+    $thumb_url  = (string) ( pzl_get_field( $img_field, $id ) ?: pzl_get_field( $lyr_field, $id ) ?: get_the_post_thumbnail_url( $id, 'thumbnail' ) );
+    $layer_url  = (string) ( pzl_get_field( $lyr_field, $id ) ?: $thumb_url );
 
     do_action( 'pizzalayer_before_layer_card', $post, $layer_type );
 
@@ -205,8 +205,8 @@ function pzt_scaffold_render_topping_card( \WP_Post $post, string $sc_var, int $
     $id        = $post->ID;
     $title     = get_the_title( $post );
     $slug      = sanitize_title( $title );
-    $thumb_url = (string) ( get_field( 'topping_image', $id ) ?: get_field( 'topping_layer_image', $id ) ?: get_the_post_thumbnail_url( $id, 'thumbnail' ) );
-    $layer_url = (string) ( get_field( 'topping_layer_image', $id ) ?: $thumb_url );
+    $thumb_url = (string) ( pzl_get_field( 'topping_image', $id ) ?: pzl_get_field( 'topping_layer_image', $id ) ?: get_the_post_thumbnail_url( $id, 'thumbnail' ) );
+    $layer_url = (string) ( pzl_get_field( 'topping_layer_image', $id ) ?: $thumb_url );
     $layer_id  = 'pizzalayer-topping-' . $slug;
 
     do_action( 'pizzalayer_before_layer_card', $post, 'toppings' );
@@ -287,7 +287,7 @@ $_topping_data = [];
 foreach ( $toppings as $_tp ) {
     if ( ! ( $_tp instanceof \WP_Post ) ) { continue; }
     $_ts    = sanitize_title( get_the_title( $_tp ) );
-    $_tu    = (string) ( get_field( 'topping_layer_image', $_tp->ID ) ?: get_field( 'topping_image', $_tp->ID ) ?: get_the_post_thumbnail_url( $_tp->ID, 'full' ) );
+    $_tu    = (string) ( pzl_get_field( 'topping_layer_image', $_tp->ID ) ?: pzl_get_field( 'topping_image', $_tp->ID ) ?: get_the_post_thumbnail_url( $_tp->ID, 'full' ) );
     $_topping_data[] = [ 'slug' => $_ts, 'url' => $_tu, 'title' => get_the_title( $_tp ) ];
 }
 // ── Default selections from options ──────────────────────────────────────────
@@ -321,31 +321,45 @@ do_action( 'pizzalayer_before_builder', $instance_id, $template_slug );
 
 <?php
 // ── Instance CSS custom properties via wp_add_inline_style ─────────────────
-$_sc_instance_css  = '#' . esc_attr( $instance_id ) . ' {' . "\n";
-$_sc_instance_css .= '  --sc-accent:      ' . esc_attr( $sc_accent_color )   . ';' . "\n";
-$_sc_instance_css .= '  --sc-bg:          ' . esc_attr( $sc_bg_color )        . ';' . "\n";
-$_sc_instance_css .= '  --sc-text:        ' . esc_attr( $sc_text_color )      . ';' . "\n";
-$_sc_instance_css .= '  --sc-border:      ' . esc_attr( $sc_border_color )    . ';' . "\n";
-$_sc_instance_css .= '  --sc-font:        ' . esc_attr( $sc_font_stack )      . ';' . "\n";
-$_sc_instance_css .= '  --sc-font-size:   ' . esc_attr( $sc_base_font_size )  . ';' . "\n";
-$_sc_instance_css .= '  --sc-card-radius: ' . esc_attr( $sc_card_radius )     . ';' . "\n";
-$_sc_instance_css .= '  --sc-thumb-size:  ' . esc_attr( $sc_thumb_size )      . ';' . "\n";
-$_sc_instance_css .= '  --sc-grid-cols:   ' . esc_attr( $sc_grid_cols_css )   . ';' . "\n";
-$_sc_instance_css .= '  --sc-anim-speed:  ' . esc_attr( $sc_anim_speed )      . ';' . "\n";
+// NOTE: esc_attr() is for HTML attributes, NOT CSS. Running it on values that
+// contain quotes/commas (e.g. the system/serif/mono font stacks) corrupts them
+// into &quot; / &#039; entities, which are invalid inside a <style> block and
+// silently break the font. Use a CSS-context sanitizer that strips only the
+// characters able to terminate a declaration or inject a rule, while keeping
+// quotes, commas and parens that are legal in property values.
+$_sc_css_val = static function ( $v ) {
+	return trim( str_replace( [ '<', '>', '{', '}', ';', '\\' ], '', (string) $v ) );
+};
+$_sc_sel = sanitize_html_class( $instance_id );
+
+$_sc_instance_css  = '#' . $_sc_sel . ' {' . "\n";
+$_sc_instance_css .= '  --sc-accent:      ' . $_sc_css_val( $sc_accent_color )   . ';' . "\n";
+$_sc_instance_css .= '  --sc-bg:          ' . $_sc_css_val( $sc_bg_color )        . ';' . "\n";
+$_sc_instance_css .= '  --sc-text:        ' . $_sc_css_val( $sc_text_color )      . ';' . "\n";
+$_sc_instance_css .= '  --sc-border:      ' . $_sc_css_val( $sc_border_color )    . ';' . "\n";
+$_sc_instance_css .= '  --sc-font:        ' . $_sc_css_val( $sc_font_stack )      . ';' . "\n";
+$_sc_instance_css .= '  --sc-font-size:   ' . $_sc_css_val( $sc_base_font_size )  . ';' . "\n";
+$_sc_instance_css .= '  --sc-card-radius: ' . $_sc_css_val( $sc_card_radius )     . ';' . "\n";
+$_sc_instance_css .= '  --sc-thumb-size:  ' . $_sc_css_val( $sc_thumb_size )      . ';' . "\n";
+$_sc_instance_css .= '  --sc-grid-cols:   ' . $_sc_css_val( $sc_grid_cols_css )   . ';' . "\n";
+$_sc_instance_css .= '  --sc-anim-speed:  ' . $_sc_css_val( $sc_anim_speed )      . ';' . "\n";
 $_sc_instance_css .= '}' . "\n";
 if ( 'yes' !== $sc_show_labels ) {
-	$_sc_instance_css .= '#' . esc_attr( $instance_id ) . ' .sc-card__label { display:none; }' . "\n";
+	$_sc_instance_css .= '#' . $_sc_sel . ' .sc-card__label { display:none; }' . "\n";
 }
 if ( $sc_custom_css ) {
 	$_sc_instance_css .= '/* Custom CSS — Scaffold template */' . "\n";
 	$_sc_instance_css .= wp_strip_all_tags( $sc_custom_css ) . "\n"; // phpcs:ignore — user-entered CSS
 }
-// Attach to the template stylesheet handle; falls back to a noop if not yet enqueued
+// Attach to the template stylesheet handle (enqueued by AssetManager as
+// 'pizzalayer-template-scaffold'); fall back to a scoped <style> tag when that
+// handle is not present (e.g. REST / block-preview contexts).
 if ( wp_style_is( 'pizzalayer-template-scaffold', 'enqueued' ) ) {
 	wp_add_inline_style( 'pizzalayer-template-scaffold', $_sc_instance_css );
 } else {
-	// Template CSS not enqueued yet (e.g. REST/block-preview context) — emit a scoped style
-	echo '<style id="pzl-sc-vars-' . esc_attr( $instance_id ) . '">' . $sc_instance_css_safe = esc_html( $_sc_instance_css ) . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput
+	// $_sc_instance_css is already CSS-context-sanitized above; do NOT esc_html
+	// it — that would re-encode quotes inside the stylesheet and break fonts.
+	echo '<style id="pzl-sc-vars-' . esc_attr( $_sc_sel ) . '">' . "\n" . $_sc_instance_css . '</style>' . "\n"; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped
 }
 unset( $_sc_instance_css );
 ?>

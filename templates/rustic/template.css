@@ -28,8 +28,8 @@
     /* Text */
     --rp-text:          #2c1a05;           /* dark espresso */
     --rp-text-mid:      #5c3d1a;           /* warm brown */
-    --rp-text-muted:    #9a7a56;           /* aged ink */
-    --rp-text-faint:    #c5a882;
+    --rp-text-muted:    #7a5c34;           /* aged ink — darkened for AA contrast on cream */
+    --rp-text-faint:    #8a6c44;           /* faint ink — darkened so placeholders stay legible */
 
     /* Typography — serif for headings, system for body */
     --rp-font-serif:    Georgia, 'Times New Roman', Times, serif;
@@ -48,6 +48,7 @@
     --rp-btn-radius:        4px;
     --rp-font-size:         15px;
     --rp-canvas-center:     #d4a574;
+    --rp-stepnav-active:    #b34a00;       /* active step text/number — independent of global accent */
 
     /* Shadows — warm-toned */
     --rp-shadow:        0 4px 20px rgba(60,30,5,0.18);
@@ -407,7 +408,7 @@
 }
 
 .rp-step.active {
-    color:       var(--rp-accent);
+    color:       var(--rp-stepnav-active);
     background:  var(--rp-surface);
 }
 .rp-step.active::after {
@@ -415,7 +416,7 @@
     position:   absolute;
     bottom:     0; left: 0; right: 0;
     height:     3px;
-    background: var(--rp-accent);
+    background: var(--rp-stepnav-active);
 }
 
 .rp-step.rp-step--done:not(.active) { color: var(--rp-green); }
@@ -444,8 +445,8 @@
     transition:      background var(--rp-transition), color var(--rp-transition);
 }
 .rp-step.active .rp-step__num {
-    background: var(--rp-accent);
-    border-color: var(--rp-accent);
+    background: var(--rp-stepnav-active);
+    border-color: var(--rp-stepnav-active);
     color: #fff;
 }
 .rp-step.rp-step--done:not(.active) .rp-step__num {
@@ -864,7 +865,7 @@
     font-size:      12px;
     font-weight:    700;
     font-style:     italic;
-    color:          var(--rp-text-muted);
+    color:          var(--rp-text-mid);
     min-width:      60px;
     padding-top:    4px;
     flex-shrink:    0;
@@ -1194,7 +1195,229 @@
     gap: 10px;
 }
 
-/* 2. Custom checkout bar — Fornaia/Rustic edition */
+/* ══════════════════════════════════════════════════════════════
+   FORNAIA — ADD TO CART CTA & CHECKOUT BAR
+   Styles the PizzaLayerPro checkout bar (checkout-bar.php) for Fornaia.
+   All rules scoped to .pztpro-checkout-bar--rustic so they only affect
+   this template. Colours pull from the Fornaia CSS variables, so they
+   follow the template's Accent / Surface / Text / Button-Style settings.
+   ══════════════════════════════════════════════════════════════ */
 .pztpro-checkout-bar--rustic {
-    margin-top: 14px;
+    margin-top:     14px;
+    display:        flex;
+    flex-direction: column;
+    gap:            14px;
+    padding:        18px 20px 20px;
+    background:     var(--rp-surface, #faf4eb);
+    border-top:     2px solid var(--rp-border, rgba(101,70,30,0.18));
+    border-radius:  0 0 var(--rp-radius-lg, 12px) var(--rp-radius-lg, 12px);
+    box-shadow:     var(--rp-shadow-inner, inset 0 1px 3px rgba(60,30,5,0.10));
+    font-family:    var(--rp-font-body);
+}
+
+/* Hand-torn divider rule above the bar */
+.pztpro-checkout-bar--rustic .pztpro-rustic-bar__divider {
+    height:     2px;
+    margin:     0 0 2px;
+    background: repeating-linear-gradient(
+        90deg,
+        var(--rp-gold-light, #c9a227) 0px,
+        var(--rp-gold-light, #c9a227) 8px,
+        transparent 8px,
+        transparent 16px
+    );
+    opacity:    0.45;
+}
+
+/* ── Bar row (price · quantity · CTA) ────────────────────────── */
+.pztpro-checkout-bar--rustic .pztpro-bar-row {
+    display:     flex;
+    align-items: center;
+    gap:         14px;
+}
+.pztpro-checkout-bar--rustic .pztpro-bar-row__summary {
+    display:        flex;
+    flex-direction: column;
+    line-height:    1.2;
+    flex:           1 1 auto;
+    min-width:      0;
+}
+.pztpro-checkout-bar--rustic .pztpro-bar-row__size-label {
+    font-family:    var(--rp-font-serif);
+    font-size:      12px;
+    font-style:     italic;
+    letter-spacing: 0.03em;
+    color:          var(--rp-text-muted, #7a5c34);
+}
+.pztpro-checkout-bar--rustic .pztpro-bar-row__price {
+    font-family:    var(--rp-font-serif);
+    font-size:      26px;
+    font-weight:    700;
+    font-style:     italic;
+    color:          var(--rp-text, #2c1a05);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Quantity stepper ────────────────────────────────────────── */
+.pztpro-checkout-bar--rustic .pztpro-bar-qty {
+    display:       inline-flex;
+    align-items:   center;
+    border:        1.5px solid var(--rp-border, rgba(101,70,30,0.18));
+    border-radius: var(--rp-btn-radius, 4px);
+    overflow:      hidden;
+    flex-shrink:   0;
+    background:    var(--rp-surface-2, #f0e5d0);
+}
+.pztpro-checkout-bar--rustic .pztpro-qty-btn {
+    width:       36px;
+    height:      36px;
+    border:      none;
+    background:  transparent;
+    color:       var(--rp-text, #2c1a05);
+    font-family: var(--rp-font-serif);
+    font-size:   20px;
+    font-weight: 700;
+    line-height: 1;
+    cursor:      pointer;
+    transition:  background var(--rp-transition, 0.2s ease),
+                 color      var(--rp-transition, 0.2s ease);
+}
+.pztpro-checkout-bar--rustic .pztpro-qty-btn:hover:not(:disabled) {
+    background: var(--rp-accent-dim, rgba(179,74,0,0.10));
+    color:      var(--rp-accent, #b34a00);
+}
+.pztpro-checkout-bar--rustic .pztpro-qty-btn:disabled {
+    opacity: 0.4;
+    cursor:  not-allowed;
+}
+.pztpro-checkout-bar--rustic .pztpro-qty-value {
+    min-width:   34px;
+    text-align:  center;
+    font-family: var(--rp-font-serif);
+    font-size:   15px;
+    font-weight: 700;
+    color:       var(--rp-text, #2c1a05);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Add to Cart CTA — terracotta, hand-crafted ──────────────── */
+.pztpro-checkout-bar--rustic .pztpro-add-to-cart-btn {
+    display:         inline-flex;
+    align-items:     center;
+    justify-content: center;
+    gap:             8px;
+    flex-shrink:     0;
+    padding:         13px 28px;
+    border:          1px solid var(--rp-accent, #b34a00);
+    border-radius:   var(--rp-btn-radius, 4px);
+    background:      var(--rp-accent, #b34a00);
+    color:           #fff;
+    font-family:     var(--rp-font-body);
+    font-size:       13px;
+    font-weight:     700;
+    letter-spacing:  0.08em;
+    text-transform:  uppercase;
+    line-height:     1;
+    cursor:          pointer;
+    box-shadow:      0 3px 12px var(--rp-accent-glow, rgba(179,74,0,0.25));
+    transition:      background  var(--rp-transition, 0.2s ease),
+                     border-color var(--rp-transition, 0.2s ease),
+                     box-shadow  var(--rp-transition, 0.2s ease),
+                     transform   0.1s ease;
+}
+.pztpro-checkout-bar--rustic .pztpro-add-to-cart-btn:hover:not(:disabled) {
+    background:   var(--rp-accent-hover, #8f3a00);
+    border-color: var(--rp-accent-hover, #8f3a00);
+    box-shadow:   0 5px 18px var(--rp-accent-glow, rgba(179,74,0,0.25));
+    transform:    translateY(-1px);
+}
+.pztpro-checkout-bar--rustic .pztpro-add-to-cart-btn:active {
+    transform:  translateY(0) scale(0.99);
+    box-shadow: 0 2px 8px var(--rp-accent-glow, rgba(179,74,0,0.25));
+}
+.pztpro-checkout-bar--rustic .pztpro-add-to-cart-btn:focus-visible {
+    outline:    none;
+    box-shadow: 0 0 0 2px var(--rp-surface, #faf4eb),
+                0 0 0 4px var(--rp-accent, #b34a00);
+}
+.pztpro-checkout-bar--rustic .pztpro-add-to-cart-btn:disabled,
+.pztpro-checkout-bar--rustic .pztpro-add-to-cart-btn.is-loading {
+    opacity:    0.6;
+    cursor:     not-allowed;
+    transform:  none;
+    box-shadow: none;
+}
+.pztpro-checkout-bar--rustic .pztpro-add-to-cart-btn.is-loading {
+    color:    transparent;
+    position: relative;
+}
+.pztpro-checkout-bar--rustic .pztpro-add-to-cart-btn.is-loading::after {
+    content:          '';
+    position:         absolute;
+    width:            18px;
+    height:           18px;
+    border:           2px solid rgba(255,255,255,0.5);
+    border-top-color: #fff;
+    border-radius:    50%;
+    animation:        rp-cta-spin 0.7s linear infinite;
+}
+@keyframes rp-cta-spin { to { transform: rotate(360deg); } }
+.pztpro-checkout-bar--rustic .pztpro-add-to-cart-btn.is-added {
+    background:   var(--rp-green, #4a6741);
+    border-color: var(--rp-green, #4a6741);
+}
+
+/* ── Order notes ─────────────────────────────────────────────── */
+.pztpro-checkout-bar--rustic .pztpro-bar-notes {
+    display:        flex;
+    flex-direction: column;
+    gap:            6px;
+}
+.pztpro-checkout-bar--rustic .pztpro-bar-notes__label {
+    font-family:    var(--rp-font-serif);
+    font-size:      12px;
+    font-weight:    700;
+    font-style:     italic;
+    letter-spacing: 0.02em;
+    color:          var(--rp-text-mid, #5c3d1a);
+}
+.pztpro-checkout-bar--rustic .pztpro-bar-notes__input {
+    width:         100%;
+    padding:       10px 12px;
+    border:        1.5px solid var(--rp-border, rgba(101,70,30,0.18));
+    border-radius: var(--rp-radius-sm, 4px);
+    background:    var(--rp-surface-2, #f0e5d0);
+    color:         var(--rp-text, #2c1a05);
+    font-family:   var(--rp-font-body);
+    font-size:     14px;
+    line-height:   1.45;
+    resize:        vertical;
+    transition:    border-color var(--rp-transition, 0.2s ease),
+                   box-shadow   var(--rp-transition, 0.2s ease);
+}
+.pztpro-checkout-bar--rustic .pztpro-bar-notes__input::placeholder {
+    color:      var(--rp-text-muted, #7a5c34);
+    font-style: italic;
+    opacity:    0.85;
+}
+.pztpro-checkout-bar--rustic .pztpro-bar-notes__input:focus {
+    outline:      none;
+    border-color: var(--rp-accent, #b34a00);
+    box-shadow:   0 0 0 3px var(--rp-accent-dim, rgba(179,74,0,0.10));
+}
+
+/* ── Responsive: stack CTA full-width on narrow screens ──────── */
+@media (max-width: 540px) {
+    .pztpro-checkout-bar--rustic .pztpro-bar-row {
+        flex-wrap: wrap;
+        gap:       10px;
+    }
+    .pztpro-checkout-bar--rustic .pztpro-bar-row__summary {
+        width: 100%;
+        flex:  none;
+    }
+    .pztpro-checkout-bar--rustic .pztpro-add-to-cart-btn {
+        flex:            1 1 auto;
+        justify-content: center;
+    }
 }

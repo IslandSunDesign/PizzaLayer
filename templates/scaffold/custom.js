@@ -135,30 +135,43 @@ function initScaffoldInstance( ROOT, cfg ) {
     ROOT.dispatchEvent( new CustomEvent( 'pizzalayer:coverageSet', { detail: { slug: slug, fraction: fraction }, bubbles: true } ) );
   }
 
-  /** Collect current state as a plain object. */
+  /** Collect current state as a plain object.
+   *
+   * Returns the standard PizzaLayerPro shape: `layers` is an ARRAY (so Pro's
+   * frontend-builder getTemplateLayersNow() can read selections — this is what
+   * the working templates such as Command Center return). The per-type map the
+   * summary panel needs is exposed separately as `baseLayers`. Previously this
+   * returned `layers` as an object, which Pro could not read, leaving the
+   * checkout bar reporting "The pizza builder is not ready yet." */
   function getState() {
-    var rawLayers = {};
-    var layers    = [];
+    var baseLayers = {};
+    var layers     = [];
     ROOT.querySelectorAll( '.sc-card--exclusive.sc-card--selected' ).forEach( function( c ) {
       var layerType = c.getAttribute( 'data-layer' );
       var slug      = c.getAttribute( 'data-slug' );
       var title     = c.getAttribute( 'data-title' );
-      rawLayers[ layerType ] = { slug: slug, title: title, img: c.getAttribute( 'data-layer-img' ) };
+      var normType  = layerType === 'slicing' ? 'cut' : layerType;
+      baseLayers[ layerType ] = { slug: slug, title: title, img: c.getAttribute( 'data-layer-img' ) };
       layers.push({
         id:        slug,
         layerId:   slug,
         title:     title || slug,
         layerName: title || slug,
-        type:      layerType === 'slicing' ? 'cut' : layerType,
-        layerType: layerType === 'slicing' ? 'cut' : layerType,
-        fraction:  'Whole',
-        coverage:  'whole'
+        type:      normType,
+        layerType: normType,
+        fraction:  'whole',
+        coverage:  'whole',
+        portion:   '',
+        coverageLabel: 'Whole'
       });
     } );
     ROOT.querySelectorAll( '.sc-card--topping.sc-card--selected' ).forEach( function( c ) {
       var slug     = c.getAttribute( 'data-slug' );
       var title    = c.getAttribute( 'data-title' );
       var coverage = c.getAttribute( 'data-coverage' ) || 'whole';
+      var cov      = window.PizzaLayerCoverage
+        ? window.PizzaLayerCoverage.normalize( coverage )
+        : { portion: '', fraction: 'whole', label: 'Whole' };
       layers.push({
         id:        slug,
         layerId:   slug,
@@ -166,11 +179,22 @@ function initScaffoldInstance( ROOT, cfg ) {
         layerName: title || slug,
         type:      'topping',
         layerType: 'topping',
-        fraction:  coverage,
-        coverage:  coverage
+        /* fraction = generic size (price-grid key); portion = the specific
+           portion the topping sits on (kitchen ticket). */
+        fraction:      cov.fraction,
+        coverage:      coverage,
+        portion:       cov.portion,
+        coverageLabel: cov.label
       });
     } );
-    return { layers: rawLayers, toppings: layers.filter( function(l){ return l.layerType === 'topping'; } ), allLayers: layers };
+    var sizeEl = ROOT.querySelector( '.pztpro-size-radio:checked' );
+    return {
+      instanceId: ROOT.id,
+      layers:     layers,
+      toppings:   layers.filter( function( l ) { return l.layerType === 'topping'; } ),
+      baseLayers: baseLayers,
+      size:       sizeEl ? sizeEl.value : null
+    };
   }
 
   /** Update the summary panel list. */
@@ -183,13 +207,13 @@ function initScaffoldInstance( ROOT, cfg ) {
     var rows  = '';
     var layerLabels = { crust:'Crust', sauce:'Sauce', cheese:'Cheese', drizzle:'Drizzle', slicing:'Slicing' };
 
-    Object.keys( state.layers ).forEach( function( ltype ) {
-      var l = state.layers[ ltype ];
+    Object.keys( state.baseLayers ).forEach( function( ltype ) {
+      var l = state.baseLayers[ ltype ];
       var label = ( layerLabels[ ltype ] || ltype );
       rows += '<li class="sc-summary__row"><span class="sc-summary__layer-type">' + scEscHtml( label ) + '</span><span class="sc-summary__layer-name">' + scEscHtml( l.title ) + '</span></li>';
     } );
     state.toppings.forEach( function( t ) {
-      rows += '<li class="sc-summary__row sc-summary__row--topping"><span class="sc-summary__layer-type">Topping</span><span class="sc-summary__layer-name">' + scEscHtml( t.title ) + '</span><span class="sc-summary__coverage">' + scEscHtml( t.coverage ) + '</span></li>';
+      rows += '<li class="sc-summary__row sc-summary__row--topping"><span class="sc-summary__layer-type">Topping</span><span class="sc-summary__layer-name">' + scEscHtml( t.title ) + '</span><span class="sc-summary__coverage">' + scEscHtml( t.coverageLabel || t.coverage ) + '</span></li>';
     } );
 
     list.innerHTML = rows;
@@ -253,6 +277,7 @@ function initScaffoldInstance( ROOT, cfg ) {
 
   // ── Public API ──────────────────────────────────────────────────────────────
   window[ VAR ] = {
+    instanceId:    ROOT.id,
     activateTab:   activateTab,
     swapBase:      swapBase,
     removeBase:    removeBase,
@@ -289,35 +314,63 @@ function initScaffoldInstance( ROOT, cfg ) {
 
 }
 
+/* PizzaLayerAPI — full surface consumed by PizzaLayerPro's frontend-builder.
+ * Pro discovers state via getState('pztpro-{idx}') (Strategy 1), getInstances()
+ * (Strategy 2), or a bare getState() (Strategy 3). Scaffold's .sc-root id IS
+ * "pztpro-{idx}", so registering each instance under its root id satisfies all
+ * three strategies. Previously scaffold exposed only a thin getState/setState
+ * surface and returned layers as an object, which Pro could not read — leaving
+ * the checkout bar stuck on "The pizza builder is not ready yet." */
+if ( ! window.PizzaLayerAPI || typeof window.PizzaLayerAPI.registerInstance !== 'function' ) {
+  ( function () {
+    var _instances = ( window.PizzaLayerAPI && window.PizzaLayerAPI._instances ) || {};
+    window.PizzaLayerAPI = {
+      _instances:       _instances,
+      registerInstance: function ( id, inst ) { _instances[ id ] = inst; },
+      getInstance:      function ( id ) { return _instances[ id ] || null; },
+      getInstances:     function () { return _instances; },
+      getAllInstances:  function () { return Object.keys( _instances ); },
+      getState: function ( id ) {
+        var inst = ( id && _instances[ id ] ) || ( id && window[ id ] );
+        if ( ! inst ) {
+          /* bare getState(): return the only instance if there is exactly one */
+          var keys = Object.keys( _instances );
+          if ( keys.length === 1 ) { inst = _instances[ keys[0] ]; }
+        }
+        return ( inst && typeof inst.getState === 'function' ) ? inst.getState() : null;
+      },
+      setState: function ( id, newState ) {
+        var inst = _instances[ id ] || window[ id ];
+        if ( inst && typeof inst.setState === 'function' ) { inst.setState( newState ); }
+      }
+    };
+  }() );
+}
+
 /* Boot — initialise every .sc-root[data-sc-cfg] on the page. */
-var _scInstances = {};
-document.querySelectorAll( '.sc-root[data-sc-cfg]' ).forEach( function( rootEl ) {
+document.querySelectorAll( '.sc-root[data-sc-cfg]' ).forEach( function ( rootEl ) {
   try {
     var cfg = JSON.parse( rootEl.getAttribute( 'data-sc-cfg' ) );
     initScaffoldInstance( rootEl, cfg );
-    /* Register instance so PizzaLayerAPI can find it */
+
     var instanceId = rootEl.getAttribute( 'id' ) || ( cfg.varName ? cfg.varName : '' );
-    if ( instanceId && window[ cfg.varName ] ) {
-      _scInstances[ instanceId ] = window[ cfg.varName ];
+    var inst       = cfg.varName ? window[ cfg.varName ] : null;
+    if ( instanceId && inst ) {
+      window.PizzaLayerAPI.registerInstance( instanceId, inst );
+
+      /* Signal readiness so PizzaLayerPro's checkout bar can bind. Fire via
+         jQuery (the event Pro binds) and a DOM CustomEvent for good measure. */
+      if ( window.jQuery ) {
+        window.jQuery( document ).trigger( 'pizzalayer_instance_ready', [ instanceId, inst ] );
+      }
+      try {
+        document.dispatchEvent( new CustomEvent( 'pizzalayer_instance_ready', {
+          detail: { instanceId: instanceId, instance: inst }, bubbles: true
+        } ) );
+      } catch ( _e ) {}
     }
-  } catch(e) {
+  } catch ( e ) {
     // eslint-disable-next-line no-console
     if ( window.console ) { console.warn( 'PizzaLayer Scaffold: config parse error', e ); }
   }
 } );
-
-/* PizzaLayerAPI — standard surface consumed by PizzaLayerPro */
-window.PizzaLayerAPI = window.PizzaLayerAPI || {
-  getState: function ( instanceId ) {
-    /* Try registry first, then window[instanceId] as fallback */
-    var inst = _scInstances[ instanceId ] || window[ instanceId ];
-    return ( inst && typeof inst.getState === 'function' ) ? inst.getState() : null;
-  },
-  getAllInstances: function () {
-    return Object.keys( _scInstances );
-  },
-  setState: function ( instanceId, newState ) {
-    var inst = _scInstances[ instanceId ] || window[ instanceId ];
-    if ( inst && typeof inst.setState === 'function' ) { inst.setState( newState ); }
-  }
-};

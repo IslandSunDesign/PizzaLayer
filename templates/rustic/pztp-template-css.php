@@ -25,13 +25,18 @@ function pizzalayer_template_rustic_generated_css(): string {
         'rustic_setting_text_color'          => '--rp-text',
         'rustic_setting_muted_text_color'    => '--rp-text-muted',
         'rustic_setting_stepnav_bg'          => '--rp-bg-dark',
-        'rustic_setting_stepnav_active_color'=> '--rp-accent',  /* overrides accent for step nav */
         'rustic_setting_pizza_canvas_bg'     => '--rp-canvas-center',
     ];
     foreach ( $map as $option => $cssvar ) {
         $val = sanitize_hex_color( $g( $option ) );
         if ( $val ) { $vars[ $cssvar ] = $val; }
     }
+
+    // Step-nav active colour gets its OWN token so it no longer collides with
+    // the global Accent setting (both previously wrote to --rp-accent, which
+    // silently let the step-nav value override the Accent / Terracotta setting).
+    $stepnav_active = sanitize_hex_color( $g( 'rustic_setting_stepnav_active_color' ) );
+    if ( $stepnav_active ) { $vars['--rp-stepnav-active'] = $stepnav_active; }
 
     // Typography
     $serif = $g( 'rustic_setting_font_serif', 'Georgia' );
@@ -118,7 +123,7 @@ function pizzalayer_template_rustic_generated_css(): string {
     // Uppercase buttons
     $uppercase = $g( 'rustic_setting_uppercase_btns', 'yes' );
     if ( $uppercase !== 'yes' ) {
-        $css .= '.rp-btn{text-transform:none!important;letter-spacing:0!important;}';
+        $css .= '.rp-btn,.pztpro-checkout-bar--rustic .pztpro-add-to-cart-btn{text-transform:none!important;letter-spacing:0.01em!important;}';
     }
 
     // Apply font-size to root element

@@ -315,7 +315,7 @@
                 _updateToppingCount: function () {
                     var self = this;
                     var n    = Object.keys(self.state.toppings).length;
-                    self.$root.find('#' + instanceId + '-cq-count, #' + instanceId + '-ld-count, #' + instanceId + '-sd-count, #' + instanceId + '-sp-count').text(n);
+                    self.$root.find('#' + instanceId + '-cq-count, #' + instanceId + '-ld-count, #' + instanceId + '-sd-count, #' + instanceId + '-sp-count, #' + instanceId + '-modal-count').text(n);
                     self._updateLayerDeckSel('toppings', n > 0 ? n + ' selected' : null);
                 },
 
@@ -375,22 +375,13 @@
                    LAYOUT 1: CORNER QUAD
                    ═══════════════════════════════════════ */
 
+                /* Corner-quad corners now open the shared modal. cqToggle is kept
+                   as a backward-compatible alias: it resolves the corner's
+                   category and opens that tab in the modal. */
                 cqToggle: function (iid, corner) {
-                    var self   = this;
-                    var $panel = self.$root.find('#' + iid + '-cq-panel-' + corner);
-                    var $btn   = self.$root.find('.pp-cq-corner--' + corner + ' .pp-cq-trigger');
-                    var isOpen = $panel.hasClass('pp-cq-panel--open');
-
-                    // Close all other corners first
-                    self.$root.find('.pp-cq-panel--open').each(function () {
-                        if ($(this).attr('id') !== iid + '-cq-panel-' + corner) {
-                            $(this).removeClass('pp-cq-panel--open').attr('aria-hidden', 'true');
-                            $(this).closest('.pp-cq-corner').find('.pp-cq-trigger').attr('aria-expanded', 'false');
-                        }
-                    });
-
-                    $panel.toggleClass('pp-cq-panel--open', !isOpen).attr('aria-hidden', isOpen ? 'true' : 'false');
-                    $btn.attr('aria-expanded', isOpen ? 'false' : 'true');
+                    var $corner = this.$root.find('.pp-cq-corner--' + corner);
+                    var tab = $corner.attr('data-tab');
+                    if (tab) { this.openModal(iid, tab); }
                 },
 
                 /* ═══════════════════════════════════════
@@ -526,11 +517,14 @@
                         $summ.show();
                     } else {
                         var labelMap = {
-                            crust:'Crust', sauce:'Sauce', cheese:'Cheese',
+                            size:'Size', crust:'Crust', sauce:'Sauce', cheese:'Cheese',
                             toppings:'Toppings', drizzle:'Drizzle', slicing:'Slicing'
                         };
-                        $title.text(labelMap[tab] || tab);
-                        // If this panel exists in modal (overflow tabs), show it
+                        // Prefer the trigger's own label (honours custom Size label) when available.
+                        var $trigger = self.$root.find('.pp-cq-corner[data-tab="' + tab + '"] .pp-cq-trigger__label, .pp-cq-overflow-btn[onclick*="\'' + tab + '\'"] span:last-child').first();
+                        var lbl = ($trigger.length ? $.trim($trigger.text()) : '') || labelMap[tab] || tab;
+                        $title.text(lbl);
+                        // If this panel exists in modal, show it
                         var $panel = self.$root.find('#' + iid + '-modal-panel-' + tab);
                         if ($panel.length) {
                             $panel.show();

@@ -190,6 +190,32 @@ return [
     ],
 
     /* ══════════════════════════════════════════════════════════════════
+       GROUP: Add to Cart (PizzaLayerPro)
+       Controls the checkout-bar CTA rendered by PizzaLayerPro. These have no
+       effect unless PizzaLayerPro is active and WooCommerce is in use. Button
+       styling lives entirely in this template's template.css
+       (.pztpro-checkout-bar--scaffold).
+       ══════════════════════════════════════════════════════════════════ */
+
+    [
+        'key'         => 'scaffold_setting_cta_text',
+        'type'        => 'text',
+        'label'       => 'Add to Cart Button Text',
+        'desc'        => 'Label shown on the Add to Cart button in the checkout bar (PizzaLayerPro). Leave blank to use the default "Add to Cart".',
+        'default'     => '',
+        'placeholder' => 'Add to Cart',
+    ],
+
+    [
+        'key'          => 'scaffold_setting_cta_show_icon',
+        'type'         => 'toggle',
+        'label'        => 'Show Cart Icon',
+        'desc'         => 'Show the cart icon to the left of the Add to Cart label. Disable for a text-only button.',
+        'default'      => 'yes',
+        'toggle_label' => 'Show cart icon on the button',
+    ],
+
+    /* ══════════════════════════════════════════════════════════════════
        GROUP: Developer CSS Override
        ══════════════════════════════════════════════════════════════════ */
 

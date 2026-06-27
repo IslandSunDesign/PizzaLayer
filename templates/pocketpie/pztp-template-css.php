@@ -100,7 +100,7 @@ function pizzalayer_template_pocketpie_generated_css() {
     }
 
     /* ── Per-layout pizza sizes ────────────────────────────────────── */
-    $cq = $px( 'pocketpie_setting_pizza_size_cq', 80, 280 );
+    $cq = $px( 'pocketpie_setting_pizza_size_cq', 120, 480 );
     if ( $cq !== '' ) {
         $css .= '.pp-root.pp-layout--corner-quad .pp-cq-pizza .pp-pizza-stage-wrap{width:' . $cq . ';height:' . $cq . ';}';
     }
@@ -118,12 +118,6 @@ function pizzalayer_template_pocketpie_generated_css() {
     }
 
     /* ── Corner Quad geometry ──────────────────────────────────────── */
-    $cq_panel_w = $len( 'pocketpie_setting_cq_panel_width' );
-    if ( $cq_panel_w !== '' ) { $css .= '.pp-root .pp-cq-panel{width:' . esc_attr( $cq_panel_w ) . ';}'; }
-
-    $cq_panel_h = $px( 'pocketpie_setting_cq_panel_max_height', 120, 400 );
-    if ( $cq_panel_h !== '' ) { $css .= '.pp-root .pp-cq-panel{max-height:' . $cq_panel_h . ';}'; }
-
     $cq_trigger = $len( 'pocketpie_setting_cq_trigger_size' );
     if ( $cq_trigger !== '' ) { $css .= '.pp-root .pp-cq-trigger{width:' . esc_attr( $cq_trigger ) . ';}'; }
 

@@ -46,10 +46,10 @@ return [
         'key'     => 'pocketpie_setting_pizza_size_cq',
         'type'    => 'range',
         'label'   => 'Corner Quad — Pizza Size (px)',
-        'desc'    => 'Diameter of the pizza preview in Corner Quad mode.',
-        'default' => '160',
-        'min'     => '80',
-        'max'     => '280',
+        'desc'    => 'Diameter of the centered pizza preview in Corner Quad mode.',
+        'default' => '300',
+        'min'     => '120',
+        'max'     => '480',
         'step'    => '4',
     ],
 
@@ -152,26 +152,6 @@ return [
             'drizzle'  => 'Drizzle',
             'slicing'  => 'Slicing',
         ],
-    ],
-
-    [
-        'key'         => 'pocketpie_setting_cq_panel_width',
-        'type'        => 'text',
-        'label'       => 'Corner Quad — Panel Width',
-        'desc'        => 'Width of the expanded corner panels. Panels expand inward so keep under half the widget width.',
-        'default'     => '180px',
-        'placeholder' => '180px',
-    ],
-
-    [
-        'key'     => 'pocketpie_setting_cq_panel_max_height',
-        'type'    => 'range',
-        'label'   => 'Corner Quad — Panel Max Height (px)',
-        'desc'    => 'Maximum scrollable height of expanded corner panels.',
-        'default' => '220',
-        'min'     => '120',
-        'max'     => '400',
-        'step'    => '10',
     ],
 
     [

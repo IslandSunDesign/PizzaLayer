@@ -66,15 +66,35 @@ class PizzaBuilder {
 	 * @return string       Image URL or empty string
 	 */
 	public static function get_layer_url( string $type, string $slug ): string {
-		if ( ! function_exists( 'get_field' ) ) { return ''; }
+		$type = self::normalize_layer_type( $type );
+		$slug = sanitize_title( $slug );
+		if ( '' === $type || '' === $slug ) { return ''; }
 		$builder = new self();
 		$id      = $builder->get_id_by_slug( $slug, $type . 's' );
 		if ( ! $id ) { return ''; }
-		$field = $type . '_layer_image';
-		$val   = get_field( $field, $id );
+		$val = pzl_get_field( $type . '_layer_image', $id );
 		// ACF may return an array (when return format = 'array') — unwrap to URL
 		if ( is_array( $val ) ) { $val = $val['url'] ?? ''; }
 		return (string) ( $val ?? '' );
+	}
+
+	/**
+	 * Allowlist + normalize a layer type to its canonical singular form.
+	 * Accepts singular or plural input; returns '' for anything unrecognised
+	 * so callers never build a post-type name from arbitrary input.
+	 */
+	private static function normalize_layer_type( string $type ): string {
+		$type = sanitize_key( $type );
+		$map  = [
+			'crust'    => 'crust',   'crusts'   => 'crust',
+			'sauce'    => 'sauce',   'sauces'   => 'sauce',
+			'cheese'   => 'cheese',  'cheeses'  => 'cheese',
+			'topping'  => 'topping', 'toppings' => 'topping',
+			'drizzle'  => 'drizzle', 'drizzles' => 'drizzle',
+			'cut'      => 'cut',     'cuts'     => 'cut',
+			'size'     => 'size',    'sizes'    => 'size',
+		];
+		return $map[ $type ] ?? '';
 	}
 
 	// ──────────────────────────────────────────────────────────────────────
@@ -104,8 +124,7 @@ class PizzaBuilder {
 	 */
 	private function get_img( string $field, int $id ): string {
 		if ( ! $id ) { return ''; }
-		if ( ! function_exists( 'get_field' ) ) { return ''; }
-		$val = get_field( $field, $id );
+		$val = pzl_get_field( $field, $id );
 		// ACF may return an array (when return format = 'array') — unwrap to URL
 		if ( is_array( $val ) ) { $val = $val['url'] ?? ''; }
 		return (string) ( $val ?? '' );

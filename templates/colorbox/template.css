@@ -37,6 +37,16 @@
 
     --cb-radius:        18px;
     --cb-radius-sm:     12px;
+    --cb-radius-lg:     18px;
+    --cb-radius-pill:   999px;
+
+    /* Motion + small shadow (previously referenced but never defined) */
+    --cb-transition:    0.18s ease;
+    --cb-shadow-sm:     0 4px 12px rgba(16, 24, 40, 0.10);
+    --cb-accent-glow:   rgba(255, 77, 77, 0.30);
+
+    /* Full container panel (wraps preview + builder) */
+    --cb-container-bg:  #f3e2c7;
 }
 
 /* ── Base reset scoped to Colorbox ─────────────────────────── */
@@ -446,6 +456,18 @@
     box-shadow:      0 2px 8px var(--cb-accent-glow);
     pointer-events:  none;
 }
+/* Draw the check as a font glyph so it renders even when Font Awesome
+   isn't loaded (the .fa <i> would otherwise be an empty box). Coloration
+   (accent circle + white check) is preserved. */
+.cb-card__check i { display: none; }
+.cb-card__check::after {
+    content:     "\2713";   /* ✓ */
+    font-family: inherit;
+    font-size:   15px;
+    font-weight: 800;
+    line-height: 1;
+    color:       #fff;
+}
 .cb-card__body  { display: flex; flex-direction: column; gap: 6px; flex: 1; }
 .cb-card__name  { font-size: 13px; font-weight: 600; color: var(--cb-text); line-height: 1.3; }
 .cb-card__actions { display: flex; gap: 6px; flex-wrap: wrap; margin-top: auto; }
@@ -541,6 +563,156 @@
 .cb-cov-ico--q2    { background: linear-gradient(225deg, var(--cb-accent) 50%, var(--cb-surface-3) 50%); }
 .cb-cov-ico--q3    { background: linear-gradient(315deg, var(--cb-accent) 50%, var(--cb-surface-3) 50%); }
 .cb-cov-ico--q4    { background: linear-gradient(45deg,  var(--cb-accent) 50%, var(--cb-surface-3) 50%); }
+
+/* ── Chosen-coverage chip (replaces the inline button row) ──────── */
+.cb-coverage__current {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           7px;
+    width:         100%;
+    padding:       7px 10px;
+    border-radius: var(--cb-radius-sm);
+    border:        1px solid var(--cb-border);
+    background:    var(--cb-surface-2);
+    color:         var(--cb-text);
+    font-size:     12px;
+    font-weight:   600;
+    cursor:        pointer;
+    transition:    border-color var(--cb-transition), background var(--cb-transition), box-shadow var(--cb-transition);
+    outline:       none;
+    text-align:    left;
+}
+.cb-coverage__current:hover {
+    border-color: var(--cb-accent);
+    background:   var(--cb-accent-dim);
+}
+.cb-coverage__current .cb-cov-ico { width: 16px; height: 16px; }
+.cb-coverage__current .cb-cov-ico {
+    display:               grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows:    repeat(2, 1fr);
+    border:                1px solid var(--cb-border);
+    border-radius:         4px;
+    overflow:              hidden;
+    flex-shrink:           0;
+}
+.cb-coverage__current-label { flex: 1; }
+.cb-coverage__caret {
+    width: 0; height: 0;
+    border-left:  4px solid transparent;
+    border-right: 4px solid transparent;
+    border-top:   5px solid var(--cb-text-muted);
+    flex-shrink: 0;
+}
+
+/* ── Coverage picker modal ──────────────────────────────────────── */
+.cb-cov-modal {
+    position: fixed;
+    inset:    0;
+    z-index:  100000;
+    display:  none;
+    align-items:     center;
+    justify-content: center;
+    padding:  20px;
+}
+.cb-cov-modal.cb-cov-modal--open { display: flex; }
+.cb-cov-modal__backdrop {
+    position: absolute;
+    inset:    0;
+    background: rgba(16, 24, 40, 0.55);
+    backdrop-filter: blur(2px);
+}
+.cb-cov-modal__dialog {
+    position: relative;
+    z-index:  1;
+    width:    100%;
+    max-width: 360px;
+    background: var(--cb-surface);
+    color:     var(--cb-text);
+    border-radius: var(--cb-radius);
+    box-shadow: 0 24px 60px rgba(16, 24, 40, 0.35);
+    overflow: hidden;
+    animation: cb-cov-pop 0.16s ease;
+}
+@keyframes cb-cov-pop {
+    from { opacity: 0; transform: translateY(8px) scale(0.97); }
+    to   { opacity: 1; transform: none; }
+}
+.cb-cov-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 16px;
+    border-bottom: 1px solid var(--cb-border);
+}
+.cb-cov-modal__title {
+    font-size: 14px;
+    font-weight: 800;
+    text-transform: uppercase;
+    letter-spacing: 0.04em;
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+.cb-cov-modal__title .fa { color: var(--cb-accent); }
+.cb-cov-modal__close {
+    background: transparent;
+    border: 0;
+    font-size: 26px;
+    line-height: 1;
+    color: var(--cb-text-muted);
+    cursor: pointer;
+    padding: 0 4px;
+    transition: color var(--cb-transition);
+}
+.cb-cov-modal__close:hover { color: var(--cb-text); }
+.cb-cov-modal__grid {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: 8px;
+    padding: 16px;
+}
+.cb-cov-opt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 14px 10px;
+    border-radius: var(--cb-radius-sm);
+    border: 1px solid var(--cb-border);
+    background: var(--cb-surface-2);
+    color: var(--cb-text);
+    font-size: 12px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: all var(--cb-transition);
+    outline: none;
+}
+.cb-cov-opt:hover {
+    border-color: var(--cb-accent);
+    background: var(--cb-accent-dim);
+}
+.cb-cov-opt.active {
+    border-color: var(--cb-accent);
+    background: var(--cb-accent-dim);
+    color: var(--cb-accent);
+    box-shadow: 0 0 0 1px var(--cb-accent);
+}
+.cb-cov-opt .cb-cov-ico {
+    width: 34px;
+    height: 34px;
+    display: grid;
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    border: 1px solid var(--cb-border);
+    border-radius: 6px;
+    overflow: hidden;
+}
+.cb-cov-opt__label { text-align: center; line-height: 1.2; }
+
+@media (max-width: 380px) {
+    .cb-cov-modal__grid { grid-template-columns: 1fr; }
+}
 
 /* ══════════════════════════════════════════════════════════════
    YOUR PIZZA SUMMARY
@@ -875,7 +1047,6 @@
 /* Overall surface: warm / bright */
 .cb-root {
     --cb-surface: #ffffff;
-    --cb-wood: #f3e2c7;
     --cb-shadow: 0 10px 24px rgba(0,0,0,.10);
     --cb-radius-lg: 18px;
 
@@ -887,11 +1058,17 @@
     --cb-c-slice:  #4A90E2;
 }
 
-/* Make the right column feel like a clean “app card” on wood */
+/* Make the right column feel like a clean “app card” on the container panel */
 .cb-layout {
-    background: var(--cb-wood);
+    background: var(--cb-container-bg, #f3e2c7);
     padding: 18px;
     border-radius: var(--cb-radius-lg);
+}
+
+/* Outer backdrop ("Background Color") shows as a thin matte frame
+   around the container panel above. */
+.cb-root {
+    padding: 14px;
 }
 
 .cb-layout__row {
@@ -1294,3 +1471,166 @@
     top:      20px;
 }
 
+
+/* ══════════════════════════════════════════════════════════════
+   CHECKOUT BAR (PizzaLayerPro) — Colorbox variant
+   Rendered by PizzaLayerPro's checkout-bar.php (this template's copy).
+   Bright, rounded "order app" bar matching the Colorbox builder.
+   All hook classes/ids are kept so Pro's cart JS still binds.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Full-width wrapper below the builder. The bar lives here (not inside the
+   sticky pizza column) so it is always on screen rather than clipped by the
+   column's max-height/overflow. */
+.cb-action-bar {
+    margin-top: 14px;
+    width:      100%;
+}
+.cb-action-bar:empty { display: none; }   /* no Pro = no empty gap */
+
+.pztpro-checkout-bar--colorbox {
+    margin-top:    0;
+    width:         100%;
+    background:    var(--cb-surface);
+    border:        1px solid var(--cb-border);
+    border-radius: var(--cb-radius);
+    box-shadow:    var(--cb-shadow-sm);
+    padding:       14px 16px;
+    font-family:   var(--cb-font);
+    color:         var(--cb-text);
+    box-sizing:    border-box;
+}
+
+.pztpro-checkout-bar--colorbox .pztpro-bar-row {
+    display:     flex;
+    align-items: center;
+    gap:         10px;
+    flex-wrap:   wrap;
+}
+
+/* Size + price summary */
+.pztpro-checkout-bar--colorbox .pztpro-bar-row__summary {
+    display:        flex;
+    flex-direction: column;
+    gap:            2px;
+    margin-right:   auto;
+    min-width:      0;
+}
+.pztpro-checkout-bar--colorbox .pztpro-bar-row__size-label {
+    font-size:      11px;
+    font-weight:    700;
+    text-transform: uppercase;
+    letter-spacing: 0.06em;
+    color:          var(--cb-text-muted);
+}
+.pztpro-checkout-bar--colorbox .pztpro-bar-row__size-label:empty { display: none; }
+.pztpro-checkout-bar--colorbox .pztpro-bar-row__price {
+    font-size:   20px;
+    font-weight: 900;
+    line-height: 1.1;
+    color:       var(--cb-text);
+}
+.pztpro-checkout-bar--colorbox .pztpro-bar-row__currency { margin-right: 1px; }
+
+/* Quantity stepper */
+.pztpro-checkout-bar--colorbox .pztpro-bar-qty {
+    display:       inline-flex;
+    align-items:   center;
+    gap:           2px;
+    background:    var(--cb-surface-2);
+    border:        1px solid var(--cb-border);
+    border-radius: var(--cb-radius-pill);
+    padding:       3px;
+}
+.pztpro-checkout-bar--colorbox .pztpro-qty-btn {
+    width:         30px;
+    height:        30px;
+    border:        0;
+    border-radius: var(--cb-radius-pill);
+    background:    transparent;
+    color:         var(--cb-text);
+    font-size:     18px;
+    font-weight:   700;
+    line-height:   1;
+    cursor:        pointer;
+    display:       inline-flex;
+    align-items:   center;
+    justify-content: center;
+    transition:    background var(--cb-transition), color var(--cb-transition);
+}
+.pztpro-checkout-bar--colorbox .pztpro-qty-btn:hover:not(:disabled) {
+    background: var(--cb-accent-dim);
+    color:      var(--cb-accent);
+}
+.pztpro-checkout-bar--colorbox .pztpro-qty-btn:disabled {
+    opacity: 0.4;
+    cursor:  default;
+}
+.pztpro-checkout-bar--colorbox .pztpro-qty-value {
+    min-width:   26px;
+    text-align:  center;
+    font-size:   14px;
+    font-weight: 800;
+    color:       var(--cb-text);
+}
+
+/* Add to Cart CTA */
+.pztpro-checkout-bar--colorbox .pztpro-add-to-cart-btn {
+    display:         inline-flex;
+    align-items:     center;
+    justify-content: center;
+    gap:             8px;
+    padding:         11px 22px;
+    border:          1px solid var(--cb-accent);
+    border-radius:   var(--cb-radius-pill);
+    background:      var(--cb-accent);
+    color:           #fff;
+    font-size:       14px;
+    font-weight:     800;
+    letter-spacing:  0.02em;
+    cursor:          pointer;
+    transition:      background var(--cb-transition), box-shadow var(--cb-transition), transform 0.1s;
+    box-shadow:      0 4px 16px var(--cb-accent-glow);
+    outline:         none;
+}
+.pztpro-checkout-bar--colorbox .pztpro-add-to-cart-btn:hover {
+    background: #e64545;
+    box-shadow: 0 6px 22px var(--cb-accent-glow);
+}
+.pztpro-checkout-bar--colorbox .pztpro-add-to-cart-btn:active { transform: scale(0.98); }
+.pztpro-checkout-bar--colorbox .pztpro-add-to-cart-btn:disabled {
+    opacity:    0.55;
+    cursor:     default;
+    box-shadow: none;
+}
+.pztpro-checkout-bar--colorbox .pztpro-bar-row__icon {
+    width:  18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+
+/* Order notes */
+.pztpro-checkout-bar--colorbox .pztpro-bar-notes { margin-top: 10px; }
+.pztpro-checkout-bar--colorbox .pztpro-bar-notes__input {
+    width:         100%;
+    padding:       9px 12px;
+    border:        1px solid var(--cb-border);
+    border-radius: var(--cb-radius-sm);
+    background:    var(--cb-surface-2);
+    color:         var(--cb-text);
+    font-family:   inherit;
+    font-size:     13px;
+    resize:        vertical;
+    min-height:    52px;
+    transition:    border-color var(--cb-transition);
+}
+.pztpro-checkout-bar--colorbox .pztpro-bar-notes__input:focus {
+    outline:      none;
+    border-color: var(--cb-accent);
+}
+
+/* Responsive: stack summary above the controls on narrow screens */
+@media (max-width: 520px) {
+    .pztpro-checkout-bar--colorbox .pztpro-bar-row__summary { width: 100%; margin-right: 0; }
+    .pztpro-checkout-bar--colorbox .pztpro-add-to-cart-btn  { flex: 1 1 auto; }
+}

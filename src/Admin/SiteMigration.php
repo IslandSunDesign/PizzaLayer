@@ -704,6 +704,17 @@ class SiteMigration {
 		$url = isset( $img['url'] ) ? esc_url_raw( (string) $img['url'] ) : '';
 		if ( ! $url ) { return false; }
 
+		// SSRF hardening: only fetch http(s) URLs, and reject loopback/private/
+		// reserved hosts. wp_http_validate_url() blocks those unless a site has
+		// explicitly opted in via the http_request_host_is_external filter.
+		$scheme = strtolower( (string) wp_parse_url( $url, PHP_URL_SCHEME ) );
+		if ( 'http' !== $scheme && 'https' !== $scheme ) {
+			return false;
+		}
+		if ( ! wp_http_validate_url( $url ) ) {
+			return false;
+		}
+
 		// media_handle_sideload requires these helpers.
 		if ( ! function_exists( 'media_handle_sideload' ) ) {
 			require_once ABSPATH . 'wp-admin/includes/media.php';

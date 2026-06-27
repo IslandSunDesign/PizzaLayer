@@ -3,7 +3,7 @@
  * Plugin Name: PizzaLayer
  * Plugin URI:  https://pizzalayer.com
  * Description: Pizza toppings customizer and visualizer.
- * Version:     1.6.3
+ * Version:     1.13.0
  * Author:      Island Sun Design
  * Author URI:  https://pizzalayer.com
  * Requires at least: 6.2
@@ -27,7 +27,7 @@ spl_autoload_register( function ( $class ) {
 } );
 
 // Constants
-define( 'PIZZALAYER_VERSION',       '1.6.3' );
+define( 'PIZZALAYER_VERSION',       '1.13.0' );
 define( 'PIZZALAYER_PLUGIN_FILE',   __FILE__ );
 define( 'PIZZALAYER_PLUGIN_DIR',    plugin_dir_path( __FILE__ ) );
 define( 'PIZZALAYER_PLUGIN_URL',    plugin_dir_url( __FILE__ ) );
@@ -68,6 +68,48 @@ if ( ! function_exists( 'pz_get_enabled_fractions' ) ) {
 			array_unshift( $saved, 'whole' );
 		}
 		return $saved;
+	}
+}
+
+/**
+ * Safe SCF/ACF field accessor with a raw post-meta fallback.
+ *
+ * When SCF/ACF is active, delegates to get_field() so the configured return
+ * format is preserved. When neither is active, falls back to post meta so the
+ * front-end templates and the [pizza_layer_info] shortcode degrade gracefully
+ * instead of fataling on an undefined get_field(). For image field keys
+ * (those ending in "_image") a stored attachment ID is resolved to its URL,
+ * matching what the layer-image meta box writes.
+ *
+ * @param string $field   Field / meta key.
+ * @param int    $post_id Post ID.
+ * @return mixed          Field value (string|array|int) or '' when unset.
+ */
+if ( ! function_exists( 'pzl_get_field' ) ) {
+	function pzl_get_field( $field, $post_id ) {
+		if ( function_exists( 'get_field' ) ) {
+			return get_field( $field, $post_id );
+		}
+
+		$field = (string) $field;
+		$value = get_post_meta( (int) $post_id, $field, true );
+		if ( '' === $value || null === $value ) {
+			return '';
+		}
+
+		// Image fields store an attachment ID (or an array) — resolve to a URL
+		// so templates that expect a URL string keep working without SCF/ACF.
+		if ( '_image' === substr( $field, -6 ) ) {
+			if ( is_array( $value ) ) {
+				return isset( $value['url'] ) ? (string) $value['url'] : '';
+			}
+			if ( is_numeric( $value ) ) {
+				$url = wp_get_attachment_url( (int) $value );
+				return $url ? $url : '';
+			}
+		}
+
+		return $value;
 	}
 }
 

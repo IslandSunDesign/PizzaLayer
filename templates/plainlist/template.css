@@ -23,6 +23,13 @@
 	--pl-section-gap:    32px;
 	--pl-item-gap:       10px;
 
+	/* List-style + Add-to-Cart button (overridden by saved settings) */
+	--pl-row-pad:        4px;
+	--pl-label-weight:   400;
+	--pl-cart-bg:        #1a1a1a;
+	--pl-cart-fg:        #ffffff;
+	--pl-cart-radius:    4px;
+
 	/* Derived */
 	--pl-accent-10: color-mix(in srgb, var(--pl-accent) 10%, transparent);
 	--pl-accent-20: color-mix(in srgb, var(--pl-accent) 20%, transparent);
@@ -124,7 +131,7 @@
 	align-items: center;
 	gap: 10px;
 	cursor: pointer;
-	padding: 4px 2px;
+	padding: var(--pl-row-pad) 2px;
 	border-radius: 4px;
 	transition: background 0.12s;
 	user-select: none;
@@ -228,10 +235,15 @@
 }
 
 /* ── Item label ───────────────────────────────────────────────────── */
+/* Bind colour directly to the setting (not `inherit`) so theme rules like
+   `.entry-content li`, `label`, or `a` can't bleed a light grey in. The
+   hardening block at the foot of this file re-asserts these with the
+   `.pl-root` scope + !important for stubborn themes. */
 .pl-item__label {
 	flex: 1;
 	font-size: var(--pl-base-size);
-	color: inherit;
+	color: var(--pl-item-color);
+	font-weight: var(--pl-label-weight);
 	line-height: 1.4;
 }
 
@@ -637,3 +649,388 @@
     border-top: 2px solid var(--pl-divider, #e0e0e0);
     padding-top: 14px;
 }
+
+/* ══════════════════════════════════════════════════════════════
+   PLAINLIST — COLOUR HARDENING (theme-override guard)
+   ══════════════════════════════════════════════════════════════
+   Many themes colour `.entry-content li`, `label`, and `a` inside post
+   content, which can win on specificity and wash the list out to a faint
+   grey. These rules re-assert the template's own colours, scoped under
+   .pl-root and marked !important so the chosen "Item Text Color" /
+   "Section Header Color" always take effect regardless of the active theme. */
+.pl-root,
+.pl-root .pl-item,
+.pl-root .pl-item__label,
+.pl-root li.pl-item {
+    color: var(--pl-item-color) !important;
+}
+.pl-root .pl-section__title,
+.pl-root .pl-summary__heading,
+.pl-root .pl-summary__item-section {
+    color: var(--pl-heading-color) !important;
+}
+.pl-root .pl-item--selected,
+.pl-root .pl-item--selected .pl-item__label {
+    color: var(--pl-accent) !important;
+}
+/* Items are not links, but guard against theme `a` colour leaking in if a
+   label is ever wrapped or linked by an integration. */
+.pl-root a,
+.pl-root .pl-item__label a {
+    color: inherit;
+    text-decoration: none;
+}
+/* Keep the marker readable: it tracks the item colour until selected. */
+.pl-root .pl-item__check { color: var(--pl-item-color); }
+.pl-root .pl-item--selected .pl-item__check { color: var(--pl-bg); }
+.pl-root--check-bullet .pl-item--selected .pl-item__check,
+.pl-root--check-dash   .pl-item--selected .pl-item__check,
+.pl-root--check-arrow  .pl-item--selected .pl-item__check,
+.pl-root--check-star   .pl-item--selected .pl-item__check {
+    color: var(--pl-accent);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PLAINLIST — LIST ROW STYLES  (Settings → List Row Style)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Bordered — thin divider under each row */
+.pl-root--rows-bordered .pl-item {
+    border-bottom: 1px solid var(--pl-divider);
+    border-radius: 0;
+}
+.pl-root--rows-bordered .pl-list { gap: 0; }
+.pl-root--rows-bordered .pl-item:last-child { border-bottom: none; }
+
+/* Underline — heavier rule under each row */
+.pl-root--rows-underline .pl-item {
+    border-bottom: 2px solid var(--pl-divider);
+    border-radius: 0;
+}
+.pl-root--rows-underline .pl-list { gap: 0; }
+
+/* Striped — zebra background on alternating rows */
+.pl-root--rows-striped .pl-list { gap: 0; }
+.pl-root--rows-striped .pl-item:nth-child(odd) {
+    background: color-mix(in srgb, var(--pl-item-color) 5%, transparent);
+}
+.pl-root--rows-striped .pl-item {
+    padding-left: 10px;
+    padding-right: 10px;
+    border-radius: 4px;
+}
+
+/* Cards — each row in its own bordered box */
+.pl-root--rows-card .pl-item {
+    border: 1px solid var(--pl-divider);
+    border-radius: 6px;
+    padding: calc(var(--pl-row-pad) + 4px) 12px;
+}
+.pl-root--rows-card .pl-item:hover {
+    border-color: var(--pl-accent-20);
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PLAINLIST — SELECTED ITEM STYLES  (Settings → Selected Item Style)
+   ══════════════════════════════════════════════════════════════ */
+
+/* Filled — accent-tinted background highlight on the chosen row */
+.pl-root--sel-filled .pl-item--selected {
+    background: var(--pl-accent-10);
+    border-radius: 4px;
+}
+
+/* Left bar — accent bar on the row's left edge */
+.pl-root--sel-leftbar .pl-item {
+    border-left: 3px solid transparent;
+    padding-left: 8px;
+}
+.pl-root--sel-leftbar .pl-item--selected {
+    border-left-color: var(--pl-accent);
+}
+
+/* Bold only — weight change, no colour shift (override the accent recolour) */
+.pl-root--sel-bold .pl-item--selected,
+.pl-root--sel-bold .pl-item--selected .pl-item__label {
+    color: var(--pl-item-color) !important;
+}
+.pl-root--sel-bold .pl-item--selected .pl-item__label {
+    font-weight: 800;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PLAINLIST — ADD-TO-CART BUTTON & CHECKOUT BAR
+   ══════════════════════════════════════════════════════════════
+   Self-contained styling for the PizzaLayerPro checkout bar so the CTA
+   matches the Plainlist aesthetic without relying on Pro's generic styles.
+   Driven by the template's colour vars + the Add-to-Cart button settings. */
+
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-bar-row {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    flex-wrap: wrap;
+}
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-bar-row__summary {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-bar-row__size-label {
+    font-size: calc(var(--pl-base-size) * 0.9);
+    color: var(--pl-item-color);
+    opacity: 0.75;
+}
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-bar-row__price {
+    font-size: calc(var(--pl-base-size) * 1.25);
+    font-weight: 700;
+    color: var(--pl-heading-color);
+    font-family: var(--pl-font);
+}
+
+/* Quantity stepper */
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-bar-qty {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    border: 1px solid var(--pl-divider);
+    border-radius: var(--pl-cart-radius);
+    padding: 2px;
+    flex-shrink: 0;
+}
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-qty-btn {
+    width: 30px;
+    height: 32px;
+    border: none;
+    background: transparent;
+    color: var(--pl-item-color);
+    font-size: 18px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: calc(var(--pl-cart-radius) - 1px);
+    transition: background 0.15s, color 0.15s;
+}
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-qty-btn:hover:not(:disabled) {
+    background: var(--pl-accent-10);
+    color: var(--pl-accent);
+}
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-qty-btn:disabled {
+    opacity: 0.35;
+    cursor: default;
+}
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-qty-value {
+    min-width: 26px;
+    text-align: center;
+    font-weight: 700;
+    font-size: calc(var(--pl-base-size) * 0.95);
+    color: var(--pl-item-color);
+}
+
+/* ── The CTA button ─────────────────────────────────────────────── */
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-bar-row__btn,
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-add-to-cart-btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    flex: 0 0 auto;
+    font-family: var(--pl-font);
+    font-weight: 700;
+    line-height: 1.2;
+    cursor: pointer;
+    border-radius: var(--pl-cart-radius);
+    border: 2px solid var(--pl-cart-bg);
+    background: var(--pl-cart-bg);
+    color: var(--pl-cart-fg);
+    transition: background 0.16s, color 0.16s, border-color 0.16s, opacity 0.16s, transform 0.05s;
+    text-decoration: none;
+}
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-bar-row__btn:hover,
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-add-to-cart-btn:hover {
+    opacity: 0.9;
+}
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-bar-row__btn:active,
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-add-to-cart-btn:active {
+    transform: translateY(1px);
+}
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-bar-row__btn:disabled,
+.pl-root .pztpro-checkout-bar--plainlist .pztpro-add-to-cart-btn:disabled {
+    opacity: 0.45;
+    cursor: default;
+}
+
+/* CTA size variants */
+.pl-root--cartsize-small  .pztpro-checkout-bar--plainlist .pztpro-bar-row__btn { padding: 7px 16px;  font-size: calc(var(--pl-base-size) * 0.9); }
+.pl-root--cartsize-medium .pztpro-checkout-bar--plainlist .pztpro-bar-row__btn { padding: 10px 22px; font-size: var(--pl-base-size); }
+.pl-root--cartsize-large  .pztpro-checkout-bar--plainlist .pztpro-bar-row__btn { padding: 14px 30px; font-size: calc(var(--pl-base-size) * 1.1); }
+
+/* CTA style: Outline — transparent until hover */
+.pl-root--cart-outline .pztpro-checkout-bar--plainlist .pztpro-bar-row__btn,
+.pl-root--cart-outline .pztpro-checkout-bar--plainlist .pztpro-add-to-cart-btn {
+    background: transparent;
+    color: var(--pl-cart-bg);
+    border-color: var(--pl-cart-bg);
+}
+.pl-root--cart-outline .pztpro-checkout-bar--plainlist .pztpro-bar-row__btn:hover,
+.pl-root--cart-outline .pztpro-checkout-bar--plainlist .pztpro-add-to-cart-btn:hover {
+    background: var(--pl-cart-bg);
+    color: var(--pl-cart-fg);
+    opacity: 1;
+}
+
+/* CTA style: Text link — minimal, underlined */
+.pl-root--cart-link .pztpro-checkout-bar--plainlist .pztpro-bar-row__btn,
+.pl-root--cart-link .pztpro-checkout-bar--plainlist .pztpro-add-to-cart-btn {
+    background: transparent;
+    border-color: transparent;
+    color: var(--pl-cart-bg);
+    text-decoration: underline;
+    text-underline-offset: 3px;
+    padding-left: 6px;
+    padding-right: 6px;
+}
+.pl-root--cart-link .pztpro-checkout-bar--plainlist .pztpro-bar-row__btn:hover,
+.pl-root--cart-link .pztpro-checkout-bar--plainlist .pztpro-add-to-cart-btn:hover {
+    color: var(--pl-accent);
+    opacity: 1;
+}
+
+/* Full-width CTA */
+.pl-root--cartfull .pztpro-checkout-bar--plainlist .pztpro-bar-row__btn,
+.pl-root--cartfull .pztpro-checkout-bar--plainlist .pztpro-add-to-cart-btn {
+    flex: 1 1 100%;
+    width: 100%;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   PER-TOPPING COVERAGE — chip + modal picker
+   The chip appears on each selected topping row; tapping it opens a
+   shared modal to choose Whole / Half / Quarter coverage.
+   ══════════════════════════════════════════════════════════════ */
+
+/* Row chip — hidden until the topping is selected */
+.pl-item__coverage {
+    display: none;
+    margin-left: auto;
+    align-items: center;
+    gap: 6px;
+    padding: 3px 10px;
+    border: 1px solid var(--pl-divider);
+    border-radius: 999px;
+    background: var(--pl-bg);
+    color: var(--pl-item-color);
+    font: inherit;
+    font-size: 12px;
+    line-height: 1.4;
+    cursor: pointer;
+    white-space: nowrap;
+    transition: border-color 0.12s, color 0.12s, background 0.12s;
+}
+.pl-item--selected .pl-item__coverage { display: inline-flex; }
+.pl-item__coverage:hover,
+.pl-item__coverage:focus-visible {
+    border-color: var(--pl-accent);
+    color: var(--pl-accent);
+    background: var(--pl-accent-10);
+    outline: none;
+}
+.pl-item__coverage-ico {
+    width: 12px;
+    height: 12px;
+    border-radius: 50%;
+    border: 1px solid currentColor;
+    background: currentColor;
+    flex-shrink: 0;
+}
+
+/* Modal */
+.pl-cov-modal {
+    position: fixed;
+    inset: 0;
+    z-index: 100000;
+    display: none;
+    align-items: center;
+    justify-content: center;
+    padding: 20px;
+}
+.pl-cov-modal--open { display: flex; }
+.pl-cov-modal__backdrop {
+    position: absolute;
+    inset: 0;
+    background: rgba(0, 0, 0, 0.45);
+}
+.pl-cov-modal__dialog {
+    position: relative;
+    z-index: 1;
+    width: min(440px, 100%);
+    background: var(--pl-bg);
+    border-radius: 10px;
+    box-shadow: 0 16px 48px rgba(0, 0, 0, 0.28);
+    overflow: hidden;
+    font-family: var(--pl-font);
+    color: var(--pl-item-color);
+}
+.pl-cov-modal__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 14px 18px;
+    border-bottom: 1px solid var(--pl-divider);
+}
+.pl-cov-modal__title {
+    font-weight: 700;
+    font-size: 16px;
+    color: var(--pl-heading-color);
+}
+.pl-cov-modal__close {
+    border: 0;
+    background: transparent;
+    cursor: pointer;
+    font-size: 24px;
+    line-height: 1;
+    color: var(--pl-item-color);
+    padding: 0 4px;
+}
+.pl-cov-modal__grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(96px, 1fr));
+    gap: 10px;
+    padding: 18px;
+}
+.pl-cov-opt {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 8px;
+    padding: 12px 6px;
+    border: 1px solid var(--pl-divider);
+    border-radius: 8px;
+    background: var(--pl-bg);
+    color: var(--pl-item-color);
+    cursor: pointer;
+    font: inherit;
+    font-size: 12px;
+    transition: border-color 0.12s, background 0.12s;
+}
+.pl-cov-opt:hover { border-color: var(--pl-accent); background: var(--pl-accent-10); }
+.pl-cov-opt--active { border-color: var(--pl-accent); background: var(--pl-accent-20); }
+.pl-cov-opt__label { text-align: center; line-height: 1.3; }
+
+/* Coverage icons — circle with the covered area filled in the accent colour */
+.pl-cov-opt__ico {
+    width: 34px;
+    height: 34px;
+    border-radius: 50%;
+    border: 2px solid var(--pl-accent);
+    box-sizing: border-box;
+    background-color: transparent;
+}
+.pl-cov-opt__ico--whole                { background: var(--pl-accent); }
+.pl-cov-opt__ico--half-left            { background: linear-gradient(to right, var(--pl-accent) 50%, transparent 50%); }
+.pl-cov-opt__ico--half-right           { background: linear-gradient(to left,  var(--pl-accent) 50%, transparent 50%); }
+.pl-cov-opt__ico--quarter-top-left     { background: conic-gradient(from 270deg, var(--pl-accent) 0 90deg, transparent 90deg); }
+.pl-cov-opt__ico--quarter-top-right    { background: conic-gradient(from 0deg,   var(--pl-accent) 0 90deg, transparent 90deg); }
+.pl-cov-opt__ico--quarter-bottom-right { background: conic-gradient(from 90deg,  var(--pl-accent) 0 90deg, transparent 90deg); }
+.pl-cov-opt__ico--quarter-bottom-left  { background: conic-gradient(from 180deg, var(--pl-accent) 0 90deg, transparent 90deg); }

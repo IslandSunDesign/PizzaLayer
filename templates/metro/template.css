@@ -7,8 +7,12 @@
 /* ── Design Tokens ─────────────────────────────────────────── */
 :root {
 	--mt-bg:             #f7f7f5;
+	--mt-ui-bg:          #ffffff;
 	--mt-surface:        #ffffff;
 	--mt-surface-2:      #f0f0ee;
+	--mt-card-bg:        #ffffff;
+	--mt-card-text:      #1a1a1a;
+	--mt-title:          #1a1a1a;
 	--mt-border:         #e4e4e0;
 	--mt-border-hover:   #c8c8c0;
 	--mt-accent:         #e63946;
@@ -46,7 +50,9 @@
 	color:         var(--mt-text);
 	background:    var(--mt-bg);
 	position:      relative;
-	padding-bottom: var(--mt-tray-h);
+	/* Page background frames the UI container on all sides; bottom keeps the
+	   summary-tray clearance. */
+	padding:       16px 16px var(--mt-tray-h);
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -57,7 +63,7 @@
 	flex-direction:  column;
 	align-items:     center;
 	padding:         48px 24px 32px;
-	background:      var(--mt-surface);
+	background:      var(--mt-ui-bg);
 	border-bottom:   1px solid var(--mt-border);
 	position:        relative;
 }
@@ -436,6 +442,7 @@
    ══════════════════════════════════════════════════════════════ */
 .mt-section {
 	padding:       40px 24px 32px;
+	background:    var(--mt-ui-bg);
 	border-bottom: 1px solid var(--mt-border);
 }
 .mt-section:last-of-type {
@@ -473,7 +480,7 @@
 	font-size:   20px;
 	font-weight: 700;
 	line-height: 1.2;
-	color:       var(--mt-text);
+	color:       var(--mt-title);
 }
 
 .mt-section__badge {
@@ -538,7 +545,7 @@
    CARD
    ══════════════════════════════════════════════════════════════ */
 .mt-card {
-	background:    var(--mt-surface);
+	background:    var(--mt-card-bg);
 	border:        2px solid var(--mt-border);
 	border-radius: var(--mt-radius);
 	overflow:      hidden;
@@ -565,7 +572,7 @@
 	width:           100%;
 	height:          var(--mt-card-img-h);
 	overflow:        hidden;
-	background:      var(--mt-surface-2);
+	background:      var(--mt-card-bg);
 }
 .mt-card__img {
 	width:       100%;
@@ -602,7 +609,7 @@
 	width:         100%;
 	font-size:     13px;
 	font-weight:   600;
-	color:         var(--mt-text);
+	color:         var(--mt-card-text);
 	white-space:   nowrap;
 	overflow:      hidden;
 	text-overflow: ellipsis;
@@ -1019,7 +1026,7 @@
 	margin:      0 0 4px;
 	font-size:   22px;
 	font-weight: 700;
-	color:       var(--mt-text);
+	color:       var(--mt-title);
 	text-align:  center;
 	line-height: 1.25;
 	letter-spacing: -0.01em;
@@ -1542,27 +1549,32 @@
 	}
 }
 
-/* ── PizzaLayer Settings — CSS var overrides ──────────────── */
-.mt-root, .np-root {
-    font-family:    var(--pzl-font,      inherit);
-    font-size:      var(--pzl-font-size, inherit);
-    background:     var(--pzl-bg,        inherit);
+/* ── PizzaLayer Settings — CSS var overrides ──────────────────────
+   Optional global --pzl-* tokens may be injected by the plugin to skin
+   the builder. When they are absent (the normal case) every value below
+   must fall back to the template's own token so this block stays a no-op
+   passthrough — NOT `inherit`, which would wipe the template defaults
+   (this previously broke the Page Background, card background, card
+   borders and card padding). */
+.mt-root {
+    font-family:    var(--pzl-font,        var(--mt-font));
+    font-size:      var(--pzl-font-size,   15px);
+    background:     var(--pzl-bg,          var(--mt-bg));
 }
-.mt-card, .np-card, .np-item {
-    background:     var(--pzl-card-bg,     inherit);
-    border-color:   var(--pzl-card-border, inherit);
-    border-radius:  var(--pzl-card-radius, inherit);
-    padding:        var(--pzl-card-pad,    inherit);
-    box-shadow:     var(--pzl-card-shadow, none);
+.mt-card {
+    background:     var(--pzl-card-bg,      var(--mt-card-bg));
+    border-color:   var(--pzl-card-border,  var(--mt-border));
+    border-radius:  var(--pzl-card-radius,  var(--mt-radius));
+    box-shadow:     var(--pzl-card-shadow,  none);
 }
-.mt-card--selected, .np-card--selected, .np-item--selected {
-    border-color:   var(--pzl-selected, inherit) !important;
+.mt-card--selected {
+    border-color:   var(--pzl-selected, var(--mt-accent)) !important;
 }
-.mt-btn--primary, .np-btn--primary {
-    background:     var(--pzl-btn-bg,   inherit);
-    color:          var(--pzl-btn-text, inherit);
-    border-radius:  var(--pzl-btn-radius, inherit);
-    font-weight:    var(--pzl-btn-fw,   inherit);
+.mt-btn--primary {
+    background:     var(--pzl-btn-bg,     var(--mt-accent));
+    color:          var(--pzl-btn-text,   #fff);
+    border-radius:  var(--pzl-btn-radius, var(--mt-radius-sm));
+    font-weight:    var(--pzl-btn-fw,     700);
 }
 .cb-tab--hidden-step { display: none !important; }
 
@@ -1710,10 +1722,191 @@
     opacity:    1 !important;
 }
 
-/* 4. Custom checkout bar — Metro edition: sharp radius, red top border */
+/* ══════════════════════════════════════════════════════════════
+   METRO — ADD TO CART CTA & CHECKOUT BAR
+   Styles the PizzaLayerPro checkout bar (checkout-bar.php) for Metro.
+   All rules scoped to .pztpro-checkout-bar--metro so they only affect
+   this template. Colours pull from the Metro CSS variables, so they
+   follow the template's Accent / Surface / Background settings.
+   ══════════════════════════════════════════════════════════════ */
 .pztpro-checkout-bar--metro {
-    margin-top: 0;
+    margin-top:    0;
+    display:       flex;
+    flex-direction: column;
+    gap:           14px;
+    padding:       18px 20px;
+    background:    var(--mt-surface, #fff);
+    border-top:    3px solid var(--mt-accent, #e63946);
     border-radius: 0 0 var(--mt-radius, 14px) var(--mt-radius, 14px);
+    box-shadow:    var(--mt-shadow-sm, 0 1px 4px rgba(0,0,0,0.07));
+    font-family:   var(--mt-font);
+}
+
+/* ── Order notes ─────────────────────────────────────────────── */
+.pztpro-checkout-bar--metro .pztpro-bar-notes {
+    display:        flex;
+    flex-direction: column;
+    gap:            6px;
+}
+.pztpro-checkout-bar--metro .pztpro-bar-notes__label {
+    font-size:      12px;
+    font-weight:    700;
+    letter-spacing: 0.02em;
+    text-transform: uppercase;
+    color:          var(--mt-text-muted, #8a8a82);
+}
+.pztpro-checkout-bar--metro .pztpro-bar-notes__input {
+    width:         100%;
+    padding:       10px 12px;
+    border:        2px solid var(--mt-border, #e4e4e0);
+    border-radius: var(--mt-radius-sm, 8px);
+    background:    var(--mt-bg, #f7f7f5);
+    color:         var(--mt-text, #1a1a1a);
+    font-family:   inherit;
+    font-size:     14px;
+    line-height:   1.45;
+    resize:        vertical;
+    transition:    border-color var(--mt-transition, 0.18s ease),
+                   box-shadow   var(--mt-transition, 0.18s ease);
+}
+.pztpro-checkout-bar--metro .pztpro-bar-notes__input:focus {
+    outline:      none;
+    border-color: var(--mt-accent, #e63946);
+    box-shadow:   0 0 0 3px var(--mt-accent-dim, rgba(230,57,70,0.10));
+}
+
+/* ── Bar row (price · quantity · CTA) ────────────────────────── */
+.pztpro-checkout-bar--metro .pztpro-bar-row {
+    display:     flex;
+    align-items: center;
+    gap:         14px;
+}
+.pztpro-checkout-bar--metro .pztpro-bar-row__summary {
+    display:        flex;
+    flex-direction: column;
+    line-height:    1.2;
+    flex:           1 1 auto;
+    min-width:      0;
+}
+.pztpro-checkout-bar--metro .pztpro-bar-row__size-label {
+    font-size:      12px;
+    font-weight:    600;
+    text-transform: uppercase;
+    letter-spacing: 0.03em;
+    color:          var(--mt-text-muted, #8a8a82);
+}
+.pztpro-checkout-bar--metro .pztpro-bar-row__price {
+    font-size:   26px;
+    font-weight: 800;
+    color:       var(--mt-text, #1a1a1a);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Quantity stepper ────────────────────────────────────────── */
+.pztpro-checkout-bar--metro .pztpro-bar-qty {
+    display:       inline-flex;
+    align-items:   center;
+    border:        2px solid var(--mt-border, #e4e4e0);
+    border-radius: var(--mt-radius-pill, 999px);
+    overflow:      hidden;
+    flex-shrink:   0;
+}
+.pztpro-checkout-bar--metro .pztpro-qty-btn {
+    width:       38px;
+    height:      38px;
+    border:      none;
+    background:  var(--mt-surface, #fff);
+    color:       var(--mt-text, #1a1a1a);
+    font-size:   20px;
+    font-weight: 700;
+    line-height: 1;
+    cursor:      pointer;
+    transition:  background var(--mt-transition, 0.18s ease),
+                 color      var(--mt-transition, 0.18s ease);
+}
+.pztpro-checkout-bar--metro .pztpro-qty-btn:hover:not(:disabled) {
+    background: var(--mt-accent-dim, rgba(230,57,70,0.10));
+    color:      var(--mt-accent, #e63946);
+}
+.pztpro-checkout-bar--metro .pztpro-qty-btn:disabled {
+    opacity: 0.4;
+    cursor:  not-allowed;
+}
+.pztpro-checkout-bar--metro .pztpro-qty-value {
+    min-width:   32px;
+    text-align:  center;
+    font-size:   15px;
+    font-weight: 700;
+    color:       var(--mt-text, #1a1a1a);
+    font-variant-numeric: tabular-nums;
+}
+
+/* ── Add to Cart CTA ─────────────────────────────────────────── */
+.pztpro-checkout-bar--metro .pztpro-add-to-cart-btn {
+    display:        inline-flex;
+    align-items:    center;
+    justify-content: center;
+    gap:            10px;
+    flex-shrink:    0;
+    padding:        13px 26px;
+    border:         none;
+    border-radius:  var(--mt-radius-pill, 999px);
+    background:     var(--mt-accent, #e63946);
+    color:          #fff;
+    font-family:    inherit;
+    font-size:      15px;
+    font-weight:    700;
+    letter-spacing: 0.01em;
+    line-height:    1;
+    cursor:         pointer;
+    box-shadow:     0 4px 14px var(--mt-accent-dim, rgba(230,57,70,0.10));
+    transition:     background  var(--mt-transition, 0.18s ease),
+                    transform   0.12s ease,
+                    box-shadow  var(--mt-transition, 0.18s ease);
+}
+.pztpro-checkout-bar--metro .pztpro-add-to-cart-btn svg {
+    width:  19px;
+    height: 19px;
+    flex-shrink: 0;
+}
+.pztpro-checkout-bar--metro .pztpro-add-to-cart-btn:hover {
+    background: var(--mt-accent-hover, #c1121f);
+    box-shadow: 0 6px 20px var(--mt-accent-dim, rgba(230,57,70,0.10));
+    transform:  translateY(-1px);
+}
+.pztpro-checkout-bar--metro .pztpro-add-to-cart-btn:active {
+    transform: translateY(0);
+    box-shadow: 0 2px 8px var(--mt-accent-dim, rgba(230,57,70,0.10));
+}
+.pztpro-checkout-bar--metro .pztpro-add-to-cart-btn:focus-visible {
+    outline:     none;
+    box-shadow:  0 0 0 3px var(--mt-surface, #fff),
+                 0 0 0 5px var(--mt-accent, #e63946);
+}
+.pztpro-checkout-bar--metro .pztpro-add-to-cart-btn:disabled,
+.pztpro-checkout-bar--metro .pztpro-add-to-cart-btn.is-loading {
+    opacity:        0.6;
+    cursor:         not-allowed;
+    transform:      none;
+    box-shadow:     none;
+}
+.pztpro-checkout-bar--metro .pztpro-add-to-cart-btn.is-loading {
+    color: transparent;
+    position: relative;
+}
+.pztpro-checkout-bar--metro .pztpro-add-to-cart-btn.is-loading::after {
+    content:       '';
+    position:      absolute;
+    width:         18px;
+    height:        18px;
+    border:        2px solid rgba(255,255,255,0.5);
+    border-top-color: #fff;
+    border-radius: 50%;
+    animation:     mt-cta-spin 0.7s linear infinite;
+}
+@keyframes mt-cta-spin { to { transform: rotate(360deg); } }
+.pztpro-checkout-bar--metro .pztpro-add-to-cart-btn.is-added {
+    background: #2d8a4e;
 }
 
 /* Metro size chips */

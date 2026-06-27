@@ -149,6 +149,59 @@ return [
 		'step'    => 2,
 	],
 
+	// ── List Item Style ──────────────────────────────────────────────
+	[
+		'key'     => 'plainlist_setting_list_style',
+		'type'    => 'select',
+		'label'   => 'List Row Style',
+		'desc'    => 'Visual treatment of each item row in the list.',
+		'default' => 'plain',
+		'options' => [
+			'plain'     => 'Plain — text rows, no boxes',
+			'bordered'  => 'Bordered — thin divider under each row',
+			'striped'   => 'Striped — alternating row background',
+			'card'      => 'Cards — each row in its own bordered box',
+			'underline' => 'Underline — heavier rule under each row',
+		],
+	],
+	[
+		'key'     => 'plainlist_setting_selected_style',
+		'type'    => 'select',
+		'label'   => 'Selected Item Style',
+		'desc'    => 'How a chosen item is emphasised in the list.',
+		'default' => 'accent',
+		'options' => [
+			'accent'  => 'Accent text — colour + bold label (default)',
+			'filled'  => 'Filled — accent background highlight on the row',
+			'leftbar' => 'Left bar — accent bar on the row’s left edge',
+			'bold'    => 'Bold only — weight change, no colour shift',
+		],
+	],
+	[
+		'key'     => 'plainlist_setting_row_padding',
+		'type'    => 'range',
+		'label'   => 'Row Padding (px)',
+		'desc'    => 'Vertical padding inside each item row. Larger values give a roomier, more tappable list.',
+		'default' => '4',
+		'min'     => 0,
+		'max'     => 20,
+		'step'    => 1,
+		'unit'    => 'px',
+	],
+	[
+		'key'     => 'plainlist_setting_label_weight',
+		'type'    => 'select',
+		'label'   => 'Item Label Weight',
+		'desc'    => 'Font weight of the (unselected) item labels.',
+		'default' => '400',
+		'options' => [
+			'400' => 'Normal',
+			'500' => 'Medium',
+			'600' => 'Semibold',
+			'700' => 'Bold',
+		],
+	],
+
 	// ── Spacing & Layout ─────────────────────────────────────────────
 	[
 		'key'     => 'plainlist_setting_max_width',
@@ -300,5 +353,75 @@ return [
 		'desc'        => 'Text for the reset / clear all button.',
 		'default'     => 'Clear all',
 		'placeholder' => 'e.g. Start over',
+	],
+
+	// ── Add-to-Cart Button (PizzaLayerPro) ───────────────────────────
+	// These style the WooCommerce checkout bar that PizzaLayerPro renders
+	// for this template. They have no visible effect unless PizzaLayerPro
+	// + WooCommerce are active.
+	[
+		'key'         => 'plainlist_setting_cart_btn_text',
+		'type'        => 'text',
+		'label'       => 'Add-to-Cart — Button Text',
+		'desc'        => 'CTA label shown on the checkout bar. Requires PizzaLayerPro + WooCommerce.',
+		'default'     => 'Add to Cart',
+		'placeholder' => 'e.g. Add to Order',
+	],
+	[
+		'key'     => 'plainlist_setting_cart_btn_style',
+		'type'    => 'select',
+		'label'   => 'Add-to-Cart — Button Style',
+		'desc'    => 'Overall visual style of the CTA button.',
+		'default' => 'solid',
+		'options' => [
+			'solid'   => 'Solid — filled background',
+			'outline' => 'Outline — border only, fills on hover',
+			'link'    => 'Text link — minimal, underlined',
+		],
+	],
+	[
+		'key'     => 'plainlist_setting_cart_btn_size',
+		'type'    => 'select',
+		'label'   => 'Add-to-Cart — Button Size',
+		'desc'    => 'Padding and font size of the CTA button.',
+		'default' => 'medium',
+		'options' => [
+			'small'  => 'Small',
+			'medium' => 'Medium',
+			'large'  => 'Large',
+		],
+	],
+	[
+		'key'     => 'plainlist_setting_cart_btn_bg',
+		'type'    => 'color',
+		'label'   => 'Add-to-Cart — Button Color',
+		'desc'    => 'Solid background colour (and the border/text colour for the Outline and Text-link styles).',
+		'default' => '#1a1a1a',
+	],
+	[
+		'key'     => 'plainlist_setting_cart_btn_text_color',
+		'type'    => 'color',
+		'label'   => 'Add-to-Cart — Button Text Color',
+		'desc'    => 'Label colour on the Solid button (and the hover-fill text colour for Outline).',
+		'default' => '#ffffff',
+	],
+	[
+		'key'     => 'plainlist_setting_cart_btn_radius',
+		'type'    => 'range',
+		'label'   => 'Add-to-Cart — Corner Radius (px)',
+		'desc'    => 'Roundness of the button corners. 0 = square.',
+		'default' => '4',
+		'min'     => 0,
+		'max'     => 32,
+		'step'    => 1,
+		'unit'    => 'px',
+	],
+	[
+		'key'          => 'plainlist_setting_cart_btn_full_width',
+		'type'         => 'toggle',
+		'label'        => 'Add-to-Cart — Full Width',
+		'desc'         => 'Stretch the CTA button across the full width of the checkout bar.',
+		'default'      => 'no',
+		'toggle_label' => 'Make button full width',
 	],
 ];

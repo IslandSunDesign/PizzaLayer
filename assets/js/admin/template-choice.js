@@ -211,6 +211,78 @@
 				if (inp && def) { inp.value = def; inp.dispatchEvent(new Event('change')); }
 			});
 		});
+
+		// Image picker (uses the WordPress media frame; falls back to manual URL entry)
+		function ptcSetImage(targetId, previewId, url) {
+			var inp = document.getElementById(targetId);
+			if (inp) { inp.value = url; inp.dispatchEvent(new Event('change')); }
+			var prev = previewId ? document.getElementById(previewId) : null;
+			if (prev) {
+				var img = prev.querySelector('img');
+				if (url) {
+					if (img) { img.setAttribute('src', url); }
+					prev.style.display = '';
+				} else {
+					if (img) { img.setAttribute('src', ''); }
+					prev.style.display = 'none';
+				}
+			}
+			var wrap = inp ? inp.closest('.ptc-image-wrap') : null;
+			if (wrap) {
+				var rm = wrap.querySelector('.ptc-image-remove');
+				if (rm) { rm.style.display = url ? '' : 'none'; }
+			}
+		}
+
+		document.querySelectorAll('.ptc-image-choose').forEach(function(btn) {
+			btn.addEventListener('click', function(e) {
+				e.preventDefault();
+				var targetId  = btn.getAttribute('data-target');
+				var previewId = btn.getAttribute('data-preview');
+				// Require the WP media library; if unavailable, focus the URL field.
+				if (typeof wp === 'undefined' || !wp.media) {
+					var manual = document.getElementById(targetId);
+					if (manual) { manual.focus(); }
+					return;
+				}
+				var frame = wp.media({
+					title: 'Select or Upload Background Image',
+					button: { text: 'Use this image' },
+					library: { type: 'image' },
+					multiple: false
+				});
+				frame.on('select', function() {
+					var att = frame.state().get('selection').first().toJSON();
+					var url = (att.sizes && att.sizes.large) ? att.sizes.large.url : att.url;
+					ptcSetImage(targetId, previewId, url || '');
+				});
+				frame.open();
+			});
+		});
+
+		document.querySelectorAll('.ptc-image-remove').forEach(function(btn) {
+			btn.addEventListener('click', function(e) {
+				e.preventDefault();
+				ptcSetImage(btn.getAttribute('data-target'), btn.getAttribute('data-preview'), '');
+			});
+		});
+
+		// Keep preview in sync when a URL is typed/pasted directly
+		document.querySelectorAll('.ptc-image__url').forEach(function(inp) {
+			inp.addEventListener('change', function() {
+				var wrap = inp.closest('.ptc-image-wrap');
+				if (!wrap) { return; }
+				var prev = wrap.querySelector('.ptc-image__preview');
+				var rm   = wrap.querySelector('.ptc-image-remove');
+				var val  = inp.value.trim();
+				if (prev) {
+					var img = prev.querySelector('img');
+					if (val) { if (img) { img.setAttribute('src', val); } prev.style.display = ''; }
+					else { prev.style.display = 'none'; }
+				}
+				if (rm) { rm.style.display = val ? '' : 'none'; }
+			});
+		});
 	});
 
 } )();

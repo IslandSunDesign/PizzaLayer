@@ -193,8 +193,10 @@
 
 .pp-chip--selected .pp-chip__check { display: block; }
 
-.pp-chip__add-btn,
-.pp-chip__remove-btn {
+/* Add control: a full-chip invisible overlay so tapping anywhere on the chip
+   adds the topping. Only present while the chip is unselected (JS hides it on
+   select), so it never sits over the coverage buttons. */
+.pp-chip__add-btn {
     position: absolute;
     inset: 0;
     background: transparent;
@@ -204,22 +206,54 @@
     z-index: 3;
 }
 
+/* Remove control: a small corner badge. Previously this shared the full-chip
+   `inset:0` overlay with the add button, which (a) painted the ✕ on top of the
+   thumbnail and (b) covered the coverage buttons so they couldn't be clicked
+   once a topping was selected. */
+.pp-chip__remove-btn {
+    position: absolute;
+    top: 4px;
+    left: 4px;
+    width: 18px;
+    height: 18px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    border: none;
+    border-radius: 50%;
+    background: var(--pp-accent2);
+    color: #1a1008;
+    font-size: 11px;
+    line-height: 1;
+    cursor: pointer;
+    z-index: 6;
+    transition: background var(--pp-trans), transform var(--pp-trans);
+}
+.pp-chip__remove-btn:hover  { background: var(--pp-accent); transform: scale(1.08); }
+.pp-chip__remove-btn:active { transform: scale(0.94); }
+
 .pp-chip__add-btn:hover  ~ .pp-chip__img,
 .pp-chip__add-btn:focus  ~ .pp-chip__img { opacity: 0.75; }
 
 .pp-chip__add-label,
 .pp-chip__remove-label { display: none; } /* invisible — just triggers JS */
 
-/* Coverage picker (toppings) */
+/* Coverage picker (toppings) — sits in its own stacking context above the
+   add overlay so the buttons are always clickable when a topping is selected. */
 .pp-coverage {
     display: flex;
     flex-wrap: wrap;
     gap: 3px;
     justify-content: center;
     margin-top: 2px;
+    position: relative;
+    z-index: 5;
 }
 
 .pp-cov-btn {
+    position: relative;
+    z-index: 5;
     padding: 2px 5px;
     border: 1px solid var(--pp-border);
     border-radius: 3px;
@@ -265,11 +299,11 @@
     width: 100%;
     /* Maintain a square-ish aspect — pizza in centre */
     aspect-ratio: 1 / 1;
-    max-width: 480px;
+    max-width: 540px;
     margin: 0 auto;
     display: grid;
-    grid-template-columns: 1fr auto 1fr;
-    grid-template-rows: 1fr auto 1fr;
+    grid-template-columns: auto 1fr auto;
+    grid-template-rows: auto 1fr auto;
 }
 
 /* Pizza centred */
@@ -281,40 +315,41 @@
     display: flex;
     flex-direction: column;
     align-items: center;
+    justify-content: center;
     gap: 6px;
     padding: 4px;
 }
 
 .pp-layout--corner-quad .pp-cq-pizza .pp-pizza-stage-wrap {
-    width: 160px;
-    height: 160px;
+    width: 300px;
+    height: 300px;
     aspect-ratio: 1/1;
     flex-shrink: 0;
-    box-shadow: 0 0 40px rgba(255,130,20,0.25), 0 0 0 2px var(--pp-border);
+    box-shadow: 0 0 48px rgba(255,130,20,0.28), 0 0 0 2px var(--pp-border);
 }
 
 .pp-cq-pizza__controls {
     display: flex;
     gap: 8px;
     align-items: center;
+    justify-content: center;
 }
 
-.pp-cq-reset,
-.pp-cq-summary-btn {
+.pp-cq-reset {
     background: var(--pp-bg-3);
     border: 1px solid var(--pp-border);
     color: var(--pp-muted);
     border-radius: var(--pp-radius-sm);
-    width: 30px;
-    height: 30px;
-    font-size: 14px;
+    width: 32px;
+    height: 32px;
+    font-size: 15px;
     display: flex;
     align-items: center;
     justify-content: center;
     cursor: pointer;
     transition: background var(--pp-trans), color var(--pp-trans);
 }
-.pp-cq-reset:hover, .pp-cq-summary-btn:hover { background: var(--pp-accent); color: #1a1008; border-color: var(--pp-accent); }
+.pp-cq-reset:hover { background: var(--pp-accent); color: #1a1008; border-color: var(--pp-accent); }
 
 /* Corners */
 .pp-cq-corner {
@@ -348,10 +383,8 @@
 .pp-cq-corner--bl .pp-cq-trigger { border-radius: 0 var(--pp-radius) 0 0; }
 .pp-cq-corner--br .pp-cq-trigger { border-radius: var(--pp-radius) 0 0 0; }
 
-.pp-cq-trigger:hover,
-.pp-cq-corner .pp-cq-panel--open ~ .pp-cq-trigger { /* can't do sibling before in CSS, handled via JS */ }
 .pp-cq-trigger:hover { background: var(--pp-bg-3); border-color: var(--pp-accent); }
-.pp-cq-trigger[aria-expanded="true"] { background: var(--pp-bg-3); border-color: var(--pp-accent); color: var(--pp-accent); }
+.pp-cq-trigger:active { transform: scale(0.96); }
 
 .pp-cq-trigger__icon { font-size: 20px; line-height: 1; }
 .pp-cq-trigger__label { font-size: 10px; letter-spacing: 0.04em; color: var(--pp-muted); }
@@ -372,87 +405,30 @@
 }
 .pp-cq-trigger__badge:not(:empty) { display: block; }
 
-/* Expand panels — grow inward from each corner */
-.pp-cq-panel {
-    position: absolute;
-    z-index: 20;
-    background: var(--pp-bg-2);
-    border: 1px solid var(--pp-border);
-    width: 180px;
-    max-height: 220px;
-    overflow-y: auto;
-    transform-origin: corner; /* overridden per corner below */
-    transform: scale(0.7);
-    opacity: 0;
-    pointer-events: none;
-    transition: transform var(--pp-trans-spring), opacity var(--pp-trans);
-    box-shadow: var(--pp-shadow);
-    scrollbar-width: thin;
-    scrollbar-color: var(--pp-accent) transparent;
-}
+/* Corner-quad corners now open the shared full-screen modal
+   (see .pp-modal* below) — the old inward-expanding panels were removed. */
 
-.pp-cq-corner--tl .pp-cq-panel {
-    top: 100%; left: 0;
-    transform-origin: top left;
-    border-radius: 0 var(--pp-radius) var(--pp-radius) var(--pp-radius);
-}
-.pp-cq-corner--tr .pp-cq-panel {
-    top: 100%; right: 0;
-    transform-origin: top right;
-    border-radius: var(--pp-radius) 0 var(--pp-radius) var(--pp-radius);
-}
-.pp-cq-corner--bl .pp-cq-panel {
-    bottom: 100%; left: 0;
-    transform-origin: bottom left;
-    border-radius: var(--pp-radius) var(--pp-radius) var(--pp-radius) 0;
-}
-.pp-cq-corner--br .pp-cq-panel {
-    bottom: 100%; right: 0;
-    transform-origin: bottom right;
-    border-radius: var(--pp-radius) var(--pp-radius) 0 var(--pp-radius);
-}
 
-.pp-cq-panel--open {
-    transform: scale(1);
-    opacity: 1;
-    pointer-events: auto;
-}
-
-.pp-cq-panel__inner { padding: 10px; }
-.pp-cq-panel__title {
-    font-size: 11px;
-    text-transform: uppercase;
-    letter-spacing: 0.08em;
-    color: var(--pp-accent);
-    padding-bottom: 6px;
-    border-bottom: 1px solid var(--pp-border);
-    margin-bottom: 6px;
-}
-
-/* Corner-quad chips are more compact */
-.pp-cq-panel .pp-chip { width: calc(50% - 4px); min-width: 60px; padding: 6px 4px; }
-.pp-cq-panel .pp-chip__img { width: 38px; height: 38px; }
-
-.pp-cq-panel__counter {
-    font-size: 11px;
-    color: var(--pp-muted);
-    text-align: center;
-    padding-top: 6px;
-    border-top: 1px solid var(--pp-border);
-    margin-top: 6px;
-}
-
-/* Overflow bar (> 4 tabs) */
+/* Actions row — overflow categories (Size / Drizzle / Slicing) + Review */
 .pp-cq-overflow-bar {
     grid-column: 1 / 4;
     grid-row: 4; /* intentionally outside grid — collapses */
     display: flex;
-    gap: 6px;
-    padding: 6px 8px;
+    align-items: center;
+    gap: 8px;
+    padding: 8px 10px;
     background: var(--pp-bg-2);
     border-top: 1px solid var(--pp-border);
+}
+
+.pp-cq-overflow-bar__cats {
+    display: flex;
+    gap: 6px;
+    flex: 1;
+    min-width: 0;
     overflow-x: auto;
-    justify-content: center;
+    scrollbar-width: thin;
+    scrollbar-color: var(--pp-accent) transparent;
 }
 
 .pp-cq-overflow-btn {
@@ -469,9 +445,34 @@
     font-size: 11px;
     cursor: pointer;
     white-space: nowrap;
+    flex-shrink: 0;
     transition: background var(--pp-trans), border-color var(--pp-trans);
 }
 .pp-cq-overflow-btn:hover { background: var(--pp-accent); color: #1a1008; border-color: var(--pp-accent); }
+
+/* Review — right-aligned, prominent button */
+.pp-cq-review-btn {
+    margin-left: auto;
+    flex-shrink: 0;
+    display: inline-flex;
+    align-items: center;
+    gap: 6px;
+    padding: 9px 18px;
+    background: var(--pp-accent);
+    color: #1a1008;
+    border: 1px solid var(--pp-accent);
+    border-radius: var(--pp-radius-sm);
+    font-family: var(--pp-font);
+    font-weight: 700;
+    font-size: 13px;
+    letter-spacing: 0.02em;
+    cursor: pointer;
+    box-shadow: 0 2px 10px rgba(255,154,26,0.25);
+    transition: background var(--pp-trans), transform 0.12s, box-shadow var(--pp-trans);
+}
+.pp-cq-review-btn:hover { background: #ffb44a; transform: translateY(-1px); box-shadow: 0 4px 16px rgba(255,154,26,0.35); }
+.pp-cq-review-btn:active { transform: scale(0.97); }
+.pp-cq-review-btn__icon { font-size: 15px; line-height: 1; }
 
 /* ═══════════════════════════════════════════════════════════════════════
    LAYOUT 2 — LAYER DECK
@@ -1189,30 +1190,31 @@
 /* ─── Responsive tweaks ───────────────────────────────────────────────── */
 @media (max-width: 340px) {
     .pp-chip { width: calc(50% - 4px); }
-    .pp-cq-trigger { width: 58px; font-size: 9px; }
-    .pp-cq-panel { width: 150px; }
-    .pp-layout--corner-quad .pp-cq-pizza .pp-pizza-stage-wrap { width: 120px; height: 120px; }
+    .pp-cq-trigger { width: 54px; font-size: 9px; }
+    .pp-layout--corner-quad .pp-cq-pizza .pp-pizza-stage-wrap { width: 58vw; height: 58vw; }
 }
 
 /* ── Responsive — standard phone (≤ 600px) ─────────────────────────── */
 @media (max-width: 600px) {
     .pp-root { border-radius: 0; }
     .pp-chips-grid--toppings .pp-chip { width: calc(50% - 4px); }
-    .pp-layout--corner-quad .pp-cq-pizza .pp-pizza-stage-wrap { width: 140px; height: 140px; }
+    .pp-layout--corner-quad .pp-cq-pizza .pp-pizza-stage-wrap {
+        width: min(62vw, 300px);
+        height: min(62vw, 300px);
+    }
 }
 
 /* ══════════════════════════════════════════════════════════════
    POCKETPIE — TABLET RESPONSIVE (341px – 768px)
    ══════════════════════════════════════════════════════════════ */
 @media (min-width: 341px) and (max-width: 768px) {
-    /* Corner quad: bigger central pizza on mid-size devices */
-    .pp-layout--corner-quad .pp-cq-wrap { max-width: 420px; }
+    /* Corner quad: large central pizza on mid-size devices */
+    .pp-layout--corner-quad .pp-cq-wrap { max-width: 500px; }
     .pp-layout--corner-quad .pp-cq-pizza .pp-pizza-stage-wrap {
-        width: 150px;
-        height: 150px;
+        width: min(64vw, 300px);
+        height: min(64vw, 300px);
     }
-    .pp-cq-trigger { width: 68px; }
-    .pp-cq-panel   { width: 170px; }
+    .pp-cq-trigger { width: 66px; }
 
     /* Layer deck: constrain pizza zone height on tablet */
     .pp-ld-pizza-zone { max-height: 260px; }
@@ -1232,12 +1234,11 @@
 
 @media (min-width: 601px) and (max-width: 900px) {
     /* Corner quad wider on tablet — allow more pizza space */
-    .pp-layout--corner-quad .pp-cq-wrap { max-width: 460px; }
+    .pp-layout--corner-quad .pp-cq-wrap { max-width: 540px; }
     .pp-layout--corner-quad .pp-cq-pizza .pp-pizza-stage-wrap {
-        width: 160px;
-        height: 160px;
+        width: 320px;
+        height: 320px;
     }
-    .pp-cq-panel { max-height: 240px; width: 190px; }
 }
 
 /* ══════════════════════════════════════════════════════════════
@@ -1321,4 +1322,157 @@
 /* 2. Custom checkout bar — PocketPie edition */
 .pztpro-checkout-bar--pocketpie {
     margin-top: 10px;
+}
+
+/* 3. Size selector inside the shared modal (moved out of the old size row) */
+.pp-modal__tab-panel--size .pp-chips-grid {
+    gap: 10px;
+    padding: 14px 4px;
+    justify-content: center;
+}
+.pp-modal__tab-panel--size .pp-size-chip {
+    flex: 0 0 auto;
+    padding: 12px 22px;
+    font-size: 15px;
+}
+
+/* 4. Toppings counter shown inside the modal panel */
+.pp-modal__topping-count {
+    font-size: 11px;
+    color: var(--pp-muted);
+    text-align: center;
+    padding: 8px 0 2px;
+    border-top: 1px solid var(--pp-border);
+    margin-top: 6px;
+}
+
+/* ══════════════════════════════════════════════════════════════
+   POCKETPIE — "ADD TO CART" CTA (template-owned styling)
+   Pro renders checkout-bar.php inside .pp-root; all visual styling
+   for the CTA lives here in the template stylesheet.
+   ══════════════════════════════════════════════════════════════ */
+.pp-root .pztpro-checkout-bar--pocketpie {
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+    padding: 12px 14px;
+    background: var(--pp-bg-2);
+    border: 1px solid var(--pp-border);
+    border-radius: var(--pp-radius);
+}
+
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-pp-bar__meta {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: 10px;
+}
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-bar-row__size-label {
+    font-size: 12px;
+    color: var(--pp-muted);
+    text-transform: uppercase;
+    letter-spacing: 0.05em;
+}
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-bar-row__price {
+    font-size: 20px;
+    font-weight: 700;
+    color: var(--pp-accent);
+    font-family: var(--pp-font);
+}
+
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-pp-bar__actions {
+    display: flex;
+    align-items: stretch;
+    gap: 10px;
+}
+
+/* Quantity stepper */
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-bar-qty {
+    display: inline-flex;
+    align-items: center;
+    gap: 2px;
+    background: var(--pp-bg-3);
+    border: 1px solid var(--pp-border);
+    border-radius: var(--pp-radius-sm);
+    padding: 2px;
+    flex-shrink: 0;
+}
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-qty-btn {
+    width: 34px;
+    height: 38px;
+    border: none;
+    background: transparent;
+    color: var(--pp-text);
+    font-size: 20px;
+    line-height: 1;
+    cursor: pointer;
+    border-radius: var(--pp-radius-sm);
+    transition: background var(--pp-trans), color var(--pp-trans);
+}
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-qty-btn:hover:not(:disabled) { background: var(--pp-accent); color: #1a1008; }
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-qty-btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-qty-value {
+    min-width: 28px;
+    text-align: center;
+    font-weight: 700;
+    font-size: 15px;
+    color: var(--pp-text);
+}
+
+/* The CTA itself — prominent amber gradient, full-width */
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-add-to-cart-btn,
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-bar-row__btn {
+    flex: 1 1 auto;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    min-height: 48px;
+    padding: 12px 20px;
+    border: none;
+    border-radius: var(--pp-radius-sm);
+    background: linear-gradient(135deg, var(--pp-accent) 0%, var(--pp-accent2) 100%);
+    color: #1a1008;
+    font-family: var(--pp-font);
+    font-weight: 800;
+    font-size: 15px;
+    letter-spacing: 0.06em;
+    text-transform: uppercase;
+    cursor: pointer;
+    box-shadow: 0 4px 18px rgba(255,130,20,0.35);
+    transition: transform 0.12s ease, box-shadow var(--pp-trans), filter var(--pp-trans);
+}
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-add-to-cart-btn:hover {
+    transform: translateY(-1px);
+    filter: brightness(1.05);
+    box-shadow: 0 6px 24px rgba(255,130,20,0.45);
+}
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-add-to-cart-btn:active { transform: scale(0.98); }
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-add-to-cart-btn:disabled {
+    opacity: 0.55;
+    cursor: not-allowed;
+    box-shadow: none;
+    filter: grayscale(0.3);
+}
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-add-to-cart-btn svg {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+}
+
+/* Order-note input */
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-bar-notes__input {
+    width: 100%;
+    resize: vertical;
+    background: var(--pp-bg-3);
+    border: 1px solid var(--pp-border);
+    border-radius: var(--pp-radius-sm);
+    color: var(--pp-text);
+    font-family: var(--pp-font);
+    font-size: 13px;
+    padding: 8px 10px;
+}
+.pp-root .pztpro-checkout-bar--pocketpie .pztpro-bar-notes__input:focus {
+    outline: none;
+    border-color: var(--pp-accent);
 }

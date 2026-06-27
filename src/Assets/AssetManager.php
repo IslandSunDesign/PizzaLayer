@@ -82,9 +82,9 @@ class AssetManager {
 		$v    = PIZZALAYER_VERSION;
 		$base = PIZZALAYER_ASSETS_URL . 'js/admin/';
 
-		// Shared admin styles + tab widget
+		// Shared admin styles (also a dependency for inline column CSS and the
+		// settings-page stylesheet below).
 		wp_enqueue_style( 'pizzalayer-admin-tabs', PIZZALAYER_ASSETS_URL . 'css/admin-tabs.css', [], $v );
-		wp_enqueue_script( 'pizzalayer-admin-js',  PIZZALAYER_ASSETS_URL . 'js/admin-tabs.js',   [ 'jquery' ], $v, true );
 
 		// Dashboard
 		if ( false !== strpos( $hook, 'pizzalayer_page_pizzalayer' ) || 'toplevel_page_pizzalayer' === $hook ) {
@@ -230,6 +230,7 @@ class AssetManager {
 
 		// Template Choice
 		if ( false !== strpos( $hook, 'pizzalayer-template' ) ) {
+			wp_enqueue_media();
 			wp_enqueue_script(
 				'pizzalayer-template-choice',
 				$base . 'template-choice.js',

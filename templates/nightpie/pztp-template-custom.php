@@ -65,6 +65,12 @@ function pzt_nightpie_inject_css(): void {
 	$sticky       = $g( 'nightpie_setting_sticky_preview', 'yes' ) === 'yes';
 	$accent_glow  = $g( 'nightpie_setting_accent_glow',    'yes' ) === 'yes';
 
+	// Item card border: off by default (transparent). When enabled, use the
+	// chosen colour; selected/hover states keep their own accent borders.
+	$card_border_on = $g( 'nightpie_setting_card_border', 'no' ) === 'yes';
+	$card_border_c  = sanitize_hex_color( $g( 'nightpie_setting_card_border_color', '#2e2e3a' ) ) ?: '#2e2e3a';
+	$card_border    = $card_border_on ? $card_border_c : 'transparent';
+
 	// ── Derive dependent values ─────────────────────────────────────
 	$accent_dim         = np_hex2rgba( $accent, 0.15 );
 	$accent_glow_color  = np_hex2rgba( $accent, 0.35 );
@@ -74,6 +80,11 @@ function pzt_nightpie_inject_css(): void {
 	$radius_lg = (int) round( $radius * 1.5 );
 
 	// ── Build CSS ───────────────────────────────────────────────────
+	// CSS custom properties redefined on .np-root override the :root tokens
+	// for everything inside the builder (proximity wins, regardless of source
+	// order). font-family/font-size are also set directly because template.css
+	// later remaps .np-root font-family/size to --pzl-* tokens; this inline
+	// block is appended AFTER template.css (same handle) so it wins.
 	$css  = ".np-root {";
 	$css .= "--np-accent:" .         esc_attr( $accent )            . ";";
 	$css .= "--np-accent-dim:" .     esc_attr( $accent_dim )        . ";";
@@ -86,17 +97,40 @@ function pzt_nightpie_inject_css(): void {
 	$css .= "--np-radius-sm:" .      $radius_sm . "px;";
 	$css .= "--np-radius:" .         $radius    . "px;";
 	$css .= "--np-radius-lg:" .      $radius_lg . "px;";
+	$css .= "--np-card-border:" .    esc_attr( $card_border )       . ";";
 	$css .= "--np-font:" .           esc_attr( $font_stack )        . ";";
+	// --pzl-font feeds template.css's `.np-root{font-family:var(--pzl-font,...)}`
+	// remap; setting font-family directly as well guarantees the chosen stack
+	// applies regardless of which rule wins the cascade.
+	$css .= "--pzl-font:" .          esc_attr( $font_stack )        . ";";
+	$css .= "font-family:" .         esc_attr( $font_stack )        . ";";
 	$css .= "font-size:" .           $base_size . "px;";
 	$css .= "}";
 
-	// Optional behavioural toggles.
-	if ( ! $sticky ) {
-		$css .= "@media (min-width:900px){.np-root .np-pizza-col{position:static !important;max-height:none !important;}}";
+	// Background Color — template.css applies a hard !important gradient to
+	// .np-root, so a flat-colour override only fires when the user actually
+	// changes this away from the default (keeping the designed gradient by
+	// default). Emitted with !important to beat that gradient.
+	if ( $bg !== '#0e0e12' ) {
+		$css .= ".np-root{background:" . esc_attr( $bg ) . " !important;}";
 	}
+
+	// Sticky preview toggle. The static override beats the desktop sticky rule
+	// (which lives inside a min-width media query) via .np-root specificity,
+	// so it is breakpoint-independent.
+	if ( ! $sticky ) {
+		$css .= ".np-root .np-pizza-col{position:static !important;max-height:none !important;}";
+	}
+
+	// Accent Glow toggle (off = flatter look). Zero the glow token AND clear the
+	// few box-shadows in template.css that use hard-coded rgba accent glows.
 	if ( ! $accent_glow ) {
-		// Suppress glow shadows by zeroing the variable used in box-shadow declarations.
-		$css .= ".np-root { --np-accent-glow: rgba(0,0,0,0); }";
+		$css .= ".np-root{--np-accent-glow:rgba(0,0,0,0);}";
+		$css .= ".np-root .np-pizza-sticky{box-shadow:0 8px 32px rgba(0,0,0,0.50),inset 0 1px 0 rgba(255,255,255,0.04);}";
+		$css .= ".np-root .np-section-nav__btn--next{box-shadow:none;}";
+		$css .= ".np-root .np-size-option:hover,.np-root .np-size-option.pztpro-size-option--active,.np-root .pztpro-size-option--active{box-shadow:0 0 0 1px var(--np-accent,#ff5722);}";
+		$css .= ".pztpro-checkout-bar--nightpie .pztpro-add-to-cart-btn,.pztpro-checkout-bar--nightpie .pztpro-bar-row__btn{box-shadow:none;}";
+		$css .= ".pztpro-checkout-bar--nightpie .pztpro-bar-row__price{text-shadow:none;}";
 	}
 
 	wp_add_inline_style( 'pizzalayer-template-nightpie', $css ); // phpcs:ignore — dynamic CSS vars

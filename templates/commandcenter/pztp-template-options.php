@@ -26,6 +26,13 @@ return [
 		'default' => '#ff5572',
 	],
 	[
+		'key'     => 'commandcenter_setting_cta_color',
+		'type'    => 'color',
+		'label'   => 'Add to Cart Button Color',
+		'desc'    => 'Color of the Add to Cart button and the live price (PizzaLayerPro). Defaults to the accent color.',
+		'default' => '#e94560',
+	],
+	[
 		'key'     => 'commandcenter_setting_step_done_color',
 		'type'    => 'color',
 		'label'   => 'Completed Step Color',
@@ -118,6 +125,14 @@ return [
 		'toggle_label' => 'Show numbered step badges',
 	],
 	[
+		'key'          => 'commandcenter_setting_colorful_tabs',
+		'type'         => 'toggle',
+		'label'        => 'Colorful Step Tabs',
+		'desc'         => 'Give each builder step its own color (size, crust, sauce, cheese, toppings, drizzle, slicing). Turn off to use a single accent color for every step.',
+		'default'      => 'yes',
+		'toggle_label' => 'Use a distinct color per step',
+	],
+	[
 		'key'          => 'commandcenter_setting_show_summary_sidebar',
 		'type'         => 'toggle',
 		'label'        => 'Show Order Summary Sidebar',
@@ -132,5 +147,15 @@ return [
 		'desc'         => 'Adds a subtle glow around the active step and primary buttons. Turn off for a flatter, more conservative look.',
 		'default'      => 'yes',
 		'toggle_label' => 'Enable accent glow',
+	],
+
+	// ── Checkout (PizzaLayerPro) ──────────────────────────────────────
+	[
+		'key'         => 'commandcenter_setting_cta_text',
+		'type'        => 'text',
+		'label'       => 'Add to Cart Button Text',
+		'desc'        => 'Label shown on the Add to Cart button in the checkout bar (PizzaLayerPro). Leave blank to use the default "Add to Cart".',
+		'default'     => '',
+		'placeholder' => 'Add to Cart',
 	],
 ];

@@ -25,8 +25,15 @@ return [
 		'key'     => 'colorbox_setting_bg_color',
 		'type'    => 'color',
 		'label'   => 'Background Color',
-		'desc'    => 'Outer background of the builder container.',
+		'desc'    => 'Outermost backdrop behind the builder — shows as a thin matte frame around the container panel.',
 		'default' => '#f6f7fb',
+	],
+	[
+		'key'     => 'colorbox_setting_container_bg',
+		'type'    => 'color',
+		'label'   => 'Container Background',
+		'desc'    => 'Background of the full builder container — the panel that wraps the pizza preview and the builder tabs.',
+		'default' => '#f3e2c7',
 	],
 	[
 		'key'     => 'colorbox_setting_surface_color',

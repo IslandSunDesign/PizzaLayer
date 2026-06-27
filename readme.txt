@@ -4,7 +4,7 @@ Tags: pizza, restaurant, woocommerce, customizer, builder
 Requires at least: 6.2
 Tested up to: 6.8
 Requires PHP: 7.4
-Stable tag: 1.6.3
+Stable tag: 1.13.0
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -194,6 +194,63 @@ Visit [pizzalayer.com/support](https://pizzalayer.com/support) or use the WordPr
 10. Setup Guide — step-by-step guided walkthrough
 
 == Changelog ==
+
+= 1.13.0 =
+* **Fixed: template card & background settings that appeared to "do nothing."** A dormant global-skin override block in the Metro and Nightpie stylesheets was collapsing card and root styling to `inherit`, overriding each template's own values. This was the shared root cause behind: Metro's **Page Background Color** not applying, Nightpie's **Item Card Border** setting having no effect, and Nightpie's item cards losing their interior padding. All three now work as intended, and selected-card accent borders and idle card backgrounds resolve correctly again.
+* **Metro → new UI Container Background setting.** Colour the builder panel (hero + ingredient sections) as one cohesive surface, separate from the Page Background (which now visibly frames the panel) and the card background.
+* **Metro → new Card Text Color and Section Title Color settings.** Tune the ingredient-name text and the section headings/hero tagline independently.
+* **Metro → roomier framing & uniform cards.** The Page Background now frames the builder, and each card's image area shares the card background so the whole card reads as one colour. Preset colour schemes updated to match.
+
+= 1.12.0 =
+* **Topping coverage now passes the specific portion, not just the fraction.** A half/quarter topping used to lose *which* half or quarter it was on once selected — only the coverage size (Whole/Half/Quarter) survived. A new shared `PizzaLayerCoverage` helper lets every template emit both a generic `fraction` (used for pricing) and the specific `portion` (e.g. "Left Half", "Top-Right Quarter"). Plainlist, Scaffold, and Command Center now pass the portion explicitly; the other templates already carried it. With PizzaLayerPro the specific portion now reaches the cart, order summary, kitchen email, and admin order screen.
+
+= 1.10.0 =
+* Scaffold template (→ 1.1.0): **Add to Cart CTA restyled from the template stylesheet** — the PizzaLayerPro checkout bar (button, price, size label, quantity stepper, and order-note field) is now fully styled for Scaffold instead of relying on Pro's generic styles. The Add to Cart button gets a proper inline-flex layout with icon sizing and hover/active/focus-visible/disabled states, all inheriting the builder's `--sc-*` tokens. New **Add to Cart Button Text** and **Show Cart Icon** settings let you customise the CTA without editing code. Markup/classes are unchanged so Pro's cart bindings keep working.
+* Scaffold: **Fixed Font Family setting silently breaking.** Per-instance CSS custom properties were escaped with `esc_attr()`, which encodes the quotes and commas in the System / Serif / Monospace / Custom font stacks into HTML entities — invalid inside a `<style>` block, so the chosen font never applied. Values are now sanitised for CSS context, and the block-preview fallback no longer double-escapes.
+* Scaffold: **Template Settings audit — all settings verified.** Every Scaffold setting was traced from the options page to the front end and confirmed to take effect; the new option keys were added to uninstall cleanup.
+* Scaffold: **Stylesheet no longer loaded twice.** `pztp-template-css.php` now defers to the canonical `pizzalayer-template-scaffold` handle and only enqueues a fallback copy when that handle is absent.
+
+= 1.9.0 =
+* Plainlist template (→ 1.1.0): **Add to Cart CTA restyled from the template stylesheet** — the PizzaLayerPro checkout bar (button, price, quantity stepper, order note) is now fully styled for Plainlist instead of relying on Pro's generic styles. New Add-to-Cart settings let you set the **button text, style** (solid / outline / text-link), **size**, **background colour, text colour, corner radius,** and a **full-width** toggle. Markup/classes are unchanged so Pro's cart bindings keep working.
+* Plainlist: **Fixed faint, hard-to-read list.** On some themes the item labels rendered as very light grey on white because theme rules for content `li` / `label` / `a` overrode the template. Item, heading, and accent colours are now re-asserted (scoped to the builder) so the **Item Text Color** and **Section Header Color** settings always win.
+* Plainlist: **New list-style settings.** Added **List Row Style** (plain / bordered / striped / cards / underline), **Selected Item Style** (accent text / filled / left bar / bold), **Row Padding**, and **Item Label Weight** so the list display can be tuned without editing CSS.
+* Plainlist: **Template Settings audit — all settings verified.** Every Plainlist setting was traced from the options page to the front end and confirmed to take effect; the new option keys were added to export/import and uninstall cleanup.
+
+= 1.8.0 =
+* Metro template (→ 1.1.0): **Add to Cart CTA restyled from the template stylesheet** — the PizzaLayerPro checkout bar's Add to Cart button, price, quantity stepper and order-note field are now fully styled for Metro: an accent pill button with cart icon and hover/active/focus/disabled/loading/added states, all tracking the Accent Color setting. Markup/classes are unchanged so Pro's cart bindings keep working.
+* Metro: **New "Container Background Image" setting.** You can now set an image behind the whole builder container (layered over the Page Background Color, displayed centered and scaled to cover). Picked via the WordPress media library, with a live preview.
+* Admin: Template Settings gained a reusable **image** field type (media-library picker with preview and manual-URL fallback), available to any template's options.
+* Metro: **Template Settings audit — all settings verified.** Every Metro setting was traced from the options page to the front end and confirmed to take effect; the new setting key was added to uninstall cleanup.
+* Fixed: The Settings page's "Template" quick-jump pill now scrolls to the right card (the target anchor was missing).
+
+= 1.7.1 =
+* NightPie template (→ 1.1.0): **Add to Cart CTA restyled from the template stylesheet** — a gradient neon-orange pill button with cart icon, glowing price, quantity stepper and order-note field, all tracking the Accent Color setting.
+* NightPie: **Step indicator moved below the choices.** The progress dots and the Prev/Next section navigation now render in a footer beneath the options instead of above them.
+* NightPie: **Fixed unreadable size buttons.** The inline size selector (PizzaLayerPro) rendered as light-on-white in some setups; the size options are now correctly dark with light text and an accent-highlighted active state.
+* NightPie: **One-column layout on tablets and below.** The two-column split now engages at ≥1024px; tablet and smaller widths stack with the pizza preview on top and a compact tab bar.
+* NightPie: **Template Settings audit — all settings now take effect.** Background Color and Font Family were previously inert (overridden by other rules) and the Accent Glow toggle only partially applied; all NightPie settings are now verified to affect the front end. NightPie setting keys were also added to uninstall cleanup.
+
+= 1.7.0 =
+* PocketPie template (→ 1.1.0): **Corner Quad redesign.** The four corner triggers and the actions-row buttons now open the shared full-screen modal (with an X close button) instead of small inward-expanding corner panels.
+* PocketPie: **Larger centered pizza** by default (160px → 300px), with the Pizza Size setting range widened to 120–480px and viewport-safe sizing on phones.
+* PocketPie: **Size selector relocated** — the standalone "Choose Pizza Size" row was removed; the size options now open from the Size button in the actions row into the shared modal.
+* PocketPie: **Review button** moved into the actions row, right-aligned and styled as a prominent button.
+* PocketPie: **Add to Cart CTA** restyled from the template stylesheet — a prominent gradient button with quantity stepper, price and order-note styling.
+* PocketPie: Settings audit — removed the two corner-panel settings made obsolete by the modal redesign; all remaining settings verified to take effect.
+
+= 1.6.5 =
+* Reliability: **PizzaLayer no longer requires SCF/ACF to render.** Front-end templates and the `[pizza_layer_info]` shortcode previously called `get_field()` directly, which fataled on sites without Secure Custom Fields / ACF active. All field reads now go through a safe accessor that falls back to post meta (resolving stored attachment IDs to image URLs), so the builder degrades gracefully instead of erroring.
+* Changed: **Layer post types are no longer exposed on the public front end.** The ingredient post types (toppings, cheeses, crusts, etc.) are now `publicly_queryable => false` with no archive and excluded from site search, so they no longer generate stray single pages or pollute search results. They remain fully available through the REST API (`show_in_rest` stays on) for apps and the block editor, exactly as before.
+* Security: **SSRF hardening on site-import image sideloading.** Remote layer-image URLs in an import file are now restricted to http(s) and validated against `wp_http_validate_url()`, blocking fetches to loopback/private/reserved hosts.
+* Security: **Size cap on base64 layer-image uploads.** The layer-image AJAX endpoints now reject oversized decoded payloads (filterable via `pizzalayer_max_layer_image_bytes`) to avoid large memory allocations.
+* Security: **REST layer type allowlisting.** The `/layer-url` endpoint now normalizes the `type` parameter against a fixed allowlist instead of building a post-type name from arbitrary input.
+* Fixed: **Theme custom-template directory standardized to `pzttemplates/`.** Template discovery previously scanned a different folder than the one the documentation and options loader used, so a theme override could be found but have its options file ignored (or vice-versa). All paths now agree on `{theme}/pzttemplates/your-slug/`.
+* Fixed: The Layer Builder Wizard no longer runs `sanitize_text_field()` over the raw meta JSON before decoding it (which could corrupt valid values); decoded values are still individually sanitized against the existing allowlist.
+* Fixed: Removed a stale admin script (`admin-tabs.js`) that posted to AJAX actions which no longer exist.
+* Fixed: Corrected internationalization calls — removed a double-translation on the "None / Plugin default" option and dynamic-variable translation calls on post-type labels (flagged by the WordPress.org i18n checks).
+
+= 1.6.4 =
+* Added: The Template page can now show a per-browser preview next to the saved default. A new `pizzalayer_active_user_template` filter lets a theme report which template the current visitor is previewing; when it differs from the saved default, the page shows a "Previewing (this browser)" pill and marks that card, while still clearly labelling the real saved default. With no theme wiring it up, the page looks and behaves exactly as before.
 
 = 1.6.3 =
 * Security: **REST API rate limiting.** The optional public endpoints (`/render`, `/layer-url`) now enforce a per-IP request limit (default 120 requests/minute, filterable) so they can't be used to flood the server when enabled. Over-limit requests receive a 429.

@@ -33,7 +33,7 @@ class LayerInfoShortcode {
 		if ( ! $post ) { $post = get_page_by_path( $slug, OBJECT, 'pizzalayer_' . $type ); }
 		if ( ! $post ) { return '<!-- [pizza_layer_info] post not found -->'; }
 
-		$value = get_field( $field, $post->ID );
+		$value = pzl_get_field( $field, $post->ID );
 		if ( is_array( $value ) ) { $value = implode( ', ', $value ); }
 
 		return esc_html( (string) $value );

@@ -88,8 +88,8 @@ function pzt_colorbox_exclusive_card( $post, string $layer_type, string $cb_var,
 	$img_field = $layer_type . '_image';
 	$lyr_field = $layer_type . '_layer_image';
 
-	$thumb_url = get_field( $img_field, $id ) ?: get_field( $lyr_field, $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
-	$layer_url = get_field( $lyr_field, $id ) ?: $thumb_url;
+	$thumb_url = pzl_get_field( $img_field, $id ) ?: pzl_get_field( $lyr_field, $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
+	$layer_url = pzl_get_field( $lyr_field, $id ) ?: $thumb_url;
 
 	$js_title  = esc_js( $title );
 	$js_layer  = esc_js( (string) $layer_url );
@@ -132,6 +132,53 @@ function pzt_colorbox_exclusive_card( $post, string $layer_type, string $cb_var,
 endif;
 
 /**
+ * Coverage helpers — shared by the topping card chip and the coverage modal.
+ * The CSS swatch classes are: --whole, --left, --right, --q1..--q4.
+ */
+if ( ! function_exists( 'pzt_colorbox_coverage_icon' ) ) :
+function pzt_colorbox_coverage_icon( string $fraction ): string {
+	$map = [
+		'whole'                => 'whole',
+		'half-left'            => 'left',
+		'half-right'           => 'right',
+		'quarter-top-left'     => 'q1',
+		'quarter-top-right'    => 'q2',
+		'quarter-bottom-left'  => 'q3',
+		'quarter-bottom-right' => 'q4',
+	];
+	return $map[ $fraction ] ?? 'whole';
+}
+endif;
+
+if ( ! function_exists( 'pzt_colorbox_coverage_label' ) ) :
+function pzt_colorbox_coverage_label( string $fraction ): string {
+	$map = [
+		'whole'                => __( 'Whole',        'pizzalayer' ),
+		'half-left'            => __( 'Left Half',    'pizzalayer' ),
+		'half-right'           => __( 'Right Half',   'pizzalayer' ),
+		'quarter-top-left'     => __( 'Top Left',     'pizzalayer' ),
+		'quarter-top-right'    => __( 'Top Right',    'pizzalayer' ),
+		'quarter-bottom-left'  => __( 'Bottom Left',  'pizzalayer' ),
+		'quarter-bottom-right' => __( 'Bottom Right', 'pizzalayer' ),
+	];
+	return $map[ $fraction ] ?? ucfirst( str_replace( '-', ' ', $fraction ) );
+}
+endif;
+
+if ( ! function_exists( 'pzt_colorbox_enabled_coverages' ) ) :
+function pzt_colorbox_enabled_coverages(): array {
+	$all = [ 'whole', 'half-left', 'half-right',
+	         'quarter-top-left', 'quarter-top-right',
+	         'quarter-bottom-left', 'quarter-bottom-right' ];
+	$enabled = function_exists( 'pz_get_enabled_fractions' ) ? pz_get_enabled_fractions() : $all;
+	$out = array_values( array_intersect( $all, (array) $enabled ) );
+	// Guarantee Whole is always present and first (it is the default).
+	$out = array_values( array_unique( array_merge( [ 'whole' ], $out ) ) );
+	return $out;
+}
+endif;
+
+/**
  * Build a topping card (multi-select with coverage picker).
  */
 if ( ! function_exists( 'pzt_colorbox_topping_card' ) ) :
@@ -142,8 +189,8 @@ function pzt_colorbox_topping_card( $post, string $cb_var, int $zindex ): string
 	$slug      = sanitize_title( $title );
 	$layer_id  = 'pizzalayer-topping-' . $slug;
 
-	$thumb_url = get_field( 'topping_image', $id ) ?: get_field( 'topping_layer_image', $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
-	$layer_url = get_field( 'topping_layer_image', $id ) ?: $thumb_url;
+	$thumb_url = pzl_get_field( 'topping_image', $id ) ?: pzl_get_field( 'topping_layer_image', $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
+	$layer_url = pzl_get_field( 'topping_layer_image', $id ) ?: $thumb_url;
 
 	$js_title  = esc_js( $title );
 	$js_slug   = esc_js( $slug );
@@ -172,26 +219,23 @@ function pzt_colorbox_topping_card( $post, string $cb_var, int $zindex ): string
 		</div>
 		<div class="cb-card__body">
 			<span class="cb-card__name"><?php echo esc_html( $title ); ?></span>
+			<?php
+			// Coverage selection is now modal: the card shows only the chosen
+			// coverage as a chip; tapping it opens the per-instance picker.
+			// Default = Whole.
+			$_icon = pzt_colorbox_coverage_icon( 'whole' );
+			$_lbl  = pzt_colorbox_coverage_label( 'whole' );
+			$js_open = "window['{$cb_var}']&&window['{$cb_var}'].openCoverage('" . esc_js( $slug ) . "')";
+			?>
 			<div class="cb-coverage" style="display:none;">
 				<span class="cb-coverage__label"><?php esc_html_e( 'Coverage:', 'pizzalayer' ); ?></span>
-				<div class="cb-coverage__btns">
-					<?php
-					$_all_coverages = [ 'whole' => 'Whole', 'half-left' => 'Left', 'half-right' => 'Right',
-					               'quarter-top-left' => 'Q1', 'quarter-top-right' => 'Q2',
-					               'quarter-bottom-left' => 'Q3', 'quarter-bottom-right' => 'Q4' ];
-					$_enabled_fracs = function_exists( 'pz_get_enabled_fractions' ) ? pz_get_enabled_fractions() : array_keys( $_all_coverages );
-					$coverages      = array_intersect_key( $_all_coverages, array_flip( $_enabled_fracs ) );
-					foreach ( $coverages as $fraction => $label ) :
-						$js_cov = "window['{$cb_var}']&&window['{$cb_var}'].setCoverage('" . esc_js( $slug ) . "','" . esc_js( $fraction ) . "',this)";
-						$ico    = 'cb-cov-ico--' . str_replace( [ 'half-', 'quarter-' ], [ '', '' ], $fraction );
-					?>
-					<button type="button" class="cb-cov-btn" data-fraction="<?php echo esc_attr( $fraction ); ?>"
-					        onclick="<?php echo esc_attr( $js_cov ); ?>">
-						<span class="cb-cov-ico <?php echo esc_attr( $ico ); ?>"></span>
-						<?php echo esc_html( $label ); ?>
-					</button>
-					<?php endforeach; ?>
-				</div>
+				<button type="button" class="cb-coverage__current" data-slug="<?php echo esc_attr( $slug ); ?>"
+				        data-fraction="whole" onclick="<?php echo esc_attr( $js_open ); ?>"
+				        aria-haspopup="dialog">
+					<span class="cb-cov-ico cb-cov-ico--<?php echo esc_attr( $_icon ); ?>"></span>
+					<span class="cb-coverage__current-label"><?php echo esc_html( $_lbl ); ?></span>
+					<span class="cb-coverage__caret" aria-hidden="true"></span>
+				</button>
 			</div>
 		</div>
 		<div class="cb-card__actions">
@@ -305,9 +349,6 @@ $spec_max        = max( 1, (int) get_option( 'pizzalayer_setting_cx_special_inst
 							<span id="<?php echo esc_attr( $instance_id ); ?>-count">0</span> / <?php echo esc_html( (string) $max_toppings ); ?> <?php esc_html_e( 'toppings', 'pizzalayer' ); ?>
 						</span>
 					</div>
-
-					<!-- Action bar: PizzaLayerPro hooks here for WC cart button -->
-					<?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
 				</div>
 			</div>
 
@@ -534,7 +575,40 @@ $spec_max        = max( 1, (int) get_option( 'pizzalayer_setting_cx_special_inst
 		</div><!-- /.cb-layout__row -->
 	</div><!-- /.cb-layout -->
 
+	<!-- Action bar: PizzaLayerPro renders its checkout / Add to Cart bar here when
+	     active. Placed full-width below the builder (rather than inside the
+	     overflow-constrained sticky pizza column, where it could be clipped off
+	     screen) so the Add to Cart CTA is always visible. -->
+	<div class="cb-action-bar">
+		<?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
+	</div>
+
 	<div id="<?php echo esc_attr( $instance_id ); ?>-fly-container" aria-hidden="true"></div>
+
+	<!-- Coverage picker modal (shared by all topping cards in this instance) -->
+	<div class="cb-cov-modal" id="<?php echo esc_attr( $instance_id ); ?>-cov-modal" aria-hidden="true">
+		<div class="cb-cov-modal__backdrop" onclick="window['<?php echo esc_js( $cb_var ); ?>']&&window['<?php echo esc_js( $cb_var ); ?>'].closeCoverage()"></div>
+		<div class="cb-cov-modal__dialog" role="dialog" aria-modal="true" aria-label="<?php esc_attr_e( 'Choose topping coverage', 'pizzalayer' ); ?>">
+			<div class="cb-cov-modal__header">
+				<span class="cb-cov-modal__title"><i class="fa fa-pizza-slice"></i> <?php esc_html_e( 'Choose Coverage', 'pizzalayer' ); ?></span>
+				<button type="button" class="cb-cov-modal__close" aria-label="<?php esc_attr_e( 'Close', 'pizzalayer' ); ?>"
+				        onclick="window['<?php echo esc_js( $cb_var ); ?>']&&window['<?php echo esc_js( $cb_var ); ?>'].closeCoverage()">&times;</button>
+			</div>
+			<div class="cb-cov-modal__grid">
+				<?php foreach ( pzt_colorbox_enabled_coverages() as $fraction ) :
+					$m_ico   = pzt_colorbox_coverage_icon( $fraction );
+					$m_lbl   = pzt_colorbox_coverage_label( $fraction );
+					$js_pick = "window['{$cb_var}']&&window['{$cb_var}'].chooseCoverage('" . esc_js( $fraction ) . "')";
+				?>
+				<button type="button" class="cb-cov-opt" data-fraction="<?php echo esc_attr( $fraction ); ?>"
+				        onclick="<?php echo esc_attr( $js_pick ); ?>">
+					<span class="cb-cov-ico cb-cov-ico--<?php echo esc_attr( $m_ico ); ?>"></span>
+					<span class="cb-cov-opt__label"><?php echo esc_html( $m_lbl ); ?></span>
+				</button>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	</div>
 
 </div><!-- /#<?php echo esc_html( $instance_id ); ?> .cb-root -->
 

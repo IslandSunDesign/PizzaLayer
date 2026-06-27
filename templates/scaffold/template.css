@@ -368,31 +368,137 @@
     display: none !important;
 }
 
-/* 2. Minimal checkout bar — matches Scaffold's token-driven skeleton */
+/* 2. Minimal checkout bar — matches Scaffold's token-driven skeleton.
+      All colours/geometry inherit the builder instance's --sc-* tokens. */
 .pztpro-checkout-bar--scaffold {
     background: var(--sc-bg, transparent);
     border: 1px solid var(--sc-border, #cccccc);
     border-radius: var(--sc-card-radius, 6px);
     padding: 12px 14px;
     margin-top: 10px;
+    font-family: var(--sc-font, inherit);
+    font-size: var(--sc-font-size, 14px);
+    color: var(--sc-text, inherit);
+}
+.pztpro-checkout-bar--scaffold .pztpro-bar-row {
+    width: 100%;
     display: flex;
     align-items: center;
     gap: 10px;
     flex-wrap: wrap;
 }
-.pztpro-checkout-bar--scaffold .pztpro-bar-row {
-    width: 100%;
+.pztpro-checkout-bar--scaffold .pztpro-bar-row__summary {
+    display: flex;
+    align-items: baseline;
+    gap: 8px;
+    flex: 1 1 auto;
+    min-width: 0;
+}
+.pztpro-checkout-bar--scaffold .pztpro-bar-row__size-label {
+    font-size: 0.875em;
+    opacity: 0.7;
 }
 .pztpro-checkout-bar--scaffold .pztpro-bar-row__price {
     font-size: 18px;
     font-weight: 700;
     color: var(--sc-accent, #333);
 }
+
+/* Quantity stepper — token-driven, no decorative flourish */
+.pztpro-checkout-bar--scaffold .pztpro-bar-qty {
+    display: inline-flex;
+    align-items: center;
+    border: 1px solid var(--sc-border, #cccccc);
+    border-radius: var(--sc-card-radius, 4px);
+    overflow: hidden;
+}
+.pztpro-checkout-bar--scaffold .pztpro-qty-btn {
+    font: inherit;
+    line-height: 1;
+    cursor: pointer;
+    background: none;
+    border: none;
+    color: var(--sc-text, inherit);
+    width: 30px;
+    height: 32px;
+    transition: background var(--sc-anim-speed, 200ms);
+}
+.pztpro-checkout-bar--scaffold .pztpro-qty-btn:hover:not(:disabled) {
+    background: var(--sc-border, #eee);
+}
+.pztpro-checkout-bar--scaffold .pztpro-qty-btn:disabled {
+    opacity: 0.4;
+    cursor: default;
+}
+.pztpro-checkout-bar--scaffold .pztpro-qty-value {
+    min-width: 28px;
+    text-align: center;
+    font-size: 0.875em;
+}
+
+/* ── Add to Cart CTA ──────────────────────────────────────────────────────
+   Button styling is kept entirely here in template.css (no inline styles).
+   Customise the look here, or the label/icon from the Scaffold settings page. */
 .pztpro-checkout-bar--scaffold .pztpro-bar-row__btn {
-    font-size: 13px;
-    padding: 0 16px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: 8px;
+    font: inherit;
+    font-size: 0.95em;
+    font-weight: 600;
+    line-height: 1;
+    padding: 0 18px;
     height: 38px;
+    cursor: pointer;
+    border: 1px solid var(--sc-accent, #333);
     border-radius: var(--sc-card-radius, 4px);
     background: var(--sc-accent, #333);
     color: #fff;
+    white-space: nowrap;
+    flex: 0 0 auto;
+    transition: opacity var(--sc-anim-speed, 200ms),
+                background var(--sc-anim-speed, 200ms),
+                transform var(--sc-anim-speed, 200ms);
+}
+.pztpro-checkout-bar--scaffold .pztpro-bar-row__icon {
+    width: 18px;
+    height: 18px;
+    flex-shrink: 0;
+}
+.pztpro-checkout-bar--scaffold .pztpro-bar-row__btn:hover {
+    opacity: 0.9;
+}
+.pztpro-checkout-bar--scaffold .pztpro-bar-row__btn:active {
+    transform: scale(0.98);
+}
+.pztpro-checkout-bar--scaffold .pztpro-bar-row__btn:focus-visible {
+    outline: 2px solid var(--sc-accent, #333);
+    outline-offset: 2px;
+}
+.pztpro-checkout-bar--scaffold .pztpro-bar-row__btn:disabled,
+.pztpro-checkout-bar--scaffold .pztpro-bar-row__btn[aria-disabled="true"] {
+    opacity: 0.5;
+    cursor: default;
+    transform: none;
+}
+
+/* Order notes textarea */
+.pztpro-checkout-bar--scaffold .pztpro-bar-notes {
+    margin-top: 10px;
+}
+.pztpro-checkout-bar--scaffold .pztpro-bar-notes__input {
+    width: 100%;
+    font: inherit;
+    font-size: 0.875em;
+    color: var(--sc-text, inherit);
+    background: var(--sc-bg, transparent);
+    border: 1px solid var(--sc-border, #cccccc);
+    border-radius: var(--sc-card-radius, 4px);
+    padding: 6px 8px;
+    resize: vertical;
+}
+.pztpro-checkout-bar--scaffold .pztpro-bar-notes__input:focus-visible {
+    outline: none;
+    border-color: var(--sc-accent, #333);
 }

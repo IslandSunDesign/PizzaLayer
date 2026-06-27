@@ -175,8 +175,8 @@ function pzt_metro_exclusive_card( $post, string $layer_type, string $mt_var, in
 	$img_field = $layer_type . '_image';
 	$lyr_field = $layer_type . '_layer_image';
 
-	$thumb_url = get_field( $img_field, $id ) ?: get_field( $lyr_field, $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
-	$layer_url = get_field( $lyr_field, $id ) ?: $thumb_url;
+	$thumb_url = pzl_get_field( $img_field, $id ) ?: pzl_get_field( $lyr_field, $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
+	$layer_url = pzl_get_field( $lyr_field, $id ) ?: $thumb_url;
 
 	$js_title  = esc_js( $title );
 	$js_layer  = esc_js( (string) $layer_url );
@@ -231,8 +231,8 @@ function pzt_metro_topping_card( $post, string $mt_var, int $zindex ): string {
 	$slug      = sanitize_title( $title );
 	$layer_id  = 'pizzalayer-topping-' . $slug;
 
-	$thumb_url = get_field( 'topping_image', $id ) ?: get_field( 'topping_layer_image', $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
-	$layer_url = get_field( 'topping_layer_image', $id ) ?: $thumb_url;
+	$thumb_url = pzl_get_field( 'topping_image', $id ) ?: pzl_get_field( 'topping_layer_image', $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
+	$layer_url = pzl_get_field( 'topping_layer_image', $id ) ?: $thumb_url;
 
 	$js_title  = esc_js( $title );
 	$js_slug   = esc_js( $slug );

@@ -24,7 +24,7 @@ class ShortcodeGenerator {
 
 		// Template list
 		$plugin_tpl_dir = PIZZALAYER_TEMPLATES_DIR;
-		$theme_tpl_dir  = get_stylesheet_directory() . '/pizzalayer/';
+		$theme_tpl_dir  = get_stylesheet_directory() . '/pzttemplates/';
 		$templates      = [];
 		foreach ( [ $plugin_tpl_dir, $theme_tpl_dir ] as $dir ) {
 			if ( is_dir( $dir ) ) {

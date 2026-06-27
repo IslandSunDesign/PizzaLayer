@@ -364,7 +364,9 @@ class LayerBuilderWizard {
 		$slug     = isset( $_POST['slug'] )  ? sanitize_title( wp_unslash( $_POST['slug'] ) )  : '';
 		$desc     = isset( $_POST['desc'] )  ? sanitize_textarea_field( wp_unslash( $_POST['desc'] ) ) : '';
 		$image_id = isset( $_POST['image_id'] ) ? absint( $_POST['image_id'] )                 : 0;
-		$meta_raw = isset( $_POST['meta'] )  ? sanitize_text_field( wp_unslash( $_POST['meta'] ) ) : '{}';
+		// Raw JSON — do NOT sanitize_text_field() here (it corrupts valid JSON).
+		// Unslash only; each decoded value is sanitized individually below.
+		$meta_raw = isset( $_POST['meta'] )  ? wp_unslash( $_POST['meta'] ) : '{}'; // phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- decoded + per-value sanitized below
 
 		if ( ! $name || ! $cpt ) {
 			wp_send_json_error( [ 'message' => __( 'Name and layer type are required.', 'pizzalayer' ) ] );
@@ -403,7 +405,7 @@ class LayerBuilderWizard {
 		}
 
 		// Save meta fields
-		$meta = json_decode( $meta_raw, true );
+		$meta = json_decode( is_string( $meta_raw ) ? $meta_raw : '{}', true );
 		if ( is_array( $meta ) ) {
 			$allowed_meta = [ 'calories', 'thickness', 'diameter_inches', 'spice_level',
 				'is_vegetarian', 'is_vegan', 'is_gluten_free', 'is_dairy_free', 'sort_order' ];

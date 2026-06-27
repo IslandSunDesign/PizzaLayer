@@ -535,12 +535,17 @@
                             layerName: sel.title || sel.slug,
                             type:      type === 'slicing' ? 'cut' : type,
                             layerType: type === 'slicing' ? 'cut' : type,
-                            fraction:  'Whole',
-                            coverage:  'whole'
+                            fraction:  'whole',
+                            coverage:  'whole',
+                            portion:   '',
+                            coverageLabel: 'Whole'
                         });
                     }
                 });
                 state.selections.toppings.forEach(function (t) {
+                    var cov = window.PizzaLayerCoverage
+                        ? window.PizzaLayerCoverage.normalize(t.coverage)
+                        : { portion: '', fraction: 'whole', label: 'Whole' };
                     layers.push({
                         id:        t.slug,
                         layerId:   t.slug,
@@ -548,8 +553,12 @@
                         layerName: t.title || t.slug,
                         type:      'topping',
                         layerType: 'topping',
-                        fraction:  t.coverage || 'whole',
-                        coverage:  t.coverage || 'whole'
+                        /* fraction = generic size (price-grid key); portion = the
+                           specific portion the topping sits on (kitchen ticket). */
+                        fraction:      cov.fraction,
+                        coverage:      t.coverage || 'whole',
+                        portion:       cov.portion,
+                        coverageLabel: cov.label
                     });
                 });
                 return {

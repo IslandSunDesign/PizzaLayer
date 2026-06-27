@@ -86,10 +86,10 @@ class PostTypeRegistrar {
 		$post_type = 'pizzalayer_' . $slug;
 
 		$labels = [
-			'name'                  => _x( $plural,          'Post Type General Name', 'pizzalayer' ),
-			'singular_name'         => _x( $singular,        'Post Type Singular Name', 'pizzalayer' ),
-			'menu_name'             => __( $plural,           'pizzalayer' ),
-			'name_admin_bar'        => __( $singular,         'pizzalayer' ),
+			'name'                  => $plural,
+			'singular_name'         => $singular,
+			'menu_name'             => $plural,
+			'name_admin_bar'        => $singular,
 			'archives'              => sprintf( __( '%s List', 'pizzalayer' ), $plural ),
 			'all_items'             => sprintf( __( 'All %s', 'pizzalayer' ), $plural ),
 			'add_new_item'          => sprintf( __( 'Add New %s', 'pizzalayer' ), $singular ),
@@ -106,8 +106,8 @@ class PostTypeRegistrar {
 		];
 
 		$args = [
-			'label'               => __( $singular, 'pizzalayer' ),
-			'description'         => __( $description, 'pizzalayer' ),
+			'label'               => $singular,
+			'description'         => $description,
 			'labels'              => $labels,
 			'supports'            => [ 'title', 'editor', 'thumbnail' ],
 			'taxonomies'          => [ 'category', 'post_tag' ],
@@ -118,13 +118,13 @@ class PostTypeRegistrar {
 			'menu_icon'           => $icon,
 			'menu_position'       => 35,
 			'show_in_admin_bar'   => false,
-			'show_in_nav_menus'   => true,
+			'show_in_nav_menus'   => false,
 			'can_export'          => true,
-			'has_archive'         => true,
-			'exclude_from_search' => false,
-			'publicly_queryable'  => true,
+			'has_archive'         => false,
+			'exclude_from_search' => true,
+			'publicly_queryable'  => false,
 			'capability_type'     => 'page',
-			'show_in_rest'        => true,
+			'show_in_rest'        => true,  // Keep REST access for apps & block editor.
 		];
 
 		/**

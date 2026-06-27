@@ -129,7 +129,8 @@
 				itemEl.setAttribute( 'aria-checked', 'true' );
 				var inp = itemEl.querySelector( '.pl-item__input' );
 				if ( inp ) { inp.checked = true; }
-				state.toppings[ slug ] = { title: title, layerUrl: layerUrl, zindex: zindex };
+				state.toppings[ slug ] = { title: title, layerUrl: layerUrl, zindex: zindex, coverage: 'whole' };
+				plUpdateCoverageChip( itemEl, 'whole' );
 				if ( layerUrl && typeof AddPizzaLayer === 'function' ) {
 					try { AddPizzaLayer( 'topping', slug, layerUrl, title, zindex ); } catch(e) {}
 				}
@@ -219,7 +220,9 @@
 
 			// Toppings
 			Object.keys( state.toppings ).forEach( function( slug ) {
-				items.push( { section: 'Topping', title: state.toppings[ slug ].title } );
+				var t   = state.toppings[ slug ];
+				var cov = ( t.coverage && t.coverage !== 'whole' ) ? ' (' + covLabel( t.coverage ) + ')' : '';
+				items.push( { section: 'Topping', title: t.title + cov } );
 			} );
 
 			if ( items.length === 0 ) {
@@ -306,6 +309,84 @@
 			root.dispatchEvent( new CustomEvent( 'pizzalayer:selection_changed', { bubbles: true, detail: detail } ) );
 		}
 
+		// ── Topping coverage modal ────────────────────────────────────
+
+		var activeCoverageSlug = null;
+		var covModal = document.getElementById( instanceId + '-cov-modal' );
+
+		var COV_LABELS = {
+			'whole':                'Whole',
+			'half-left':            'Left Half',
+			'half-right':           'Right Half',
+			'quarter-top-left':     'Top-Left \u00BC',
+			'quarter-top-right':    'Top-Right \u00BC',
+			'quarter-bottom-left':  'Bottom-Left \u00BC',
+			'quarter-bottom-right': 'Bottom-Right \u00BC'
+		};
+		function covLabel( fr ) { return COV_LABELS[ fr ] || COV_LABELS.whole; }
+
+		/** Reflect a coverage choice on a topping row's chip. */
+		function plUpdateCoverageChip( itemEl, fraction ) {
+			if ( ! itemEl ) { return; }
+			var lbl = itemEl.querySelector( '.pl-item__coverage-label' );
+			if ( lbl ) { lbl.textContent = covLabel( fraction ); }
+			var btn = itemEl.querySelector( '.pl-item__coverage' );
+			if ( btn ) { btn.setAttribute( 'data-fraction', fraction ); }
+		}
+
+		/** Open the shared coverage modal for a selected topping. */
+		function plOpenCoverage( slug ) {
+			if ( ! state.toppings[ slug ] || ! covModal ) { return; }
+			activeCoverageSlug = slug;
+			var current = state.toppings[ slug ].coverage || 'whole';
+			qa( '.pl-cov-opt' ).forEach( function( opt ) {
+				opt.classList.toggle( 'pl-cov-opt--active', opt.getAttribute( 'data-fraction' ) === current );
+			} );
+			covModal.classList.add( 'pl-cov-modal--open' );
+			covModal.setAttribute( 'aria-hidden', 'false' );
+		}
+
+		/** Close the coverage modal. */
+		function plCloseCoverage() {
+			activeCoverageSlug = null;
+			if ( covModal ) {
+				covModal.classList.remove( 'pl-cov-modal--open' );
+				covModal.setAttribute( 'aria-hidden', 'true' );
+			}
+		}
+
+		/** Apply the chosen coverage to the active topping. */
+		function plChooseCoverage( fraction ) {
+			if ( activeCoverageSlug && state.toppings[ activeCoverageSlug ] ) {
+				var slug = activeCoverageSlug;
+				state.toppings[ slug ].coverage = fraction;
+
+				var itemEl = root.querySelector( '.pl-item--topping[data-slug="' + slug + '"]' );
+				plUpdateCoverageChip( itemEl, fraction );
+
+				/* Best-effort visual coverage: the base layer system styles toppings
+				   via tcg-* classes on #pizzalayer-topping-{slug}. */
+				var layerEl = document.getElementById( 'pizzalayer-topping-' + slug );
+				if ( layerEl ) {
+					layerEl.className = layerEl.className.replace( /\btcg-[a-z-]+\b/g, '' ).replace( /\s+/g, ' ' ).trim();
+					layerEl.classList.add( 'tcg-' + fraction );
+				}
+
+				refreshSummary();
+				dispatchChange();
+			}
+			plCloseCoverage();
+		}
+
+		/* Close the modal on Escape. */
+		if ( covModal ) {
+			document.addEventListener( 'keydown', function( e ) {
+				if ( ( e.key === 'Escape' || e.keyCode === 27 ) && covModal.classList.contains( 'pl-cov-modal--open' ) ) {
+					plCloseCoverage();
+				}
+			} );
+		}
+
 		// ── Utility ───────────────────────────────────────────────────
 
 		function escHtml( str ) {
@@ -320,6 +401,9 @@
 		var api = {
 			plToggleExclusive: plToggleExclusive,
 			plToggleTopping:   plToggleTopping,
+			plOpenCoverage:    plOpenCoverage,
+			plCloseCoverage:   plCloseCoverage,
+			plChooseCoverage:  plChooseCoverage,
 			plReset:           plReset,
 			setState:          plSetState,
 			getState:          function() {
@@ -338,23 +422,32 @@
 							layerName: e.title  || e.slug,
 							type:      layerType,
 							layerType: layerType,
-							fraction:  'Whole',
-							coverage:  'whole'
+							fraction:  'whole',
+							coverage:  'whole',
+							portion:   '',
+							coverageLabel: 'Whole'
 						});
 					}
 				});
 				/* Toppings */
 				Object.keys( state.toppings ).forEach( function( slug ) {
 					var t = state.toppings[ slug ];
+					var c = window.PizzaLayerCoverage
+						? window.PizzaLayerCoverage.normalize( t.coverage )
+						: { portion: '', fraction: 'whole', label: 'Whole' };
 					layers.push({
-						id:        slug,
-						layerId:   slug,
-						title:     t.title  || slug,
-						layerName: t.title  || slug,
-						type:      'topping',
-						layerType: 'topping',
-						fraction:  t.coverage || 'whole',
-						coverage:  t.coverage || 'whole'
+						id:            slug,
+						layerId:       slug,
+						title:         t.title  || slug,
+						layerName:     t.title  || slug,
+						type:          'topping',
+						layerType:     'topping',
+						/* fraction = generic size (price-grid key); portion = the
+						   specific portion the topping sits on (kitchen ticket). */
+						fraction:      c.fraction,
+						coverage:      t.coverage || 'whole',
+						portion:       c.portion,
+						coverageLabel: c.label
 					});
 				});
 				return {

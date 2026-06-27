@@ -39,7 +39,13 @@ if ( ! function_exists( 'hex2rgba' ) ) {
 
 $mt_accent         = sanitize_hex_color( get_option( 'metro_setting_accent_color',           '#e63946' ) ) ?: '#e63946';
 $mt_bg             = sanitize_hex_color( get_option( 'metro_setting_background_color',        '#f7f7f5' ) ) ?: '#f7f7f5';
-$mt_card_bg        = sanitize_hex_color( get_option( 'metro_setting_card_bg_color',           '#f8f9fa' ) ) ?: '#f8f9fa';
+$mt_ui_bg          = sanitize_hex_color( get_option( 'metro_setting_ui_bg_color',            '#ffffff' ) ) ?: '#ffffff';
+$mt_bg_image       = esc_url_raw( (string) get_option( 'metro_setting_container_bg_image',     '' ) );
+$mt_card_bg        = sanitize_hex_color( get_option( 'metro_setting_card_bg_color',           '#ffffff' ) ) ?: '#ffffff';
+$mt_card_text      = sanitize_hex_color( get_option( 'metro_setting_card_text_color',         '#1a1a1a' ) ) ?: '#1a1a1a';
+$mt_title          = sanitize_hex_color( get_option( 'metro_setting_title_color',             '#1a1a1a' ) ) ?: '#1a1a1a';
+$mt_border         = sanitize_hex_color( get_option( 'metro_setting_border_color',            '#e4e4e0' ) ) ?: '#e4e4e0';
+$mt_show_borders   =                     get_option( 'metro_setting_show_borders',            'yes'     ) === 'yes';
 $mt_heading_font   = sanitize_key(       get_option( 'metro_setting_heading_font',            'system'  ) );
 $mt_font_size      = (int)               get_option( 'metro_setting_base_font_size',           14        );
 $mt_layout         = sanitize_key(       get_option( 'metro_setting_layout_mode',             'centered') );
@@ -104,6 +110,7 @@ $darken = function( string $hex, int $amount = 18 ): string {
 };
 $mt_accent_hover = $darken( $mt_accent, 18 );
 $mt_accent_dim   = mt_hex2rgba( $mt_accent, 0.10 );
+$mt_border_hover = $darken( $mt_border, 28 );
 
 /* ── Column map: setting value → CSS minmax width ────────────────── */
 
@@ -135,19 +142,25 @@ $mt_hero_size = $mt_viz_size > 0
  */
 add_action( 'wp_enqueue_scripts', function() use (
 	$mt_accent, $mt_accent_hover, $mt_accent_dim,
-	$mt_bg, $mt_card_bg,
+	$mt_bg, $mt_ui_bg, $mt_card_bg, $mt_card_text, $mt_title,
+	$mt_border, $mt_border_hover, $mt_show_borders,
 	$mt_font_stack, $mt_font_size,
 	$mt_hero_size, $mt_card_min_w, $mt_card_radius,
 	$mt_section_gap,
 	$mt_show_tray, $mt_sticky_viz, $mt_show_count,
-	$mt_layout, $mt_card_style, $mt_tab_style
+	$mt_layout, $mt_card_style, $mt_tab_style, $mt_bg_image
 ) {
 	// CSS variable overrides
 	$accent_esc       = esc_attr( $mt_accent );
 	$accent_hover_esc = esc_attr( $mt_accent_hover );
 	$accent_dim_esc   = esc_attr( $mt_accent_dim );
 	$bg_esc           = esc_attr( $mt_bg );
+	$ui_bg_esc        = esc_attr( $mt_ui_bg );
 	$card_bg_esc      = esc_attr( $mt_card_bg );
+	$card_text_esc    = esc_attr( $mt_card_text );
+	$title_esc        = esc_attr( $mt_title );
+	$border_esc       = esc_attr( $mt_show_borders ? $mt_border       : 'transparent' );
+	$border_hover_esc = esc_attr( $mt_show_borders ? $mt_border_hover : 'transparent' );
 	$font_esc         = esc_attr( $mt_font_stack );
 	$font_size_esc    = (int) $mt_font_size;
 	$hero_esc         = esc_attr( $mt_hero_size );
@@ -161,13 +174,33 @@ add_action( 'wp_enqueue_scripts', function() use (
 	$_mt_css .= "  --mt-accent-hover:   {$accent_hover_esc};\n";
 	$_mt_css .= "  --mt-accent-dim:     {$accent_dim_esc};\n";
 	$_mt_css .= "  --mt-bg:             {$bg_esc};\n";
-	$_mt_css .= "  --mt-surface:        {$card_bg_esc};\n";
+	$_mt_css .= "  --mt-ui-bg:          {$ui_bg_esc};\n";
+	// Misc chrome (search field, summary tray, section navs, modals) follows the
+	// UI container colour so it always sits on the same surface as the panel.
+	$_mt_css .= "  --mt-surface:        {$ui_bg_esc};\n";
+	$_mt_css .= "  --mt-card-bg:        {$card_bg_esc};\n";
+	$_mt_css .= "  --mt-card-text:      {$card_text_esc};\n";
+	$_mt_css .= "  --mt-title:          {$title_esc};\n";
+	$_mt_css .= "  --mt-border:         {$border_esc};\n";
+	$_mt_css .= "  --mt-border-hover:   {$border_hover_esc};\n";
 	$_mt_css .= "  --mt-font:           {$font_esc};\n";
 	$_mt_css .= "  --mt-hero-pizza-size:{$hero_esc};\n";
 	$_mt_css .= "  --mt-card-w:         {$card_min_w_esc};\n";
 	$_mt_css .= "  --mt-radius:         {$card_r_esc}px;\n";
 	$_mt_css .= "  font-size:           {$font_size_esc}px;\n";
 	$_mt_css .= "}\n";
+
+	// Full-container background image (layered over --mt-bg color).
+	if ( $mt_bg_image !== '' ) {
+		$bg_img_esc = esc_url( $mt_bg_image );
+		$_mt_css .= ".mt-root {\n";
+		$_mt_css .= "  background-image:    url('{$bg_img_esc}');\n";
+		$_mt_css .= "  background-size:     cover;\n";
+		$_mt_css .= "  background-position: center center;\n";
+		$_mt_css .= "  background-repeat:   no-repeat;\n";
+		$_mt_css .= "  background-attachment: scroll;\n";
+		$_mt_css .= "}\n";
+	}
 
 	// Section gap
 	$_mt_css .= ".mt-root .mt-section { padding-top:{$gap_esc}px; padding-bottom:{$gap_esc}px; }\n";

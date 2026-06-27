@@ -25,8 +25,24 @@
     --cc-accent-hover:  #ff5572;
     --cc-accent-glow:   0 0 20px rgba(233,69,96,0.35);
 
+    /* Add to Cart CTA (settings-driven; defaults to the accent) */
+    --cc-cta:           #e94560;
+    --cc-cta-hover:     #ff5572;
+    --cc-cta-glow:      0 0 18px rgba(233,69,96,0.4);
+
     --cc-step-done:     #3dd68c;
     --cc-step-done-dim: rgba(61,214,140,0.15);
+
+    /* Per-tab accent palette. Each builder step gets its own colour so the
+       wizard reads as a guided, colourful flow rather than one flat red.
+       The settings injector can re-tint or collapse these to the accent. */
+    --cc-tab-size:      #6c8cff;
+    --cc-tab-crust:     #e0a458;
+    --cc-tab-sauce:     #e0544e;
+    --cc-tab-cheese:    #f2c14e;
+    --cc-tab-toppings:  #3dd68c;
+    --cc-tab-drizzle:   #c178e9;
+    --cc-tab-slicing:   #46c6d9;
 
     --cc-radius:        12px;
     --cc-radius-sm:     8px;
@@ -141,14 +157,25 @@
     transition:  color var(--cc-transition);
 }
 
+/* Per-tab colour assignment (collapses to accent when colourful tabs are off) */
+.cc-step[data-tab="size"]      { --cc-tab: var(--cc-tab-size); }
+.cc-step[data-tab="crust"]     { --cc-tab: var(--cc-tab-crust); }
+.cc-step[data-tab="sauce"]     { --cc-tab: var(--cc-tab-sauce); }
+.cc-step[data-tab="cheese"]    { --cc-tab: var(--cc-tab-cheese); }
+.cc-step[data-tab="toppings"]  { --cc-tab: var(--cc-tab-toppings); }
+.cc-step[data-tab="drizzle"]   { --cc-tab: var(--cc-tab-drizzle); }
+.cc-step[data-tab="slicing"]   { --cc-tab: var(--cc-tab-slicing); }
+.cc-step[data-tab="yourpizza"] { --cc-tab: var(--cc-accent); }
+
 /* Active step */
 .cc-step.cc-step--active .cc-step__bubble {
-    background:   var(--cc-accent);
-    border-color: var(--cc-accent);
+    background:   var(--cc-tab, var(--cc-accent));
+    border-color: var(--cc-tab, var(--cc-accent));
     box-shadow:   var(--cc-accent-glow);
 }
 .cc-step.cc-step--active .cc-step__num  { color: #fff; }
-.cc-step.cc-step--active .cc-step__label { color: var(--cc-accent); }
+.cc-step.cc-step--active .cc-step__label { color: var(--cc-tab, var(--cc-accent)); }
+.cc-step.cc-step--active .cc-step__bubble--review svg { stroke: #fff; }
 
 /* Done step */
 .cc-step.cc-step--done .cc-step__bubble {
@@ -167,6 +194,16 @@
 }
 .cc-step:not(.cc-step--active):not(.cc-step--done):hover .cc-step__label {
     color: var(--cc-text-muted);
+}
+
+/* Idle steps carry a subtle tint of their own colour so every step reads as
+   its category at a glance (progressive enhancement; falls back to the neutral
+   number/border where color-mix is unsupported). */
+.cc-step:not(.cc-step--active):not(.cc-step--done) .cc-step__num {
+    color: var(--cc-tab, var(--cc-text-muted));
+}
+.cc-step:not(.cc-step--active):not(.cc-step--done) .cc-step__bubble {
+    border-color: color-mix(in srgb, var(--cc-tab, var(--cc-border)) 40%, transparent);
 }
 
 /* Progress track */
@@ -344,6 +381,14 @@
     flex-shrink:     0;
     box-shadow:      var(--cc-accent-glow);
 }
+/* Per-tab badge colour, matched to the wizard-header step colours. */
+[id$="-panel-size"]     .cc-panel__step-badge { background: var(--cc-tab-size); }
+[id$="-panel-crust"]    .cc-panel__step-badge { background: var(--cc-tab-crust); }
+[id$="-panel-sauce"]    .cc-panel__step-badge { background: var(--cc-tab-sauce); }
+[id$="-panel-cheese"]   .cc-panel__step-badge { background: var(--cc-tab-cheese); }
+[id$="-panel-toppings"] .cc-panel__step-badge { background: var(--cc-tab-toppings); }
+[id$="-panel-drizzle"]  .cc-panel__step-badge { background: var(--cc-tab-drizzle); }
+[id$="-panel-slicing"]  .cc-panel__step-badge { background: var(--cc-tab-slicing); }
 
 .cc-panel__review-icon {
     width:           40px;
@@ -398,12 +443,12 @@
     color:        var(--cc-text);
 }
 .cc-nav-btn--cta {
-    background:  var(--cc-accent);
-    border-color: var(--cc-accent);
+    background:  var(--cc-cta, var(--cc-accent));
+    border-color: var(--cc-cta, var(--cc-accent));
     color:        #fff;
-    box-shadow:   var(--cc-accent-glow);
+    box-shadow:   var(--cc-cta-glow, var(--cc-accent-glow));
 }
-.cc-nav-btn--cta:hover { background: var(--cc-accent-hover); border-color: var(--cc-accent-hover); }
+.cc-nav-btn--cta:hover { background: var(--cc-cta-hover, var(--cc-accent-hover)); border-color: var(--cc-cta-hover, var(--cc-accent-hover)); }
 
 /* Ghost button (reset / start over) */
 .cc-ghost-btn {
@@ -794,10 +839,20 @@
    CHECKOUT BAR (PizzaLayerPro)
    ══════════════════════════════════════════════════════════════════ */
 
+/* Always-present, full-width dock that hosts the Pro Add to Cart bar.
+   Renders independently of the optional order-summary sidebar. It stays empty
+   (and collapses) on sites without PizzaLayerPro active. */
+.cc-checkout-dock {
+    border-top: 1px solid var(--cc-border);
+}
+.cc-checkout-dock:empty { display: none; }
+
 .pztpro-checkout-bar--commandcenter {
     background:  var(--cc-bar-bg, #0e1929);
-    border-top:  1px solid var(--cc-bar-border, rgba(233,69,96,0.25));
-    padding:     14px 20px;
+    border-top:  none;
+    padding:     16px 20px;
+    border-bottom-left-radius:  var(--cc-radius-lg);
+    border-bottom-right-radius: var(--cc-radius-lg);
 }
 
 .pztpro-checkout-bar--commandcenter .pztpro-bar-notes {
@@ -848,9 +903,10 @@
 .pztpro-checkout-bar--commandcenter .pztpro-bar-row__price {
     font-size:   20px;
     font-weight: 700;
-    color:       var(--cc-accent, #e94560);
+    color:       var(--cc-cta, var(--cc-accent));
     font-variant-numeric: tabular-nums;
 }
+.pztpro-checkout-bar--commandcenter .pztpro-bar-row__currency { margin-right: 1px; }
 
 .pztpro-checkout-bar--commandcenter .pztpro-bar-qty {
     display:     flex;
@@ -888,26 +944,29 @@
 .pztpro-checkout-bar--commandcenter .pztpro-bar-row__btn {
     display:      inline-flex;
     align-items:  center;
+    justify-content: center;
     gap:          8px;
-    padding:      11px 22px;
-    background:   var(--cc-accent, #e94560);
+    padding:      13px 26px;
+    background:   var(--cc-cta, var(--cc-accent));
     border:       none;
     border-radius: var(--cc-radius-sm, 8px);
     color:        #fff;
-    font-size:    14px;
+    font-size:    15px;
     font-weight:  700;
     cursor:       pointer;
     transition:   background 0.15s, box-shadow 0.15s, transform 0.1s;
     white-space:  nowrap;
-    box-shadow:   0 0 18px rgba(233,69,96,0.4);
-    flex-shrink:  0;
+    box-shadow:   var(--cc-cta-glow, 0 0 18px rgba(233,69,96,0.4));
+    flex:         0 1 auto;
+    min-width:    180px;
 }
-.pztpro-checkout-bar--commandcenter .pztpro-bar-row__btn svg { width: 17px; height: 17px; flex-shrink: 0; }
+.pztpro-checkout-bar--commandcenter .pztpro-bar-row__btn svg { width: 18px; height: 18px; flex-shrink: 0; }
 .pztpro-checkout-bar--commandcenter .pztpro-bar-row__btn:hover {
-    background: var(--cc-accent-hover, #ff5572);
-    box-shadow: 0 0 24px rgba(233,69,96,0.6);
+    background: var(--cc-cta-hover, var(--cc-accent-hover));
+    box-shadow: var(--cc-cta-glow, 0 0 24px rgba(233,69,96,0.6));
 }
-.pztpro-checkout-bar--commandcenter .pztpro-bar-row__btn:active { transform: scale(0.97); }
+.pztpro-checkout-bar--commandcenter .pztpro-bar-row__btn:active { transform: scale(0.98); }
+.pztpro-checkout-bar--commandcenter .pztpro-bar-row__btn:disabled { opacity: 0.55; cursor: default; box-shadow: none; }
 
 /* ══════════════════════════════════════════════════════════════════
    MOBILE TWEAKS
@@ -923,6 +982,8 @@
     .cc-panel        { padding: 18px 14px 16px; }
     .cc-panel__header { gap: 10px; }
     .cc-panel__step-badge { width: 28px; height: 28px; font-size: 13px; }
+    .pztpro-checkout-bar--commandcenter .pztpro-bar-row__summary { flex: 1 0 100%; }
+    .pztpro-checkout-bar--commandcenter .pztpro-bar-row__btn { flex: 1 0 100%; width: 100%; }
 }
 
 @media (max-width: 859px) {

@@ -42,6 +42,25 @@ $pl_step_prev      = sanitize_text_field( get_option( 'plainlist_setting_step_bt
 $pl_step_progress  = get_option( 'plainlist_setting_step_show_progress', 'yes' ) === 'yes';
 $pl_step_require   = get_option( 'plainlist_setting_step_require_selection', 'no' ) === 'yes';
 
+// List-row appearance + Add-to-Cart button styling (drive .pl-root modifier classes)
+$pl_list_style   = sanitize_key( get_option( 'plainlist_setting_list_style',         'plain'  ) );
+$pl_sel_style    = sanitize_key( get_option( 'plainlist_setting_selected_style',     'accent' ) );
+$pl_cart_style   = sanitize_key( get_option( 'plainlist_setting_cart_btn_style',     'solid'  ) );
+$pl_cart_size    = sanitize_key( get_option( 'plainlist_setting_cart_btn_size',      'medium' ) );
+$pl_cart_full    = get_option( 'plainlist_setting_cart_btn_full_width', 'no' ) === 'yes';
+
+// Whitelist class fragments so a bad option value can't inject arbitrary classes.
+$pl_list_style = in_array( $pl_list_style, [ 'plain', 'bordered', 'striped', 'card', 'underline' ], true ) ? $pl_list_style : 'plain';
+$pl_sel_style  = in_array( $pl_sel_style,  [ 'accent', 'filled', 'leftbar', 'bold' ], true )              ? $pl_sel_style  : 'accent';
+$pl_cart_style = in_array( $pl_cart_style, [ 'solid', 'outline', 'link' ], true )                          ? $pl_cart_style : 'solid';
+$pl_cart_size  = in_array( $pl_cart_size,  [ 'small', 'medium', 'large' ], true )                          ? $pl_cart_size  : 'medium';
+
+$pl_style_classes  = ' pl-root--rows-' . $pl_list_style;
+$pl_style_classes .= ' pl-root--sel-' . $pl_sel_style;
+$pl_style_classes .= ' pl-root--cart-' . $pl_cart_style;
+$pl_style_classes .= ' pl-root--cartsize-' . $pl_cart_size;
+if ( $pl_cart_full ) { $pl_style_classes .= ' pl-root--cartfull'; }
+
 // Column CSS class
 $pl_col_class_map = [
 	'2'    => 'pl-list--cols-2',
@@ -140,7 +159,7 @@ function pzt_plainlist_exclusive_item( $post, string $layer_type, string $pl_var
 	$input_id = 'pl-' . esc_attr( $layer_type ) . '-' . esc_attr( $slug );
 
 	// JS: reuse the same API as other templates for compatibility
-	$layer_url = get_field( $layer_type . '_layer_image', $id ) ?: '';
+	$layer_url = pzl_get_field( $layer_type . '_layer_image', $id ) ?: '';
 	$js_title  = esc_js( $title );
 	$js_layer  = esc_js( (string) $layer_url );
 	$js_toggle = "window['{$pl_var}']&&window['{$pl_var}'].plToggleExclusive('{$layer_type}','{$slug}','{$js_title}','{$js_layer}',this)";
@@ -185,8 +204,8 @@ function pzt_plainlist_topping_item( $post, int $zindex, string $pl_var ): strin
 	$layer_id = 'pizzalayer-topping-' . $slug;
 	$input_id = 'pl-topping-' . $slug;
 
-	$layer_url = get_field( 'topping_layer_image', $id ) ?: '';
-	$thumb_url = get_field( 'topping_image', $id ) ?: $layer_url;
+	$layer_url = pzl_get_field( 'topping_layer_image', $id ) ?: '';
+	$thumb_url = pzl_get_field( 'topping_image', $id ) ?: $layer_url;
 	$js_title  = esc_js( $title );
 	$js_slug   = esc_js( $slug );
 	$js_layer  = esc_js( (string) $layer_url );
@@ -215,6 +234,13 @@ function pzt_plainlist_topping_item( $post, int $zindex, string $pl_var ): strin
 		<label class="pl-item__label" for="<?php echo esc_attr( $input_id ); ?>" onclick="return false;">
 			<?php echo esc_html( $title ); ?>
 		</label>
+		<button type="button" class="pl-item__coverage" data-fraction="whole"
+		        aria-label="<?php esc_attr_e( 'Choose topping coverage', 'pizzalayer' ); ?>"
+		        onclick="event.stopPropagation();window['<?php echo esc_js( $pl_var ); ?>']&&window['<?php echo esc_js( $pl_var ); ?>'].plOpenCoverage('<?php echo esc_js( $slug ); ?>')"
+		        onkeydown="event.stopPropagation();">
+			<span class="pl-item__coverage-ico" aria-hidden="true"></span>
+			<span class="pl-item__coverage-label"><?php esc_html_e( 'Whole', 'pizzalayer' ); ?></span>
+		</button>
 	</li>
 	<?php
 	do_action( 'pizzalayer_after_layer_card', $post, 'toppings' );
@@ -293,7 +319,7 @@ $total_steps = count( $visible_tabs );
      Mode: <?php echo esc_html( $pl_layout ); ?>
 ══════════════════════════════════════════════════════════════════ -->
 <div id="<?php echo esc_attr( $instance_id ); ?>"
-     class="pl-root pl-root--check-<?php echo esc_attr( $pl_check_style ); ?><?php echo $is_step ? ' pl-root--step-mode' : ' pl-root--list-mode'; ?>"
+     class="pl-root pl-root--check-<?php echo esc_attr( $pl_check_style ); ?><?php echo $is_step ? ' pl-root--step-mode' : ' pl-root--list-mode'; ?><?php echo esc_attr( $pl_style_classes ); ?>"
      data-instance="<?php echo esc_attr( $instance_id ); ?>"
      data-pl-var="<?php echo esc_attr( $pl_var ); ?>"
      data-layout="<?php echo esc_attr( $pl_layout ); ?>"
@@ -491,6 +517,41 @@ $total_steps = count( $visible_tabs );
 	</div><!-- /.pl-inner -->
 
 	<?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
+
+	<!-- Coverage picker modal (shared by every topping row in this instance) -->
+	<div class="pl-cov-modal" id="<?php echo esc_attr( $instance_id ); ?>-cov-modal" aria-hidden="true">
+		<div class="pl-cov-modal__backdrop"
+		     onclick="window['<?php echo esc_js( $pl_var ); ?>']&&window['<?php echo esc_js( $pl_var ); ?>'].plCloseCoverage()"></div>
+		<div class="pl-cov-modal__dialog" role="dialog" aria-modal="true"
+		     aria-label="<?php esc_attr_e( 'Choose topping coverage', 'pizzalayer' ); ?>">
+			<div class="pl-cov-modal__header">
+				<span class="pl-cov-modal__title"><?php esc_html_e( 'Choose Coverage', 'pizzalayer' ); ?></span>
+				<button type="button" class="pl-cov-modal__close" aria-label="<?php esc_attr_e( 'Close', 'pizzalayer' ); ?>"
+				        onclick="window['<?php echo esc_js( $pl_var ); ?>']&&window['<?php echo esc_js( $pl_var ); ?>'].plCloseCoverage()">&times;</button>
+			</div>
+			<div class="pl-cov-modal__grid">
+				<?php
+				$pl_coverages = [
+					'whole'                => __( 'Whole',          'pizzalayer' ),
+					'half-left'            => __( 'Left Half',      'pizzalayer' ),
+					'half-right'           => __( 'Right Half',     'pizzalayer' ),
+					'quarter-top-left'     => __( 'Top-Left ¼',     'pizzalayer' ),
+					'quarter-top-right'    => __( 'Top-Right ¼',    'pizzalayer' ),
+					'quarter-bottom-left'  => __( 'Bottom-Left ¼',  'pizzalayer' ),
+					'quarter-bottom-right' => __( 'Bottom-Right ¼', 'pizzalayer' ),
+				];
+				foreach ( $pl_coverages as $pl_frac => $pl_lbl ) :
+					$pl_pick = "window['{$pl_var}']&&window['{$pl_var}'].plChooseCoverage('" . esc_js( $pl_frac ) . "')";
+				?>
+				<button type="button" class="pl-cov-opt" data-fraction="<?php echo esc_attr( $pl_frac ); ?>"
+				        onclick="<?php echo esc_attr( $pl_pick ); ?>">
+					<span class="pl-cov-opt__ico pl-cov-opt__ico--<?php echo esc_attr( $pl_frac ); ?>" aria-hidden="true"></span>
+					<span class="pl-cov-opt__label"><?php echo esc_html( $pl_lbl ); ?></span>
+				</button>
+				<?php endforeach; ?>
+			</div>
+		</div>
+	</div>
 
 </div><!-- /#<?php echo esc_html( $instance_id ); ?> .pl-root -->
 

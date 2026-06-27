@@ -35,6 +35,28 @@ if ( ! function_exists( 'hex2rgba' ) ) {
 	function hex2rgba( $color, $alpha ) { return cc_hex2rgba( (string) $color, (float) $alpha ); }
 }
 
+if ( ! function_exists( 'cc_shade' ) ) {
+	/**
+	 * Lighten ( $percent > 0 ) or darken ( $percent < 0 ) a hex colour.
+	 * $percent is a fraction in the range -1..1. Returns a #rrggbb string.
+	 */
+	function cc_shade( string $hex, float $percent ): string {
+		$hex = ltrim( $hex, '#' );
+		if ( strlen( $hex ) === 3 ) {
+			$hex = $hex[0] . $hex[0] . $hex[1] . $hex[1] . $hex[2] . $hex[2];
+		}
+		if ( strlen( $hex ) !== 6 ) { return '#' . $hex; }
+		$r = hexdec( substr( $hex, 0, 2 ) );
+		$g = hexdec( substr( $hex, 2, 2 ) );
+		$b = hexdec( substr( $hex, 4, 2 ) );
+		$adj = function ( $c ) use ( $percent ) {
+			$c = ( $percent >= 0 ) ? $c + ( 255 - $c ) * $percent : $c * ( 1 + $percent );
+			return max( 0, min( 255, (int) round( $c ) ) );
+		};
+		return sprintf( '#%02x%02x%02x', $adj( $r ), $adj( $g ), $adj( $b ) );
+	}
+}
+
 if ( ! function_exists( 'pzt_commandcenter_get_font_stack' ) ) :
 function pzt_commandcenter_get_font_stack( string $key ): string {
 	$map = [
@@ -71,6 +93,9 @@ function pzt_commandcenter_inject_css(): void {
 	$show_step_nums  = $g( 'commandcenter_setting_show_step_numbers',    'yes' ) === 'yes';
 	$show_sidebar    = $g( 'commandcenter_setting_show_summary_sidebar', 'yes' ) === 'yes';
 	$accent_glow     = $g( 'commandcenter_setting_accent_glow',          'yes' ) === 'yes';
+	$colorful_tabs   = $g( 'commandcenter_setting_colorful_tabs',        'yes' ) === 'yes';
+
+	$cta             = sanitize_hex_color( $g( 'commandcenter_setting_cta_color',           '#e94560' ) ) ?: '#e94560';
 
 	// ── Derive dependent rgba/glow values from accent ───────────────
 	$accent_dim  = cc_hex2rgba( $accent, 0.18 );
@@ -79,9 +104,38 @@ function pzt_commandcenter_inject_css(): void {
 		: 'none';
 	$step_done_dim = cc_hex2rgba( $step_done, 0.15 );
 
+	// ── Derive the Add to Cart CTA tokens ───────────────────────────
+	$cta_hover = cc_shade( $cta, 0.14 );
+	$cta_glow  = $accent_glow ? '0 0 18px ' . cc_hex2rgba( $cta, 0.40 ) : 'none';
+
+	// ── Cascade surface / border tokens from the chosen colours so a
+	//    custom Surface / Text / Accent fully propagates (raised cards,
+	//    hover tints, borders, the checkout bar) instead of staying on
+	//    the hardcoded navy defaults. ──────────────────────────────────
+	$surface_3     = cc_shade( $surface_2, 0.10 );
+	$surface_hover = cc_shade( $surface,   0.07 );
+	$text_faint    = cc_hex2rgba( $text, 0.30 );
+	$border        = cc_hex2rgba( $text, 0.09 );
+	$border_hover  = cc_hex2rgba( $text, 0.16 );
+	$border_active = cc_hex2rgba( $accent, 0.50 );
+	$bar_bg        = cc_shade( $surface, -0.40 );
+	$bar_border    = cc_hex2rgba( $cta, 0.25 );
+
 	// Derive smaller radius proportionally (template uses 12 / 8 / 16 ratio).
 	$radius_sm = max( 0, (int) round( $radius * 0.66 ) );
 	$radius_lg = (int) round( $radius * 1.33 );
+
+	// ── Per-tab palette. Distinct colour per step when enabled; all
+	//    collapse to the accent colour when "Colorful Step Tabs" is off. ─
+	$tab_palette = [
+		'size'     => '#6c8cff',
+		'crust'    => '#e0a458',
+		'sauce'    => '#e0544e',
+		'cheese'   => '#f2c14e',
+		'toppings' => '#3dd68c',
+		'drizzle'  => '#c178e9',
+		'slicing'  => '#46c6d9',
+	];
 
 	// ── Build CSS ───────────────────────────────────────────────────
 	$css  = ".cc-root {";
@@ -89,16 +143,30 @@ function pzt_commandcenter_inject_css(): void {
 	$css .= "--cc-accent-hover:" .  esc_attr( $accent_hover ) . ";";
 	$css .= "--cc-accent-dim:" .    esc_attr( $accent_dim )   . ";";
 	$css .= "--cc-accent-glow:" .   esc_attr( $accent_glow_shadow ) . ";";
+	$css .= "--cc-cta:" .           esc_attr( $cta )          . ";";
+	$css .= "--cc-cta-hover:" .     esc_attr( $cta_hover )    . ";";
+	$css .= "--cc-cta-glow:" .      esc_attr( $cta_glow )     . ";";
 	$css .= "--cc-step-done:" .     esc_attr( $step_done )      . ";";
 	$css .= "--cc-step-done-dim:" . esc_attr( $step_done_dim )  . ";";
 	$css .= "--cc-bg:" .            esc_attr( $bg )           . ";";
 	$css .= "--cc-surface:" .       esc_attr( $surface )      . ";";
 	$css .= "--cc-surface-2:" .     esc_attr( $surface_2 )    . ";";
+	$css .= "--cc-surface-3:" .     esc_attr( $surface_3 )    . ";";
+	$css .= "--cc-surface-hover:" . esc_attr( $surface_hover ). ";";
 	$css .= "--cc-text:" .          esc_attr( $text )         . ";";
 	$css .= "--cc-text-muted:" .    esc_attr( $text_muted )   . ";";
+	$css .= "--cc-text-faint:" .    esc_attr( $text_faint )   . ";";
+	$css .= "--cc-border:" .        esc_attr( $border )       . ";";
+	$css .= "--cc-border-hover:" .  esc_attr( $border_hover ) . ";";
+	$css .= "--cc-border-active:" . esc_attr( $border_active ). ";";
+	$css .= "--cc-bar-bg:" .        esc_attr( $bar_bg )       . ";";
+	$css .= "--cc-bar-border:" .    esc_attr( $bar_border )   . ";";
 	$css .= "--cc-radius:" .        $radius    . "px;";
 	$css .= "--cc-radius-sm:" .     $radius_sm . "px;";
 	$css .= "--cc-radius-lg:" .     $radius_lg . "px;";
+	foreach ( $tab_palette as $tab => $tab_color ) {
+		$css .= "--cc-tab-" . esc_attr( $tab ) . ":" . esc_attr( $colorful_tabs ? $tab_color : $accent ) . ";";
+	}
 	$css .= "font-family:" .        esc_attr( $font_stack )   . ";";
 	$css .= "font-size:" .          $base_size . "px;";
 	$css .= "}";

@@ -17,6 +17,84 @@
 	// ── Private state ─────────────────────────────────────────────────
 	var rotationIntervals = {};
 
+	// ── Coverage / portion contract (shared by all templates) ─────────
+	//
+	// A topping/layer's coverage has TWO distinct facets that downstream
+	// consumers (PizzaLayerPro pricing + kitchen tickets) both need:
+	//
+	//   fraction — the generic SIZE of the coverage ('whole' | 'half' | 'quarter').
+	//              This is what the price grid is keyed on.
+	//   portion  — WHICH specific portion the topping sits on
+	//              ('half-left', 'quarter-top-right', …). The kitchen needs
+	//              this to know *where* on the pie the topping goes.
+	//
+	// Historically only the fraction survived to the order, so a "half"
+	// topping never recorded whether it was the left or right half. This
+	// helper lets every template emit both consistently. Exposed on window
+	// so each template IIFE can normalise without duplicating the maps.
+	var COVERAGE_MAP = {
+		'whole':                { fraction: 'whole',   label: 'Whole' },
+		'half-left':            { fraction: 'half',    label: 'Left Half' },
+		'half-right':           { fraction: 'half',    label: 'Right Half' },
+		'quarter-top-left':     { fraction: 'quarter', label: 'Top-Left Quarter' },
+		'quarter-top-right':    { fraction: 'quarter', label: 'Top-Right Quarter' },
+		'quarter-bottom-left':  { fraction: 'quarter', label: 'Bottom-Left Quarter' },
+		'quarter-bottom-right': { fraction: 'quarter', label: 'Bottom-Right Quarter' }
+	};
+
+	// Aliases for the various slug spellings templates have emitted over time.
+	var COVERAGE_ALIAS = {
+		'halfleft':            'half-left',
+		'half_left':           'half-left',
+		'halfright':           'half-right',
+		'half_right':          'half-right',
+		'quartertopleft':      'quarter-top-left',
+		'quarter_top_left':    'quarter-top-left',
+		'quartertopright':     'quarter-top-right',
+		'quarter_top_right':   'quarter-top-right',
+		'quarterbottomleft':   'quarter-bottom-left',
+		'quarter_bottom_left': 'quarter-bottom-left',
+		'quarterbottomright':  'quarter-bottom-right',
+		'quarter_bottom_right':'quarter-bottom-right'
+	};
+
+	/**
+	 * Resolve a raw coverage value to its canonical portion slug.
+	 * Bare 'half'/'quarter' (no side) resolve to '' because the specific
+	 * portion is unknown — callers fall back to the fraction in that case.
+	 */
+	function canonicalPortion( raw ) {
+		var s = String( raw == null ? '' : raw ).toLowerCase().replace( /\s+/g, '-' );
+		if ( COVERAGE_ALIAS[ s ] ) { s = COVERAGE_ALIAS[ s ]; }
+		return COVERAGE_MAP[ s ] ? s : '';
+	}
+
+	window.PizzaLayerCoverage = {
+		/**
+		 * Normalise any raw coverage string to a full descriptor:
+		 *   { portion, fraction, label }
+		 * - portion : canonical specific slug, or '' when only a bare fraction is known
+		 * - fraction: generic 'whole' | 'half' | 'quarter' (price-grid key)
+		 * - label   : human-readable portion, e.g. 'Left Half'
+		 */
+		normalize: function ( raw ) {
+			var portion = canonicalPortion( raw );
+			if ( portion ) {
+				return { portion: portion, fraction: COVERAGE_MAP[ portion ].fraction, label: COVERAGE_MAP[ portion ].label };
+			}
+			// No specific portion — derive the bare fraction from the prefix.
+			var s = String( raw == null ? 'whole' : raw ).toLowerCase();
+			var frac = s.indexOf( 'quarter' ) === 0 ? 'quarter'
+			         : s.indexOf( 'half' )    === 0 ? 'half'
+			         : 'whole';
+			var lbl = frac.charAt( 0 ).toUpperCase() + frac.slice( 1 );
+			return { portion: '', fraction: frac, label: lbl };
+		},
+		portion:  function ( raw ) { return this.normalize( raw ).portion; },
+		fraction: function ( raw ) { return this.normalize( raw ).fraction; },
+		label:    function ( raw ) { return this.normalize( raw ).label; }
+	};
+
 	// ── Internal helpers ──────────────────────────────────────────────
 
 	function convertToSlug( text ) {

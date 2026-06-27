@@ -142,8 +142,8 @@ function pzt_pocketpie_chip( $post, string $layer_type, string $pp_var, int $zin
     $img_field = $layer_type . '_image';
     $lyr_field = $layer_type . '_layer_image';
 
-    $thumb_url = get_field( $img_field, $id ) ?: get_field( $lyr_field, $id ) ?: (string) get_the_post_thumbnail_url( $id, 'thumbnail' );
-    $layer_url = get_field( $lyr_field, $id ) ?: $thumb_url;
+    $thumb_url = pzl_get_field( $img_field, $id ) ?: pzl_get_field( $lyr_field, $id ) ?: (string) get_the_post_thumbnail_url( $id, 'thumbnail' );
+    $layer_url = pzl_get_field( $lyr_field, $id ) ?: $thumb_url;
 
     $js_add    = esc_attr( "window['{$pp_var}']&&window['{$pp_var}'].swapBase('{$layer_type}','".esc_js($slug)."','".esc_js($title)."','".esc_js((string)$layer_url)."',this)" );
     $js_remove = esc_attr( "window['{$pp_var}']&&window['{$pp_var}'].removeBase('{$layer_type}','".esc_js($slug)."',this)" );
@@ -187,8 +187,8 @@ function pzt_pocketpie_topping_chip( $post, string $pp_var, int $zindex ): strin
     $title     = get_the_title( $post );
     $slug      = sanitize_title( $title );
 
-    $thumb_url = get_field( 'topping_image', $id ) ?: get_field( 'topping_layer_image', $id ) ?: (string) get_the_post_thumbnail_url( $id, 'thumbnail' );
-    $layer_url = get_field( 'topping_layer_image', $id ) ?: $thumb_url;
+    $thumb_url = pzl_get_field( 'topping_image', $id ) ?: pzl_get_field( 'topping_layer_image', $id ) ?: (string) get_the_post_thumbnail_url( $id, 'thumbnail' );
+    $layer_url = pzl_get_field( 'topping_layer_image', $id ) ?: $thumb_url;
     $layer_id  = 'pizzalayer-topping-' . $slug;
 
     $js_add    = esc_attr( "window['{$pp_var}']&&window['{$pp_var}'].addTopping({$zindex},'".esc_js($slug)."','".esc_js((string)$layer_url)."','".esc_js($title)."','{$layer_id}','{$layer_id}',this)" );
@@ -280,9 +280,42 @@ $initial_pizza = $builder->build_dynamic(
     $atts['default_cut']      ?? ''
 );
 
+// ── PizzaLayerPro size chips — rendered inside the shared "Size" modal ──
+// (Previously these lived in a standalone "Choose Pizza Size" row above the
+//  builder; they now open from the Size button in the actions row.)
+$size_html  = '';
+$pp_size_label = __( 'Size', 'pizzalayer' );
+if ( $_has_pro ) {
+    $_pp_size_setting = function_exists( 'pztpro_get_setting' ) ? (string) pztpro_get_setting( 'size_selector_label', '' ) : '';
+    if ( '' !== $_pp_size_setting ) { $pp_size_label = sanitize_text_field( $_pp_size_setting ); }
+
+    preg_match( '/-(\d+)$/', $instance_id, $_pp_m );
+    $_pp_radio_sfx  = ! empty( $_pp_m[1] ) ? $_pp_m[1] : preg_replace( '/[^a-zA-Z0-9_]/', '_', $instance_id );
+    $_pp_radio_name = 'pztpro_size_' . $_pp_radio_sfx;
+
+    ob_start();
+    foreach ( $_pro_sizes as $i => $size ) :
+        $_pp_sz_id = esc_attr( $instance_id ) . '-sz-' . sanitize_html_class( strtolower( $size ) );
+        ?>
+        <label class="pp-size-chip pztpro-size-option<?php echo 0 === $i ? ' pp-size-chip--active pztpro-size-option--active' : ''; ?>"
+               for="<?php echo esc_attr( $_pp_sz_id ); ?>">
+            <input type="radio"
+                   id="<?php echo esc_attr( $_pp_sz_id ); ?>"
+                   name="<?php echo esc_attr( $_pp_radio_name ); ?>"
+                   value="<?php echo esc_attr( $size ); ?>"
+                   class="pztpro-size-radio"
+                   <?php checked( 0, $i ); ?> />
+            <span class="pp-size-chip__name"><?php echo esc_html( $size ); ?></span>
+        </label>
+        <?php
+    endforeach;
+    $size_html = ob_get_clean();
+    unset( $_pp_m, $_pp_radio_sfx, $_pp_radio_name, $_pp_sz_id, $_pp_size_setting );
+}
+
 // Tab meta (icons + labels)
 $tab_meta = [
-    'size'      => [ '&#9654;',  __( 'Size',       'pizzalayer' ), '' ],
+    'size'      => [ '&#9654;',  $pp_size_label, $size_html ],
     'crust'     => [ '&#9711;',  __( 'Crust',      'pizzalayer' ), $crusts_html   ],
     'sauce'     => [ '&#128138;',__( 'Sauce',      'pizzalayer' ), $sauces_html   ],
     'cheese'    => [ '&#129472;',__( 'Cheese',     'pizzalayer' ), $cheeses_html  ],
@@ -351,45 +384,15 @@ $summary_rows = [
      data-pizza-aspect="<?php echo esc_attr( $pizza_aspect ); ?>"
      data-pizza-radius="<?php echo esc_attr( $pizza_radius ); ?>">
 
-    <?php if ( $_has_pro ) : ?>
-    <?php
-    // Size selection using PocketPie's own visual card-tap pattern
-    preg_match( '/-(\d+)$/', $instance_id, $_pp_m );
-    $_pp_radio_sfx  = ! empty( $_pp_m[1] ) ? $_pp_m[1] : preg_replace( '/[^a-zA-Z0-9_]/', '_', $instance_id );
-    $_pp_radio_name = 'pztpro_size_' . $_pp_radio_sfx;
-    $_pp_size_label = function_exists( 'pztpro_get_setting' ) ? (string) pztpro_get_setting( 'size_selector_label', '' ) : '';
-    if ( '' === $_pp_size_label ) { $_pp_size_label = __( 'Choose Size', 'pizzalayer' ); }
-    ?>
-    <div class="pp-size-row" id="<?php echo esc_attr( $instance_id ); ?>-size-row"
-         role="group" aria-label="<?php echo esc_attr( $_pp_size_label ); ?>">
-        <div class="pp-size-row__label">
-            <span class="pp-size-row__icon">&#9654;</span>
-            <span class="pp-size-row__text"><?php echo esc_html( $_pp_size_label ); ?></span>
-        </div>
-        <div class="pp-size-row__options">
-            <?php foreach ( $_pro_sizes as $i => $size ) :
-                $_pp_sz_id = esc_attr( $instance_id ) . '-sz-' . sanitize_html_class( strtolower( $size ) );
-            ?>
-            <label class="pp-size-chip pztpro-size-option<?php echo 0 === $i ? ' pp-size-chip--active pztpro-size-option--active' : ''; ?>"
-                   for="<?php echo esc_attr( $_pp_sz_id ); ?>">
-                <input type="radio"
-                       id="<?php echo esc_attr( $_pp_sz_id ); ?>"
-                       name="<?php echo esc_attr( $_pp_radio_name ); ?>"
-                       value="<?php echo esc_attr( $size ); ?>"
-                       class="pztpro-size-radio"
-                       <?php checked( 0, $i ); ?> />
-                <span class="pp-size-chip__name"><?php echo esc_html( $size ); ?></span>
-            </label>
-            <?php endforeach; ?>
-        </div>
-    </div>
-    <?php endif; ?>
-
+    <?php /* The PizzaLayerPro size selector is now presented inside the shared
+             "Size" modal, opened from the Size button in the actions row.
+             See $size_html / $tab_meta['size'] above. */ ?>
 
     <?php /* ─────────────────────────────────────────────────────────────────
            LAYOUT 1 — CORNER QUAD
-           Four corner panels expand inward; pizza is centred.
-           Corners: TL=crust, TR=sauce, BL=cheese/drizzle, BR=toppings/slicing
+           Pizza centred and large; four small corner triggers + an actions row
+           open the shared full-screen modal. Corner categories default to
+           TL=crust, TR=sauce, BL=cheese, BR=toppings (configurable).
            ───────────────────────────────────────────────────────────────── */ ?>
     <?php if ( $layout === 'corner-quad' ) : ?>
     <div class="pp-cq-wrap">
@@ -409,46 +412,40 @@ $summary_rows = [
             $ctab = $corner_assignments[ $corner ] ?? null;
             if ( ! $ctab || ! isset( $tab_meta[ $ctab ] ) ) { continue; }
             [ $icon, $label, $html ] = $tab_meta[ $ctab ];
-            $is_topping = ( $ctab === 'toppings' );
         ?>
         <div class="pp-cq-corner pp-cq-corner--<?php echo esc_attr( $corner ); ?>"
              data-tab="<?php echo esc_attr( $ctab ); ?>">
             <button type="button" class="pp-cq-trigger"
-                    onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].cqToggle('<?php echo esc_js( $ii ); ?>','<?php echo esc_attr( $corner ); ?>')"
-                    aria-expanded="false">
+                    onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo esc_js( $ii ); ?>','<?php echo esc_js( $ctab ); ?>')">
                 <span class="pp-cq-trigger__icon"><?php echo $icon; // phpcs:ignore ?></span>
                 <span class="pp-cq-trigger__label"><?php echo esc_html( $label ); ?></span>
                 <span class="pp-cq-trigger__badge" id="<?php echo $ii; ?>-cq-badge-<?php echo esc_attr( $corner ); ?>"></span>
             </button>
-            <div class="pp-cq-panel" id="<?php echo $ii; ?>-cq-panel-<?php echo esc_attr( $corner ); ?>" aria-hidden="true">
-                <div class="pp-cq-panel__inner">
-                    <div class="pp-cq-panel__title"><?php echo esc_html( $label ); ?></div>
-                    <div class="pp-chips-grid <?php echo $is_topping ? 'pp-chips-grid--toppings' : ''; ?>">
-                        <?php echo $html; // phpcs:ignore ?>
-                    </div>
-                    <?php if ( $is_topping ) : ?>
-                    <div class="pp-cq-panel__counter">
-                        <span id="<?php echo $ii; ?>-cq-count">0</span> / <?php echo esc_html( (string) $max_toppings ); ?> <?php esc_html_e( 'toppings', 'pizzalayer' ); ?>
-                    </div>
-                    <?php endif; ?>
-                </div>
-            </div>
         </div>
         <?php endforeach; ?>
 
-        <?php if ( ! empty( $overflow_tabs ) ) : ?>
-        <!-- Overflow tabs as bottom pill bar -->
+        <?php if ( ! empty( $overflow_tabs ) || $pp_show_review ) : ?>
+        <!-- Actions row: overflow categories (Size / Drizzle / Slicing) + Review -->
         <div class="pp-cq-overflow-bar">
-            <?php foreach ( $overflow_tabs as $otab ) :
-                if ( ! isset( $tab_meta[ $otab ] ) ) { continue; }
-                [ $oicon, $olabel, $ohtml ] = $tab_meta[ $otab ];
-            ?>
-            <button type="button" class="pp-cq-overflow-btn"
-                    onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','<?php echo esc_js( $otab ); ?>')">
-                <span><?php echo $oicon; // phpcs:ignore ?></span>
-                <span><?php echo esc_html( $olabel ); ?></span>
+            <div class="pp-cq-overflow-bar__cats">
+                <?php foreach ( $overflow_tabs as $otab ) :
+                    if ( ! isset( $tab_meta[ $otab ] ) ) { continue; }
+                    [ $oicon, $olabel, $ohtml ] = $tab_meta[ $otab ];
+                ?>
+                <button type="button" class="pp-cq-overflow-btn"
+                        onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','<?php echo esc_js( $otab ); ?>')">
+                    <span><?php echo $oicon; // phpcs:ignore ?></span>
+                    <span><?php echo esc_html( $olabel ); ?></span>
+                </button>
+                <?php endforeach; ?>
+            </div>
+            <?php if ( $pp_show_review ) : ?>
+            <button type="button" class="pp-cq-review-btn"
+                    onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','yourpizza')">
+                <span class="pp-cq-review-btn__icon">&#128203;</span>
+                <span class="pp-cq-review-btn__label"><?php echo esc_html( $pp_review_label ); ?></span>
             </button>
-            <?php endforeach; ?>
+            <?php endif; ?>
         </div>
         <?php endif; ?>
 
@@ -462,11 +459,6 @@ $summary_rows = [
                 <button type="button" class="pp-cq-reset"
                         onclick="ClearPizza();window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].resetAll();"
                         title="<?php esc_attr_e( 'Reset', 'pizzalayer' ); ?>">&#8635;</button>
-                <?php endif; ?>
-                <?php if ( $pp_show_review ) : ?>
-                <button type="button" class="pp-cq-summary-btn"
-                        onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','yourpizza')"
-                        title="<?php echo esc_attr( $pp_review_label ); ?>">&#128203;</button>
                 <?php endif; ?>
             </div>
                 <!-- Action bar moved to root level below -->
@@ -741,20 +733,30 @@ $summary_rows = [
         <div class="pp-modal__body" id="<?php echo $ii; ?>-modal-body">
             <!-- Dynamic content depending on which tab triggered this modal -->
         </div>
-        <!-- Overflow tab content injected here for corner-quad when > 4 tabs -->
+        <!-- Category panels live in this modal ONLY for corner-quad, where the
+             corner triggers and the actions-row buttons open them here. Other
+             layouts render their categories in their own drawers/sheets/expands,
+             so we skip them to avoid duplicate IDs (e.g. size radios). -->
+        <?php if ( $layout === 'corner-quad' ) : ?>
         <?php foreach ( $visible_tabs as $tab ) :
-            if ( in_array( $tab, array_slice( $corner_tabs, 0, 4 ), true ) && $layout === 'corner-quad' ) { continue; }
             if ( $tab === 'yourpizza' ) { continue; }
             if ( ! isset( $tab_meta[ $tab ] ) ) { continue; }
             [ , , $html ] = $tab_meta[ $tab ];
-            $is_top = ( $tab === 'toppings' );
+            $is_top  = ( $tab === 'toppings' );
+            $is_size = ( $tab === 'size' );
         ?>
-        <div class="pp-modal__tab-panel <?php echo $is_top ? 'pp-chips-grid--toppings' : ''; ?>"
+        <div class="pp-modal__tab-panel <?php echo $is_top ? 'pp-chips-grid--toppings' : ''; ?> <?php echo $is_size ? 'pp-modal__tab-panel--size' : ''; ?>"
              id="<?php echo $ii; ?>-modal-panel-<?php echo esc_attr( $tab ); ?>"
              style="display:none;">
             <div class="pp-chips-grid"><?php echo $html; // phpcs:ignore ?></div>
+            <?php if ( $is_top ) : ?>
+            <div class="pp-modal__topping-count">
+                <span id="<?php echo $ii; ?>-modal-count">0</span>/<?php echo esc_html( (string) $max_toppings ); ?> <?php esc_html_e( 'toppings', 'pizzalayer' ); ?>
+            </div>
+            <?php endif; ?>
         </div>
         <?php endforeach; ?>
+        <?php endif; ?>
         <!-- Summary panel -->
         <div class="pp-modal__summary" id="<?php echo $ii; ?>-modal-summary" style="display:none;">
             <?php foreach ( $summary_rows as $key => [ $ico, $slabel ] ) : ?>

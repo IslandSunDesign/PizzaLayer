@@ -57,7 +57,7 @@ return [
         'type'    => 'color',
         'label'   => 'Muted Text',
         'desc'    => 'Secondary text colour for hints, labels, and step descriptions.',
-        'default' => '#9a7a56',
+        'default' => '#7a5c34',
     ],
 
     /* ── Typography ──────────────────────────────────────────── */

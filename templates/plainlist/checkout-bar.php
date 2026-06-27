@@ -9,6 +9,16 @@ $show_qty   = class_exists('PizzaLayerPro\Pro\WooCommerce\CartIntegration') && (
 $max_qty    = max(1, (int) pztpro_get_setting('max_quantity', 99));
 $show_notes = (bool) pztpro_get_setting('enable_order_notes', false);
 $note_ph    = pztpro_get_setting('order_note_placeholder', '') ?: __('Any special requests?', 'pizzalayerpro');
+
+// CTA label: Plainlist template setting wins, then the Pro global cart-button
+// text, then the default. Lets the Plainlist template own its own CTA wording.
+$cta_label  = trim( (string) get_option( 'plainlist_setting_cart_btn_text', '' ) );
+if ( '' === $cta_label && function_exists( 'pztpro_get_setting' ) ) {
+    $cta_label = trim( (string) pztpro_get_setting( 'cart_btn_text', '' ) );
+}
+if ( '' === $cta_label ) {
+    $cta_label = __( 'Add to Cart', 'pizzalayerpro' );
+}
 ?>
 <div class="pztpro-checkout-bar pztpro-checkout-bar--plainlist"
      id="pztpro-checkout-bar-<?php echo esc_attr($instance_id); ?>"
@@ -33,7 +43,7 @@ $note_ph    = pztpro_get_setting('order_note_placeholder', '') ?: __('Any specia
                 id="pztpro-checkout-btn-<?php echo esc_attr($instance_id); ?>"
                 data-instance="<?php echo esc_attr($instance_id); ?>"
                 aria-live="polite">
-            <?php esc_html_e('Add to Cart', 'pizzalayerpro'); ?>
+            <?php echo esc_html( $cta_label ); ?>
         </button>
     </div>
 

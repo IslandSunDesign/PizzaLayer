@@ -54,6 +54,23 @@ return [
 		'default' => '#888898',
 	],
 
+	// ── Item Cards ────────────────────────────────────────────────────
+	[
+		'key'          => 'nightpie_setting_card_border',
+		'type'         => 'toggle',
+		'label'        => 'Item Card Border',
+		'desc'         => 'Draw a border around each selectable ingredient card. Off by default — cards sit borderless (transparent) on their surface. Selected and hovered cards keep their accent outline either way.',
+		'default'      => 'no',
+		'toggle_label' => 'Show a border around item cards',
+	],
+	[
+		'key'     => 'nightpie_setting_card_border_color',
+		'type'    => 'color',
+		'label'   => 'Item Card Border Color',
+		'desc'    => 'Border color used when "Item Card Border" is enabled above.',
+		'default' => '#2e2e3a',
+	],
+
 	// ── Typography ────────────────────────────────────────────────────
 	[
 		'key'     => 'nightpie_setting_font_family',

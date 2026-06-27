@@ -137,8 +137,8 @@ function pzt_commandcenter_exclusive_card( $post, string $layer_type, string $cc
     $img_field = $layer_type . '_image';
     $lyr_field = $layer_type . '_layer_image';
 
-    $thumb_url = get_field( $img_field, $id ) ?: get_field( $lyr_field, $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
-    $layer_url = get_field( $lyr_field, $id ) ?: $thumb_url;
+    $thumb_url = pzl_get_field( $img_field, $id ) ?: pzl_get_field( $lyr_field, $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
+    $layer_url = pzl_get_field( $lyr_field, $id ) ?: $thumb_url;
 
     $js_title  = esc_js( $title );
     $js_layer  = esc_js( (string) $layer_url );
@@ -195,8 +195,8 @@ function pzt_commandcenter_topping_card( $post, string $cc_var, int $zindex ): s
     $slug      = sanitize_title( $title );
     $layer_id  = 'pizzalayer-topping-' . $slug;
 
-    $thumb_url = get_field( 'topping_image', $id ) ?: get_field( 'topping_layer_image', $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
-    $layer_url = get_field( 'topping_layer_image', $id ) ?: $thumb_url;
+    $thumb_url = pzl_get_field( 'topping_image', $id ) ?: pzl_get_field( 'topping_layer_image', $id ) ?: (string) get_the_post_thumbnail_url( $id, 'medium' );
+    $layer_url = pzl_get_field( 'topping_layer_image', $id ) ?: $thumb_url;
 
     $js_title  = esc_js( $title );
     $js_slug   = esc_js( $slug );
@@ -695,13 +695,19 @@ do_action( 'pizzalayer_before_builder', $instance_id, $template_slug );
                     </div>
                     <?php endforeach; ?>
                 </div>
-                <div class="cc-sidebar__footer">
-                    <?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
-                </div>
             </div>
         </aside>
 
     </div><!-- /.cc-layout -->
+
+    <!-- ── Checkout dock ───────────────────────────────────────────────
+         PizzaLayerPro renders its Add to Cart / checkout bar here when active.
+         This dock is always present (it does NOT depend on the optional order
+         summary sidebar), spans the full builder width, and sits at the end of
+         the wizard so the final custom pizza can always be added to the cart. -->
+    <div class="cc-checkout-dock" id="<?php echo esc_attr( $instance_id ); ?>-checkout-dock">
+        <?php do_action( 'pizzalayer_builder_action_bar', $instance_id ); ?>
+    </div>
 
     <div id="<?php echo esc_attr( $instance_id ); ?>-fly-container" aria-hidden="true"></div>
 

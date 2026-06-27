@@ -106,6 +106,39 @@ class Settings {
 		'plainlist_setting_footer_note',
 		'plainlist_setting_summary_heading',
 		'plainlist_setting_reset_label',
+		// Plainlist — list-row style additions
+		'plainlist_setting_list_style',
+		'plainlist_setting_selected_style',
+		'plainlist_setting_row_padding',
+		'plainlist_setting_label_weight',
+		// Plainlist — Add-to-Cart button (PizzaLayerPro checkout bar)
+		'plainlist_setting_cart_btn_text',
+		'plainlist_setting_cart_btn_style',
+		'plainlist_setting_cart_btn_size',
+		'plainlist_setting_cart_btn_bg',
+		'plainlist_setting_cart_btn_text_color',
+		'plainlist_setting_cart_btn_radius',
+		'plainlist_setting_cart_btn_full_width',
+		// Scaffold template settings
+		'scaffold_setting_accent_color',
+		'scaffold_setting_bg_color',
+		'scaffold_setting_text_color',
+		'scaffold_setting_border_color',
+		'scaffold_setting_font_family',
+		'scaffold_setting_font_custom',
+		'scaffold_setting_base_font_size',
+		'scaffold_setting_builder_width',
+		'scaffold_setting_tab_style',
+		'scaffold_setting_thumb_size',
+		'scaffold_setting_card_radius',
+		'scaffold_setting_card_cols',
+		'scaffold_setting_show_labels',
+		'scaffold_setting_anim_speed',
+		'scaffold_setting_summary_title',
+		'scaffold_setting_custom_css',
+		// Scaffold — Add-to-Cart button (PizzaLayerPro checkout bar)
+		'scaffold_setting_cta_text',
+		'scaffold_setting_cta_show_icon',
 		// Active template — stored separately from Settings page but exported/imported here
 		'pizzalayer_setting_global_template',
 	];
@@ -928,7 +961,7 @@ class Settings {
 					<p class="pset-desc">Template-specific settings have moved to the <strong>Template</strong> page, below the template selector.</p>
 				</div>
 			</div>
-			<div class="pset-card__body" style="padding:18px 24px;">
+			<div class="pset-card__body" id="pset-body-template-settings" style="padding:18px 24px;">
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-template#template-settings' ) ); ?>" class="button button-primary">
 					<span class="dashicons dashicons-admin-appearance" style="margin-top:3px;"></span>
 					<?php printf( esc_html__( 'Open %s Template Settings', 'pizzalayer' ), esc_html( ucwords( str_replace( '-', ' ', $active_template ) ) ) ); ?>
@@ -1263,7 +1296,7 @@ class Settings {
 		<div class="pset-field">
 			<label><?php echo esc_html( $label ); ?></label>
 			<select name="<?php echo esc_attr( $key ); ?>" class="pset-select">
-				<option value=""><?php esc_html_e( __( '— None / Plugin default —', 'pizzalayer' ), 'pizzalayer' ); ?></option>
+				<option value=""><?php esc_html_e( '— None / Plugin default —', 'pizzalayer' ); ?></option>
 				<?php foreach ( $posts as $p ) :
 					$slug = sanitize_title( $p->post_title );
 				?>
