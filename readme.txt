@@ -4,7 +4,7 @@ Tags: pizza, restaurant, woocommerce, customizer, builder
 Requires at least: 6.2
 Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.13.2
+Stable tag: 1.13.3
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -195,6 +195,9 @@ Visit [pizzalayer.com/support](https://pizzalayer.com/support) or use the WordPr
 
 == Changelog ==
 
+
+= 1.13.3 =
+* Updated the plugin Author URI to https://islandsundesign.com (the Plugin URI remains https://pizzalayer.com). No functional change.
 
 = 1.13.2 =
 * Plugin Check cleanup (no behavior change): replaced the version-gated `wp_is_serving_rest_request()` calls in the block render callbacks with a small internal `REST_REQUEST` check, so block editor previews are detected without referencing a function newer than the plugin's minimum WordPress version.

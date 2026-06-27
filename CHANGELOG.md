@@ -6,6 +6,13 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.13.3] - 2026-06-26
+
+### Changed
+- Updated the plugin **Author URI** header to `https://islandsundesign.com`. The **Plugin URI** is unchanged (`https://pizzalayer.com`). No functional change.
+
+---
+
 ## [1.13.2] - 2026-06-26
 
 ### Plugin Check compliance (no behavior change)
