@@ -173,7 +173,7 @@ class Settings {
 		}
 
 		if ( $import_msg ) {
-			echo $import_msg; // phpcs:ignore — sanitized in import_settings()
+			echo $import_msg; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Built and escaped inside import_settings().
 		}
 
 		// Load CPT options for dropdowns
@@ -964,7 +964,7 @@ class Settings {
 			<div class="pset-card__body" id="pset-body-template-settings" style="padding:18px 24px;">
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-template#template-settings' ) ); ?>" class="button button-primary">
 					<span class="dashicons dashicons-admin-appearance" style="margin-top:3px;"></span>
-					<?php printf( esc_html__( 'Open %s Template Settings', 'pizzalayer' ), esc_html( ucwords( str_replace( '-', ' ', $active_template ) ) ) ); ?>
+					<?php printf( /* translators: %s = template name. */ esc_html__( 'Open %s Template Settings', 'pizzalayer' ), esc_html( ucwords( str_replace( '-', ' ', $active_template ) ) ) ); ?>
 				</a>
 				<p style="margin-top:12px;font-size:13px;color:#646970;">Settings for the active template are now configured directly alongside the template selector.</p>
 			</div>
@@ -1015,12 +1015,12 @@ class Settings {
 			// printed output before this admin_post handler ran), so a file
 			// download can't be sent. Fall back to a no-JavaScript page that
 			// presents the export JSON in a read-only textarea to copy/save.
-			$back = esc_url( wp_get_referer() ?: admin_url( 'admin.php?page=pizzalayer-settings' ) );
+			$back = wp_get_referer() ?: admin_url( 'admin.php?page=pizzalayer-settings' );
 			echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' . esc_html__( 'PizzaLayer Settings Export', 'pizzalayer' ) . '</title></head><body style="font-family:sans-serif;padding:24px;max-width:820px;margin:0 auto;">';
 			echo '<h1 style="font-size:18px;">' . esc_html__( 'Settings export', 'pizzalayer' ) . '</h1>';
 			echo '<p>' . esc_html__( 'Automatic download was unavailable on this server. Copy the text below and save it with this file name:', 'pizzalayer' ) . ' <code>' . esc_html( $filename ) . '</code></p>';
 			echo '<textarea readonly rows="20" style="width:100%;box-sizing:border-box;font-family:monospace;font-size:12px;">' . esc_textarea( $json ) . '</textarea>';
-			echo '<p><a href="' . $back . '">' . esc_html__( 'Back', 'pizzalayer' ) . '</a></p>';
+			echo '<p><a href="' . esc_url( $back ) . '">' . esc_html__( 'Back', 'pizzalayer' ) . '</a></p>';
 			echo '</body></html>';
 			exit;
 		}
@@ -1029,11 +1029,13 @@ class Settings {
 		header( 'Content-Type: application/json; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 		header( 'Content-Length: ' . strlen( $json ) );
-		echo $json; // phpcs:ignore WordPress.Security.EscapeOutput — raw JSON download
+		echo $json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Raw JSON file download (Content-Type: application/json).
 		exit;
 	}
 
 	private function import_settings(): string {
+		check_admin_referer( 'pizzalayer_settings_save' );
+
 		if ( empty( $_FILES['pizzalayer_import_file']['tmp_name'] ) ) {
 			return '<div class="notice notice-error is-dismissible"><p><strong>' . esc_html__( 'Import failed:', 'pizzalayer' ) . '</strong> ' . esc_html__( 'no file received.', 'pizzalayer' ) . '</p></div>';
 		}
@@ -1130,6 +1132,8 @@ class Settings {
 	}
 
 	private function save_settings(): void {
+		check_admin_referer( 'pizzalayer_settings_save' );
+
 		$text_options = [
 			'pizzalayer_setting_crust_padding',
 			'pizzalayer_setting_sauce_padding',
@@ -1329,12 +1333,12 @@ class Settings {
 				break;
 			}
 		}
-		$items_json = esc_attr( wp_json_encode( $items ) );
+		$items_json = wp_json_encode( $items );
 		?>
 		<div class="pset-field pset-layer-picker-field"
 		     data-picker-key="<?php echo esc_attr( $key ); ?>"
 		     data-picker-label="<?php echo esc_attr( $label ); ?>"
-		     data-picker-items="<?php echo $items_json; ?>">
+		     data-picker-items="<?php echo esc_attr( $items_json ); ?>">
 			<label><?php echo esc_html( $label ); ?></label>
 			<input type="hidden" name="<?php echo esc_attr( $key ); ?>" value="<?php echo esc_attr( $current ); ?>">
 			<button type="button" class="pset-layer-trigger <?php echo $current ? 'pset-layer-trigger--has-value' : ''; ?>">

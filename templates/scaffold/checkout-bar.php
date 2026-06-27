@@ -24,6 +24,7 @@
  *   your-theme/pizzalayerpro/checkout-bar.php
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial; this file is include'd inside a method (render_template / load_template_custom / inject_inline_styles / Pro CartIntegration::render_cart_button), so its top-level variables are method-local, not global.
 if ( ! isset( $instance_id ) ) { $instance_id = ''; }
 
 /* Robust setting access — Pro provides pztpro_get_setting(); guard so the bar
@@ -33,18 +34,18 @@ $show_qty   = $pzt_can_setting ? (bool) pztpro_get_setting( 'show_quantity_selec
 $max_qty    = max( 1, $pzt_can_setting ? (int) pztpro_get_setting( 'max_quantity', 99 ) : 99 );
 $show_notes = $pzt_can_setting ? (bool) pztpro_get_setting( 'enable_order_notes', false ) : false;
 $note_ph    = ( $pzt_can_setting ? (string) pztpro_get_setting( 'order_note_placeholder', '' ) : '' );
-if ( '' === $note_ph ) { $note_ph = __( 'Any special requests?', 'pizzalayerpro' ); }
+if ( '' === $note_ph ) { $note_ph = __( 'Any special requests?', 'pizzalayer' ); }
 
 /* Scaffold lets the site owner customise the Add to Cart label and icon from
  * the template settings page (Templates → Scaffold). */
 $cta_text = sanitize_text_field( (string) get_option( 'scaffold_setting_cta_text', '' ) );
-if ( '' === $cta_text ) { $cta_text = __( 'Add to Cart', 'pizzalayerpro' ); }
+if ( '' === $cta_text ) { $cta_text = __( 'Add to Cart', 'pizzalayer' ); }
 $cta_show_icon = ( 'yes' === (string) get_option( 'scaffold_setting_cta_show_icon', 'yes' ) );
 ?>
 <div class="pztpro-checkout-bar pztpro-checkout-bar--scaffold sc-root"
      id="pztpro-checkout-bar-<?php echo esc_attr( $instance_id ); ?>"
      data-instance="<?php echo esc_attr( $instance_id ); ?>"
-     role="region" aria-label="<?php esc_attr_e( 'Pizza order summary', 'pizzalayerpro' ); ?>">
+     role="region" aria-label="<?php esc_attr_e( 'Pizza order summary', 'pizzalayer' ); ?>">
 
     <div class="pztpro-bar-row">
         <div class="pztpro-bar-row__summary">
@@ -54,9 +55,9 @@ $cta_show_icon = ( 'yes' === (string) get_option( 'scaffold_setting_cta_show_ico
 
         <?php if ( $show_qty ) : ?>
         <div class="pztpro-bar-qty" data-instance="<?php echo esc_attr( $instance_id ); ?>" data-max="<?php echo esc_attr( $max_qty ); ?>">
-            <button type="button" class="pztpro-qty-btn pztpro-qty-btn--minus" data-instance="<?php echo esc_attr( $instance_id ); ?>" disabled aria-label="<?php esc_attr_e( 'Decrease quantity', 'pizzalayerpro' ); ?>">&minus;</button>
+            <button type="button" class="pztpro-qty-btn pztpro-qty-btn--minus" data-instance="<?php echo esc_attr( $instance_id ); ?>" disabled aria-label="<?php esc_attr_e( 'Decrease quantity', 'pizzalayer' ); ?>">&minus;</button>
             <span class="pztpro-qty-value" id="pztpro-qty-<?php echo esc_attr( $instance_id ); ?>" data-qty="1">1</span>
-            <button type="button" class="pztpro-qty-btn pztpro-qty-btn--plus" data-instance="<?php echo esc_attr( $instance_id ); ?>" aria-label="<?php esc_attr_e( 'Increase quantity', 'pizzalayerpro' ); ?>">+</button>
+            <button type="button" class="pztpro-qty-btn pztpro-qty-btn--plus" data-instance="<?php echo esc_attr( $instance_id ); ?>" aria-label="<?php esc_attr_e( 'Increase quantity', 'pizzalayer' ); ?>">+</button>
         </div>
         <?php endif; ?>
 

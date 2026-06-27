@@ -158,7 +158,7 @@ class AdminHome {
 						<?php foreach ( $missing as $k ) : ?>
 						<li>
 							<a href="<?php echo esc_url( admin_url( 'post-new.php?post_type=pizzalayer_' . $k ) ); ?>">
-								<?php printf( esc_html__( 'Add your first %s →', 'pizzalayer' ), esc_html( ucfirst( $k ) ) ); ?>
+								<?php printf( /* translators: %s = content type name. */ esc_html__( 'Add your first %s →', 'pizzalayer' ), esc_html( ucfirst( $k ) ) ); ?>
 							</a>
 						</li>
 						<?php endforeach; ?>

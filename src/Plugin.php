@@ -34,8 +34,8 @@ final class Plugin {
 	 */
 	private function register_services(): void {
 
-		// Load text domain
-		$this->loader->add_action( 'init', $this, 'load_textdomain' );
+		// Text domain is auto-loaded by WordPress (just-in-time, since 4.6;
+		// plugin requires 6.2). Bundled /languages files load via Domain Path.
 
 		// CPTs
 		$cpt = new PostTypes\PostTypeRegistrar();
@@ -135,15 +135,6 @@ final class Plugin {
 		}
 	}
 
-	/** Load plugin text domain. */
-	public function load_textdomain(): void {
-		load_plugin_textdomain(
-			'pizzalayer',
-			false,
-			dirname( plugin_basename( PIZZALAYER_PLUGIN_FILE ) ) . '/languages'
-		);
-	}
-
 	/** Register all four shortcodes. */
 	public function register_shortcodes(): void {
 		add_shortcode( 'pizza_builder',    [ new Shortcodes\BuilderShortcode(),    'render' ] );
@@ -160,7 +151,7 @@ final class Plugin {
 	public function register_debug_helpers(): void {
 		if ( ! function_exists( 'pizzalayer_log' ) ) {
 			function pizzalayer_log( $data ): void { // phpcs:ignore
-				$entry = is_array( $data ) || is_object( $data ) ? print_r( $data, true ) : (string) $data;
+				$entry = is_array( $data ) || is_object( $data ) ? print_r( $data, true ) : (string) $data; // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_print_r -- WP_DEBUG-gated logging helper.
 				error_log( '[PizzaLayer] ' . $entry ); // phpcs:ignore WordPress.PHP.DevelopmentFunctions
 			}
 		}

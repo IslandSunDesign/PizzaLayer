@@ -128,8 +128,10 @@ class AdminMenu {
 		$hub_base = admin_url( 'admin.php?page=pizzalayer-content' );
 		// Detect which CPT is currently active for sidebar highlighting
 		$active_cpt = '';
-		if ( isset( $_GET['page'] ) && $_GET['page'] === 'pizzalayer-content' && isset( $_GET['pl_cpt'] ) ) {
-			$active_cpt = sanitize_key( $_GET['pl_cpt'] );
+		// Read-only sidebar highlight derived from the admin query string. No form
+		// is submitted and no state changes here, so nonce verification does not apply.
+		if ( isset( $_GET['page'], $_GET['pl_cpt'] ) && 'pizzalayer-content' === $_GET['page'] ) { // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only menu highlight, no state change.
+			$active_cpt = sanitize_key( wp_unslash( $_GET['pl_cpt'] ) ); // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only menu highlight, no state change.
 		}
 		?>
 		<style>

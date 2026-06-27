@@ -121,12 +121,12 @@ class SiteMigration {
 			// Headers already committed before this admin_post handler ran, so
 			// a file download can't be sent. Fall back to a no-JavaScript page
 			// presenting the export JSON in a read-only textarea to copy/save.
-			$back = esc_url( wp_get_referer() ?: admin_url( 'admin.php?page=pizzalayer-migration' ) );
+			$back = wp_get_referer() ?: admin_url( 'admin.php?page=pizzalayer-migration' );
 			echo '<!DOCTYPE html><html><head><meta charset="utf-8"><title>' . esc_html__( 'PizzaLayer Site Export', 'pizzalayer' ) . '</title></head><body style="font-family:sans-serif;padding:24px;max-width:820px;margin:0 auto;">';
 			echo '<h1 style="font-size:18px;">' . esc_html__( 'Site export', 'pizzalayer' ) . '</h1>';
 			echo '<p>' . esc_html__( 'Automatic download was unavailable on this server. Copy the text below and save it with this file name:', 'pizzalayer' ) . ' <code>' . esc_html( $filename ) . '</code></p>';
 			echo '<textarea readonly rows="20" style="width:100%;box-sizing:border-box;font-family:monospace;font-size:12px;">' . esc_textarea( $json ) . '</textarea>';
-			echo '<p><a href="' . $back . '">' . esc_html__( 'Back', 'pizzalayer' ) . '</a></p>';
+			echo '<p><a href="' . esc_url( $back ) . '">' . esc_html__( 'Back', 'pizzalayer' ) . '</a></p>';
 			echo '</body></html>';
 			exit;
 		}
@@ -135,7 +135,7 @@ class SiteMigration {
 		header( 'Content-Type: application/json; charset=utf-8' );
 		header( 'Content-Disposition: attachment; filename="' . $filename . '"' );
 		header( 'Content-Length: ' . strlen( $json ) );
-		echo $json; // phpcs:ignore WordPress.Security.EscapeOutput — raw JSON download
+		echo $json; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Raw JSON file download (Content-Type: application/json).
 		exit;
 	}
 
@@ -356,6 +356,8 @@ class SiteMigration {
 	 * Returns an HTML notice (success or error) for inline display.
 	 */
 	private function handle_import_upload(): string {
+		check_admin_referer( 'pizzalayer_site_import' );
+
 		if ( empty( $_FILES['pizzalayer_site_import_file']['tmp_name'] ) ) {
 			return $this->error_notice( __( 'No file received.', 'pizzalayer' ) );
 		}
@@ -797,7 +799,7 @@ class SiteMigration {
 			</div>
 		</div>
 
-		<?php if ( $notice ) { echo $notice; /* phpcs:ignore WordPress.Security.EscapeOutput — pre-built, escaped notice */ } ?>
+		<?php if ( $notice ) { echo $notice; /* phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Pre-built, escaped notice. */ } ?>
 
 		<div class="psm-grid">
 

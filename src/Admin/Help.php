@@ -21,7 +21,7 @@ class Help {
 	public function render(): void {
 		if ( ! current_user_can( 'manage_options' ) ) { return; }
 
-		$active   = isset( $_GET['section'] ) ? sanitize_key( $_GET['section'] ) : 'quickstart';
+		$active   = isset( $_GET['section'] ) ? sanitize_key( $_GET['section'] ) : 'quickstart'; // phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only: selects which help section to display; validated against the allowlist below.
 		$sections = $this->get_sections();
 		if ( ! array_key_exists( $active, $sections ) ) { $active = 'quickstart'; }
 		$hub = admin_url( 'admin.php?page=pizzalayer-help' );
@@ -55,7 +55,7 @@ class Help {
 				<?php foreach ( $sections as $key => $sec ) : ?>
 				<a href="<?php echo esc_url( add_query_arg( 'section', $key, $hub ) ); ?>"
 				   class="plhelp-nav__item<?php echo $key === $active ? ' plhelp-nav__item--active' : ''; ?>">
-					<span class="plhelp-nav__icon"><?php echo $sec['icon']; ?></span>
+					<span class="plhelp-nav__icon"><?php echo esc_html( $sec['icon'] ); ?></span>
 					<?php echo esc_html( $sec['title'] ); ?>
 				</a>
 				<?php endforeach; ?>
@@ -87,7 +87,7 @@ class Help {
 	}
 
 	private function render_section( string $key, array $meta ): void {
-		echo '<h2 class="plhelp-section-title">' . $meta['icon'] . ' ' . esc_html( $meta['title'] ) . '</h2>';
+		echo '<h2 class="plhelp-section-title">' . esc_html( $meta['icon'] ) . ' ' . esc_html( $meta['title'] ) . '</h2>';
 		$method = 'section_' . $key;
 		if ( method_exists( $this, $method ) ) { $this->$method(); }
 	}
@@ -614,7 +614,7 @@ class Help {
 			<?php foreach ( $types as $t ) : ?>
 			<div class="plhelp-layer-card">
 				<div class="plhelp-layer-card__head" style="border-left-color:<?php echo esc_attr( $t['color'] ); ?>">
-					<span class="plhelp-layer-card__icon" style="color:<?php echo esc_attr( $t['color'] ); ?>"><?php echo $t['icon']; ?></span>
+					<span class="plhelp-layer-card__icon" style="color:<?php echo esc_attr( $t['color'] ); ?>"><?php echo esc_html( $t['icon'] ); ?></span>
 					<div>
 						<h3><?php echo esc_html( $t['name'] ); ?></h3>
 						<span class="plhelp-badge" style="background:<?php echo esc_attr( $t['color'] ); ?>20;color:<?php echo esc_attr( $t['color'] ); ?>">z-index: <?php echo esc_html( $t['z'] ); ?></span>
@@ -852,13 +852,13 @@ class Help {
 		<ol class="plhelp-list plhelp-list--numbered">
 			<li><strong>Child theme:</strong> <code>/wp-content/themes/your-child-theme/pzttemplates/your-slug/</code></li>
 			<li><strong>Parent theme:</strong> <code>/wp-content/themes/your-theme/pzttemplates/your-slug/</code></li>
-			<li><strong>Plugin:</strong> <code>/wp-content/plugins/PizzaLayer/templates/your-slug/</code></li>
+			<li><strong>Plugin:</strong> <code>/wp-content/plugins/pizzalayer/templates/your-slug/</code></li>
 		</ol>
 		<p>PizzaLayer checks the child theme first — your customisations survive plugin updates safely.</p>
 
 		<h3>Creating a custom template</h3>
 		<ol class="plhelp-list plhelp-list--numbered">
-			<li>Copy the <code>nightpie</code> directory from <code>/plugins/PizzaLayer/templates/</code> to your theme's <code>pzttemplates/</code> folder.</li>
+			<li>Copy the <code>nightpie</code> directory from <code>/plugins/pizzalayer/templates/</code> to your theme's <code>pzttemplates/</code> folder.</li>
 			<li>Rename the directory to your slug (e.g. <code>mypizzeria</code>).</li>
 			<li>Edit <code>template.css</code> — all main variables are CSS custom properties at the top of the file.</li>
 			<li>Restructure HTML in <code>pztp-containers-menu.php</code> as needed. The <code>$atts</code> and <code>$instance_id</code> variables are available.</li>
@@ -916,7 +916,7 @@ class Help {
 		<div class="plhelp-info-box plhelp-info-box--warn">
 			<span class="dashicons dashicons-warning"></span>
 			<div>
-				<strong>Always use your theme directory for custom templates.</strong> Files inside <code>/plugins/PizzaLayer/templates/</code> are overwritten on plugin update. Anything in <code>/pzttemplates/</code> in your theme is safe.
+				<strong>Always use your theme directory for custom templates.</strong> Files inside <code>/plugins/pizzalayer/templates/</code> are overwritten on plugin update. Anything in <code>/pzttemplates/</code> in your theme is safe.
 			</div>
 		</div>
 	<?php }

@@ -101,19 +101,19 @@ class LayerImageMaker {
 						[ 'id' => 'plim-opacity',     'label' => __( 'Opacity', 'pizzalayer' ),     'min' => 0,    'max' => 100, 'def' => 100, 'unit' => '%' ],
 					];
 					foreach ( $sliders as $s ) {
-						$mid = esc_attr( $s['id'] );
+						$mid = (string) $s['id'];
 						$min = (int) $s['min'];
 						$max = (int) $s['max'];
 						$def = (int) $s['def'];
-						$unit = esc_html( $s['unit'] );
+						$unit = (string) $s['unit'];
 						?>
 						<div class="plim-slider-row">
-							<label class="plim-slider-label" for="<?php echo $mid; ?>">
+							<label class="plim-slider-label" for="<?php echo esc_attr( $mid ); ?>">
 								<?php echo esc_html( $s['label'] ); ?>
-								<span class="plim-slider-val" id="<?php echo $mid; ?>-val"><?php echo $def . $unit; ?></span>
+								<span class="plim-slider-val" id="<?php echo esc_attr( $mid ); ?>-val"><?php echo esc_html( $def . $unit ); ?></span>
 							</label>
-							<input type="range" id="<?php echo $mid; ?>" class="plim-slider" data-unit="<?php echo $unit; ?>"
-							       min="<?php echo $min; ?>" max="<?php echo $max; ?>" value="<?php echo $def; ?>" step="1">
+							<input type="range" id="<?php echo esc_attr( $mid ); ?>" class="plim-slider" data-unit="<?php echo esc_attr( $unit ); ?>"
+							       min="<?php echo esc_attr( $min ); ?>" max="<?php echo esc_attr( $max ); ?>" value="<?php echo esc_attr( $def ); ?>" step="1">
 						</div>
 						<?php
 					}
@@ -259,8 +259,8 @@ class LayerImageMaker {
 		check_ajax_referer( 'pizzalayer_layer_image_maker', 'nonce' );
 		if ( ! current_user_can( 'upload_files' ) ) { wp_send_json_error( 'Forbidden' ); }
 
-		$data     = isset( $_POST['data'] ) ? sanitize_text_field( $_POST['data'] ) : '';
-		$filename = isset( $_POST['filename'] ) ? sanitize_file_name( $_POST['filename'] ) : 'layer-image.png';
+		$data     = isset( $_POST['data'] ) ? sanitize_text_field( wp_unslash( $_POST['data'] ) ) : '';
+		$filename = isset( $_POST['filename'] ) ? sanitize_file_name( wp_unslash( $_POST['filename'] ) ) : 'layer-image.png';
 
 		// Strip data-URI header
 		if ( strpos( $data, 'base64,' ) !== false ) {

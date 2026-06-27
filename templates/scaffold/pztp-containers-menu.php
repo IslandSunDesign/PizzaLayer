@@ -30,6 +30,8 @@
  * ─────────────────────────────────────────────────────────────────────────────
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial; this file is include'd inside a method (render_template / load_template_custom / inject_inline_styles / Pro CartIntegration::render_cart_button), so its top-level variables are method-local, not global.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Template helper functions use the plugin's pzt_ (PizzaLayer Template) prefix; shared/back-compat helpers are function_exists()-guarded against redeclaration.
 
 // ── Guard against direct inclusion without context ───────────────────────────
 if ( ! isset( $instance_id ) )      { $instance_id    = 'pizzabuilder-1'; }
@@ -152,7 +154,7 @@ function pzt_scaffold_partial( string $name, array $extra_vars = [], array $atts
 
     // Guard against empty filename (e.g. filter returned '' or sanitize_file_name() stripped everything)
     if ( '' === trim( $filename ) ) {
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, WordPress.Security.EscapeOutput.OutputNotEscaped -- Developer warning to error log; interpolated values are internal template identifiers, not user input.
         trigger_error( "PizzaLayer Scaffold: empty partial filename for '{$name}'", E_USER_WARNING );
         return;
     }
@@ -160,7 +162,7 @@ function pzt_scaffold_partial( string $name, array $extra_vars = [], array $atts
     $path = __DIR__ . '/partials/' . $filename;
     // Use is_file() — file_exists() returns true for directories, which causes include() to fail
     if ( ! is_file( $path ) ) {
-        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error
+        // phpcs:ignore WordPress.PHP.DevelopmentFunctions.error_log_trigger_error, WordPress.Security.EscapeOutput.OutputNotEscaped -- Developer warning to error log; interpolated values are internal template identifiers, not user input.
         trigger_error( "PizzaLayer Scaffold: partial not found: {$path}", E_USER_WARNING );
         return;
     }
@@ -349,7 +351,7 @@ if ( 'yes' !== $sc_show_labels ) {
 }
 if ( $sc_custom_css ) {
 	$_sc_instance_css .= '/* Custom CSS — Scaffold template */' . "\n";
-	$_sc_instance_css .= wp_strip_all_tags( $sc_custom_css ) . "\n"; // phpcs:ignore — user-entered CSS
+	$_sc_instance_css .= wp_strip_all_tags( $sc_custom_css ) . "\n"; // phpcs:ignore -- user-entered CSS
 }
 // Attach to the template stylesheet handle (enqueued by AssetManager as
 // 'pizzalayer-template-scaffold'); fall back to a scoped <style> tag when that

@@ -27,6 +27,7 @@
  */
 
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial; this file is include'd inside a method (render_template / load_template_custom / inject_inline_styles / Pro CartIntegration::render_cart_button), so its top-level variables are method-local, not global.
 if ( ! isset( $instance_id ) ) { $instance_id = ''; }
 
 /* Robust setting access — Pro provides pztpro_get_setting(); guard so the bar
@@ -36,23 +37,23 @@ $show_qty   = $pzt_can_setting ? (bool) pztpro_get_setting( 'show_quantity_selec
 $max_qty    = max( 1, $pzt_can_setting ? (int) pztpro_get_setting( 'max_quantity', 99 ) : 99 );
 $show_notes = $pzt_can_setting ? (bool) pztpro_get_setting( 'enable_order_notes', false ) : false;
 $note_ph    = ( $pzt_can_setting ? (string) pztpro_get_setting( 'order_note_placeholder', '' ) : '' );
-if ( '' === $note_ph ) { $note_ph = __( 'Any special requests?', 'pizzalayerpro' ); }
+if ( '' === $note_ph ) { $note_ph = __( 'Any special requests?', 'pizzalayer' ); }
 
 /* Command Center lets the site owner customise the Add to Cart label from the
  * template settings page (Templates → Command Center → Add to Cart Button Text). */
 $cta_text = sanitize_text_field( (string) get_option( 'commandcenter_setting_cta_text', '' ) );
-if ( '' === $cta_text ) { $cta_text = __( 'Add to Cart', 'pizzalayerpro' ); }
+if ( '' === $cta_text ) { $cta_text = __( 'Add to Cart', 'pizzalayer' ); }
 ?>
 <div class="pztpro-checkout-bar pztpro-checkout-bar--commandcenter"
      id="pztpro-checkout-bar-<?php echo esc_attr( $instance_id ); ?>"
      data-instance="<?php echo esc_attr( $instance_id ); ?>"
-     role="region" aria-label="<?php esc_attr_e( 'Pizza order summary', 'pizzalayerpro' ); ?>">
+     role="region" aria-label="<?php esc_attr_e( 'Pizza order summary', 'pizzalayer' ); ?>">
 
     <?php if ( $show_notes ) : ?>
     <div class="pztpro-bar-notes">
         <label class="pztpro-bar-notes__label" for="pztpro-note-cc-<?php echo esc_attr( $instance_id ); ?>">
             <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.6" aria-hidden="true"><path d="M2 2h12v10H2z"/><path d="M5 7h6M5 9.5h4"/></svg>
-            <?php esc_html_e( 'Special instructions', 'pizzalayerpro' ); ?>
+            <?php esc_html_e( 'Special instructions', 'pizzalayer' ); ?>
         </label>
         <textarea id="pztpro-note-cc-<?php echo esc_attr( $instance_id ); ?>"
                   class="pztpro-bar-notes__input pztpro-order-note-input"
@@ -75,11 +76,11 @@ if ( '' === $cta_text ) { $cta_text = __( 'Add to Cart', 'pizzalayerpro' ); }
             <button type="button" class="pztpro-qty-btn pztpro-qty-btn--minus"
                     data-instance="<?php echo esc_attr( $instance_id ); ?>"
                     disabled
-                    aria-label="<?php esc_attr_e( 'Decrease quantity', 'pizzalayerpro' ); ?>">&minus;</button>
+                    aria-label="<?php esc_attr_e( 'Decrease quantity', 'pizzalayer' ); ?>">&minus;</button>
             <span class="pztpro-qty-value" id="pztpro-qty-<?php echo esc_attr( $instance_id ); ?>" data-qty="1">1</span>
             <button type="button" class="pztpro-qty-btn pztpro-qty-btn--plus"
                     data-instance="<?php echo esc_attr( $instance_id ); ?>"
-                    aria-label="<?php esc_attr_e( 'Increase quantity', 'pizzalayerpro' ); ?>">+</button>
+                    aria-label="<?php esc_attr_e( 'Increase quantity', 'pizzalayer' ); ?>">+</button>
         </div>
         <?php endif; ?>
 

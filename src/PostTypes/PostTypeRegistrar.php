@@ -90,18 +90,28 @@ class PostTypeRegistrar {
 			'singular_name'         => $singular,
 			'menu_name'             => $plural,
 			'name_admin_bar'        => $singular,
+			/* translators: %s = the post type name. */
 			'archives'              => sprintf( __( '%s List', 'pizzalayer' ), $plural ),
+			/* translators: %s = the post type name. */
 			'all_items'             => sprintf( __( 'All %s', 'pizzalayer' ), $plural ),
+			/* translators: %s = the post type name. */
 			'add_new_item'          => sprintf( __( 'Add New %s', 'pizzalayer' ), $singular ),
 			'add_new'               => __( 'Add New', 'pizzalayer' ),
+			/* translators: %s = the post type name. */
 			'edit_item'             => sprintf( __( 'Edit %s', 'pizzalayer' ), $singular ),
+			/* translators: %s = the post type name. */
 			'update_item'           => sprintf( __( 'Update %s', 'pizzalayer' ), $singular ),
+			/* translators: %s = the post type name. */
 			'view_item'             => sprintf( __( 'View %s', 'pizzalayer' ), $singular ),
+			/* translators: %s = the post type name. */
 			'search_items'          => sprintf( __( 'Search %s', 'pizzalayer' ), $plural ),
 			'not_found'             => __( 'Not found', 'pizzalayer' ),
 			'not_found_in_trash'    => __( 'Not found in Trash', 'pizzalayer' ),
+			/* translators: %s = the post type name. */
 			'featured_image'        => sprintf( __( '%s Image', 'pizzalayer' ), $singular ),
+			/* translators: %s = the post type name. */
 			'set_featured_image'    => sprintf( __( 'Set %s image', 'pizzalayer' ), strtolower( $singular ) ),
+			/* translators: %s = the post type name. */
 			'remove_featured_image' => sprintf( __( 'Remove %s image', 'pizzalayer' ), strtolower( $singular ) ),
 		];
 

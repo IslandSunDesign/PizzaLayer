@@ -1,5 +1,6 @@
 <?php
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Template helper functions use the plugin's pzt_ (PizzaLayer Template) prefix; shared/back-compat helpers are function_exists()-guarded against redeclaration.
 do_action( 'pizzalayer_file_pztp-template-custom_start' );
 
 /**
@@ -180,7 +181,7 @@ function pzt_commandcenter_inject_css(): void {
 		$css .= ".cc-root .cc-main-col { width: 100%; }";
 	}
 
-	wp_add_inline_style( 'pizzalayer-template-commandcenter', $css ); // phpcs:ignore — dynamic CSS vars
+	wp_add_inline_style( 'pizzalayer-template-commandcenter', $css ); // phpcs:ignore -- dynamic CSS vars
 }
 endif;
 

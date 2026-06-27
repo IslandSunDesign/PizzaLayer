@@ -12,6 +12,8 @@
  * each maintain independent state.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial; this file is include'd inside a method (render_template / load_template_custom / inject_inline_styles / Pro CartIntegration::render_cart_button), so its top-level variables are method-local, not global.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Template helper functions use the plugin's pzt_ (PizzaLayer Template) prefix; shared/back-compat helpers are function_exists()-guarded against redeclaration.
 
 // Ensure we have all expected variables (guard for direct include)
 if ( ! isset( $instance_id ) )    { $instance_id    = 'pizzabuilder-1'; }
@@ -449,7 +451,7 @@ $initial_pizza = $builder->build_dynamic(
 							<div class="np-panel__header">
 								<h2 class="np-panel__title"><i class="fa fa-seedling"></i> <?php esc_html_e( 'Choose Your Toppings', 'pizzalayer' ); ?></h2>
 								<p class="np-panel__hint">
-									<?php printf( esc_html__( 'Add up to %s toppings.', 'pizzalayer' ), '<strong>' . esc_html( (string) $max_toppings ) . '</strong>' ); ?>
+									<?php printf( /* translators: %s = maximum number of toppings. */ esc_html__( 'Add up to %s toppings.', 'pizzalayer' ), '<strong>' . esc_html( (string) $max_toppings ) . '</strong>' ); ?>
 								</p>
 							</div>
 							<div class="np-cards-grid np-cards-grid--toppings"><?php echo $toppings_html; // phpcs:ignore ?></div>

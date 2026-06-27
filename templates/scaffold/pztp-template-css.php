@@ -13,6 +13,7 @@
  * stylesheet twice.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial; this file is include'd inside a method (render_template / load_template_custom / inject_inline_styles / Pro CartIntegration::render_cart_button), so its top-level variables are method-local, not global.
 
 if ( ! wp_style_is( 'pizzalayer-template-scaffold', 'enqueued' )
 	&& ! wp_style_is( 'pizzalayer-template-scaffold', 'registered' ) ) {

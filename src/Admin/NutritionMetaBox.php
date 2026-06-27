@@ -189,9 +189,8 @@ class NutritionMetaBox {
 		if ( ! current_user_can( 'edit_post', $post_id ) ) { return; }
 
 		$fields = self::TYPE_FIELDS[ $slug ];
-		$in     = isset( $_POST['pzl_nutrition'] ) && is_array( $_POST['pzl_nutrition'] )
-			? wp_unslash( $_POST['pzl_nutrition'] )
-			: [];
+		// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- Array unslashed here; each field is sanitized individually below (nonce + capability already verified above).
+		$in     = ( isset( $_POST['pzl_nutrition'] ) && is_array( $_POST['pzl_nutrition'] ) ) ? wp_unslash( $_POST['pzl_nutrition'] ) : [];
 
 		// Ingredients — sanitize each line, drop blanks, re-join with "\n".
 		if ( in_array( 'ingredients', $fields, true ) ) {

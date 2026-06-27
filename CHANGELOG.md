@@ -6,6 +6,35 @@ Versions follow [Semantic Versioning](https://semver.org/).
 
 ---
 
+## [1.13.2] - 2026-06-26
+
+### Plugin Check compliance (no behavior change)
+- **Block render callbacks:** replaced the two `wp_is_serving_rest_request()` calls in `BlockRegistrar` with a small private `is_rest_request()` helper that checks the `REST_REQUEST` constant. The block editor previews server-side blocks through the REST block-renderer endpoint, which always defines `REST_REQUEST`, so detection is unchanged — but the plugin no longer references a function that requires WordPress 6.5 while declaring a 6.2 minimum (`wp_function_not_compatible_with_requires_wp`).
+- **Admin sidebar highlight:** corrected the `WordPress.Security.NonceVerification.Recommended` suppression in `AdminMenu::render_menu_styles()`. The `phpcs:ignore` now annotates the line that actually reads `$_GET['pl_cpt']`, the read is `wp_unslash()`'d before `sanitize_key()`, and the two `isset()` checks are consolidated. This is a read-only menu highlight derived from the admin query string with no form processing or state change.
+
+---
+
+## [1.13.1] - 2026-06-26
+
+### Security & Hardening (WordPress.org Plugin Check compliance)
+- **Nonce verification:** added defense-in-depth `check_admin_referer()` at the entry of every settings/import save handler (Settings, Site Migration, Settings Wizard, Template Choice). Each was already only reachable through a nonce-gated path; the re-check makes that explicit and satisfies static analysis. Read-only admin `$_GET` navigation reads are sanitized and documented.
+- **Input sanitization:** added missing `wp_unslash()` to AJAX uploads (layer image maker, layer-image metabox), sanitized the REST rate-limiter IP read, and documented the decode-then-sanitize pattern for JSON/array payloads.
+- **Output escaping:** moved escaping to the point of output across admin screens and the PocketPie / Plainlist / Scaffold templates (previously escaped at assignment, which static analysis can't verify). Behavior is unchanged.
+- **Direct DB:** the Template-Choice preview-page lookup is now object-cached; the Setup-Guide existence check is documented as using hardcoded (non-user) parameters.
+- Fixed several `phpcs:ignore` annotations that used an em-dash separator instead of `--`, which silently disabled the suppression (including real escaping/notice cases).
+
+### Internationalization
+- Standardized the text domain to `pizzalayer` across the entire plugin: the 8 `checkout-bar.php` templates previously used the `pizzalayerpro` domain, which both broke their translation loading in the free plugin and triggered text-domain-mismatch errors. They now use `pizzalayer` (the free plugin is always active when Pro is, so they still translate correctly at runtime).
+- Added `/* translators: */` comments to all placeholder-bearing strings.
+- Removed the redundant manual `load_plugin_textdomain()` call (translations auto-load since WP 4.6; minimum is 6.2).
+
+### Compatibility & Metadata
+- Guarded `wp_is_serving_rest_request()` for WordPress < 6.5.
+- "Tested up to" set to 7.0; readme changelog trimmed to the Plugin Directory's length limit.
+- Prefixed global variables in `uninstall.php`.
+
+---
+
 ## [1.13.0] - 2026-06-26
 
 ### Fixed

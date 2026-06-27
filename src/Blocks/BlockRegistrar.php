@@ -203,11 +203,9 @@ class BlockRegistrar {
 	 */
 	public function render_builder( array $atts ): string {
 
-		// Detect block editor / REST preview context.
-		// wp_is_serving_rest_request() is available since WP 6.5;
-		// fall back to checking the REST constant for older WP.
-		$is_editor_preview = ( function_exists( 'wp_is_serving_rest_request' ) && wp_is_serving_rest_request() )
-		                  || ( defined( 'REST_REQUEST' ) && REST_REQUEST );
+		// Detect block editor / REST preview context. The block-renderer
+		// endpoint runs as a REST request, which always defines REST_REQUEST.
+		$is_editor_preview = $this->is_rest_request();
 
 		if ( $is_editor_preview ) {
 			return $this->editor_placeholder( $atts );
@@ -349,7 +347,7 @@ class BlockRegistrar {
 		] );
 
 		if ( empty( $shortcode_atts['slug'] ) ) {
-			if ( is_admin() || wp_is_serving_rest_request() ) {
+			if ( is_admin() || $this->is_rest_request() ) {
 				return '<p style="color:#999;font-style:italic;font-size:13px;margin:0;">'
 				     . esc_html__( 'Enter a layer slug in the block settings.', 'pizzalayer' )
 				     . '</p>';
@@ -364,6 +362,21 @@ class BlockRegistrar {
 	/* ──────────────────────────────────────────────────────────────
 	   HELPERS
 	   ────────────────────────────────────────────────────────────── */
+
+	/**
+	 * Whether the current request is being served as a REST API request.
+	 *
+	 * Server-side blocks are previewed in the editor through the REST
+	 * block-renderer endpoint, which sets the REST_REQUEST constant for the
+	 * duration of the request. Relying on the constant keeps the plugin
+	 * compatible with its declared minimum WordPress version —
+	 * wp_is_serving_rest_request() only exists since WP 6.5.
+	 *
+	 * @return bool True when handling a REST request.
+	 */
+	private function is_rest_request(): bool {
+		return defined( 'REST_REQUEST' ) && REST_REQUEST;
+	}
 
 	/**
 	 * Strip empty-string values so shortcode_atts() defaults kick in.

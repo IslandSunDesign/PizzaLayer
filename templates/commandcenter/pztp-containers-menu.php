@@ -12,6 +12,8 @@
  *   $function_prefix string 'pzt_commandcenter'
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial; this file is include'd inside a method (render_template / load_template_custom / inject_inline_styles / Pro CartIntegration::render_cart_button), so its top-level variables are method-local, not global.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Template helper functions use the plugin's pzt_ (PizzaLayer Template) prefix; shared/back-compat helpers are function_exists()-guarded against redeclaration.
 
 if ( ! isset( $instance_id ) )     { $instance_id    = 'pizzabuilder-1'; }
 if ( ! isset( $atts ) )            { $atts           = []; }
@@ -377,7 +379,7 @@ do_action( 'pizzalayer_before_builder', $instance_id, $template_slug );
                  role="button" tabindex="0"
                  onclick="window['<?php echo esc_js( $cc_var ); ?>']&&window['<?php echo esc_js( $cc_var ); ?>'].goTab('<?php echo esc_js( $tab ); ?>')"
                  onkeydown="if(event.key==='Enter'||event.key===' ')this.click()"
-                 aria-label="<?php echo esc_attr( sprintf( __( 'Step %1$s: %2$s', 'pizzalayer' ), $step_n, $label ) ); ?>">
+                 aria-label="<?php echo esc_attr( sprintf( /* translators: 1: step number, 2: step label. */ __( 'Step %1$s: %2$s', 'pizzalayer' ), $step_n, $label ) ); ?>">
                 <div class="cc-step__bubble">
                     <span class="cc-step__num"><?php echo esc_html( (string) $step_n ); ?></span>
                     <span class="cc-step__check" aria-hidden="true">
@@ -541,7 +543,7 @@ do_action( 'pizzalayer_before_builder', $instance_id, $template_slug );
                         <div>
                             <h2 class="cc-panel__title"><?php esc_html_e( 'Choose Toppings', 'pizzalayer' ); ?></h2>
                             <p class="cc-panel__hint">
-                                <?php printf( esc_html__( 'Up to %s toppings.', 'pizzalayer' ), '<strong>' . esc_html( (string) $max_toppings ) . '</strong>' ); ?>
+                                <?php printf( /* translators: %s = maximum number of toppings. */ esc_html__( 'Up to %s toppings.', 'pizzalayer' ), '<strong>' . esc_html( (string) $max_toppings ) . '</strong>' ); ?>
                             </p>
                         </div>
                     </div>
@@ -634,7 +636,7 @@ do_action( 'pizzalayer_before_builder', $instance_id, $template_slug );
                             </span>
                             <button type="button" class="cc-review-edit"
                                     onclick="window['<?php echo esc_js( $cc_var ); ?>']&&window['<?php echo esc_js( $cc_var ); ?>'].goTab('<?php echo esc_js( $key ); ?>')"
-                                    aria-label="<?php echo esc_attr( sprintf( __( 'Edit %s', 'pizzalayer' ), $row_label ) ); ?>">
+                                    aria-label="<?php echo esc_attr( sprintf( /* translators: %s = item label. */ __( 'Edit %s', 'pizzalayer' ), $row_label ) ); ?>">
                                 <svg viewBox="0 0 16 16" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round" aria-hidden="true"><path d="M11.5 2.5a1.5 1.5 0 0 1 2 2L5 13l-3 1 1-3Z"/></svg>
                                 <?php esc_html_e( 'Edit', 'pizzalayer' ); ?>
                             </button>

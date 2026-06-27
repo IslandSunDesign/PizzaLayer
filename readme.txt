@@ -2,9 +2,9 @@
 Contributors: islandsundesign
 Tags: pizza, restaurant, woocommerce, customizer, builder
 Requires at least: 6.2
-Tested up to: 6.8
+Tested up to: 7.0
 Requires PHP: 7.4
-Stable tag: 1.13.0
+Stable tag: 1.13.2
 License: GPLv2 or later
 License URI: https://www.gnu.org/licenses/gpl-2.0.html
 
@@ -195,6 +195,17 @@ Visit [pizzalayer.com/support](https://pizzalayer.com/support) or use the WordPr
 
 == Changelog ==
 
+
+= 1.13.2 =
+* Plugin Check cleanup (no behavior change): replaced the version-gated `wp_is_serving_rest_request()` calls in the block render callbacks with a small internal `REST_REQUEST` check, so block editor previews are detected without referencing a function newer than the plugin's minimum WordPress version.
+* Fixed the nonce-verification suppression on the admin sidebar's active-CPT highlight — the `phpcs:ignore` now sits on the line that actually reads `$_GET`, and the read is `wp_unslash()`'d before sanitizing. This is a read-only menu highlight with no state change.
+
+= 1.13.1 =
+* Security & hardening pass for WordPress.org Plugin Check: added defense-in-depth nonce re-checks to all settings/import save handlers, added missing `wp_unslash()` on AJAX uploads, sanitized the REST rate-limiter IP read, and moved output escaping to the point of output across the admin screens and the PocketPie/Plainlist/Scaffold templates (behavior unchanged).
+* The Template-Choice preview-page lookup is now object-cached; fixed several `phpcs:ignore` comments that used an em-dash instead of `--` (which silently disabled the suppression, including real escaping cases).
+* Internationalization: standardized the entire plugin to the `pizzalayer` text domain (the 8 checkout-bar templates previously used `pizzalayerpro`, which broke their translations and caused mismatch errors); added translator comments to every placeholder string; removed the redundant manual text-domain load (auto-loaded since WP 4.6).
+* Compatibility: guarded `wp_is_serving_rest_request()` for WP < 6.5; "Tested up to" set to 7.0; prefixed globals in uninstall.php.
+
 = 1.13.0 =
 * **Fixed: template card & background settings that appeared to "do nothing."** A dormant global-skin override block in the Metro and Nightpie stylesheets was collapsing card and root styling to `inherit`, overriding each template's own values. This was the shared root cause behind: Metro's **Page Background Color** not applying, Nightpie's **Item Card Border** setting having no effect, and Nightpie's item cards losing their interior padding. All three now work as intended, and selected-card accent borders and idle card backgrounds resolve correctly again.
 * **Metro → new UI Container Background setting.** Colour the builder panel (hero + ingredient sections) as one cohesive surface, separate from the Page Background (which now visibly frames the panel) and the card background.
@@ -210,278 +221,7 @@ Visit [pizzalayer.com/support](https://pizzalayer.com/support) or use the WordPr
 * Scaffold: **Template Settings audit — all settings verified.** Every Scaffold setting was traced from the options page to the front end and confirmed to take effect; the new option keys were added to uninstall cleanup.
 * Scaffold: **Stylesheet no longer loaded twice.** `pztp-template-css.php` now defers to the canonical `pizzalayer-template-scaffold` handle and only enqueues a fallback copy when that handle is absent.
 
-= 1.9.0 =
-* Plainlist template (→ 1.1.0): **Add to Cart CTA restyled from the template stylesheet** — the PizzaLayerPro checkout bar (button, price, quantity stepper, order note) is now fully styled for Plainlist instead of relying on Pro's generic styles. New Add-to-Cart settings let you set the **button text, style** (solid / outline / text-link), **size**, **background colour, text colour, corner radius,** and a **full-width** toggle. Markup/classes are unchanged so Pro's cart bindings keep working.
-* Plainlist: **Fixed faint, hard-to-read list.** On some themes the item labels rendered as very light grey on white because theme rules for content `li` / `label` / `a` overrode the template. Item, heading, and accent colours are now re-asserted (scoped to the builder) so the **Item Text Color** and **Section Header Color** settings always win.
-* Plainlist: **New list-style settings.** Added **List Row Style** (plain / bordered / striped / cards / underline), **Selected Item Style** (accent text / filled / left bar / bold), **Row Padding**, and **Item Label Weight** so the list display can be tuned without editing CSS.
-* Plainlist: **Template Settings audit — all settings verified.** Every Plainlist setting was traced from the options page to the front end and confirmed to take effect; the new option keys were added to export/import and uninstall cleanup.
-
-= 1.8.0 =
-* Metro template (→ 1.1.0): **Add to Cart CTA restyled from the template stylesheet** — the PizzaLayerPro checkout bar's Add to Cart button, price, quantity stepper and order-note field are now fully styled for Metro: an accent pill button with cart icon and hover/active/focus/disabled/loading/added states, all tracking the Accent Color setting. Markup/classes are unchanged so Pro's cart bindings keep working.
-* Metro: **New "Container Background Image" setting.** You can now set an image behind the whole builder container (layered over the Page Background Color, displayed centered and scaled to cover). Picked via the WordPress media library, with a live preview.
-* Admin: Template Settings gained a reusable **image** field type (media-library picker with preview and manual-URL fallback), available to any template's options.
-* Metro: **Template Settings audit — all settings verified.** Every Metro setting was traced from the options page to the front end and confirmed to take effect; the new setting key was added to uninstall cleanup.
-* Fixed: The Settings page's "Template" quick-jump pill now scrolls to the right card (the target anchor was missing).
-
-= 1.7.1 =
-* NightPie template (→ 1.1.0): **Add to Cart CTA restyled from the template stylesheet** — a gradient neon-orange pill button with cart icon, glowing price, quantity stepper and order-note field, all tracking the Accent Color setting.
-* NightPie: **Step indicator moved below the choices.** The progress dots and the Prev/Next section navigation now render in a footer beneath the options instead of above them.
-* NightPie: **Fixed unreadable size buttons.** The inline size selector (PizzaLayerPro) rendered as light-on-white in some setups; the size options are now correctly dark with light text and an accent-highlighted active state.
-* NightPie: **One-column layout on tablets and below.** The two-column split now engages at ≥1024px; tablet and smaller widths stack with the pizza preview on top and a compact tab bar.
-* NightPie: **Template Settings audit — all settings now take effect.** Background Color and Font Family were previously inert (overridden by other rules) and the Accent Glow toggle only partially applied; all NightPie settings are now verified to affect the front end. NightPie setting keys were also added to uninstall cleanup.
-
-= 1.7.0 =
-* PocketPie template (→ 1.1.0): **Corner Quad redesign.** The four corner triggers and the actions-row buttons now open the shared full-screen modal (with an X close button) instead of small inward-expanding corner panels.
-* PocketPie: **Larger centered pizza** by default (160px → 300px), with the Pizza Size setting range widened to 120–480px and viewport-safe sizing on phones.
-* PocketPie: **Size selector relocated** — the standalone "Choose Pizza Size" row was removed; the size options now open from the Size button in the actions row into the shared modal.
-* PocketPie: **Review button** moved into the actions row, right-aligned and styled as a prominent button.
-* PocketPie: **Add to Cart CTA** restyled from the template stylesheet — a prominent gradient button with quantity stepper, price and order-note styling.
-* PocketPie: Settings audit — removed the two corner-panel settings made obsolete by the modal redesign; all remaining settings verified to take effect.
-
-= 1.6.5 =
-* Reliability: **PizzaLayer no longer requires SCF/ACF to render.** Front-end templates and the `[pizza_layer_info]` shortcode previously called `get_field()` directly, which fataled on sites without Secure Custom Fields / ACF active. All field reads now go through a safe accessor that falls back to post meta (resolving stored attachment IDs to image URLs), so the builder degrades gracefully instead of erroring.
-* Changed: **Layer post types are no longer exposed on the public front end.** The ingredient post types (toppings, cheeses, crusts, etc.) are now `publicly_queryable => false` with no archive and excluded from site search, so they no longer generate stray single pages or pollute search results. They remain fully available through the REST API (`show_in_rest` stays on) for apps and the block editor, exactly as before.
-* Security: **SSRF hardening on site-import image sideloading.** Remote layer-image URLs in an import file are now restricted to http(s) and validated against `wp_http_validate_url()`, blocking fetches to loopback/private/reserved hosts.
-* Security: **Size cap on base64 layer-image uploads.** The layer-image AJAX endpoints now reject oversized decoded payloads (filterable via `pizzalayer_max_layer_image_bytes`) to avoid large memory allocations.
-* Security: **REST layer type allowlisting.** The `/layer-url` endpoint now normalizes the `type` parameter against a fixed allowlist instead of building a post-type name from arbitrary input.
-* Fixed: **Theme custom-template directory standardized to `pzttemplates/`.** Template discovery previously scanned a different folder than the one the documentation and options loader used, so a theme override could be found but have its options file ignored (or vice-versa). All paths now agree on `{theme}/pzttemplates/your-slug/`.
-* Fixed: The Layer Builder Wizard no longer runs `sanitize_text_field()` over the raw meta JSON before decoding it (which could corrupt valid values); decoded values are still individually sanitized against the existing allowlist.
-* Fixed: Removed a stale admin script (`admin-tabs.js`) that posted to AJAX actions which no longer exist.
-* Fixed: Corrected internationalization calls — removed a double-translation on the "None / Plugin default" option and dynamic-variable translation calls on post-type labels (flagged by the WordPress.org i18n checks).
-
-= 1.6.4 =
-* Added: The Template page can now show a per-browser preview next to the saved default. A new `pizzalayer_active_user_template` filter lets a theme report which template the current visitor is previewing; when it differs from the saved default, the page shows a "Previewing (this browser)" pill and marks that card, while still clearly labelling the real saved default. With no theme wiring it up, the page looks and behaves exactly as before.
-
-= 1.6.3 =
-* Security: **REST API rate limiting.** The optional public endpoints (`/render`, `/layer-url`) now enforce a per-IP request limit (default 120 requests/minute, filterable) so they can't be used to flood the server when enabled. Over-limit requests receive a 429.
-* Performance: **REST render caching.** When the *REST cache TTL* setting is set above 0, identical `/render` requests are served from a short-lived cache instead of rebuilding the pizza from the database each time.
-* Changed: Internal cleanup — moved the Content Hub's list-table column styling into the normal stylesheet pipeline, and replaced the export "headers already sent" fallback with a no-JavaScript copy/paste page. No visible change in normal use.
-
-= 1.6.2 =
-* Security: **Custom CSS and Custom JS now require the `unfiltered_html` capability.** These Advanced fields are output verbatim on the front end, so editing them now requires the same capability WordPress uses for raw markup — not just `manage_options`. On single sites nothing changes (administrators already have it). On multisite, site administrators without `unfiltered_html` now see the fields as read-only and any imported values for them are ignored, closing a path that could otherwise inject site-wide CSS/JS. The gate is applied to the Settings save, the settings import, and the full site-migration import.
-
-= 1.6.1 =
-* Improved: **Setup Guide steps now auto-complete reliably.** Three steps that previously only checked off when you clicked "Mark done" are now auto-detected: "Prepare your layer images" (ticks once any layer has an image or featured image), "Embed the Builder on a page" (ticks once the `[pizza_builder]` shortcode is found in published content), and the final step — renamed "View your builder on the front end" — which ticks the first time the builder renders on your live site. A manual fallback remains for each, and "Undo" only appears when a step was hand-marked rather than auto-detected.
-
-= 1.6.0 =
-* New: **Nutrition & Ingredients meta box.** Each edible layer type (Toppings, Crusts, Sauces, Cheeses, Drizzles) now has a native "Nutrition & Ingredients" box on its edit screen. Add an Ingredients list (one per line) plus serving size, calories, spice level, thickness (crusts), and dietary flags (vegetarian / vegan / gluten-free / dairy-free). Values are stored on the plugin's own meta keys — no ACF/SCF required — and feed the Content Hub columns. A new optional "Ingredients" column is available in the Content Hub.
-* New: **Setting — disable the Content Layer Manager.** Settings → Content & Data lets you bypass the Content Hub and send the sidebar layer links and dashboard stat boxes straight to the standard WordPress post lists. Direct hits on the Content Hub redirect to the matching WP list.
-* New: **Setting — hide incomplete layers.** Optionally exclude any layer missing the data needed to render or price it (image-bearing layers without a usable image; sizes without a diameter) from the builder and from calculations, so a half-configured item can't break the builder.
-* Changed: **Admin menu reorganized.** Added a "Basics" group above "Content" containing Template, Settings, Help, and Shortcode Generator (moved out of "Tools").
-
-= 1.5.4 =
-* Changed: **Dashboard — removed the Light/Dark mode toggle.** The Auto/Light/Dark control in the dashboard header has been removed along with the admin dark-mode styling it drove, which had little visible effect. This also prevents getting stuck in a dark admin with no way to switch back.
-* Changed: **Dashboard — Help is now a prominent, featured item** in the quick-access nav (moved up and visually highlighted) so support is easier to find.
-* Changed: **Dashboard — removed the Layer Manager section and the Tips & Tricks column.** Layer management now lives in the Content Hub (List/Grid views with bulk actions and custom columns).
-* Added: **Dashboard — the layer-count boxes are now clickable.** Each box in the top stats row links to its layer type in the Content Hub (Total → Content Hub, Active Template → Template page).
-
-= 1.5.3 =
-* Fixed: **Content Hub bulk delete/trash no longer errors.** Selecting multiple items with the checkboxes and applying a bulk action (Move to Trash, Restore, Delete Permanently) failed with "Cannot load pizzalayer-content." The bulk-action handler was defined but never hooked to `admin_init`, so the POST fell through to WordPress's page-hook resolution and died. The handler now runs on `admin_init` and redirects cleanly after the action completes — in both List and Grid view.
-* Fixed: **Content Hub List/Grid toggle.** When a user's saved view was Grid, the toolbar's "List" button could no-op because the front-end didn't know the current view. The persisted view mode is now passed to the page so the toggle always switches correctly.
-* Improved: **Content Hub Grid (thumbnail) view** — layers display as a responsive grid of image cards with per-item checkboxes, inline edit/trash actions, search, and paging, as an alternative to the List view. Toggle between List and Grid from the toolbar; the choice is remembered per user.
-* Improved: **Content Hub custom columns** — each layer type can now show optional columns drawn from its custom fields (Order, Dietary, Diameter, Calories, Spice, Thickness, Slug, Description, ID). Most are hidden by default; toggle them from the "Columns" dropdown and the selection is remembered per user, per layer type. The same fields surface as compact chips on the Grid cards.
-* Improved: The Presets tab and the "WP List" button now update correctly when switching layer types within the Content Hub.
-
-= 1.5.2 =
-* Fix: Added the `window.PizzaLayerAPI.setState()` method to the Plainlist, Scaffold, and CommandCenter templates so PizzaLayerPro's Default Layers feature applies correctly on them. All eight bundled templates now expose the same getState / setState / getAllInstances API surface.
-
-= 1.5.0 =
-* Fixed: **Pizza Shape settings now apply.** The global Shape Preset / Aspect Ratio / Border Radius options were never reaching any template due to an attribute-fallback bug — the saved values now apply to all templates and the Gutenberg block. Per-shortcode overrides (`pizza_shape="..."` etc.) continue to take precedence.
-* Fixed: **Crust Padding and the Sauce & Cheese settings now work.** Crust Padding, Sauce Padding, Cheese Distance from Edge, and Cheese Padding are now applied to the rendered pizza layers on every template.
-* Fixed: **Plainlist template settings now apply.** All 30 Plainlist settings were silently discarded due to a CSS-injection timing bug; colours, typography, sizing, and layout options now take effect.
-* Fixed: **Metro template settings now apply.** The Metro colour/typography/size variables were injected too late to take effect, several layout rules were printed as raw text into the page head, and the selected Google Font never loaded — all three issues resolved.
-* Fixed: **PocketPie template settings now work.** Previously none of PocketPie's Template Settings had any effect. Now wired: colour themes (8 presets + custom pickers), typography, widget width, per-layout pizza sizes, Corner Quad corner categories and panel geometry, Layer Deck preview/strip sizing, Slide Drawer height and pill bar position/style, Stack Panel sheet height/progress dots/step label, chip thumbnail size/radius/columns/name labels, summary modal title, Review button visibility and label, Reset button visibility, modal backdrop/animation/backdrop-click-close, swipe-to-close gestures, UI transition speed, chip hover lift, and the custom-CSS box. The Default Layout Mode setting now applies when the shortcode omits `layout=`.
-* New: The **Demo / Announcement Bar** is now displayed above the builder on every template, and the **Help Screen Content** appears as an expandable "Need help?" panel below the builder on every template.
-* Changed: Settings page streamlined — removed the Pizza Display, Animations, UI Styles, Branding, Layout, Typography, Colours, Spacing, and Topping Display sections (these settings were not wired into the templates). Removed the unused Focus Ring, ARIA Language, Image Format, and Client-Side Caching fields from Accessibility & Performance; the working Reduce Motion, High Contrast, Lazy-Load, and Preload options remain.
-* Changed: Removed five PocketPie settings that had no corresponding feature in the template (grain overlay, coverage picker style and reveal, summary mini-pizza, summary empty rows).
-* Changed: Quick-jump menu and admin-bar shortcuts updated to match the current settings sections.
-* Improved: Scaffold template stage now sizes itself per shape (aspect ratio only applies to rectangle/custom; radius only to custom), and PocketPie handles the custom shape.
-
-= 1.4.0 =
-* New: **Site Migration** tool under PizzaLayer → Site Migration. Exports a complete site setup as a single JSON file: every plugin setting, all eight content types (toppings, crusts, sauces, cheeses, drizzles, cuts, sizes, presets) with their full custom fields, the Ingredient Groups taxonomy tree, and (if PizzaLayerPro is active) Pro data via the `pizzalayer_export_payload` filter.
-* New: Layer images are exported as **URL references** (URL + filename + alt + caption), not packaged binaries — keeps export files small. The destination site sideloads each image into its own media library on import.
-* New: Imports are **create-only by slug** — any post or taxonomy term whose slug already exists on the destination is skipped. Re-running an import is idempotent and never destructive (settings always overwrite, but posts/terms never do).
-* New: Two extension hooks — `pizzalayer_export_payload` filter (Pro and other add-ons contribute their data to the export) and `pizzalayer_import_payload` action (consume the full payload on the way in). Documented in Help → Site Migration.
-* New: Site Migration card on the Dashboard quick-nav row.
-* New: Help → Site Migration section with full how-to plus developer extension example.
-* Public API: `PizzaLayer\Admin\Settings::get_option_keys()` — read-only accessor for the canonical option-key list, used by Site Migration and available to extensions.
-* Docs: Help class map + `pizzalayer_cpt_registered` hook description corrected from "7 CPTs" to "8 CPTs (7 layer types + Presets)" — the Presets CPT was always there but was undercounted.
-
-= 1.3.0 =
-* New: Command Center, NightPie, and Colorbox templates now expose configurable settings on the Templates page (colors, typography, geometry, behavioural toggles). Previously these three templates rendered an empty "no customizable settings" panel; they now ship with full settings-driven CSS-variable injection like Metro and Plainlist.
-* New: Colorbox per-category tile colors are now individually configurable (Sizes, Crust, Sauce, Cheese, Toppings, Drizzle, Cuts), plus a master "Colorful Category Tiles" toggle.
-* New: NightPie sticky preview can now be toggled off for a static side-by-side desktop layout.
-* New: Command Center exposes step-number visibility, summary-sidebar visibility, and accent-glow toggles.
-* Fix: Templates page — stray PHP escape (`template\'s`) inside HTML output replaced with proper `&rsquo;`.
-* Docs: Help → Quickstart now lists all seven user-facing templates including Colorbox (was missing) and adds a Settings Wizard primary entry point.
-* Docs: Help → Managing Content now leads with a Layer Builder Wizard fast-path callout.
-* Docs: Help → Template System CSS variable reference rewritten with correct values for NightPie (previous values were wrong) and a new section for Command Center; new "Per-template settings" intro pointing users at the Templates page UI.
-* Docs: Help → Developer Reference class map adds `Core\Loader`, `Core\Activator`, `Core\Deactivator`, and `Admin\Customizer`.
-
-= 1.2.1 =
-* Fix: Layer Builder Wizard now saves correctly — nonce action now matches between client and server (was `pizzalayer_layer_builder` vs `pizzalayer_wizard_save`)
-* Fix: Layer Builder Wizard JS no longer ships with literal `<?php …?>` strings; all UI labels and alerts are now delivered via wp_localize_script with English fallbacks
-* Fix: Layer Image Meta Box JS rewritten to remove leftover PHP and a stray `</script>` literal; multiple meta boxes on the same screen no longer collide
-* Fix: Settings import now preserves Custom CSS and Custom JS (no longer mangled by wp_kses_post on import — matches the live save path)
-* Fix: Settings import hardened — requires a real HTTP upload, checks for upload errors, caps file size at 1 MB, requires a `.json` extension
-* Fix: Template activation now validates the posted slug against available templates before writing the option
-* Fix: Layer Builder Wizard verifies the supplied image_id is an actual image attachment before associating it with the new layer post
-* Fix: Help page "Shortcodes" section icon — the malformed `</>` glyph is now `⌨`
-* Security: Template settings save (TemplateChoice and Settings) now namespace-guards keys so a malicious template-options.php cannot overwrite core options like `siteurl`
-
-= 1.2.0 =
-* **Breaking:** All pricing logic, fields, and settings consolidated into PizzaLayerPro. The free plugin now focuses purely on ingredients, layouts, and visualization; install PizzaLayerPro for prices, cart integration, and checkout.
-* Remove: "Price Modifier" field from Layer Builder Wizard (and its `_pizzalayer_price` post meta save).
-* Remove: "Pricing Grid (CSV)" meta box (`PriceGrid` admin class) — was unused dead code; PizzaLayerPro provides the actual pricing grid.
-* Remove: Settings → Pricing & Cart section (Price Display Mode, Base Price, Currency Symbol Position, Price Update Animation) — these settings are now in PizzaLayerPro → Pro Settings. Replaced with a notice pointing admins to the right place.
-* Remove: Settings → Typography → Price Font Size field and the matching `--pzl-price-size` CSS variable (Pro provides its own price typography).
-* Remove: `priceDisplayMode` from frontend localized config.
-* Remove: Topping Sort → "Price (low to high)" / "Price (high to low)" options (referenced an unused meta key).
-* Remove: Help → Class Reference entry for the deleted `PriceGrid` class.
-* Update: AdminHome and SetupGuide descriptions softened — references to "price data" and "price grid rows" replaced with neutral language; toppings setup now points to PizzaLayerPro for pricing.
-* Update: Uninstall now also clears legacy `_pizzalayer_price` and `*_cost_csv` post meta from older versions.
-
-= 1.1.6 =
-* Remove: Colorbox template removed; Command Center is now the seventh template
-* Fix: Command Center template — selection cards no longer clipped at the bottom; panels now scroll freely to full content height
-* Update: Template default fallback updated from colorbox to nightpie
-
-= 1.1.3 =
-* Fix: Settings Wizard option keys corrected to match actual Settings page — wizard saves now write to the correct database options
-* Fix: Settings Wizard removed non-existent options (dark_mode, cx_allow_name, cx_require_name, cx_show_price_live, layout_show_step_numbers, builder_title, confirm_button_text)
-* Fix: Settings Wizard a11y_focus_ring field changed from toggle to select to match actual field type (theme default / bold / glow / none)
-* Fix: Settings Wizard animation values updated to match plugin values (scale-in, slide-up, flip-in, drop-in, instant)
-* Fix: Settings Wizard pizza_shape options corrected (round, square, rectangle, custom)
-* Fix: Settings Wizard step-by-step mode and cx_show_start_over added as they are real, working settings
-* Improvement: Settings Wizard Topping Rules step simplified — duplicate toppings toggle removed (not a standalone setting in this version)
-* Improvement: Settings Wizard Messaging step updated to use real branding_tagline and settings_demonotice option keys
-* Fix: Help page — template count corrected to six built-in templates (NightPie, Metro, Colorbox, Fornaia, PocketPie, Plainlist) plus Scaffold
-* Fix: Help page — Content Hub and Layer Types reference corrected from 8 to 7 layer types/CPTs
-* Fix: Help page — Developer Reference class map updated with all actual classes, correct PizzaLayer\Api namespace, and proper grouping
-* Fix: Help page — [pizza_layer_info] shortcode added to Shortcodes section with full attribute table and examples
-* Fix: Help page — Gutenberg info box updated to correctly identify which three of the four shortcodes have native blocks
-
-= 1.1.2 =
-* Fix: Standardized plugin name to one-word form "PizzaLayer" throughout all user-facing strings, block labels, admin menus, and readme
-* Fix: Added GPL license.txt to plugin root
-* Fix: Extracted all inline <script> blocks from admin PHP to properly enqueued JS files via wp_enqueue_script and wp_localize_script — resolves WordPress.org submission blocker
-* Fix: Replaced per-instance inline <style> in Scaffold, Metro, and Plainlist templates with wp_add_inline_style() calls  
-* Fix: Added Requires at least: 6.2 and Tested up to: 6.7 to plugin header
-* Fix: Removed artifact includes/{css,js}/ directory from build
-
-= 1.1.0 =
-* New: Layer Builder Wizard — step-by-step guided workflow for adding new ingredients with image upload, field population, and instant publish
-* New: Settings Wizard — guided first-run configuration walkthrough covering template selection, fractions, colours, and layout
-* New: Admin dark mode toggle for all PizzaLayer admin screens
-* New: Colorbox template updated to v1.1.0 with improved touch targets and accessibility enhancements
-* New: Spanish (es_ES) and German (de_DE) translation files bundled
-* New: `[pizza_layer_info]` shortcode for displaying layer metadata inline in content
-* New: `pizzalayer_builder_action_bar` action hook for Pro extension checkout bar integration
-* New: `pizzalayer_tab_order` filter for reordering or removing builder tabs
-* New: `pizzalayer_query_args_toppings` filter for customising topping query arguments
-* New: `restrict` shortcode attribute — limit visible ingredients to a comma-separated slug list
-* New: REST API `/presets` endpoint listing saved pizza presets
-* Improvement: Template loader falls back to first available template rather than hard-coded default when active template is missing
-* Improvement: Admin Content Hub consolidated ingredient management with AJAX panel switching
-* Improvement: Settings export uses a detached JS-constructed form to avoid nested-form issues
-* Improvement: `get_posts()` orderby now uses array syntax for reliable `WP_Post` object returns
-* Fix: `ServerSideRender` in Gutenberg block editor returns a static branded preview when called via REST context
-* Fix: PHP 7.4 compatibility — replaced all `str_ends_with()` / `str_starts_with()` calls with `substr()` / `strpos() === 0` equivalents
-
-= 1.0.4 =
-* Fix: Checkout bar relocated to the very bottom of all 7 template layouts
-* Fix: Checkout bar now renders at 100% width regardless of template
-
-= 1.0.3 =
-* Security: validate base64-decoded image bytes via `finfo::buffer()` before writing to disk in Layer Image Maker and Layer Image Meta Box upload handlers
-* Security: derive file extension from the real MIME type of uploaded bytes rather than the client-supplied filename
-* Security: added `upload_files` capability check to Layer Image Meta Box AJAX handler
-* Security: added allowlist validation to the `field_key` parameter in Layer Image Meta Box AJAX handler — only known meta keys accepted
-* Security: added `sanitize_callback` to the `toppings` argument of the `/render` REST endpoint
-* Docs: corrected REST API section of Help page
-
-= 1.0.2 =
-* Security: added `current_user_can('manage_options')` capability check to template preview override handler
-* Security: strip `</style>` sequences from admin-entered custom CSS before output
-* Security: added `escHtml()` helper to settings-page admin JS, applied to all `innerHTML` injections in the layer picker modal
-* Security: added `scEscHtml()` helper to Scaffold template JS, applied to layer titles and coverage values in summary panel
-* Security: escaped media library attachment URL values before injecting into logo preview `innerHTML`
-* Compatibility: replaced `str_ends_with()` calls with `substr()` equivalents for PHP 7.4 compatibility
-* Compatibility: replaced `str_starts_with()` call with `strpos() === 0` for PHP 7.4 compatibility
-
-= 1.0.1 =
-* Fix: Corrected plugin header text domain declaration
-* Fix: Resolved edge-case PHP notice on first activation before any CPT content exists
-* Fix: Template loader correctly falls back to first available template when active template directory is missing
-
-= 1.0.0 =
-* 7 built-in templates: Colorbox, Metro, NightPie, Fornaia, PocketPie, Plainlist, Scaffold
-* Shortcodes: `[pizza_builder]`, `[pizza_static]`, `[pizza_layer]`, `[pizza_layer_info]`
-* Gutenberg blocks: Pizza Builder, PizzaLayer Image, Pizza Static
-* Custom Post Types: Toppings, Crusts, Sauces, Cheeses, Drizzles, Cuts, Sizes
-* REST API endpoints: `/render`, `/layer-url`, `/presets` (opt-in, disabled by default)
-* Settings page: Typography, Colours, Spacing, Builder Layout, Customer Experience, Performance, Accessibility, Advanced
-* Admin: Dashboard, Setup Guide, Content Hub, Shortcode Generator, Template Chooser, Help
-* Layer Image Maker tool — generate and upload layer images from the admin
-* WooCommerce-ready hooks for Pro extension integration
-* Admin dark mode toggle
-* Developer PHP and JS public APIs
-* `.pot` translation file included
-
-= 0.9.0 =
-* Beta: Full 7-template suite finalized — Colorbox, Metro, NightPie, Fornaia, PocketPie, Plainlist, Scaffold
-* Beta: Layer Image Maker tool — generate transparent PNG layer images from the admin without external software
-* Beta: Settings page scaffolded with Typography, Colours, Spacing, Builder Layout, Customer Experience, Performance, Accessibility, and Advanced tabs
-* Beta: Admin dark mode toggle introduced
-* Beta: PHP and JS public APIs documented and stabilized for Pro extension handshake
-
-= 0.8.0 =
-* Alpha: PocketPie template — compact mobile-first builder with Corner Quad, Layer Deck, Slide Drawer, and Stack Panel layout modes
-* Alpha: Plainlist template — accessible text-first checklist builder with single-scroll and step-by-step wizard modes
-* Alpha: Scaffold template — bare-bones developer starter with modular HTML partials and hook points
-* Alpha: `pizzalayer_template_dirs` filter added to support external template registration
-* Alpha: `pizzalayer_builder_action_bar` action hook added for checkout bar injection point (Pro integration)
-
-= 0.7.0 =
-* Alpha: Fornaia (Rustic) template — earthy, homestyle aesthetic with aged-paper texture, serif typography, and vintage badge accents
-* Alpha: NightPie template — dark split-screen layout with sticky preview panel, tabbed sections, and fly-to animation
-* Alpha: Template folder slug convention established: `rustic/` on disk for Fornaia
-* Alpha: `function_exists()` guards added to shared template function names for safe multi-template coexistence
-
-= 0.6.0 =
-* Alpha: Colorbox template — bright tile-based builder with pill tabs and category swatches
-* Alpha: Metro template — clean single-scroll layout with centered pizza hero
-* Alpha: Template info file spec (`pztp-template-info.php`) defined
-* Alpha: CSS custom properties system introduced for theme-compatible colour and typography overrides
-* Alpha: Layer animation system — CSS transition stack for ingredient selection
-
-= 0.5.0 =
-* Alpha: Gutenberg block registered — Pizza Builder, PizzaLayer Image, Pizza Static blocks
-* Alpha: `ServerSideRender` integration with static branded preview for REST context
-* Alpha: Shortcode system: `[pizza_builder]`, `[pizza_static]`, `[pizza_layer]`
-* Alpha: Shortcode attributes defined: `id`, `template`, `max_toppings`, `show_tabs`, `hide_tabs`, `default_*`, `pizza_shape`, `pizza_aspect`, `restrict`
-* Alpha: REST API scaffolded: `/render`, `/layer-url` endpoints (disabled by default)
-
-= 0.4.0 =
-* Alpha: Custom Post Types registered — Toppings, Crusts, Sauces, Cheeses, Drizzles, Cuts, Sizes
-* Alpha: Admin Content Hub introduced — consolidated CPT management with AJAX panel switching
-* Alpha: Layer image meta box added to all CPT edit screens
-* Alpha: `get_posts()` orderby switched to array syntax for reliable `WP_Post` returns
-
-= 0.3.0 =
-* Alpha: Plugin namespace established (`PizzaLayer\Builder`)
-* Alpha: Core `PizzaBuilder` class with `render_pizza_stack()` and `get_layer_url()` public API methods
-* Alpha: Live layered PNG stacking system — transparent images composited client-side in real time
-* Alpha: JS public API (`window.PizzaLayerAPI`) with `getState()`, `setState()`, and event bus
-
-= 0.2.0 =
-* Proof of concept: layered image preview system functional with manual ingredient arrays
-* Proof of concept: Admin screen scaffolded under PizzaLayer menu
-* Proof of concept: Basic CPT registration for Toppings
-
-= 0.1.0 =
-* Initial proof of concept — pizza builder rendered from hardcoded layer images
-* Plugin file structure established
+For the complete version history, see CHANGELOG.md in the plugin folder or https://github.com/IslandSunDesign/PizzaLayer
 
 == Upgrade Notice ==
 

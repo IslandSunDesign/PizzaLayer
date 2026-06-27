@@ -16,6 +16,8 @@
  *   $template_slug — 'plainlist'
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial; this file is include'd inside a method (render_template / load_template_custom / inject_inline_styles / Pro CartIntegration::render_cart_button), so its top-level variables are method-local, not global.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Template helper functions use the plugin's pzt_ (PizzaLayer Template) prefix; shared/back-compat helpers are function_exists()-guarded against redeclaration.
 
 if ( ! isset( $instance_id ) )    { $instance_id    = 'pizzabuilder-1'; }
 if ( ! isset( $atts ) )           { $atts           = []; }
@@ -395,14 +397,14 @@ $total_steps = count( $visible_tabs );
 			preg_match( '/-(\d+)$/', $instance_id, $_pl_m );
 			$_pl_radio_sfx  = ! empty( $_pl_m[1] ) ? $_pl_m[1] : preg_replace( '/[^a-zA-Z0-9_]/', '_', $instance_id );
 			$_pl_radio_name = 'pztpro_size_' . $_pl_radio_sfx;
-			$_pl_modal_id   = esc_attr( $instance_id ) . '-size-modal';
+			$_pl_modal_id   = $instance_id . '-size-modal';
 			?>
 			<button type="button"
 			        class="pl-size-modal-trigger"
 			        id="<?php echo esc_attr( $instance_id ); ?>-size-modal-trigger"
 			        aria-haspopup="dialog"
-			        aria-controls="<?php echo $_pl_modal_id; ?>"
-			        onclick="document.getElementById('<?php echo $_pl_modal_id; ?>').classList.add('is-open')">
+			        aria-controls="<?php echo esc_attr( $_pl_modal_id ); ?>"
+			        onclick="document.getElementById('<?php echo esc_attr( $_pl_modal_id ); ?>').classList.add('is-open')">
 				<i class="fa fa-ruler-combined"></i>
 				<?php esc_html_e( 'Size:', 'pizzalayer' ); ?>
 				<span class="pl-size-modal-trigger__value" id="<?php echo esc_attr( $instance_id ); ?>-size-display">
@@ -412,13 +414,13 @@ $total_steps = count( $visible_tabs );
 			</button>
 
 			<!-- Size modal -->
-			<div class="pl-size-modal" id="<?php echo $_pl_modal_id; ?>" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr( $_pl_size_heading ); ?>">
-				<div class="pl-size-modal__backdrop" onclick="document.getElementById('<?php echo $_pl_modal_id; ?>').classList.remove('is-open')"></div>
+			<div class="pl-size-modal" id="<?php echo esc_attr( $_pl_modal_id ); ?>" role="dialog" aria-modal="true" aria-label="<?php echo esc_attr( $_pl_size_heading ); ?>">
+				<div class="pl-size-modal__backdrop" onclick="document.getElementById('<?php echo esc_attr( $_pl_modal_id ); ?>').classList.remove('is-open')"></div>
 				<div class="pl-size-modal__panel">
 					<div class="pl-size-modal__heading">
 						<span><?php echo esc_html( $_pl_size_heading ); ?></span>
 						<button type="button" class="pl-size-modal__close"
-						        onclick="document.getElementById('<?php echo $_pl_modal_id; ?>').classList.remove('is-open')"
+						        onclick="document.getElementById('<?php echo esc_attr( $_pl_modal_id ); ?>').classList.remove('is-open')"
 						        aria-label="<?php esc_attr_e( 'Close', 'pizzalayer' ); ?>">
 							<i class="fa fa-times"></i>
 						</button>
@@ -430,7 +432,7 @@ $total_steps = count( $visible_tabs );
 						<label class="pl-size-modal__option<?php echo 0 === $i ? ' is-active pztpro-size-option--active' : ''; ?>"
 						       for="<?php echo esc_attr( $_sz_id ); ?>"
 						       onclick="
-						       		var m=document.getElementById('<?php echo $_pl_modal_id; ?>');
+						       		var m=document.getElementById('<?php echo esc_attr( $_pl_modal_id ); ?>');
 						       		m.classList.remove('is-open');
 						       		var d=document.getElementById('<?php echo esc_attr( $instance_id ); ?>-size-display');
 						       		if(d)d.textContent=this.querySelector('.pl-size-modal__option-name').textContent;
@@ -510,7 +512,7 @@ $total_steps = count( $visible_tabs );
 		<?php if ( $pl_footer_note ) : ?>
 		<!-- ── Footer note ──────────────────────────────────── -->
 		<div class="pl-footer-note">
-			<?php echo $pl_footer_note; // phpcs:ignore WordPress.Security.EscapeOutput — sanitized via wp_kses_post on read ?>
+			<?php echo $pl_footer_note; // phpcs:ignore WordPress.Security.EscapeOutput.OutputNotEscaped -- Sanitized via wp_kses_post on read. ?>
 		</div>
 		<?php endif; ?>
 

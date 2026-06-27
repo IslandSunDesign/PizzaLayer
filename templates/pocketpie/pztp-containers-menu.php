@@ -12,6 +12,8 @@
  *   $instance_id, $atts, $template_slug, $function_prefix
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial; this file is include'd inside a method (render_template / load_template_custom / inject_inline_styles / Pro CartIntegration::render_cart_button), so its top-level variables are method-local, not global.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Template helper functions use the plugin's pzt_ (PizzaLayer Template) prefix; shared/back-compat helpers are function_exists()-guarded against redeclaration.
 
 if ( ! isset( $instance_id ) )     { $instance_id    = 'pizzabuilder-1'; }
 if ( ! isset( $atts ) )            { $atts           = []; }
@@ -145,9 +147,8 @@ function pzt_pocketpie_chip( $post, string $layer_type, string $pp_var, int $zin
     $thumb_url = pzl_get_field( $img_field, $id ) ?: pzl_get_field( $lyr_field, $id ) ?: (string) get_the_post_thumbnail_url( $id, 'thumbnail' );
     $layer_url = pzl_get_field( $lyr_field, $id ) ?: $thumb_url;
 
-    $js_add    = esc_attr( "window['{$pp_var}']&&window['{$pp_var}'].swapBase('{$layer_type}','".esc_js($slug)."','".esc_js($title)."','".esc_js((string)$layer_url)."',this)" );
-    $js_remove = esc_attr( "window['{$pp_var}']&&window['{$pp_var}'].removeBase('{$layer_type}','".esc_js($slug)."',this)" );
-
+    $js_add    = "window['{$pp_var}']&&window['{$pp_var}'].swapBase('{$layer_type}','".esc_js($slug)."','".esc_js($title)."','".esc_js((string)$layer_url)."',this)";
+    $js_remove = "window['{$pp_var}']&&window['{$pp_var}'].removeBase('{$layer_type}','".esc_js($slug)."',this)";
     ob_start();
     do_action( 'pizzalayer_before_layer_card', $post, $layer_type );
     ?>
@@ -164,10 +165,10 @@ function pzt_pocketpie_chip( $post, string $layer_type, string $pp_var, int $zin
         <?php endif; ?>
         <span class="pp-chip__name"><?php echo esc_html( $title ); ?></span>
         <span class="pp-chip__check">&#10003;</span>
-        <button type="button" class="pp-chip__add-btn" onclick="<?php echo $js_add; ?>">
+        <button type="button" class="pp-chip__add-btn" onclick="<?php echo esc_attr( $js_add ); ?>">
             <span class="pp-chip__add-label"><?php esc_html_e( 'Select', 'pizzalayer' ); ?></span>
         </button>
-        <button type="button" class="pp-chip__remove-btn" style="display:none;" onclick="<?php echo $js_remove; ?>">
+        <button type="button" class="pp-chip__remove-btn" style="display:none;" onclick="<?php echo esc_attr( $js_remove ); ?>">
             <span class="pp-chip__remove-label">&#x2715;</span>
         </button>
     </div>
@@ -191,9 +192,8 @@ function pzt_pocketpie_topping_chip( $post, string $pp_var, int $zindex ): strin
     $layer_url = pzl_get_field( 'topping_layer_image', $id ) ?: $thumb_url;
     $layer_id  = 'pizzalayer-topping-' . $slug;
 
-    $js_add    = esc_attr( "window['{$pp_var}']&&window['{$pp_var}'].addTopping({$zindex},'".esc_js($slug)."','".esc_js((string)$layer_url)."','".esc_js($title)."','{$layer_id}','{$layer_id}',this)" );
-    $js_remove = esc_attr( "window['{$pp_var}']&&window['{$pp_var}'].removeTopping('pizzalayer-topping-".esc_js($slug)."','".esc_js($slug)."',this)" );
-
+    $js_add    = "window['{$pp_var}']&&window['{$pp_var}'].addTopping({$zindex},'".esc_js($slug)."','".esc_js((string)$layer_url)."','".esc_js($title)."','{$layer_id}','{$layer_id}',this)";
+    $js_remove = "window['{$pp_var}']&&window['{$pp_var}'].removeTopping('pizzalayer-topping-".esc_js($slug)."','".esc_js($slug)."',this)";
     ob_start();
     do_action( 'pizzalayer_before_layer_card', $post, 'toppings' );
     ?>
@@ -223,17 +223,17 @@ function pzt_pocketpie_topping_chip( $post, string $pp_var, int $zindex ): strin
                 'quarter-bottom-right'=> 'Q4',
             ];
             foreach ( $coverages as $fraction => $label ) :
-                $js_cov = esc_attr( "window['{$pp_var}']&&window['{$pp_var}'].setCoverage('".esc_js($slug)."','".esc_js($fraction)."',this)" );
+                $js_cov = "window['{$pp_var}']&&window['{$pp_var}'].setCoverage('".esc_js($slug)."','".esc_js($fraction)."',this)";
             ?>
-            <button type="button" class="pp-cov-btn" data-fraction="<?php echo esc_attr( $fraction ); ?>" onclick="<?php echo $js_cov; ?>">
+            <button type="button" class="pp-cov-btn" data-fraction="<?php echo esc_attr( $fraction ); ?>" onclick="<?php echo esc_attr( $js_cov ); ?>">
                 <?php echo $label; // phpcs:ignore -- safe, ascii symbols ?>
             </button>
             <?php endforeach; ?>
         </div>
-        <button type="button" class="pp-chip__add-btn" onclick="<?php echo $js_add; ?>">
+        <button type="button" class="pp-chip__add-btn" onclick="<?php echo esc_attr( $js_add ); ?>">
             <span class="pp-chip__add-label">+</span>
         </button>
-        <button type="button" class="pp-chip__remove-btn" style="display:none;" onclick="<?php echo $js_remove; ?>">
+        <button type="button" class="pp-chip__remove-btn" style="display:none;" onclick="<?php echo esc_attr( $js_remove ); ?>">
             <span>&#x2715;</span>
         </button>
     </div>
@@ -352,8 +352,8 @@ unset( $pp_corner_prefs, $pp_ordered, $pp_pref, $pp_t );
 
 $corners       = [ 'tl', 'tr', 'bl', 'br' ];
 
-$ii = esc_attr( $instance_id );
-$pv = esc_js( $pp_var );
+$ii = $instance_id;
+$pv = $pp_var;
 
 // Shorthand for summary rows
 $summary_rows = [
@@ -372,9 +372,9 @@ $summary_rows = [
      Instance: <?php echo esc_html( $instance_id ); ?>
      Layout: <?php echo esc_html( $layout ); ?>
 ═══════════════════════════════════════════════════ -->
-<div id="<?php echo $ii; ?>"
+<div id="<?php echo esc_attr( $ii ); ?>"
      class="pp-root pp-layout--<?php echo esc_attr( $layout ); ?> pp-modal-anim--<?php echo esc_attr( $pp_modal_anim ); ?> pp-sd-pills-pos--<?php echo esc_attr( $pp_sd_pill_pos ); ?> pp-sd-pill-style--<?php echo esc_attr( $pp_sd_pill_style ); ?>"
-     data-instance="<?php echo $ii; ?>"
+     data-instance="<?php echo esc_attr( $ii ); ?>"
      data-pp-var="<?php echo esc_attr( $pp_var ); ?>"
      data-layout="<?php echo esc_attr( $layout ); ?>"
      data-swipe-close-sd="<?php echo $pp_swipe_close_sd ? 'yes' : 'no'; ?>"
@@ -416,10 +416,10 @@ $summary_rows = [
         <div class="pp-cq-corner pp-cq-corner--<?php echo esc_attr( $corner ); ?>"
              data-tab="<?php echo esc_attr( $ctab ); ?>">
             <button type="button" class="pp-cq-trigger"
-                    onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo esc_js( $ii ); ?>','<?php echo esc_js( $ctab ); ?>')">
+                    onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].openModal('<?php echo esc_js( $ii ); ?>','<?php echo esc_js( $ctab ); ?>')">
                 <span class="pp-cq-trigger__icon"><?php echo $icon; // phpcs:ignore ?></span>
                 <span class="pp-cq-trigger__label"><?php echo esc_html( $label ); ?></span>
-                <span class="pp-cq-trigger__badge" id="<?php echo $ii; ?>-cq-badge-<?php echo esc_attr( $corner ); ?>"></span>
+                <span class="pp-cq-trigger__badge" id="<?php echo esc_attr( $ii ); ?>-cq-badge-<?php echo esc_attr( $corner ); ?>"></span>
             </button>
         </div>
         <?php endforeach; ?>
@@ -433,7 +433,7 @@ $summary_rows = [
                     [ $oicon, $olabel, $ohtml ] = $tab_meta[ $otab ];
                 ?>
                 <button type="button" class="pp-cq-overflow-btn"
-                        onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','<?php echo esc_js( $otab ); ?>')">
+                        onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].openModal('<?php echo esc_attr( $ii ); ?>','<?php echo esc_js( $otab ); ?>')">
                     <span><?php echo $oicon; // phpcs:ignore ?></span>
                     <span><?php echo esc_html( $olabel ); ?></span>
                 </button>
@@ -441,7 +441,7 @@ $summary_rows = [
             </div>
             <?php if ( $pp_show_review ) : ?>
             <button type="button" class="pp-cq-review-btn"
-                    onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','yourpizza')">
+                    onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].openModal('<?php echo esc_attr( $ii ); ?>','yourpizza')">
                 <span class="pp-cq-review-btn__icon">&#128203;</span>
                 <span class="pp-cq-review-btn__label"><?php echo esc_html( $pp_review_label ); ?></span>
             </button>
@@ -450,14 +450,14 @@ $summary_rows = [
         <?php endif; ?>
 
         <!-- Centre pizza -->
-        <div class="pp-cq-pizza" id="<?php echo $ii; ?>-cq-pizza">
-            <div class="pp-pizza-stage-wrap" id="<?php echo $ii; ?>-canvas">
+        <div class="pp-cq-pizza" id="<?php echo esc_attr( $ii ); ?>-cq-pizza">
+            <div class="pp-pizza-stage-wrap" id="<?php echo esc_attr( $ii ); ?>-canvas">
                 <?php echo $initial_pizza; // phpcs:ignore ?>
             </div>
             <div class="pp-cq-pizza__controls">
                 <?php if ( $pp_show_reset ) : ?>
                 <button type="button" class="pp-cq-reset"
-                        onclick="ClearPizza();window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].resetAll();"
+                        onclick="ClearPizza();window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].resetAll();"
                         title="<?php esc_attr_e( 'Reset', 'pizzalayer' ); ?>">&#8635;</button>
                 <?php endif; ?>
             </div>
@@ -476,16 +476,16 @@ $summary_rows = [
 
         <!-- Pizza stage -->
         <div class="pp-ld-pizza-zone">
-            <div class="pp-pizza-stage-wrap" id="<?php echo $ii; ?>-canvas">
+            <div class="pp-pizza-stage-wrap" id="<?php echo esc_attr( $ii ); ?>-canvas">
                 <?php echo $initial_pizza; // phpcs:ignore ?>
             </div>
-            <div class="pp-ld-topping-badge" id="<?php echo $ii; ?>-ld-count-wrap">
-                <span id="<?php echo $ii; ?>-ld-count">0</span> / <?php echo esc_html( (string) $max_toppings ); ?>
+            <div class="pp-ld-topping-badge" id="<?php echo esc_attr( $ii ); ?>-ld-count-wrap">
+                <span id="<?php echo esc_attr( $ii ); ?>-ld-count">0</span> / <?php echo esc_html( (string) $max_toppings ); ?>
             </div>
         </div>
 
         <!-- Deck strip -->
-        <div class="pp-ld-deck" id="<?php echo $ii; ?>-ld-deck">
+        <div class="pp-ld-deck" id="<?php echo esc_attr( $ii ); ?>-ld-deck">
             <?php foreach ( $visible_tabs as $tab ) :
                 if ( $tab === 'yourpizza' ) { continue; }
                 if ( ! isset( $tab_meta[ $tab ] ) ) { continue; }
@@ -494,16 +494,16 @@ $summary_rows = [
             <button type="button"
                     class="pp-ld-deck-thumb"
                     data-tab="<?php echo esc_attr( $tab ); ?>"
-                    id="<?php echo $ii; ?>-ld-thumb-<?php echo esc_attr( $tab ); ?>"
-                    onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].ldSelect('<?php echo $ii; ?>','<?php echo esc_js( $tab ); ?>')">
+                    id="<?php echo esc_attr( $ii ); ?>-ld-thumb-<?php echo esc_attr( $tab ); ?>"
+                    onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].ldSelect('<?php echo esc_attr( $ii ); ?>','<?php echo esc_js( $tab ); ?>')">
                 <span class="pp-ld-deck-thumb__icon"><?php echo $icon; // phpcs:ignore ?></span>
                 <span class="pp-ld-deck-thumb__label"><?php echo esc_html( $label ); ?></span>
-                <span class="pp-ld-deck-thumb__sel" id="<?php echo $ii; ?>-ld-sel-<?php echo esc_attr( $tab ); ?>"></span>
+                <span class="pp-ld-deck-thumb__sel" id="<?php echo esc_attr( $ii ); ?>-ld-sel-<?php echo esc_attr( $tab ); ?>"></span>
             </button>
             <?php endforeach; ?>
             <?php if ( $pp_show_review ) : ?>
             <button type="button" class="pp-ld-deck-thumb pp-ld-deck-thumb--summary"
-                    onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','yourpizza')">
+                    onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].openModal('<?php echo esc_attr( $ii ); ?>','yourpizza')">
                 <span class="pp-ld-deck-thumb__icon">&#128203;</span>
                 <span class="pp-ld-deck-thumb__label"><?php echo esc_html( $pp_review_label ); ?></span>
             </button>
@@ -511,16 +511,16 @@ $summary_rows = [
         </div>
 
         <!-- Expanded selection card (fills box, shows selected layer image big) -->
-        <div class="pp-ld-expand" id="<?php echo $ii; ?>-ld-expand" aria-hidden="true">
+        <div class="pp-ld-expand" id="<?php echo esc_attr( $ii ); ?>-ld-expand" aria-hidden="true">
             <div class="pp-ld-expand__header">
-                <span class="pp-ld-expand__title" id="<?php echo $ii; ?>-ld-expand-title"></span>
+                <span class="pp-ld-expand__title" id="<?php echo esc_attr( $ii ); ?>-ld-expand-title"></span>
                 <button type="button" class="pp-ld-expand__close"
-                        onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].ldClose('<?php echo $ii; ?>')">&#10005;</button>
+                        onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].ldClose('<?php echo esc_attr( $ii ); ?>')">&#10005;</button>
             </div>
             <!-- Selected layer preview image -->
-            <div class="pp-ld-expand__preview-img" id="<?php echo $ii; ?>-ld-preview-img">
-                <img src="" alt="" id="<?php echo $ii; ?>-ld-preview-img-tag" />
-                <div class="pp-ld-expand__preview-img-empty" id="<?php echo $ii; ?>-ld-preview-img-empty"><?php esc_html_e( 'Tap a choice below', 'pizzalayer' ); ?></div>
+            <div class="pp-ld-expand__preview-img" id="<?php echo esc_attr( $ii ); ?>-ld-preview-img">
+                <img src="" alt="" id="<?php echo esc_attr( $ii ); ?>-ld-preview-img-tag" />
+                <div class="pp-ld-expand__preview-img-empty" id="<?php echo esc_attr( $ii ); ?>-ld-preview-img-empty"><?php esc_html_e( 'Tap a choice below', 'pizzalayer' ); ?></div>
             </div>
             <!-- Chips for active tab -->
             <?php foreach ( $visible_tabs as $tab ) :
@@ -530,7 +530,7 @@ $summary_rows = [
                 $is_top = ( $tab === 'toppings' );
             ?>
             <div class="pp-ld-expand__chips <?php echo $is_top ? 'pp-chips-grid--toppings' : ''; ?>"
-                 id="<?php echo $ii; ?>-ld-chips-<?php echo esc_attr( $tab ); ?>"
+                 id="<?php echo esc_attr( $ii ); ?>-ld-chips-<?php echo esc_attr( $tab ); ?>"
                  style="display:none;">
                 <div class="pp-chips-grid">
                     <?php echo $html; // phpcs:ignore ?>
@@ -543,7 +543,7 @@ $summary_rows = [
         <div class="pp-ld-controls">
             <?php if ( $pp_show_reset ) : ?>
             <button type="button" class="pp-btn pp-btn--ghost pp-btn--sm"
-                    onclick="ClearPizza();window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].resetAll();">
+                    onclick="ClearPizza();window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].resetAll();">
                 &#8635; <?php esc_html_e( 'Reset', 'pizzalayer' ); ?>
             </button>
             <?php endif; ?>
@@ -563,7 +563,7 @@ $summary_rows = [
 
         <!-- Pizza zone with category pills overlaid at bottom -->
         <div class="pp-sd-pizza-zone">
-            <div class="pp-pizza-stage-wrap" id="<?php echo $ii; ?>-canvas">
+            <div class="pp-pizza-stage-wrap" id="<?php echo esc_attr( $ii ); ?>-canvas">
                 <?php echo $initial_pizza; // phpcs:ignore ?>
             </div>
             <!-- Category pills -->
@@ -576,38 +576,38 @@ $summary_rows = [
                 <button type="button"
                         class="pp-sd-pill"
                         data-tab="<?php echo esc_attr( $tab ); ?>"
-                        id="<?php echo $ii; ?>-sd-pill-<?php echo esc_attr( $tab ); ?>"
-                        onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].sdOpen('<?php echo $ii; ?>','<?php echo esc_js( $tab ); ?>')">
+                        id="<?php echo esc_attr( $ii ); ?>-sd-pill-<?php echo esc_attr( $tab ); ?>"
+                        onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].sdOpen('<?php echo esc_attr( $ii ); ?>','<?php echo esc_js( $tab ); ?>')">
                     <span class="pp-sd-pill__icon"><?php echo $icon; // phpcs:ignore ?></span>
                     <span class="pp-sd-pill__text"><?php echo esc_html( $label ); ?></span>
-                    <span class="pp-sd-pill__dot" id="<?php echo $ii; ?>-sd-dot-<?php echo esc_attr( $tab ); ?>"></span>
+                    <span class="pp-sd-pill__dot" id="<?php echo esc_attr( $ii ); ?>-sd-dot-<?php echo esc_attr( $tab ); ?>"></span>
                 </button>
                 <?php endforeach; ?>
                 <?php if ( $pp_show_review ) : ?>
                 <button type="button" class="pp-sd-pill pp-sd-pill--summary"
-                        onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','yourpizza')">
+                        onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].openModal('<?php echo esc_attr( $ii ); ?>','yourpizza')">
                     &#128203; <?php echo esc_html( $pp_review_label ); ?>
                 </button>
                 <?php endif; ?>
             </div>
             <div class="pp-sd-pizza-controls">
-                <span class="pp-sd-count" id="<?php echo $ii; ?>-sd-count-wrap">
-                    &#127807; <span id="<?php echo $ii; ?>-sd-count">0</span>/<?php echo esc_html( (string) $max_toppings ); ?>
+                <span class="pp-sd-count" id="<?php echo esc_attr( $ii ); ?>-sd-count-wrap">
+                    &#127807; <span id="<?php echo esc_attr( $ii ); ?>-sd-count">0</span>/<?php echo esc_html( (string) $max_toppings ); ?>
                 </span>
                 <?php if ( $pp_show_reset ) : ?>
                 <button type="button" class="pp-sd-reset"
-                        onclick="ClearPizza();window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].resetAll();">&#8635;</button>
+                        onclick="ClearPizza();window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].resetAll();">&#8635;</button>
                 <?php endif; ?>
             </div>
         </div>
 
         <!-- Slide-up drawer -->
-        <div class="pp-sd-drawer" id="<?php echo $ii; ?>-sd-drawer" aria-hidden="true">
+        <div class="pp-sd-drawer" id="<?php echo esc_attr( $ii ); ?>-sd-drawer" aria-hidden="true">
             <div class="pp-sd-drawer__handle"></div>
             <div class="pp-sd-drawer__header">
-                <span class="pp-sd-drawer__title" id="<?php echo $ii; ?>-sd-drawer-title"></span>
+                <span class="pp-sd-drawer__title" id="<?php echo esc_attr( $ii ); ?>-sd-drawer-title"></span>
                 <button type="button" class="pp-sd-drawer__close"
-                        onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].sdClose('<?php echo $ii; ?>')">&#10005;</button>
+                        onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].sdClose('<?php echo esc_attr( $ii ); ?>')">&#10005;</button>
             </div>
             <?php foreach ( $visible_tabs as $tab ) :
                 if ( $tab === 'yourpizza' ) { continue; }
@@ -616,7 +616,7 @@ $summary_rows = [
                 $is_top = ( $tab === 'toppings' );
             ?>
             <div class="pp-sd-drawer__panel <?php echo $is_top ? 'pp-chips-grid--toppings' : ''; ?>"
-                 id="<?php echo $ii; ?>-sd-panel-<?php echo esc_attr( $tab ); ?>"
+                 id="<?php echo esc_attr( $ii ); ?>-sd-panel-<?php echo esc_attr( $tab ); ?>"
                  style="display:none;">
                 <div class="pp-chips-grid"><?php echo $html; // phpcs:ignore ?></div>
             </div>
@@ -636,23 +636,23 @@ $summary_rows = [
 
         <!-- Compact pizza + step indicator -->
         <div class="pp-sp-top">
-            <div class="pp-sp-pizza-mini" id="<?php echo $ii; ?>-canvas">
+            <div class="pp-sp-pizza-mini" id="<?php echo esc_attr( $ii ); ?>-canvas">
                 <?php echo $initial_pizza; // phpcs:ignore ?>
             </div>
             <div class="pp-sp-step-info">
-                <div class="pp-sp-step-dots" id="<?php echo $ii; ?>-sp-dots">
+                <div class="pp-sp-step-dots" id="<?php echo esc_attr( $ii ); ?>-sp-dots">
                     <?php foreach ( $visible_tabs as $dot ) : ?>
                     <span class="pp-sp-dot" data-step="<?php echo esc_attr( $dot ); ?>"></span>
                     <?php endforeach; ?>
                 </div>
-                <div class="pp-sp-step-label" id="<?php echo $ii; ?>-sp-label">
+                <div class="pp-sp-step-label" id="<?php echo esc_attr( $ii ); ?>-sp-label">
                     <?php esc_html_e( 'Start building your pizza', 'pizzalayer' ); ?>
                 </div>
             </div>
         </div>
 
         <!-- Step nav bar -->
-        <div class="pp-sp-stepbar" id="<?php echo $ii; ?>-sp-stepbar">
+        <div class="pp-sp-stepbar" id="<?php echo esc_attr( $ii ); ?>-sp-stepbar">
             <?php $first_sp = true; foreach ( $visible_tabs as $tab ) :
                 if ( $tab === 'yourpizza' ) { continue; }
                 if ( ! isset( $tab_meta[ $tab ] ) ) { continue; }
@@ -663,15 +663,15 @@ $summary_rows = [
             <button type="button"
                     class="pp-sp-step <?php echo esc_attr( $active_class ); ?>"
                     data-tab="<?php echo esc_attr( $tab ); ?>"
-                    onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].spOpen('<?php echo $ii; ?>','<?php echo esc_js( $tab ); ?>')">
+                    onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].spOpen('<?php echo esc_attr( $ii ); ?>','<?php echo esc_js( $tab ); ?>')">
                 <span class="pp-sp-step__icon"><?php echo $icon; // phpcs:ignore ?></span>
                 <span class="pp-sp-step__label"><?php echo esc_html( $label ); ?></span>
-                <span class="pp-sp-step__dot" id="<?php echo $ii; ?>-sp-step-dot-<?php echo esc_attr( $tab ); ?>"></span>
+                <span class="pp-sp-step__dot" id="<?php echo esc_attr( $ii ); ?>-sp-step-dot-<?php echo esc_attr( $tab ); ?>"></span>
             </button>
             <?php endforeach; ?>
             <?php if ( $pp_show_review ) : ?>
             <button type="button" class="pp-sp-step pp-sp-step--summary"
-                    onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].openModal('<?php echo $ii; ?>','yourpizza')">
+                    onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].openModal('<?php echo esc_attr( $ii ); ?>','yourpizza')">
                 <span class="pp-sp-step__icon">&#128203;</span>
                 <span class="pp-sp-step__label"><?php echo esc_html( $pp_review_label ); ?></span>
             </button>
@@ -679,12 +679,12 @@ $summary_rows = [
         </div>
 
         <!-- Bottom sheet panel -->
-        <div class="pp-sp-sheet" id="<?php echo $ii; ?>-sp-sheet" aria-hidden="true">
+        <div class="pp-sp-sheet" id="<?php echo esc_attr( $ii ); ?>-sp-sheet" aria-hidden="true">
             <div class="pp-sp-sheet__grip"></div>
             <div class="pp-sp-sheet__header">
-                <span class="pp-sp-sheet__title" id="<?php echo $ii; ?>-sp-sheet-title"></span>
+                <span class="pp-sp-sheet__title" id="<?php echo esc_attr( $ii ); ?>-sp-sheet-title"></span>
                 <button type="button" class="pp-sp-sheet__close"
-                        onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].spClose('<?php echo $ii; ?>')">&#10005;</button>
+                        onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].spClose('<?php echo esc_attr( $ii ); ?>')">&#10005;</button>
             </div>
             <?php foreach ( $visible_tabs as $tab ) :
                 if ( $tab === 'yourpizza' ) { continue; }
@@ -693,12 +693,12 @@ $summary_rows = [
                 $is_top = ( $tab === 'toppings' );
             ?>
             <div class="pp-sp-sheet__panel <?php echo $is_top ? 'pp-chips-grid--toppings' : ''; ?>"
-                 id="<?php echo $ii; ?>-sp-panel-<?php echo esc_attr( $tab ); ?>"
+                 id="<?php echo esc_attr( $ii ); ?>-sp-panel-<?php echo esc_attr( $tab ); ?>"
                  style="display:none;">
                 <div class="pp-chips-grid"><?php echo $html; // phpcs:ignore ?></div>
                 <?php if ( $is_top ) : ?>
                 <div class="pp-sp-topping-count">
-                    <span id="<?php echo $ii; ?>-sp-count">0</span>/<?php echo esc_html( (string) $max_toppings ); ?> <?php esc_html_e( 'toppings', 'pizzalayer' ); ?>
+                    <span id="<?php echo esc_attr( $ii ); ?>-sp-count">0</span>/<?php echo esc_html( (string) $max_toppings ); ?> <?php esc_html_e( 'toppings', 'pizzalayer' ); ?>
                 </div>
                 <?php endif; ?>
             </div>
@@ -706,7 +706,7 @@ $summary_rows = [
             <div class="pp-sp-sheet__actions">
                 <?php if ( $pp_show_reset ) : ?>
                 <button type="button" class="pp-btn pp-btn--ghost pp-btn--sm"
-                        onclick="ClearPizza();window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].resetAll();">
+                        onclick="ClearPizza();window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].resetAll();">
                     &#8635; <?php esc_html_e( 'Reset', 'pizzalayer' ); ?>
                 </button>
                 <?php endif; ?>
@@ -720,17 +720,17 @@ $summary_rows = [
     <!-- ═══════════════════════════════════════
          SHARED: Summary Modal (all layouts)
          ═══════════════════════════════════════ -->
-    <div class="pp-modal-overlay" id="<?php echo $ii; ?>-modal-overlay" aria-hidden="true"
-         <?php if ( $pp_close_on_backdrop ) : ?>onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].closeModal('<?php echo $ii; ?>')"<?php endif; ?>>
+    <div class="pp-modal-overlay" id="<?php echo esc_attr( $ii ); ?>-modal-overlay" aria-hidden="true"
+         <?php if ( $pp_close_on_backdrop ) : ?>onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].closeModal('<?php echo esc_attr( $ii ); ?>')"<?php endif; ?>>
     </div>
-    <div class="pp-modal" id="<?php echo $ii; ?>-modal" role="dialog" aria-hidden="true">
+    <div class="pp-modal" id="<?php echo esc_attr( $ii ); ?>-modal" role="dialog" aria-hidden="true">
         <div class="pp-modal__header">
-            <span class="pp-modal__title" id="<?php echo $ii; ?>-modal-title"
+            <span class="pp-modal__title" id="<?php echo esc_attr( $ii ); ?>-modal-title"
                   data-default="<?php echo esc_attr( $pp_summary_title ); ?>"><?php echo esc_html( $pp_summary_title ); ?></span>
             <button type="button" class="pp-modal__close"
-                    onclick="window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].closeModal('<?php echo $ii; ?>')">&#10005;</button>
+                    onclick="window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].closeModal('<?php echo esc_attr( $ii ); ?>')">&#10005;</button>
         </div>
-        <div class="pp-modal__body" id="<?php echo $ii; ?>-modal-body">
+        <div class="pp-modal__body" id="<?php echo esc_attr( $ii ); ?>-modal-body">
             <!-- Dynamic content depending on which tab triggered this modal -->
         </div>
         <!-- Category panels live in this modal ONLY for corner-quad, where the
@@ -746,25 +746,25 @@ $summary_rows = [
             $is_size = ( $tab === 'size' );
         ?>
         <div class="pp-modal__tab-panel <?php echo $is_top ? 'pp-chips-grid--toppings' : ''; ?> <?php echo $is_size ? 'pp-modal__tab-panel--size' : ''; ?>"
-             id="<?php echo $ii; ?>-modal-panel-<?php echo esc_attr( $tab ); ?>"
+             id="<?php echo esc_attr( $ii ); ?>-modal-panel-<?php echo esc_attr( $tab ); ?>"
              style="display:none;">
             <div class="pp-chips-grid"><?php echo $html; // phpcs:ignore ?></div>
             <?php if ( $is_top ) : ?>
             <div class="pp-modal__topping-count">
-                <span id="<?php echo $ii; ?>-modal-count">0</span>/<?php echo esc_html( (string) $max_toppings ); ?> <?php esc_html_e( 'toppings', 'pizzalayer' ); ?>
+                <span id="<?php echo esc_attr( $ii ); ?>-modal-count">0</span>/<?php echo esc_html( (string) $max_toppings ); ?> <?php esc_html_e( 'toppings', 'pizzalayer' ); ?>
             </div>
             <?php endif; ?>
         </div>
         <?php endforeach; ?>
         <?php endif; ?>
         <!-- Summary panel -->
-        <div class="pp-modal__summary" id="<?php echo $ii; ?>-modal-summary" style="display:none;">
+        <div class="pp-modal__summary" id="<?php echo esc_attr( $ii ); ?>-modal-summary" style="display:none;">
             <?php foreach ( $summary_rows as $key => [ $ico, $slabel ] ) : ?>
-            <div class="pp-summary-row" id="<?php echo $ii; ?>-modal-yp-<?php echo esc_attr( $key ); ?>">
+            <div class="pp-summary-row" id="<?php echo esc_attr( $ii ); ?>-modal-yp-<?php echo esc_attr( $key ); ?>">
                 <span class="pp-summary-row__icon"><?php echo $ico; // phpcs:ignore ?></span>
                 <span class="pp-summary-row__label"><?php echo esc_html( $slabel ); ?></span>
                 <span class="pp-summary-row__val pp-summary-row__val--empty"
-                      id="<?php echo $ii; ?>-modal-yp-<?php echo esc_attr( $key ); ?>-val">
+                      id="<?php echo esc_attr( $ii ); ?>-modal-yp-<?php echo esc_attr( $key ); ?>-val">
                     — <?php esc_html_e( 'none', 'pizzalayer' ); ?> —
                 </span>
             </div>
@@ -772,7 +772,7 @@ $summary_rows = [
             <div class="pp-modal__summary-actions">
                 <!-- Action bar moved to root level below -->
                 <button type="button" class="pp-btn pp-btn--ghost pp-btn--sm"
-                        onclick="ClearPizza();window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].resetAll();window['<?php echo $pv; ?>']&&window['<?php echo $pv; ?>'].closeModal('<?php echo $ii; ?>')">
+                        onclick="ClearPizza();window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].resetAll();window['<?php echo esc_js( $pv ); ?>']&&window['<?php echo esc_js( $pv ); ?>'].closeModal('<?php echo esc_attr( $ii ); ?>')">
                     &#8635; <?php esc_html_e( 'Start Over', 'pizzalayer' ); ?>
                 </button>
             </div>

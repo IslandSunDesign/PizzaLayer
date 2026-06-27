@@ -14,6 +14,8 @@
  * namespace) so multiple builders on one page maintain independent state.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial; this file is include'd inside a method (render_template / load_template_custom / inject_inline_styles / Pro CartIntegration::render_cart_button), so its top-level variables are method-local, not global.
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Template helper functions use the plugin's pzt_ (PizzaLayer Template) prefix; shared/back-compat helpers are function_exists()-guarded against redeclaration.
 
 // Ensure we have all expected variables
 if ( ! isset( $instance_id ) )     { $instance_id     = 'pizzabuilder-1'; }
@@ -509,7 +511,7 @@ $initial_pizza = $builder->build_dynamic(
                                     <div class="rp-panel__badge-text">
                                         <h2 class="rp-panel__title"><?php esc_html_e( 'Choose Your Toppings', 'pizzalayer' ); ?></h2>
                                         <p class="rp-panel__hint">
-                                            <?php printf( esc_html__( 'Pile on up to %s toppings — market-fresh.', 'pizzalayer' ), '<strong>' . esc_html( (string) $max_toppings ) . '</strong>' ); ?>
+                                            <?php printf( /* translators: %s = maximum number of toppings. */ esc_html__( 'Pile on up to %s toppings — market-fresh.', 'pizzalayer' ), '<strong>' . esc_html( (string) $max_toppings ) . '</strong>' ); ?>
                                         </p>
                                     </div>
                                 </div>

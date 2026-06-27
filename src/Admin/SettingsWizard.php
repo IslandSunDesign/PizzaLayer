@@ -99,7 +99,7 @@ class SettingsWizard {
 			<div class="pzwiz-progress-bar" style="width:<?php echo esc_attr( (string) $pct ); ?>%"></div>
 		</div>
 		<p class="pzwiz-progress-label">
-			<?php printf( esc_html__( '%1$d of %2$d sections complete (%3$d%%)', 'pizzalayer' ), $done_count, $total, $pct ); ?>
+			<?php printf( /* translators: 1: completed sections, 2: total sections, 3: percent complete. */ esc_html__( '%1$d of %2$d sections complete (%3$d%%)', 'pizzalayer' ), (int) $done_count, (int) $total, (int) $pct ); ?>
 			<?php if ( $done_count > 0 ) : ?>
 				&nbsp;·&nbsp;
 				<form method="post" action="" style="display:inline;">
@@ -123,7 +123,7 @@ class SettingsWizard {
 				?>
 				<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer-wizard&step=' . $step['key'] ) ); ?>"
 				   class="pzwiz-step-link<?php echo $is_active ? ' pzwiz-step-link--active' : ''; ?><?php echo $is_done ? ' pzwiz-step-link--done' : ''; ?>">
-					<span class="pzwiz-step-num"><?php echo $is_done ? '✓' : ( $idx + 1 ); ?></span>
+					<span class="pzwiz-step-num"><?php echo esc_html( $is_done ? '✓' : (string) ( $idx + 1 ) ); ?></span>
 					<span class="pzwiz-step-label">
 						<span class="pzwiz-step-title"><?php echo esc_html( $step['title'] ); ?></span>
 						<?php if ( $is_done ) : ?>
@@ -222,6 +222,8 @@ class SettingsWizard {
 	// ── Save step settings ────────────────────────────────────────────────────
 
 	private function save_step( string $step_key ): void {
+		check_admin_referer( 'pizzalayer_wizard' );
+
 		/** Map of step key → option keys it owns (must match actual Settings.php keys) */
 		$step_options = [
 			'defaults'    => [

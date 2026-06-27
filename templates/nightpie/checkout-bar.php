@@ -4,11 +4,12 @@
  * Dark surface, neon-orange glow, pill button, glowing price.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial; this file is include'd inside a method (render_template / load_template_custom / inject_inline_styles / Pro CartIntegration::render_cart_button), so its top-level variables are method-local, not global.
 if ( ! isset( $instance_id ) ) { $instance_id = ''; }
 $show_qty   = class_exists('PizzaLayerPro\Pro\WooCommerce\CartIntegration') && (bool) pztpro_get_setting('show_quantity_selector', true);
 $max_qty    = max(1, (int) pztpro_get_setting('max_quantity', 99));
 $show_notes = (bool) pztpro_get_setting('enable_order_notes', false);
-$note_ph    = pztpro_get_setting('order_note_placeholder', '') ?: __('Any special requests?', 'pizzalayerpro');
+$note_ph    = pztpro_get_setting('order_note_placeholder', '') ?: __('Any special requests?', 'pizzalayer');
 ?>
 <div class="pztpro-checkout-bar pztpro-checkout-bar--nightpie"
      id="pztpro-checkout-bar-<?php echo esc_attr($instance_id); ?>"
@@ -22,9 +23,9 @@ $note_ph    = pztpro_get_setting('order_note_placeholder', '') ?: __('Any specia
 
         <?php if ($show_qty) : ?>
         <div class="pztpro-bar-qty" data-instance="<?php echo esc_attr($instance_id); ?>" data-max="<?php echo esc_attr($max_qty); ?>">
-            <button type="button" class="pztpro-qty-btn pztpro-qty-btn--minus" data-instance="<?php echo esc_attr($instance_id); ?>" disabled aria-label="<?php esc_attr_e('Decrease quantity','pizzalayerpro'); ?>">−</button>
+            <button type="button" class="pztpro-qty-btn pztpro-qty-btn--minus" data-instance="<?php echo esc_attr($instance_id); ?>" disabled aria-label="<?php esc_attr_e('Decrease quantity','pizzalayer'); ?>">−</button>
             <span class="pztpro-qty-value" id="pztpro-qty-<?php echo esc_attr($instance_id); ?>" data-qty="1">1</span>
-            <button type="button" class="pztpro-qty-btn pztpro-qty-btn--plus"  data-instance="<?php echo esc_attr($instance_id); ?>" aria-label="<?php esc_attr_e('Increase quantity','pizzalayerpro'); ?>">+</button>
+            <button type="button" class="pztpro-qty-btn pztpro-qty-btn--plus"  data-instance="<?php echo esc_attr($instance_id); ?>" aria-label="<?php esc_attr_e('Increase quantity','pizzalayer'); ?>">+</button>
         </div>
         <?php endif; ?>
 
@@ -34,7 +35,7 @@ $note_ph    = pztpro_get_setting('order_note_placeholder', '') ?: __('Any specia
                 data-instance="<?php echo esc_attr($instance_id); ?>"
                 aria-live="polite">
             <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><circle cx="9" cy="21" r="1"/><circle cx="20" cy="21" r="1"/><path d="M1 1h4l2.68 13.39a2 2 0 0 0 2 1.61h9.72a2 2 0 0 0 2-1.61L23 6H6"/></svg>
-            <?php esc_html_e('Add to Cart', 'pizzalayerpro'); ?>
+            <?php esc_html_e('Add to Cart', 'pizzalayer'); ?>
         </button>
     </div>
 

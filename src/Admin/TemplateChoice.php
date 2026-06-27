@@ -24,7 +24,7 @@ class TemplateChoice {
 			$available_slugs   = array_keys( (array) $loader->get_available_templates() );
 			if ( $slug && in_array( $slug, $available_slugs, true ) ) {
 				update_option( 'pizzalayer_setting_global_template', $slug );
-				echo '<div class="notice notice-success is-dismissible"><p>' . sprintf( esc_html__( 'Template %s activated.', 'pizzalayer' ), '<strong>' . esc_html( $slug ) . '</strong>' ) . '</p></div>';
+				echo '<div class="notice notice-success is-dismissible"><p>' . sprintf( /* translators: %s = template name. */ esc_html__( 'Template %s activated.', 'pizzalayer' ), '<strong>' . esc_html( $slug ) . '</strong>' ) . '</p></div>';
 			} else {
 				echo '<div class="notice notice-error is-dismissible"><p>' . esc_html__( 'Invalid template.', 'pizzalayer' ) . '</p></div>';
 			}
@@ -98,13 +98,18 @@ class TemplateChoice {
 		if ( ! $preview_page_url ) {
 			// Search post_content for [pizza_builder] shortcode
 			global $wpdb;
-			$found_id = $wpdb->get_var(
-				"SELECT ID FROM {$wpdb->posts}
-				 WHERE post_status = 'publish'
-				   AND post_type IN ('page','post')
-				   AND post_content LIKE '%pizza_builder%'
-				 LIMIT 1"
-			);
+			$found_id = wp_cache_get( 'pizzalayer_preview_page_id', 'pizzalayer' );
+			if ( false === $found_id ) {
+				// phpcs:ignore WordPress.DB.DirectDatabaseQuery.DirectQuery -- One-off admin lookup with static SQL (no user input); result cached below.
+				$found_id = $wpdb->get_var(
+					"SELECT ID FROM {$wpdb->posts}
+					 WHERE post_status = 'publish'
+					   AND post_type IN ('page','post')
+					   AND post_content LIKE '%pizza_builder%'
+					 LIMIT 1"
+				);
+				wp_cache_set( 'pizzalayer_preview_page_id', $found_id, 'pizzalayer', HOUR_IN_SECONDS );
+			}
 			if ( $found_id ) {
 				$preview_page_url  = (string) get_permalink( (int) $found_id );
 				$preview_page_auto = true;
@@ -454,10 +459,10 @@ class TemplateChoice {
 						<?php foreach ( $schemes as $scheme ) :
 							$colors_for_chips = isset( $scheme['colors'] ) ? $scheme['colors'] : array_values( $scheme['keys'] ?? [] );
 							$data_key = isset( $scheme['keys'] ) ? 'keys' : 'colors';
-							$safe = esc_attr( wp_json_encode( $has_metro_schemes ? $scheme['colors'] : $scheme['keys'] ) );
+							$safe = wp_json_encode( $has_metro_schemes ? $scheme['colors'] : $scheme['keys'] );
 						?>
 						<button type="button" class="ptc-scheme-chip"
-						        data-scheme="<?php echo $safe; ?>"
+						        data-scheme="<?php echo esc_attr( $safe ); ?>"
 						        title="<?php echo esc_attr( $scheme['name'] ); ?>">
 							<span class="ptc-scheme-chip__swatches">
 								<?php foreach ( array_slice( $colors_for_chips, 0, 3 ) as $c ) : ?>
@@ -475,7 +480,7 @@ class TemplateChoice {
 				<div class="ptc-settings-grid">
 				<?php foreach ( $template_settings as $field ) :
 					if ( empty( $field['key'] ) || empty( $field['type'] ) ) { continue; }
-					$fkey   = esc_attr( $field['key'] );
+					$fkey   = (string) ( $field['key'] ?? '' );
 					$fval   = (string) get_option( $field['key'], $field['default'] ?? '' );
 					$flabel = $field['label'] ?? $field['key'];
 					$fdesc  = $field['desc']  ?? '';
@@ -486,17 +491,17 @@ class TemplateChoice {
 					<p class="ptc-field__desc"><?php echo esc_html( $fdesc ); ?></p>
 					<?php endif; ?>
 					<?php if ( $field['type'] === 'text' || $field['type'] === 'text_wide' ) : ?>
-						<input type="text" name="<?php echo $fkey; ?>" value="<?php echo esc_attr( $fval ); ?>" class="ptc-field__input<?php echo $field['type'] === 'text_wide' ? ' ptc-field__input--wide' : ''; ?>" placeholder="<?php echo esc_attr( $field['placeholder'] ?? '' ); ?>">
+						<input type="text" name="<?php echo esc_attr( $fkey ); ?>" value="<?php echo esc_attr( $fval ); ?>" class="ptc-field__input<?php echo $field['type'] === 'text_wide' ? ' ptc-field__input--wide' : ''; ?>" placeholder="<?php echo esc_attr( $field['placeholder'] ?? '' ); ?>">
 					<?php elseif ( $field['type'] === 'number' ) : ?>
-						<input type="number" name="<?php echo $fkey; ?>" value="<?php echo esc_attr( $fval ); ?>" class="ptc-field__input" min="<?php echo esc_attr( (string)( $field['min'] ?? '' ) ); ?>" max="<?php echo esc_attr( (string)( $field['max'] ?? '' ) ); ?>" step="<?php echo esc_attr( (string)( $field['step'] ?? '1' ) ); ?>">
+						<input type="number" name="<?php echo esc_attr( $fkey ); ?>" value="<?php echo esc_attr( $fval ); ?>" class="ptc-field__input" min="<?php echo esc_attr( (string)( $field['min'] ?? '' ) ); ?>" max="<?php echo esc_attr( (string)( $field['max'] ?? '' ) ); ?>" step="<?php echo esc_attr( (string)( $field['step'] ?? '1' ) ); ?>">
 					<?php elseif ( $field['type'] === 'color' ) : ?>
 						<div class="ptc-color-wrap">
-							<input type="color" name="<?php echo $fkey; ?>" id="ptc-color-<?php echo $fkey; ?>"
+							<input type="color" name="<?php echo esc_attr( $fkey ); ?>" id="ptc-color-<?php echo esc_attr( $fkey ); ?>"
 							       value="<?php echo esc_attr( $fval ?: ( $field['default'] ?? '#000000' ) ); ?>" class="ptc-color">
 							<?php if ( ! empty( $field['default'] ) ) : ?>
 							<button type="button" class="ptc-color-revert"
 							        data-default="<?php echo esc_attr( $field['default'] ); ?>"
-							        data-target="ptc-color-<?php echo $fkey; ?>"
+							        data-target="ptc-color-<?php echo esc_attr( $fkey ); ?>"
 							        title="Revert to default (<?php echo esc_attr( $field['default'] ); ?>)">
 								<span class="dashicons dashicons-image-rotate"></span>
 							</button>
@@ -506,59 +511,59 @@ class TemplateChoice {
 					<?php elseif ( $field['type'] === 'image' ) : ?>
 						<div class="ptc-image-wrap">
 							<div class="ptc-image__row">
-								<input type="text" name="<?php echo $fkey; ?>" id="ptc-image-<?php echo $fkey; ?>"
+								<input type="text" name="<?php echo esc_attr( $fkey ); ?>" id="ptc-image-<?php echo esc_attr( $fkey ); ?>"
 								       value="<?php echo esc_attr( $fval ); ?>"
 								       class="ptc-field__input ptc-image__url"
 								       placeholder="<?php echo esc_attr( $field['placeholder'] ?? '' ); ?>">
 								<button type="button" class="button ptc-image-choose"
-								        data-target="ptc-image-<?php echo $fkey; ?>"
-								        data-preview="ptc-image-preview-<?php echo $fkey; ?>">
+								        data-target="ptc-image-<?php echo esc_attr( $fkey ); ?>"
+								        data-preview="ptc-image-preview-<?php echo esc_attr( $fkey ); ?>">
 									<span class="dashicons dashicons-format-image"></span> <?php esc_html_e( 'Choose Image', 'pizzalayer' ); ?>
 								</button>
 								<button type="button" class="button ptc-image-remove"
-								        data-target="ptc-image-<?php echo $fkey; ?>"
-								        data-preview="ptc-image-preview-<?php echo $fkey; ?>"<?php echo $fval ? '' : ' style="display:none;"'; ?>>
+								        data-target="ptc-image-<?php echo esc_attr( $fkey ); ?>"
+								        data-preview="ptc-image-preview-<?php echo esc_attr( $fkey ); ?>"<?php echo $fval ? '' : ' style="display:none;"'; ?>>
 									<?php esc_html_e( 'Remove', 'pizzalayer' ); ?>
 								</button>
 							</div>
-							<div class="ptc-image__preview" id="ptc-image-preview-<?php echo $fkey; ?>"<?php echo $fval ? '' : ' style="display:none;"'; ?>>
+							<div class="ptc-image__preview" id="ptc-image-preview-<?php echo esc_attr( $fkey ); ?>"<?php echo $fval ? '' : ' style="display:none;"'; ?>>
 								<img src="<?php echo esc_url( $fval ); ?>" alt="" />
 							</div>
 						</div>
 					<?php elseif ( $field['type'] === 'select' ) : ?>
-						<select name="<?php echo $fkey; ?>" class="ptc-field__select">
+						<select name="<?php echo esc_attr( $fkey ); ?>" class="ptc-field__select">
 							<?php foreach ( $field['options'] ?? [] as $ov => $ol ) : ?>
 							<option value="<?php echo esc_attr( $ov ); ?>"<?php selected( $fval, $ov ); ?>><?php echo esc_html( $ol ); ?></option>
 							<?php endforeach; ?>
 						</select>
 					<?php elseif ( $field['type'] === 'toggle' ) : ?>
 						<label class="ptc-toggle">
-							<input type="hidden" name="<?php echo $fkey; ?>" value="no">
-							<input type="checkbox" name="<?php echo $fkey; ?>" value="yes"<?php checked( $fval, 'yes' ); ?>>
+							<input type="hidden" name="<?php echo esc_attr( $fkey ); ?>" value="no">
+							<input type="checkbox" name="<?php echo esc_attr( $fkey ); ?>" value="yes"<?php checked( $fval, 'yes' ); ?>>
 							<span class="ptc-toggle__track"><span class="ptc-toggle__thumb"></span></span>
 							<span class="ptc-toggle__label"><?php echo esc_html( $field['toggle_label'] ?? 'Enabled' ); ?></span>
 						</label>
 					<?php elseif ( $field['type'] === 'textarea' ) : ?>
-						<textarea name="<?php echo $fkey; ?>" class="ptc-field__textarea" rows="<?php echo esc_attr( (string)( $field['rows'] ?? 3 ) ); ?>"><?php echo esc_textarea( $fval ); ?></textarea>
+						<textarea name="<?php echo esc_attr( $fkey ); ?>" class="ptc-field__textarea" rows="<?php echo esc_attr( (string)( $field['rows'] ?? 3 ) ); ?>"><?php echo esc_textarea( $fval ); ?></textarea>
 					<?php elseif ( $field['type'] === 'radio' ) : ?>
 						<div class="ptc-radio-group">
 							<?php foreach ( $field['options'] ?? [] as $ov => $ol ) : ?>
 							<label class="ptc-radio-label">
-								<input type="radio" name="<?php echo $fkey; ?>" value="<?php echo esc_attr( $ov ); ?>"<?php checked( $fval, $ov ); ?>>
+								<input type="radio" name="<?php echo esc_attr( $fkey ); ?>" value="<?php echo esc_attr( $ov ); ?>"<?php checked( $fval, $ov ); ?>>
 								<?php echo esc_html( $ol ); ?>
 							</label>
 							<?php endforeach; ?>
 						</div>
 					<?php elseif ( $field['type'] === 'range' ) : ?>
 						<div class="ptc-range-wrap">
-							<input type="range" name="<?php echo $fkey; ?>" id="ptc-range-<?php echo $fkey; ?>"
+							<input type="range" name="<?php echo esc_attr( $fkey ); ?>" id="ptc-range-<?php echo esc_attr( $fkey ); ?>"
 							       value="<?php echo esc_attr( $fval ?: ( $field['default'] ?? '0' ) ); ?>"
 							       min="<?php echo esc_attr( (string)( $field['min'] ?? 0 ) ); ?>"
 							       max="<?php echo esc_attr( (string)( $field['max'] ?? 100 ) ); ?>"
 							       step="<?php echo esc_attr( (string)( $field['step'] ?? 1 ) ); ?>"
 							       class="ptc-range"
-							       oninput="document.getElementById('ptc-range-val-<?php echo $fkey; ?>').textContent=this.value+'<?php echo esc_js( $field['unit'] ?? '' ); ?>'">
-							<span class="ptc-range__val" id="ptc-range-val-<?php echo $fkey; ?>"><?php echo esc_html( $fval ?: ( $field['default'] ?? '0' ) ); ?><?php echo esc_html( $field['unit'] ?? '' ); ?></span>
+							       oninput="document.getElementById('ptc-range-val-<?php echo esc_attr( $fkey ); ?>').textContent=this.value+'<?php echo esc_js( $field['unit'] ?? '' ); ?>'">
+							<span class="ptc-range__val" id="ptc-range-val-<?php echo esc_attr( $fkey ); ?>"><?php echo esc_html( $fval ?: ( $field['default'] ?? '0' ) ); ?><?php echo esc_html( $field['unit'] ?? '' ); ?></span>
 						</div>
 					<?php endif; ?>
 				</div>
@@ -586,6 +591,8 @@ class TemplateChoice {
 	}
 
 	private function save_template_settings(): void {
+		check_admin_referer( 'pizzalayer_template_settings_save' );
+
 		$active = (string) get_option( 'pizzalayer_setting_global_template', '' );
 		if ( ! $active ) { return; }
 		// Load the option keys for this template
@@ -608,6 +615,7 @@ class TemplateChoice {
 			// This prevents a malicious template-options.php from overwriting core options
 			// like `siteurl`, `admin_email`, etc.
 			if ( $key === '' || strpos( $key, '_setting_' ) === false ) { continue; }
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput -- Raw value; each field type below applies the appropriate wp_unslash() + sanitizer.
 			$raw = $_POST[ $key ] ?? null;
 			if ( $field['type'] === 'toggle' ) {
 				// Hidden input sends 'no', checkbox overwrites with 'yes' if checked

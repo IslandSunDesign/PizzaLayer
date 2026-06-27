@@ -129,7 +129,7 @@ class PizzaRestApi {
 	 * or short-circuit the limiter via the rate-limit filters.
 	 */
 	private function client_ip(): string {
-		$raw = isset( $_SERVER['REMOTE_ADDR'] ) ? wp_unslash( $_SERVER['REMOTE_ADDR'] ) : '';
+		$raw = isset( $_SERVER['REMOTE_ADDR'] ) ? sanitize_text_field( wp_unslash( $_SERVER['REMOTE_ADDR'] ) ) : '';
 		$ip  = filter_var( (string) $raw, FILTER_VALIDATE_IP );
 		return $ip ? (string) $ip : '';
 	}

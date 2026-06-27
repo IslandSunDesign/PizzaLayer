@@ -3,11 +3,11 @@
  * Plugin Name: PizzaLayer
  * Plugin URI:  https://pizzalayer.com
  * Description: Pizza toppings customizer and visualizer.
- * Version:     1.13.0
+ * Version:     1.13.2
  * Author:      Island Sun Design
  * Author URI:  https://pizzalayer.com
  * Requires at least: 6.2
- * Tested up to:      6.7
+ * Tested up to:      7.0
  * License:     GPLv2 or later
  * Text Domain: pizzalayer
  * Domain Path: /languages
@@ -27,7 +27,7 @@ spl_autoload_register( function ( $class ) {
 } );
 
 // Constants
-define( 'PIZZALAYER_VERSION',       '1.13.0' );
+define( 'PIZZALAYER_VERSION',       '1.13.2' );
 define( 'PIZZALAYER_PLUGIN_FILE',   __FILE__ );
 define( 'PIZZALAYER_PLUGIN_DIR',    plugin_dir_path( __FILE__ ) );
 define( 'PIZZALAYER_PLUGIN_URL',    plugin_dir_url( __FILE__ ) );
@@ -44,7 +44,7 @@ define( 'PIZZALAYER_BLOCKS_DIR',    PIZZALAYER_PLUGIN_DIR . 'blocks/' );
  * @return string[]
  */
 if ( ! function_exists( 'pz_get_enabled_fractions' ) ) {
-	function pz_get_enabled_fractions(): array {
+	function pz_get_enabled_fractions(): array { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Uses the plugin-owned pz_ prefix; function_exists()-guarded above.
 		$saved = get_option( 'pizzalayer_setting_topping_fractions', [] );
 		if ( ! is_array( $saved ) ) {
 			// Migrate legacy string values
@@ -86,7 +86,7 @@ if ( ! function_exists( 'pz_get_enabled_fractions' ) ) {
  * @return mixed          Field value (string|array|int) or '' when unset.
  */
 if ( ! function_exists( 'pzl_get_field' ) ) {
-	function pzl_get_field( $field, $post_id ) {
+	function pzl_get_field( $field, $post_id ) { // phpcs:ignore WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Uses the plugin-owned pzl_ prefix; this is the shared ACF/SCF safe accessor, function_exists()-guarded above.
 		if ( function_exists( 'get_field' ) ) {
 			return get_field( $field, $post_id );
 		}

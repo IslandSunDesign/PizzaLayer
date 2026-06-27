@@ -85,25 +85,25 @@ class AdminBar {
 				'id'     => 'pizzalayer-cpt-' . $slug,
 				'title'  => esc_html( $meta['label'] ),
 				'href'   => $list_url,
-				'meta'   => [ 'class' => 'pzlab-cpt-row', 'title' => sprintf( __( 'Manage %s', 'pizzalayer' ), $meta['label'] ) ],
+				'meta'   => [ 'class' => 'pzlab-cpt-row', 'title' => sprintf( /* translators: %s = content type label. */ __( 'Manage %s', 'pizzalayer' ), $meta['label'] ) ],
 			] );
 
 			// Sub-link: All
 			$bar->add_menu( [
 				'parent' => 'pizzalayer-cpt-' . $slug,
 				'id'     => 'pizzalayer-cpt-' . $slug . '-all',
-				'title'  => sprintf( esc_html__( 'All %s', 'pizzalayer' ), esc_html( $meta['label'] ) ),
+				'title'  => sprintf( /* translators: %s = content type label. */ esc_html__( 'All %s', 'pizzalayer' ), esc_html( $meta['label'] ) ),
 				'href'   => $list_url,
-				'meta'   => [ 'title' => sprintf( __( 'View all %s', 'pizzalayer' ), $meta['label'] ) ],
+				'meta'   => [ 'title' => sprintf( /* translators: %s = content type label. */ __( 'View all %s', 'pizzalayer' ), $meta['label'] ) ],
 			] );
 
 			// Sub-link: Add New
 			$bar->add_menu( [
 				'parent' => 'pizzalayer-cpt-' . $slug,
 				'id'     => 'pizzalayer-cpt-' . $slug . '-new',
-				'title'  => sprintf( esc_html__( 'Add New %s', 'pizzalayer' ), esc_html( $meta['singular'] ) ),
+				'title'  => sprintf( /* translators: %s = content type name. */ esc_html__( 'Add New %s', 'pizzalayer' ), esc_html( $meta['singular'] ) ),
 				'href'   => $new_url,
-				'meta'   => [ 'title' => sprintf( __( 'Add a new %s', 'pizzalayer' ), $meta['singular'] ) ],
+				'meta'   => [ 'title' => sprintf( /* translators: %s = content type name. */ __( 'Add a new %s', 'pizzalayer' ), $meta['singular'] ) ],
 			] );
 		}
 
@@ -307,6 +307,7 @@ class AdminBar {
 
 	/** Return the current CPT slug for sidebar/bar highlighting. */
 	private function get_current_cpt_slug(): string {
+		// phpcs:disable WordPress.Security.NonceVerification.Recommended -- Read-only: derives the active CPT from the admin URL for menu highlighting; value is sanitized and not used to change state.
 		global $pagenow;
 		if ( ! isset( $pagenow ) ) { return ''; }
 		if ( $pagenow === 'admin.php'
@@ -319,6 +320,7 @@ class AdminBar {
 			$pt = sanitize_key( $_GET['post_type'] ?? get_post_type() ?? '' );
 			return str_replace( 'pizzalayer_', '', $pt );
 		}
+		// phpcs:enable WordPress.Security.NonceVerification.Recommended
 		return '';
 	}
 }

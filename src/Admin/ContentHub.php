@@ -288,6 +288,7 @@ class ContentHub {
 
 		// Persist column selection for this CPT if supplied.
 		if ( isset( $_POST['cols'] ) ) {
+			// phpcs:ignore WordPress.Security.ValidatedSanitizedInput.InputNotSanitized -- JSON payload; each decoded key is sanitize_key()'d and validated against an allowlist below.
 			$raw = json_decode( wp_unslash( $_POST['cols'] ), true );
 			$valid_keys = array_keys( $this->columns_for( $slug ) );
 			$clean = [];
@@ -323,9 +324,8 @@ class ContentHub {
 		if ( ! current_user_can( 'manage_options' ) ) { return; }
 
 		// Active CPT slug from query param — default to 'toppings'
-		$active_slug = isset( $_GET['pl_cpt'] ) // phpcs:ignore WordPress.Security.NonceVerification
-			? sanitize_key( wp_unslash( $_GET['pl_cpt'] ) )
-			: 'toppings';
+		// phpcs:ignore WordPress.Security.NonceVerification.Recommended -- Read-only CPT tab selector; sanitized and validated against self::CPTS below, no state change.
+		$active_slug = isset( $_GET['pl_cpt'] ) ? sanitize_key( wp_unslash( $_GET['pl_cpt'] ) ) : 'toppings';
 
 		if ( ! array_key_exists( $active_slug, self::CPTS ) ) {
 			$active_slug = 'toppings';
@@ -392,7 +392,7 @@ class ContentHub {
 					$is_active  = ( $slug === $active_slug );
 					$count      = $counts[ $slug ];
 					$zero_class = $count === 0 ? ' plch-rail__count--zero' : '';
-					$cpt_data   = esc_attr( wp_json_encode( [
+					$cpt_data   = wp_json_encode( [
 						'slug'     => $slug,
 						'label'    => $meta['label'],
 						'singular' => $meta['singular'],
@@ -401,12 +401,12 @@ class ContentHub {
 						'desc'     => $meta['desc'],
 						'addUrl'    => admin_url( 'post-new.php?post_type=pizzalayer_' . $slug ),
 					'wpListUrl' => admin_url( 'edit.php?post_type=pizzalayer_' . $slug ),
-					] ) );
+					] );
 				?>
 				<a href="<?php echo esc_url( add_query_arg( 'pl_cpt', $slug, $hub_url ) ); ?>"
 				   class="plch-rail__item<?php echo $is_active ? ' plch-rail__item--active' : ''; ?>"
 				   data-slug="<?php echo esc_attr( $slug ); ?>"
-				   data-cpt='<?php echo $cpt_data; ?>'
+				   data-cpt='<?php echo esc_attr( $cpt_data ); ?>'
 				   aria-current="<?php echo $is_active ? 'page' : 'false'; ?>">
 
 					<span class="plch-rail__icon"
@@ -597,7 +597,7 @@ class ContentHub {
 					<?php endif; ?>
 				</select>
 				<button type="submit" class="button plch-grid-apply"><?php esc_html_e( 'Apply', 'pizzalayer' ); ?></button>
-				<span class="plch-grid-count"><?php echo esc_html( sprintf( _n( '%d item', '%d items', (int) $q->found_posts, 'pizzalayer' ), (int) $q->found_posts ) ); ?></span>
+				<span class="plch-grid-count"><?php echo esc_html( sprintf( /* translators: %d = number of items. */ _n( '%d item', '%d items', (int) $q->found_posts, 'pizzalayer' ), (int) $q->found_posts ) ); ?></span>
 			</div>
 
 			<?php if ( $q->have_posts() ) : ?>
@@ -655,7 +655,7 @@ class ContentHub {
 				if ( $search ) { $base = add_query_arg( 's', $search, $base ); }
 				?>
 				<div class="plch-grid-pager tablenav-pages">
-					<span class="displaying-num"><?php echo esc_html( sprintf( _n( '%d item', '%d items', (int) $q->found_posts, 'pizzalayer' ), (int) $q->found_posts ) ); ?></span>
+					<span class="displaying-num"><?php echo esc_html( sprintf( /* translators: %d = number of items. */ _n( '%d item', '%d items', (int) $q->found_posts, 'pizzalayer' ), (int) $q->found_posts ) ); ?></span>
 					<span class="pagination-links">
 						<?php
 						for ( $i = 1; $i <= $total_pages; $i++ ) {
@@ -677,12 +677,12 @@ class ContentHub {
 					<p>
 						<?php
 						echo $search
-							? esc_html( sprintf( __( 'No %s match your search.', 'pizzalayer' ), strtolower( $active_meta['label'] ) ) )
-							: esc_html( sprintf( __( 'No %s yet.', 'pizzalayer' ), strtolower( $active_meta['label'] ) ) );
+							? esc_html( sprintf( /* translators: %s = content type label. */ __( 'No %s match your search.', 'pizzalayer' ), strtolower( $active_meta['label'] ) ) )
+							: esc_html( sprintf( /* translators: %s = content type label. */ __( 'No %s yet.', 'pizzalayer' ), strtolower( $active_meta['label'] ) ) );
 						?>
 					</p>
 					<a class="button button-primary" href="<?php echo esc_url( admin_url( 'post-new.php?post_type=' . $cpt ) ); ?>">
-						<?php echo esc_html( sprintf( __( 'Add %s', 'pizzalayer' ), $active_meta['singular'] ) ); ?>
+						<?php echo esc_html( sprintf( /* translators: %s = content type name. */ __( 'Add %s', 'pizzalayer' ), $active_meta['singular'] ) ); ?>
 					</a>
 				</div>
 			<?php endif; ?>
@@ -827,7 +827,7 @@ class ContentHub {
 				if ( ! $list ) { return $dash; }
 				$count = count( $list );
 				if ( $compact ) {
-					return esc_html( sprintf( _n( '%d ingredient', '%d ingredients', $count, 'pizzalayer' ), $count ) );
+					return esc_html( sprintf( /* translators: %d = number of ingredients. */ _n( '%d ingredient', '%d ingredients', $count, 'pizzalayer' ), $count ) );
 				}
 				$shown = array_slice( $list, 0, 4 );
 				$text  = implode( ', ', $shown );

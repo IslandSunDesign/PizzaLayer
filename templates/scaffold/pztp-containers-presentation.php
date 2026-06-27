@@ -4,6 +4,7 @@
  * Delegates to pzt_scaffold_menu_func() defined in pztp-template-custom.php.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedFunctionFound -- Template helper functions use the plugin's pzt_ (PizzaLayer Template) prefix; shared/back-compat helpers are function_exists()-guarded against redeclaration.
 do_action( 'pizzalayer_file_pztp-containers-presentation_start' );
 
 function pzt_scaffold_visualizer_func( $atts = [] ) {

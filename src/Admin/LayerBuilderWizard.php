@@ -121,8 +121,8 @@ class LayerBuilderWizard {
 			];
 			foreach ( $steps as $n => $label ) :
 			?>
-			<div class="plbw-step <?php echo $n === 1 ? 'is-active' : ''; ?>" data-step="<?php echo $n; ?>">
-				<div class="plbw-step-circle"><?php echo $n; ?></div>
+			<div class="plbw-step <?php echo $n === 1 ? 'is-active' : ''; ?>" data-step="<?php echo esc_attr( $n ); ?>">
+				<div class="plbw-step-circle"><?php echo esc_html( (string) $n ); ?></div>
 				<span class="plbw-step-label"><?php echo esc_html( $label ); ?></span>
 			</div>
 			<?php if ( $n < 4 ) : ?>
@@ -145,7 +145,7 @@ class LayerBuilderWizard {
 					data-color="<?php echo esc_attr( $type['color'] ); ?>"
 					data-extra="<?php echo esc_attr( wp_json_encode( $type['extra_fields'] ) ); ?>"
 					style="--plbw-accent:<?php echo esc_attr( $type['color'] ); ?>">
-					<span class="plbw-type-emoji" aria-hidden="true"><?php echo $type['emoji']; ?></span>
+					<span class="plbw-type-emoji" aria-hidden="true"><?php echo esc_html( $type['emoji'] ); ?></span>
 					<span class="plbw-type-name"><?php echo esc_html( $type['label'] ); ?></span>
 					<span class="plbw-type-desc"><?php echo esc_html( $type['description'] ); ?></span>
 					<span class="plbw-type-check dashicons dashicons-yes-alt" aria-hidden="true"></span>

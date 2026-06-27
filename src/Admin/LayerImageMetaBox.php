@@ -209,7 +209,7 @@ class LayerImageMetaBox {
 				<div class="pzlmb-actions">
 					<button type="button" class="button button-primary pzlmb-set-btn" disabled>
 						<span class="dashicons dashicons-yes"></span>
-						<?php printf( esc_html__( 'Set as %s Layer Image', 'pizzalayer' ), esc_html( $singular ) ); ?>
+						<?php printf( /* translators: %s = layer type name. */ esc_html__( 'Set as %s Layer Image', 'pizzalayer' ), esc_html( $singular ) ); ?>
 					</button>
 					<button type="button" class="button pzlmb-cancel-btn"><?php esc_html_e( 'Cancel', 'pizzalayer' ); ?></button>
 				</div>
@@ -225,8 +225,8 @@ class LayerImageMetaBox {
 	// ── AJAX: upload PNG and set post meta ────────────────────────────────────
 
 	public function ajax_set_layer_image(): void {
-		$post_id   = (int) ( $_POST['post_id']   ?? 0 );
-		$filename  = sanitize_file_name( $_POST['filename']  ?? 'layer-image.png' );
+		$post_id   = absint( wp_unslash( $_POST['post_id'] ?? 0 ) );
+		$filename  = sanitize_file_name( wp_unslash( $_POST['filename'] ?? 'layer-image.png' ) );
 		$data      = $_POST['data'] ?? ''; // phpcs:ignore
 
 		check_ajax_referer( 'pzl_metabox_set_layer_image_' . $post_id, 'meta_nonce' );

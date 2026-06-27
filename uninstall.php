@@ -9,7 +9,7 @@ if ( ! defined( 'WP_UNINSTALL_PLUGIN' ) ) { exit; }
  */
 
 // ── Core plugin options (mirrors Settings::OPTIONS) ────────────────────
-$options = [
+$pizzalayer_options = [
 	// Template
 	'pizzalayer_setting_global_template',
 	// Pizza display
@@ -371,12 +371,12 @@ $options = [
 	'pizzalayer_wizard_done',
 ];
 
-foreach ( $options as $opt ) {
-	delete_option( $opt );
+foreach ( $pizzalayer_options as $pizzalayer_opt ) {
+	delete_option( $pizzalayer_opt );
 }
 
 // ── Delete all CPT posts and their postmeta ────────────────────────────
-$cpt_slugs = [
+$pizzalayer_cpt_slugs = [
 	'pizzalayer_toppings',
 	'pizzalayer_crusts',
 	'pizzalayer_sauces',
@@ -386,7 +386,7 @@ $cpt_slugs = [
 	'pizzalayer_sizes',
 ];
 
-foreach ( $cpt_slugs as $post_type ) {
+foreach ( $pizzalayer_cpt_slugs as $post_type ) {
 	$posts = get_posts( [
 		'post_type'      => $post_type,
 		'post_status'    => 'any',

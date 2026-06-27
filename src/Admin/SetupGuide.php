@@ -203,7 +203,7 @@ class SetupGuide {
 				<div class="psg-progress-bar" style="width:<?php echo esc_attr( (string) $pct ); ?>%"></div>
 			</div>
 			<div class="psg-progress-labels">
-				<span><?php printf( esc_html__( '%d of %d steps complete', 'pizzalayer' ), $done_count, $total_count ); ?></span>
+				<span><?php printf( /* translators: 1: completed step count, 2: total step count. */ esc_html__( '%1$d of %2$d steps complete', 'pizzalayer' ), (int) $done_count, (int) $total_count ); ?></span>
 				<span class="psg-pct"><?php echo esc_html( (string) $pct ); ?>%</span>
 			</div>
 		</div>
@@ -297,7 +297,7 @@ class SetupGuide {
 			<span class="dashicons dashicons-sos"></span>
 			<div>
 				<h3><?php esc_html_e( 'Need help?', 'pizzalayer' ); ?></h3>
-				<p><?php printf( wp_kses_post( __( 'Check the documentation or reach out through %s.', 'pizzalayer' ) ), '<a href="https://islandsundesign.com" target="_blank" rel="noopener">IslandSunDesign.com</a>' ); ?></p>
+				<p><?php printf( wp_kses_post( /* translators: %s = contact link. */ __( 'Check the documentation or reach out through %s.', 'pizzalayer' ) ), '<a href="https://islandsundesign.com" target="_blank" rel="noopener">IslandSunDesign.com</a>' ); ?></p>
 			</div>
 			<a href="<?php echo esc_url( admin_url( 'admin.php?page=pizzalayer' ) ); ?>" class="button"><?php esc_html_e( '← Back to Dashboard', 'pizzalayer' ); ?></a>
 		</div>
@@ -318,7 +318,7 @@ class SetupGuide {
 		$post_types = "'pizzalayer_crusts','pizzalayer_sauces','pizzalayer_cheeses','pizzalayer_toppings','pizzalayer_drizzles','pizzalayer_cuts'";
 		$meta_keys  = "'crust_layer_image','sauce_layer_image','cheese_layer_image','topping_layer_image','drizzle_layer_image','cut_layer_image'";
 
-		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL
+		// phpcs:disable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter -- $post_types/$meta_keys are hardcoded constant lists defined above, not user input; no injection vector.
 		$found = $wpdb->get_var(
 			"SELECT pm.post_id
 			   FROM {$wpdb->postmeta} pm
@@ -331,7 +331,7 @@ class SetupGuide {
 			    )
 			  LIMIT 1"
 		);
-		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL
+		// phpcs:enable WordPress.DB.DirectDatabaseQuery, WordPress.DB.PreparedSQL, PluginCheck.Security.DirectDB.UnescapedDBParameter
 
 		return ! empty( $found );
 	}

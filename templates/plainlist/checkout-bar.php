@@ -4,11 +4,12 @@
  * Minimal, text-first, borderless, respects user-set accent colour.
  */
 if ( ! defined( 'ABSPATH' ) ) { exit; }
+// phpcs:disable WordPress.NamingConventions.PrefixAllGlobals.NonPrefixedVariableFound -- Template partial; this file is include'd inside a method (render_template / load_template_custom / inject_inline_styles / Pro CartIntegration::render_cart_button), so its top-level variables are method-local, not global.
 if ( ! isset( $instance_id ) ) { $instance_id = ''; }
 $show_qty   = class_exists('PizzaLayerPro\Pro\WooCommerce\CartIntegration') && (bool) pztpro_get_setting('show_quantity_selector', true);
 $max_qty    = max(1, (int) pztpro_get_setting('max_quantity', 99));
 $show_notes = (bool) pztpro_get_setting('enable_order_notes', false);
-$note_ph    = pztpro_get_setting('order_note_placeholder', '') ?: __('Any special requests?', 'pizzalayerpro');
+$note_ph    = pztpro_get_setting('order_note_placeholder', '') ?: __('Any special requests?', 'pizzalayer');
 
 // CTA label: Plainlist template setting wins, then the Pro global cart-button
 // text, then the default. Lets the Plainlist template own its own CTA wording.
@@ -17,7 +18,7 @@ if ( '' === $cta_label && function_exists( 'pztpro_get_setting' ) ) {
     $cta_label = trim( (string) pztpro_get_setting( 'cart_btn_text', '' ) );
 }
 if ( '' === $cta_label ) {
-    $cta_label = __( 'Add to Cart', 'pizzalayerpro' );
+    $cta_label = __( 'Add to Cart', 'pizzalayer' );
 }
 ?>
 <div class="pztpro-checkout-bar pztpro-checkout-bar--plainlist"
@@ -32,9 +33,9 @@ if ( '' === $cta_label ) {
 
         <?php if ($show_qty) : ?>
         <div class="pztpro-bar-qty" data-instance="<?php echo esc_attr($instance_id); ?>" data-max="<?php echo esc_attr($max_qty); ?>">
-            <button type="button" class="pztpro-qty-btn pztpro-qty-btn--minus" data-instance="<?php echo esc_attr($instance_id); ?>" disabled aria-label="<?php esc_attr_e('Decrease quantity','pizzalayerpro'); ?>">−</button>
+            <button type="button" class="pztpro-qty-btn pztpro-qty-btn--minus" data-instance="<?php echo esc_attr($instance_id); ?>" disabled aria-label="<?php esc_attr_e('Decrease quantity','pizzalayer'); ?>">−</button>
             <span class="pztpro-qty-value" id="pztpro-qty-<?php echo esc_attr($instance_id); ?>" data-qty="1">1</span>
-            <button type="button" class="pztpro-qty-btn pztpro-qty-btn--plus"  data-instance="<?php echo esc_attr($instance_id); ?>" aria-label="<?php esc_attr_e('Increase quantity','pizzalayerpro'); ?>">+</button>
+            <button type="button" class="pztpro-qty-btn pztpro-qty-btn--plus"  data-instance="<?php echo esc_attr($instance_id); ?>" aria-label="<?php esc_attr_e('Increase quantity','pizzalayer'); ?>">+</button>
         </div>
         <?php endif; ?>
 
